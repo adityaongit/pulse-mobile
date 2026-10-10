@@ -32,7 +32,7 @@ export const toast = {
     show("success", text);
   },
   error: (text: string) => {
-    // haptic.error() once the kit has it (phase-2 merge).
+    haptic.error();
     show("error", text);
   },
 };

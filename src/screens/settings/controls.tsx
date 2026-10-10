@@ -1,7 +1,7 @@
 // The form and settings pieces Settings, onboarding and Behaviours share. The web draws them with its shadcn components
 // (Input, Switch, Dialog, outline Button, Progress) and a few class strings; the kit has none of these, so they are
 // built here from the same classes and tokens, never from a platform control.
-import { useState, type ReactNode, type Ref } from "react";
+import { useEffect, useState, type ReactNode, type Ref } from "react";
 import { Modal, Pressable, TextInput, View, type TextInputProps } from "react-native";
 import Animated, { useAnimatedStyle, withTiming } from "react-native-reanimated";
 import type { LucideIcon } from "lucide-react-native";
@@ -217,7 +217,9 @@ export function ConfirmDialog({
   confirmVariant?: "outline" | "primary";
 }) {
   const { c } = useTheme();
-  // haptic.warning() when `open` turns true for a destructive (outline) confirm: the kit has it after the phase-2 merge.
+  useEffect(() => {
+    if (open && confirmVariant === "outline") haptic.warning();
+  }, [open, confirmVariant]);
   return (
     <Modal visible={open} transparent animationType="fade" onRequestClose={() => !pending && onCancel()} statusBarTranslucent navigationBarTranslucent>
       <Pressable accessibilityLabel="Close" accessible={false} onPress={() => !pending && onCancel()} className="flex-1 items-center justify-center bg-dim-strong px-4">

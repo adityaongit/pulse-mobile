@@ -61,7 +61,7 @@ export default function LogSheet() {
     const r = await logEntry(store, input).catch(() => ({ ok: false as const, error: "Couldn’t save. Check your connection and try again." }));
     setSaving(false);
     if (!r.ok) {
-      // haptic.error() (arrives with the kit merge): a log write that fails, the not-connected answer included.
+      haptic.error();
       if (r.error === RECONNECT) setReconnect(true);
       else setError(r.error);
       return;

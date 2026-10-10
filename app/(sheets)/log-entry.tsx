@@ -70,7 +70,7 @@ export default function LogEntrySheet() {
       haptic.success();
       return void toast.success("Deleted");
     }
-    // haptic.error() (arrives with the kit merge): a delete that fails.
+    haptic.error();
     const why = failed.error === RECONNECT ? "Reconnect Google in Settings to delete it there." : failed.error === "network" ? "Try again." : failed.error;
     // A weigh-in is two points: say which one stayed when the first went.
     toast.error(failed.e === shown.entries[0] ? `Couldn’t delete. ${why}` : `${failed.e.title} wasn’t deleted. ${why}`);
@@ -116,7 +116,7 @@ export default function LogEntrySheet() {
           </View>
         ) : (
           <Button size="sheet" variant="secondary" onPress={() => {
-            // haptic.warning() (arrives with the kit merge): the delete confirm appears.
+            haptic.warning();
             setConfirming(true);
           }}>
             <Text className={RED}>{shown.entries.length > 1 ? "Delete weigh-in" : "Delete entry"}</Text>

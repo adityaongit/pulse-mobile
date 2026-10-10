@@ -182,8 +182,10 @@ export function CheckInSheet() {
     const text = note.trim();
     const r = await saveCheckIn(store, loaded.day, changes, text !== loaded.checkIn.note ? text : null).catch(() => ({ ok: false as const }));
     setSaving(false);
-    // haptic.error() (arrives with the kit merge): a save that fails.
-    if (!r.ok) return setSaveError(true);
+    if (!r.ok) {
+      haptic.error();
+      return setSaveError(true);
+    }
     setDone(true); // the Saved screen plays the success haptic
   };
 
