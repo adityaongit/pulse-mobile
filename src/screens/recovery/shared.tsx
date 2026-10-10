@@ -34,8 +34,6 @@ export function WeeklyTrendsSlotSkeleton(_: { titles: string[] }): ReactNode {
   return null
 }
 
-/** The summary card's padding: the web's `px-4 py-1` (the kit's Card pads `py-4`, and a class cannot override a class, so the style does). */
-export const SUMMARY_CARD_STYLE = { paddingVertical: 4 } as const
 
 /** Recovery and Strain's loading shape (pulse's skeletons.tsx `DialDetail`): the dial, the notched summary card, the insight card, then the page's own cards. */
 export function DialDetailSkeleton({
@@ -64,7 +62,7 @@ export function DialDetailSkeleton({
       notch
       hero={<ScoreDialSkeleton size="lg" variant={dial} />}
       summary={
-        <Card accessibilityElementsHidden className="px-4" style={SUMMARY_CARD_STYLE}>
+        <Card accessibilityElementsHidden className="gap-0 px-4 py-1">
           <Divided>
             {labels.map((l) => (
               <KeyStatRowSkeleton key={l} variant="row" label={l} />

@@ -4,6 +4,7 @@
 import { View } from "react-native";
 import { IntradayHrChartSkeleton } from "@/ui/charts/IntradayHrChart";
 import { ZoneBarsSkeleton } from "@/ui/charts/ZoneBars";
+import { Card } from "@/ui/Card";
 import { InsightCardSkeleton } from "@/ui/metrics/InsightCard";
 import { KeyStatRowSkeleton } from "@/ui/metrics/KeyStatRow";
 import { LABEL } from "@/ui/metrics/primitives";
@@ -13,7 +14,6 @@ import { Skeleton, SkeletonText } from "@/ui/Skeleton";
 import { Text } from "@/ui/Text";
 import { cn } from "@/ui/cn";
 import { statIcon } from "../_lib/view";
-import { PlainCard } from "./parts";
 
 const TILES = [
   ["avgHr", "Average heart rate"],
@@ -64,9 +64,9 @@ export function NapSkeleton() {
           </View>
         </SectionShell>,
         <SectionShell key="hrr" variant="section" title="Heart rate recovery">
-          <PlainCard className="justify-center p-4">
+          <Card className="justify-center gap-0 p-4">
             <Skeleton className="h-24 rounded-lg bg-muted/60" />
-          </PlainCard>
+          </Card>
         </SectionShell>,
       ]}
       footer={<InsightCardSkeleton />}

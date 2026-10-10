@@ -38,12 +38,13 @@ export function useCardStyle(): ViewStyle & { boxShadow: string } {
   };
 }
 
-export function Card({ className, style, children, ...props }: ViewProps & { style?: StyleProp<ViewStyle> }) {
+/** `ring`: a 1 px ring colour (the web's `ring-1 ring-*`: an alert's red, a selected card's white) drawn inside the edge. */
+export function Card({ className, style, ring, children, ...props }: ViewProps & { style?: StyleProp<ViewStyle>; ring?: string }) {
   const shadow = useCardStyle();
   return (
     <InCard.Provider value>
-      <View className={cn(CARD_CLASS, "py-4", className)} style={[shadow, style]} {...props}>
-        <CardFill />
+      <View className={cn(CARD_CLASS, "py-4", className)} style={[ring ? { boxShadow: `${shadow.boxShadow}, inset 0 0 0 1px ${ring}` } : shadow, style]} {...props}>
+        <CardFill ring={ring} />
         {children}
       </View>
     </InCard.Provider>

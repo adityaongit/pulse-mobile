@@ -3,6 +3,7 @@
 // skeleton goes with Weekly Trends (the Trends stream).
 import { Fragment } from "react";
 import { View } from "react-native";
+import { Card } from "@/ui/Card";
 import { InsightCardSkeleton } from "@/ui/metrics/InsightCard";
 import { KeyStatRowSkeleton } from "@/ui/metrics/KeyStatRow";
 import { ScoreDialSkeleton } from "@/ui/metrics/ScoreDial";
@@ -12,7 +13,6 @@ import { SectionShell } from "@/ui/shells/SectionShell";
 import { Skeleton, SkeletonText } from "@/ui/Skeleton";
 import { Text } from "@/ui/Text";
 import { TONIGHT_INFO } from "../_lib/info";
-import { PlainCard } from "./parts";
 
 const rows = (n: number, Row: (i: number) => React.ReactNode) => Array.from({ length: n }, (_, i) => <Fragment key={i}>{Row(i)}</Fragment>);
 
@@ -52,7 +52,7 @@ export function SleepSkeleton() {
       notch
       hero={<ScoreDialSkeleton size="lg" variant="sleep" />}
       summary={
-        <PlainCard className="px-4 py-1">
+        <Card className="gap-0 px-4 py-1">
           {["Hours vs. needed", "Sleep consistency", "Sleep efficiency"].map((l, i) => (
             <Fragment key={l}>
               {i > 0 && <View className="h-px bg-border" />}
@@ -62,7 +62,7 @@ export function SleepSkeleton() {
           <View className="mb-3 mt-1 rounded-lg bg-inset px-3 py-2">
             <SkeletonText className="w-48" />
           </View>
-        </PlainCard>
+        </Card>
       }
       insight={<InsightCardSkeleton action={false} />}
       primary={

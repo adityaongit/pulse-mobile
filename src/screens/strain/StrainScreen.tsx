@@ -27,7 +27,7 @@ import { InfoButton } from "@/ui/shells/InfoButton"
 import { SectionShell } from "@/ui/shells/SectionShell"
 import { STRAIN_INFO, STRAIN_TARGET_INFO } from "@/screens/_lib/info"
 import { CAPTION, hrSeries, LABEL, statProps, TodayVsLegend } from "@/screens/_lib/view"
-import { DialDetailSkeleton, Divided, ScreenError, SUMMARY_CARD_STYLE, WEEKLY_STRAIN, WeeklyTrendsSlot, WeeklyTrendsSlotSkeleton } from "@/screens/recovery/shared"
+import { DialDetailSkeleton, Divided, ScreenError, WEEKLY_STRAIN, WeeklyTrendsSlot, WeeklyTrendsSlotSkeleton } from "@/screens/recovery/shared"
 import { useScreen } from "@/screens/useScreen"
 
 export function StrainScreen() {
@@ -51,7 +51,7 @@ export function StrainScreen() {
       notch
       hero={<ScoreDial variant="strain" size="lg" value={s.value} reason={s.reason} target={t ? [t.low, t.high] : null} extraTags={vm.soFar && s.value !== null ? ["so_far"] : undefined} />}
       summary={
-        <Card className="px-4" style={SUMMARY_CARD_STYLE}>
+        <Card className="gap-0 px-4 py-1">
           <Divided>
             <TargetRow vm={vm} />
             {vm.summary.map((k) => (

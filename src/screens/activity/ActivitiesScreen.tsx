@@ -23,8 +23,6 @@ const KIND_LABEL: Record<ActivityKind, string> = { run: "Runs", ride: "Rides", w
 const STAT_LABEL = "text-xs leading-4 font-bold tracking-[0.1em] text-foreground-secondary uppercase"
 const PILL = "h-9 shrink-0 items-center justify-center rounded-full px-4"
 const PILL_TEXT = "text-xs font-bold tracking-[0.1em] uppercase"
-/** The web's `p-1.5` card (the kit's Card pads `py-4`, and a class cannot override a class, so the style does). */
-const INSET_CARD = { padding: 6 } as const
 
 type Group = ActivitiesVM["groups"][number]
 
@@ -131,7 +129,7 @@ function Day({ g, today, timeZone }: { g: Group; today: string; timeZone: string
       </View>
       {g.items.length ? (
         // 6 px inset in a 16 px card around the rows' 10 px radius, as on Home (spec §2.4).
-        <Card style={INSET_CARD}>
+        <Card className="p-1.5">
           <View className="gap-1.5">
             {g.items.map((a) => (
               <ActivityCard key={a.id} name={a.name} kind={a.activityKind} strain={a.strain} start={a.start} end={a.end} distanceKm={a.distanceKm} paceS={a.paceS} href={activityHref(a.id)} timeZone={timeZone} />
@@ -162,7 +160,7 @@ function ActivitiesSkeleton() {
           {[1, 2].map((n) => (
             <View key={n} className="gap-2">
               <Text className={GROUP_LABEL}>{" "}</Text>
-              <Card style={INSET_CARD}>
+              <Card className="p-1.5">
                 <TimelineSkeleton rows={n} />
               </Card>
             </View>

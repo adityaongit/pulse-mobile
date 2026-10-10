@@ -6,12 +6,12 @@ import { Pressable, View } from "react-native";
 import { Activity, ChevronRight, HeartPulse } from "lucide-react-native";
 import { DAY, formatDay, formatValue } from "@/lib/format";
 import type { EcgReading, HeartRhythm as HeartRhythmVM } from "@/queries/types";
+import { Card } from "@/ui/Card";
 import { cn } from "@/ui/cn";
 import { Icon } from "@/ui/Icon";
 import { CAPTION, LABEL, StatusChip, ValueUnit } from "@/ui/metrics/primitives";
 import { openSheet } from "@/ui/shells/sheets";
 import { Text } from "@/ui/Text";
-import { Surface } from "./Surface";
 
 /** Fitbit's and the reference app's notes both say "not a diagnosis" and name what ECG can't detect (pulse docs/research/heart-rhythm-ui.md). */
 export const RHYTHM_DISCLAIMER = "Not a diagnosis. ECG and irregular rhythm notifications can’t detect a heart attack, blood clots or stroke. Talk to your doctor about any result.";
@@ -27,19 +27,19 @@ export function HeartRhythm({ rhythm }: { rhythm: HeartRhythmVM }) {
 
   if (!ecg.length && !irn.count)
     return (
-      <Surface className={ROW}>
+      <Card className={ROW}>
         <Icon icon={HeartPulse} size={20} tone="muted-foreground" strokeWidth={1.5} />
         <View className="min-w-0 flex-1">
           <Text className="text-[15px] leading-5 text-foreground-secondary">No heart rhythm readings yet</Text>
           <Text className={cn(CAPTION, "mt-0.5")}>ECG readings and irregular rhythm notifications from the Google Health app show up here after they sync.</Text>
         </View>
-      </Surface>
+      </Card>
     );
 
   const [latest, ...older] = ecg;
   return (
     <View className="gap-3">
-      <Surface className="overflow-hidden">
+      <Card className="py-0">
         {latest ? (
           <Pressable accessibilityRole="button" accessibilityLabel={`Latest ECG, ${when(latest)}: ${latest.label}, average ${bpm(latest)} bpm`} onPress={() => open(latest)} className="w-full gap-3 p-4 active:bg-accent">
             <View accessibilityElementsHidden className="w-full flex-row items-center gap-2.5">
@@ -80,9 +80,9 @@ export function HeartRhythm({ rhythm }: { rhythm: HeartRhythmVM }) {
             ))}
           </View>
         )}
-      </Surface>
+      </Card>
 
-      <Surface className={ROW}>
+      <Card className={ROW}>
         <Icon icon={HeartPulse} size={20} tone="muted-foreground" strokeWidth={1.5} />
         <View className="min-w-0 flex-1">
           <Text className={LABEL}>Irregular rhythm notifications</Text>
@@ -91,7 +91,7 @@ export function HeartRhythm({ rhythm }: { rhythm: HeartRhythmVM }) {
           </Text>
         </View>
         <Text className="font-numeric text-xl leading-6 font-bold tabular-nums">{irn.count}</Text>
-      </Surface>
+      </Card>
 
       <Text className={cn(CAPTION, "px-1")}>{RHYTHM_DISCLAIMER}</Text>
     </View>

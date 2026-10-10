@@ -8,6 +8,7 @@ import { trendHref } from "@/lib/url";
 import { getSleep } from "@/queries/sleep";
 import type { SleepVM } from "@/queries/types";
 import { cn } from "@/ui/cn";
+import { Card } from "@/ui/Card";
 import { InsightCard } from "@/ui/metrics/InsightCard";
 import { KeyStatRow } from "@/ui/metrics/KeyStatRow";
 import { CAPTION, LABEL } from "@/ui/metrics/primitives";
@@ -24,7 +25,6 @@ import { statProps } from "../_lib/view";
 import { useScreen } from "../useScreen";
 import { HoursVsNeed, SleepConsistency, SleepEfficiency } from "./SleepCards";
 import { SleepSkeleton } from "./SleepSkeleton";
-import { PlainCard } from "./parts";
 
 const STATUS_LEGEND = [
   ["bg-warning", "Poor"],
@@ -64,7 +64,7 @@ function Sleep({ vm, timeZone }: { vm: SleepVM; timeZone: string }) {
         />
       }
       summary={
-        <PlainCard className="px-4 py-1">
+        <Card className="gap-0 px-4 py-1">
           {vm.summary.map((k, i) => (
             <Fragment key={k.key}>
               {i > 0 && <View className="h-px bg-border" />}
@@ -79,7 +79,7 @@ function Sleep({ vm, timeZone }: { vm: SleepVM; timeZone: string }) {
               </View>
             ))}
           </View>
-        </PlainCard>
+        </Card>
       }
       insight={vm.insight ? <InsightCard body={vm.insight} action={{ label: "Explore your sleep insights", href: trendHref("sleep", { d, today }) }} /> : undefined}
       primary={

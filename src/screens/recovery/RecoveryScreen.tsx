@@ -13,7 +13,7 @@ import { RECOVERY_INFO } from "@/screens/_lib/info"
 import { statProps, TodayVsLegend } from "@/screens/_lib/view"
 import { useScreen } from "@/screens/useScreen"
 import { BehaviorInsights } from "./BehaviorInsights"
-import { DialDetailSkeleton, Divided, ScreenError, SUMMARY_CARD_STYLE, WEEKLY_RECOVERY, WeeklyTrendsSlot, WeeklyTrendsSlotSkeleton } from "./shared"
+import { DialDetailSkeleton, Divided, ScreenError, WEEKLY_RECOVERY, WeeklyTrendsSlot, WeeklyTrendsSlotSkeleton } from "./shared"
 
 export function RecoveryScreen() {
   const { d: raw } = useLocalSearchParams<{ d?: string }>()
@@ -35,7 +35,7 @@ export function RecoveryScreen() {
       notch
       hero={<ScoreDial variant="recovery" size="lg" value={r.value} reason={r.reason} nightsLeft={r.nightsLeft} provisional={r.provisional} tags={r.tags} />}
       summary={
-        <Card className="px-4" style={SUMMARY_CARD_STYLE}>
+        <Card className="gap-0 px-4 py-1">
           <Divided>
             {vm.summary.map((k) => (
               <KeyStatRow key={k.key} variant="row" {...statProps(k, { d, today })} />
