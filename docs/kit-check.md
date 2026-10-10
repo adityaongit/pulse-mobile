@@ -18,7 +18,7 @@ flowchart TD
 
 1. In a terminal in this repository: `pnpm install`, then `npx expo start --go`. The `--go` flag is needed because `expo-dev-client` is installed, which otherwise makes `expo start` serve a development build.
 2. Phone and computer must be on the same Wi-Fi. Android: install **Expo Go** from <https://expo.dev/go> (the Play Store build may lag behind SDK 57) and scan the QR code the terminal prints. The app opens on the Home tab (still the scaffold screen).
-3. The tab screens have no link to the kit. In Expo Go choose **Enter URL manually** and type `exp://<your computer's LAN IP>:8081/--/dev/kit` (the IP is in the terminal under the QR code). Fallback: `exp://<ip>:8081/--/_sitemap` lists every route; tap `dev/kit`.
+3. The tab screens have no link to the kit (the Health, Journal and More tabs are placeholders that show the tab bar and the check-in button). In Expo Go choose **Enter URL manually** and type `exp://<your computer's LAN IP>:8081/--/dev/kit` (the IP is in the terminal under the QR code). Fallback: `exp://<ip>:8081/--/_sitemap` lists every route; tap `dev/kit`.
 4. The kit's first screen has the light / dark toggle (System, Light, Dark). It is global: the Home and Detail demos, which have no toggle, follow the last choice. Pull down the Expo Go menu (shake) and tap Reload if a screen looks stale.
 
 **Expo Go is enough on Android.** Skia, Reanimated, gesture handler, SVG and the fonts are all bundled in Expo Go for SDK 57; everything else is JavaScript. If something does not render, the fallback is a development build, which carries the exact native modules of this project.
@@ -42,7 +42,7 @@ Check each frame in light and in dark. "Same" means the same number, copy, colou
 | SectionShell | Section title 22 px, card title caps, the chevron on a whole-card link, the info button, "View all" link. |
 | CollapsibleSection, EmptyState, MetricState | The chevron turns; the five states (loading, empty, reason, provisional, value) in one list; each reason code's icon and copy. |
 | DateSwitcher, CalendarPanel | Pill sizes and labels ("Today", "Yesterday", "Mon., Sep. 28"); steppers grey out at today; the calendar drops from the top, colours Recovery days, shows a dashed ring on today and the legend; the week pill. |
-| InfoButton, LinkList, ResponsiveSheet | The centred info card (title caps, chip, outline action); 56 px link rows; the bottom sheet: handle, centred caps title, X at the right, pill footer; the tall and full-screen sizes. |
+| InfoButton, LinkList, SheetScreen | The info sheet (a native form sheet: title caps, chip, outline action); 56 px link rows; the sheet demos (Open sheet, tall, screen): handle, centred caps title, X at the right, pill footer, the three sizes. |
 | ScoreDial | The 4 degree gap at 12 o'clock; band colours (green 67+, yellow 34 to 66, red below); the Strain Target band and white tick; the stress gauge's gradient arc and needle; every reason code in the large ring; tags stack; compact form; loading; arc thickness against the web at each size. |
 | MiniRing | Track and fill at 0, mid, max; no value. |
 | KeyStatRow | Row, card and tile: label caps, value and unit, the average under the value, arrow direction and tone, the status segments, chips, tags, the wide tile with a sparkline, reasons, loading. |
@@ -56,13 +56,14 @@ Check each frame in light and in dark. "Same" means the same number, copy, colou
 | ZoneBars | Row order (zone 5 first), the share in the zone's colour, hatched track, typical-range box; the stacked bar. |
 | Home demo | The top row (avatar, date pill), the dials and the ring row that eases in once the dials have scrolled away. |
 | Detail demo | The date as the header title; the hero ring; after scrolling, the hero shrinks into the header with the two stats. |
-| Tab bar (tab screens) | The floating glass bar, the sliding lens under the active tab, the round "P" action beside it. |
+| Tab bar (tab screens) | The platform tab bar (Home, Health, Journal, More) and the round "P" check-in button floating above it: see the native feel checklist below. |
 
-Touch checks: drag across a chart (a cursor and a tooltip; a vertical swipe still scrolls the page); tap a bar; tap a sheet's dim to close it; the Android back gesture closes the calendar, the info card and sheets.
+Touch checks: drag across a chart (a cursor and a tooltip; a vertical swipe still scrolls the page); tap a bar; tap a sheet's dim to close it; the Android back gesture closes the calendar and sheets.
 
 ## Differences you will see, on purpose
 
-- No blur on the glass bar and sheets (the blur module is not installed); the glass is its solid fallback colour. Cards are a flat colour, without the web's 2 to 4 percent top-to-bottom fade.
+- Tab bar, sheets and the info card are the platform's own components, so their shapes, motion and (on iOS 26) Liquid Glass are the OS's, not the web's drawings. The tab icons are the nearest SF Symbols and Material Symbols to the web's. The info card is a bottom sheet, not a centred card.
+- Only the round check-in button is blurred glass (as on the web). The headers keep their ground fill and fade: the web does not blur them either.
 - Charts are Skia, not SVG in the DOM: curves match (Recharts' monotone curve is reimplemented), but anti-aliasing differs a little. Hover tooltips are touch tooltips.
 - The Home header shows the ring row with a fade (the web's laptop behaviour) instead of morphing each dial into its ring on scroll.
 - The tablet rail and laptop sidebar, two-column layouts and keyboard shortcuts of the web are not ported (phone only).
@@ -71,3 +72,23 @@ Touch checks: drag across a chart (a cursor and a tooltip; a vertical swipe stil
 ## Not in the kit yet
 
 AgeOrb, ConnectionBanner, the sync status control, TrendViewChart and the walkthrough and brand icons (BandIcon, Google marks) are not ported: each depends on data, sync or accounts that belong to other streams.
+
+## Native feel checklist
+
+Run it on Android in Expo Go (`npx expo start --go`) and on an iPhone in the development build. The kit pages are `exp://<ip>:8081/--/dev/kit` (Android Expo Go) or `pulse://dev/kit` (development build); the tab screens open with the app. **Predictive back (and `app.json` in general) only takes effect in a development build, never in Expo Go.** Anything you see wrong, report the platform, the Android or iOS version and what you saw.
+
+| Check | How | Pass when |
+|---|---|---|
+| Tabs | Open the app. Tap Home, Health, Journal, More; tap the active tab again. | The platform bar (iOS 26: floating Liquid Glass, Android: Material bar with a pill indicator), icons house / ECG line / book (pencil on Android) / three lines, in that order, labels in Figtree, active tab in the foreground colour. Switching keeps the ground colour (no white flash), in light and dark. |
+| Check-in button | On Health, Journal and More. Then open `/dev/kit/detail`. | A round "P" button floats bottom right, **fully above the tab bar** (a 12 px gap), not behind it, on both platforms. On the detail demo it sits above the home indicator. The last content of a page scrolls clear of it. If it touches or hides behind the bar on iOS, say so: the bar's height is read from the screen's safe area, which Expo Router does not document. |
+| Check-in sheet | Tap the button. | A sheet opens at half height with a grabber (iOS) or handle (Android); drag up and it goes full height; drag down or tap the dim and it closes. Title CHECK IN, X at the right, Save pill; Save shows "Saved" with a check, then closes. |
+| Sheet detents, drag | `/dev/kit`, the sheet demos. | Open sheet: as tall as its content, no half step. Open tall sheet: opens half height, drags to full. Open screen sheet: the whole phone as a modal with the sand glow. Each closes by drag down (screen: iOS swipe down from the top, Android back), the X and Cancel. |
+| Info sheet | Tap any "i" (the kit's cards and detail demo). | A half-height sheet with the title and text; long text scrolls inside it. |
+| Swipe-back | Kit, open Detail demo or any kit sub-screen. iPhone: swipe from the left edge. Android: back gesture or button. | The screen slides away with your finger (iOS) and returns to the previous one. Also works from the sheets: Android back closes a sheet; iOS swipes it down. |
+| Predictive back | Development build, Android 13+ (before Android 15: Settings, Developer options, Predictive back animations). Hold the back gesture on a detail screen and on a tab root. | The system shows its back preview (on a root: the app shrinking toward the launcher) and the gesture still goes back or closes the sheet when released. If back stops working anywhere, set `predictiveBackGestureEnabled` back to false and report. |
+| Haptics | Phone not on silent / Low Power Mode off (iOS). Tap the check-in button, flip a Segmented control (kit), pick a sleep-stage radio, fold a CollapsibleSection, Save in a sheet. | A light tap on the button, a tick on choices and folds, a success buzz on Save. Nothing on tab presses or plain taps. |
+| Blur | Check-in button over scrolling content: `/dev/kit/detail`, scroll so a card passes under the button. | iOS: the content behind the button is softly blurred. Android 12+: likewise; older Android shows the translucent fill only. The headers are not blurred (as the web). |
+| Cards | Kit Metrics, dark mode. | Cards are a hair lighter at the top than at the bottom (the web's fade), with the lit top edge; the selected impact row keeps its white ring. |
+| Pull to refresh | `/dev/kit/home` and `/dev/kit/detail`: pull down from the top. | The platform spinner appears **below** the header and spins for about a second, then stops. |
+| Keyboard | Open any sheet demo, scroll to NOTE and tap the field. Open the tall sheet and the screen sheet too. | The field and the Save pill stay visible above the keyboard (the sheet lifts or the body scrolls). Dragging the body dismisses the keyboard. If the keyboard covers the field on Android, report it: the fix is `react-native-keyboard-controller` (see the report). |
+| Status bar and safe areas | Light and dark (the kit toggle), on a notched phone. | Clock and battery readable on every header, the sheets and the screen modal; nothing under the notch or the home indicator. |

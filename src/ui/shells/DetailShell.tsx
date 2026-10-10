@@ -8,7 +8,7 @@ import type { DateSwitcherProps } from "./DateSwitcher";
 import { DateSwitcher } from "./DateSwitcher";
 import { DetailHeader, type DetailHeaderProps } from "./DetailHeader";
 import { HEADER_ROW } from "./Header";
-import { ScreenScroll, useCollapse } from "./ScreenScroll";
+import { ScreenScroll, type ScreenScrollProps, useCollapse } from "./ScreenScroll";
 
 export type DetailShellProps = {
   title: string;
@@ -34,11 +34,13 @@ export type DetailShellProps = {
   /** Cards in one column on a phone (the web balances them in two from 1280 px). */
   secondary?: ReactNode[];
   footer?: ReactNode;
+  /** Pull to refresh (see ScreenScroll): wire it to "sync now". */
+  onRefresh?: ScreenScrollProps["onRefresh"];
   /** A route's loading state: says "Loading…" to screen readers while skeletons show. */
   loading?: boolean;
 };
 
-export function DetailShell({ title, subtitle, info, backHref, dateSwitcher, dismiss, align, titleIcon, action, ground, hero, stats, collapse, summary, notch, insight, primary, secondary, footer, loading }: DetailShellProps) {
+export function DetailShell({ title, subtitle, info, backHref, dateSwitcher, dismiss, align, titleIcon, action, ground, hero, stats, collapse, summary, notch, insight, primary, secondary, footer, loading, onRefresh }: DetailShellProps) {
   const insets = useSafeAreaInsets();
   const side = summary ?? (hero ? insight : null);
   const inHeader = dateSwitcher?.placement === "header";
@@ -51,7 +53,7 @@ export function DetailShell({ title, subtitle, info, backHref, dateSwitcher, dis
   const header = compact ? <CollapsingHeader {...headerProps} compact={compact} stats={stats} progress={progress} onHeight={setHeaderHeight} /> : <DetailHeader {...headerProps} onHeight={setHeaderHeight} />;
 
   return (
-    <ScreenScroll header={header} top={headerHeight} onScroll={onScroll} healthspan={ground === "healthspan"}>
+    <ScreenScroll header={header} top={headerHeight} onScroll={onScroll} healthspan={ground === "healthspan"} onRefresh={onRefresh}>
       <View className="w-full px-4 pt-2" accessibilityState={{ busy: !!loading }}>
         {loading && <Text accessibilityLiveRegion="polite" className="absolute h-px w-px opacity-0">{title.trim() ? `Loading ${title}…` : "Loading…"}</Text>}
         {dateSwitcher && !inHeader && (

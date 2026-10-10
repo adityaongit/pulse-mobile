@@ -4,7 +4,7 @@ import { Text } from "../Text";
 import type { DateSwitcherProps } from "./DateSwitcher";
 import { HomeHeader, type HeaderRings } from "./HomeHeader";
 import { HEADER_ROW, TitleHeader, useHeaderHeight } from "./Header";
-import { ScreenScroll, useCollapse } from "./ScreenScroll";
+import { ScreenScroll, type ScreenScrollProps, useCollapse } from "./ScreenScroll";
 
 /** Home: `top` (the dials) then `main` (My Day), `aside` (My Dashboard) and `bottom`, in phone reading order (web: laptop columns, D-L4). */
 export type HomeSlots = { top: ReactNode; main: ReactNode; aside: ReactNode; bottom?: ReactNode };
@@ -23,13 +23,15 @@ export type PageShellProps = {
   rings?: HeaderRings;
   /** Right slot of the header (sync status; the sync stream provides it). */
   headerRight?: ReactNode;
+  /** Pull to refresh (see ScreenScroll): wire it to "sync now". */
+  onRefresh?: ScreenScrollProps["onRefresh"];
   /** A route's loading state: says "Loading…" to screen readers while skeletons show. */
   loading?: boolean;
   children?: ReactNode;
 };
 
 /** Tab roots: Home, Health, Journal, More (spec §4.5). */
-export function PageShell({ title, dateSwitcher, actions, layout = "stack", slots, rings, headerRight, loading, children }: PageShellProps) {
+export function PageShell({ title, dateSwitcher, actions, layout = "stack", slots, rings, headerRight, loading, onRefresh, children }: PageShellProps) {
   const { scrollY, threshold, onScroll, progress } = useCollapse();
   const home = layout === "home";
   const top = useHeaderHeight(HEADER_ROW + (dateSwitcher && !home ? 40 : 0));
@@ -38,7 +40,7 @@ export function PageShell({ title, dateSwitcher, actions, layout = "stack", slot
 
   const header = home ? <HomeHeader rings={rings} progress={progress} right={headerRight} /> : <TitleHeader title={title} dateSwitcher={dateSwitcher} right={headerRight} />;
   return (
-    <ScreenScroll header={header} top={top} onScroll={onScroll}>
+    <ScreenScroll header={header} top={top} onScroll={onScroll} onRefresh={onRefresh}>
       <View className="w-full px-4 pt-2" accessibilityState={{ busy: !!loading }}>
         {loading && <Text accessibilityLiveRegion="polite" className="absolute h-px w-px opacity-0">{title.trim() ? `Loading ${title}…` : "Loading…"}</Text>}
         {actions && <View className="mb-4 flex-row justify-end gap-2">{actions}</View>}

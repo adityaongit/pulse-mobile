@@ -5,7 +5,7 @@ import { ChevronRight } from "lucide-react-native";
 import { deltaTone, type ChipTone, type DeltaDir, type GoodDirection, type Tone } from "@/lib/bands";
 import { formatValue, MISSING, statSentence, type FormatKey } from "@/lib/format";
 import { reasonCopy, type Metric, type ReasonCode } from "@/lib/reasons";
-import { CARD_CLASS, useCardStyle } from "../Card";
+import { CARD_CLASS, CardFill, useCardStyle } from "../Card";
 import { cn } from "../cn";
 import { alpha } from "../color";
 import { Icon } from "../Icon";
@@ -91,6 +91,7 @@ function Row({ p, c }: { p: KeyStatRowProps; c: Computed }) {
   const disabled = c.loading ? { ...p, href: undefined, onSelect: undefined } : p;
   return (
     <Frame p={disabled} sentence={sentence} className={card ? cn(CARD_CLASS, "min-h-14 flex-row items-center gap-3 px-4 py-2", p.className) : cn("min-h-14 flex-row items-center gap-3 py-2", p.className)} style={card ? shadow : undefined}>
+      {card && <CardFill />}
       {p.icon && <View className="size-5 shrink-0 items-center justify-center">{p.icon}</View>}
       <View className="min-w-0 flex-1">
         {/* Long metric labels must wrap to fit narrow phone widths. */}
@@ -152,6 +153,7 @@ function Tile({ p, c }: { p: KeyStatRowProps; c: Computed }) {
       className={cn(CARD_CLASS, "min-w-0 gap-3 p-3", wide ? "flex-row items-center" : "min-h-[124px]", p.className)}
       style={{ boxShadow: `${shadow.boxShadow}${ring}` }}
     >
+      <CardFill ring={flagged ? alpha(colors.warning, 0.5) : undefined} />
       <View className={cn(wide ? "min-w-0 flex-1 gap-2" : "flex-1 gap-3", p.spark && "flex-none")}>
         <View className="flex-row items-center gap-2.5">
           {p.icon && <View className="size-5 shrink-0 items-center justify-center">{p.icon}</View>}

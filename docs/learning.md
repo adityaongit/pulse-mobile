@@ -124,11 +124,11 @@ On the web `body` sets `text-foreground` and everything inherits it. In React Na
 
 ## Root providers: gesture handler, safe area, bottom sheets
 
-`src/ui/providers.tsx` wraps the app once. `GestureHandlerRootView` is required for any gesture (chart scrubbing, bottom sheets); `SafeAreaProvider` gives headers and the floating bar the notch and home-indicator insets; `BottomSheetModalProvider` is where `@gorhom/bottom-sheet` draws its sheets.
+`src/ui/providers.tsx` wraps the app once. `GestureHandlerRootView` is required for any gesture (chart scrubbing); `SafeAreaProvider` gives headers the notch and home-indicator insets; `ShellCalendarProvider` carries today's date. Sheets need no provider any more: they are routes (see "Sheets are routes", below), and `@gorhom/bottom-sheet` is no longer used.
 
-## Expo Router tabs with a custom bar
+## Expo Router native tabs
 
-`app/(tabs)/_layout.tsx` uses Expo Router's `<Tabs>` for the navigation state and passes `tabBar` to draw our own floating glass bar. The parentheses make `(tabs)` a route group: it groups screens without adding to the URL, so Home stays `/`. Detail screens live outside the group, in the root `Stack`, so they cover the tab bar the way the web's detail screens do.
+`app/(tabs)/_layout.tsx` uses `NativeTabs` from `expo-router/unstable-native-tabs`: the platform's own tab bar (a UITabBarController with Liquid Glass on iOS 26, a Material 3 navigation bar on Android), so it animates, themes and handles accessibility the way the OS does. The parentheses make `(tabs)` a route group: it groups screens without adding to the URL, so Home stays `/`. Detail screens live outside the group, in the root `Stack`, so they cover the tab bar. The old JavaScript glass bar and its sliding lens were deleted.
 
 ## Reanimated for header motion
 
@@ -140,11 +140,11 @@ Scroll position lives in a Reanimated shared value updated on the UI thread (`us
 
 ## react-native-svg for rings, gradients and the hatch
 
-The score dials, mini rings, wordmark, page ground, glass fill and hatched tracks are small static drawings: react-native-svg is bundled in Expo Go and draws them with the same arc and gradient vocabulary the web used. There is no `expo-linear-gradient` in the project, so `Gradient.tsx` is an SVG rectangle behind the content.
+The score dials, mini rings, wordmark, page ground, header fade and hatched tracks are small static drawings: react-native-svg is bundled in Expo Go and draws them with the same arc and gradient vocabulary the web used. Plain two-colour gradients (cards, the insight hairline, glass) are `expo-linear-gradient` instead, see "Native gradients and the card fill".
 
 ## Bottom sheets and the info card
 
-The web's Vaul drawer becomes `BottomSheetModal` from `@gorhom/bottom-sheet`: `present()` and `dismiss()` are driven from the controlled `open` prop, so a screen uses it like the web's `ResponsiveSheet`. The centred info card and the calendar panel are plain React Native `<Modal>`s, which close on the Android back gesture for free.
+The calendar panel is still a plain React Native `<Modal>`: it drops from the top (not a sheet) and writes the screen's `?d=` param, which a separate route would fight over. A `<Modal>` closes on the Android back gesture for free. Everything the user opens as a task is a route: see "Sheets are routes".
 
 ## Gestures: scrubbing a chart
 
@@ -164,4 +164,48 @@ React Native 0.86 on the new architecture takes a CSS-like `boxShadow` string, i
 
 ## Why the kit runs in Expo Go
 
-Everything the kit uses (Skia, Reanimated, gesture handler, SVG, safe-area, expo-font) is bundled in Expo Go for SDK 57; NativeWind, the bottom-sheet library and the icons are plain JavaScript. So `npx expo start --go` is enough on Android. An iPhone needs a development build, since the App Store's Expo Go stops at SDK 54.
+Everything the kit uses (Skia, Reanimated, gesture handler, SVG, safe-area, expo-font) is bundled in Expo Go for SDK 57; NativeWind and the icons are plain JavaScript; native tabs, form sheets, `expo-blur`, `expo-linear-gradient` and `expo-haptics` are in Expo Go too (haptics: the docs do not print the badge, so the checklist confirms it). So `npx expo start --go` is enough on Android. An iPhone needs a development build, since the App Store's Expo Go stops at SDK 54.
+
+## Sheets are routes (`presentation: "formSheet"`)
+
+A task sheet (check-in, logs, info) is a file under `app/(sheets)/` registered in `app/_layout.tsx` with `sheetOptions(size, c)` from `src/ui/shells/sheets.ts`. Expo Router's native stack presents it as a `UISheetPresentationController` on iOS and a native bottom sheet on Android, so the drag, the detents, the dim and the back gesture are the OS's. `<SheetScreen>` only draws the inside. Open with `openSheet("/name")`, close with `closeSheet()`.
+
+## Detents
+
+`sheetAllowedDetents` is a list of screen fractions the sheet snaps to (`[0.5, 1]`: half, then full) or `"fitToContents"` (as tall as its content: no `flex: 1` inside). Android takes at most three. Full-screen tasks use `presentation: "modal"` instead, which is a full page on both platforms.
+
+## A route cannot carry JSX: the info sheet
+
+Route params are strings, but an info card's body is React nodes. `openInfo(content)` leaves the content in a module variable, then pushes `/info`; the route reads it once on mount. If the app is restored on `/info` with nothing there, the sheet closes itself.
+
+## Native gradients and the card fill
+
+`expo-linear-gradient` draws a gradient on the GPU with a native layer, so `src/ui/Gradient.tsx` now wraps it. The web's cards fade 2 to 4 percent lighter toward the top (`card-top` to `card`), which only shows in dark mode, so `<CardFill>` draws it there. A gradient child sits above the parent's own inset shadow, so the fill redraws the lit top edge itself.
+
+## Blur: iOS is free, Android needs a target
+
+`expo-blur`'s `BlurView` blurs what is behind it on iOS by itself. On Android it can only blur what sits inside a `BlurTargetView`, so `ScreenScroll` wraps the scrolling page in one and shares its ref through `BlurTargetContext`. Only the round check-in button is glass; the web's headers do not blur (the spec's header frame: "a fade, not frosted text"), so the headers keep their ground fill.
+
+## Haptics: few, and per platform
+
+`src/ui/haptics.ts` maps four moments (`tap`, `select`, `toggle`, `success`) to iOS feedback generators and to Android's own haptic constants, which `expo-haptics` recommends over raw vibration. Used on the check-in button, segmented controls, radio rows, section toggles and a finished save; not on tab presses (the system tab bar has none) and not on every tap.
+
+## The check-in button above a native tab bar
+
+Expo Router's native tabs cannot report the tab bar's height. So `ScreenScroll` owns a nested `SafeAreaProvider`: it measures this screen's own native view, whose bottom inset includes the tab bar on iOS and sits above it on Android. The button and the scroll padding both read that inset, so there is no tab-bar height constant to get wrong. The button is drawn by `ScreenScroll`, so a tab screen must use `PageShell` (or `DetailShell`).
+
+## Pull to refresh
+
+`RefreshControl` on the shell scroll views, enabled by an `onRefresh` prop that returns a promise: the spinner stays until it settles. `progressViewOffset` pushes the spinner below the header, which is drawn over the scroll view. Wire it to "sync now" later.
+
+## Keyboard
+
+Sheets wrap their body in React Native's `KeyboardAvoidingView` (`padding` on iOS) and the shell scroll view uses `automaticallyAdjustKeyboardInsets` and `keyboardShouldPersistTaps="handled"`. That is the built-in route in Expo's keyboard guide. `react-native-keyboard-controller` is the richer one, but it is not a dependency of this project.
+
+## Predictive back on Android
+
+`android.predictiveBackGestureEnabled` in `app.json` lets Android 13+ show the system's back preview (the app peeking out, or returning to the launcher) while the gesture is held. It is a native manifest flag, so Expo Go ignores it: it only shows in a development build.
+
+## Headers stay custom, on the native stack
+
+The headers are the shells' own views (centred title, date switcher, collapsing hero) laid over a `Stack` whose native header is off. The native stack still gives the iOS edge swipe-back and the Android back gesture on every pushed route, because those belong to the screen, not the header.

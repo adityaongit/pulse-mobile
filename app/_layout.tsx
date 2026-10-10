@@ -18,7 +18,7 @@ import { Figtree_700Bold } from "@expo-google-fonts/figtree/700Bold";
 import { db } from "@/data/db";
 import migrations from "@/data/migrations/migrations";
 import { AppProviders } from "@/ui/providers";
-import { AppShell } from "@/ui/shells/AppShell";
+import { sheetOptions, type SheetSize } from "@/ui/shells/sheets";
 import { useTheme } from "@/ui/theme";
 
 // Keep the splash screen up until the fonts and the database are ready, so no screen paints in the wrong font.
@@ -55,9 +55,16 @@ export default function RootLayout() {
 function Screens() {
   const { c, scheme } = useTheme();
   return (
-    <AppShell>
+    <>
       <StatusBar style={scheme === "dark" ? "light" : "dark"} />
-      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: c.background } }} />
-    </AppShell>
+      {/* The native stack: detail screens push with the platform's transition, iOS swipe-back from the left edge and the
+          Android back gesture work on every route that is not a root. The headers are the shells' own, so the native one is off. */}
+      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: c.background } }}>
+        {/* Sheets are routes presented by the platform (src/ui/shells/sheets.ts says how to add one). */}
+        <Stack.Screen name="(sheets)/checkin" options={sheetOptions("tall", c)} />
+        <Stack.Screen name="(sheets)/info" options={sheetOptions("tall", c)} />
+        <Stack.Screen name="dev/sheet" options={({ route }) => sheetOptions((route.params as { size?: SheetSize } | undefined)?.size ?? "default", c)} />
+      </Stack>
+    </>
   );
 }

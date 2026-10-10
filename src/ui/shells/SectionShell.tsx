@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { Pressable, View } from "react-native";
 import { router, type Href } from "expo-router";
 import { ChevronRight } from "lucide-react-native";
-import { Card, CARD_CLASS, useCardStyle } from "../Card";
+import { Card, CARD_CLASS, CardFill, useCardStyle } from "../Card";
 import { cn } from "../cn";
 import { Icon } from "../Icon";
 import { Text } from "../Text";
@@ -43,6 +43,7 @@ export function CardLink({ href, className, children }: { href: string; classNam
   const shadow = useCardStyle();
   return (
     <Pressable accessibilityRole="link" onPress={() => go(href)} className={cn(CARD_CLASS, "active:scale-[0.96]", className)} style={shadow}>
+      <CardFill />
       {children}
     </Pressable>
   );

@@ -2,7 +2,7 @@ import { Pressable, View } from "react-native";
 import { ChevronDown, ChevronRight, ChevronUp } from "lucide-react-native";
 import { formatValue } from "@/lib/format";
 import type { Metric } from "@/lib/reasons";
-import { CARD_CLASS, useCardStyle, useInCard } from "../Card";
+import { CARD_CLASS, CardFill, useCardStyle, useInCard } from "../Card";
 import { cn } from "../cn";
 import { Hatch } from "../Hatch";
 import { Icon } from "../Icon";
@@ -121,13 +121,17 @@ function Item({ i, max, p }: { i: DriverItem; max: number; p: DriverListProps })
   // Each row is its own card; inside a card it steps down to a 10 px bg-secondary row (no card in a card). Rows that open a sheet press in.
   const cls = cn(inCard ? "rounded-lg bg-secondary" : CARD_CLASS, "px-4 py-3");
   const style = inCard ? undefined : shadow;
-  const ring = p.selectedKey === i.key ? { boxShadow: "inset 0 0 0 1px rgba(255, 255, 255, 0.6)" } : null;
+  const selected = p.selectedKey === i.key;
+  const ring = selected ? { boxShadow: "inset 0 0 0 1px rgba(255, 255, 255, 0.6)" } : null;
+  const fill = !inCard && <CardFill ring={selected ? "rgba(255, 255, 255, 0.6)" : undefined} />;
   return p.onSelect ? (
-    <Pressable accessibilityRole="button" accessibilityState={{ selected: p.selectedKey === i.key }} onPress={() => p.onSelect?.(i.key)} className={cn(cls, "active:scale-[0.96]")} style={[style, ring]}>
+    <Pressable accessibilityRole="button" accessibilityState={{ selected }} onPress={() => p.onSelect?.(i.key)} className={cn(cls, "active:scale-[0.96]")} style={[style, ring]}>
+      {fill}
       {content}
     </Pressable>
   ) : (
     <View className={cls} style={style}>
+      {fill}
       {content}
     </View>
   );
@@ -175,6 +179,7 @@ export function DriverListSkeleton({ variant = "impact", unit = "%", rows = 3 }:
       <View className="gap-2">
         {Array.from({ length: rows }, (_, k) => (
           <View key={k} className={cn(CARD_CLASS, "gap-2 px-4 py-3")} style={shadow}>
+            <CardFill />
             <View className="flex-row items-center justify-between gap-3">
               <SkeletonText className="w-28" lh={impact ? 20 : 16} fs={impact ? 15 : 12} />
               {!impact && value}
