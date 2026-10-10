@@ -11,7 +11,7 @@ import type { BaselineState, HrSample } from "@/core/scoring/types";
 import { timeInZone, zones as hrZones } from "@/core/scoring/zones";
 import { minuteLoad } from "@/core/algorithms/energyBank";
 import { minuteMeanHr, stress } from "@/core/algorithms/stress";
-import { BATCH_DAYS, type Data, type Exercise, r1, round, type Session, sha, touching } from "./data";
+import { BATCH_DAYS, breathe, type Data, type Exercise, r1, round, type Session, sha, touching } from "./data";
 import { type PipelineOptions, SCORING_VERSION, type Stage1Activity, type Stage1Day } from "./types";
 
 /** A baseline whose centre is set, so stress() scores every still minute; only the still mask is kept. */
@@ -69,6 +69,7 @@ export async function stage1(store: Store, data: Data, opts: PipelineOptions): P
     const scores: Stage1Write[] = [];
     const series: SeriesRow[] = [];
     for (const b of batch) {
+      await breathe();
       const steps = between(stepsAll, b.start, b.end).map((s) => ({ ts: s.ts, steps: s.v }));
       const r = stage1Day(data, b.day, b.start, b.end, b.main, b.exs, between(hrAll, b.lo, b.hi), steps, keys.get(b.day)!, opts);
       // Stage 1 never stamps scoring_version (a new row gets 0) and leaves intraday_dirty alone: stage 2 does

@@ -85,6 +85,16 @@ export const touching = <T extends { startTs: number; endTs: number }>(xs: T[], 
   xs.filter((x) => x.endTs > lo && x.startTs < hi);
 
 // SHA-1 from @noble/hashes: Hermes has no node:crypto. data.test.ts checks it against node:crypto.
+// Not in pulse: on a phone the pipeline shares the one JavaScript thread with the screens. A long synchronous loop calls
+// this once per day; after 8 ms of work it yields a turn to the event loop, so frames, gestures and progress keep
+// running. It changes no value (the F3 and F4 parity tests run through it).
+let lastBreath = Date.now();
+export async function breathe() {
+  if (Date.now() - lastBreath < 8) return;
+  await new Promise((r) => setTimeout(r, 0));
+  lastBreath = Date.now();
+}
+
 export const sha = (s: string) => bytesToHex(sha1(utf8ToBytes(s))).slice(0, 16);
 export const round = (x: number, dp: number) => Math.round(x * 10 ** dp) / 10 ** dp;
 export const r1 = (x: number | null) => (x == null ? null : round(x, 1));

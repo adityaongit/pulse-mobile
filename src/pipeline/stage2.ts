@@ -11,7 +11,7 @@ import { addDays, daysBetween } from "../time";
 import { hrvCfg, respCfg, restingHRCfg, skinTempCfg, update } from "@/core/scoring/baselines";
 import { journalImpact, type JournalDay, type TagImpact } from "@/core/algorithms/journalImpact";
 import { buildReport, periodBounds, reportPeriods } from "@/core/algorithms/reports";
-import { BATCH_DAYS, type Data, groupBy, sha } from "./data";
+import { BATCH_DAYS, breathe, type Data, groupBy, sha } from "./data";
 import {
   type Cached,
   dayOf,
@@ -110,6 +110,7 @@ export async function stage2(store: Store, data: Data, opts: PipelineOptions, re
   // Order matters: each scorer reads the fold as earlier scorers left it for today.
   for (let i = 0; i < days.length; i++) {
     const day = days[i];
+    await breathe();
     if (i % BATCH_DAYS === 0) {
       // The per-minute series the scorers read, a batch of days at a time: the scorers stay synchronous and memory
       // stays flat in history length.
@@ -164,6 +165,7 @@ export async function stage2(store: Store, data: Data, opts: PipelineOptions, re
   const rows = new Map<string, Stage2Row>();
   const impactsAsOf = new Map<string, TagImpact[]>();
   for (const day of days) {
+    await breathe();
     const from = addDays(day, -90);
     const inWindow = entries.filter((e) => e.day >= from && e.day < day);
     const outWindow = f.outcomes.filter((o) => o.day > from && o.day <= day);
