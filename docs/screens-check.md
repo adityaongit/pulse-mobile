@@ -21,10 +21,9 @@ flowchart LR
 
 ### Known gap to expect
 
-Weekly Trends, the closing stack of Recovery and Strain, is not drawn yet: its chart and data belong to the Trends
-stream. Everything above it should match. (Its loading skeleton is left out for the same reason.) The coach pill on an
-activity is not shown either: the coach reads as not set up, so the templated insight card shows, as the web does with no
-coach key.
+The coach pill on an activity is not shown: the coach reads as not set up, so the templated insight card shows, as the web
+does with no coach key. Weekly Trends closes Recovery (five cards) and Strain (six): one card per metric over the seven
+days ending on the day shown, that day's column highlighted, each card a link (chevron) to its Trend View on W.
 
 ### Recovery
 
@@ -91,10 +90,10 @@ flowchart LR
 | Compare | Pass when |
 |---|---|
 | Top | Wordmark, then three equal dials (Sleep, Recovery, Strain), 24 px under them the Health Monitor and Stress Monitor cards side by side, then the coach card, then the alert if any. No day strip (the web has none: spec C4). |
-| Header | Pill and calendar change the day (the screen shows its skeleton while the day loads, as the web's `loading.tsx`). Once the dials scroll under the header, the ring row appears. On this phone it appears once the whole dials block and its note have gone, the web's moment is the dial labels (see the report). No streak and no sync status yet (other streams). |
+| Header | Pill and calendar change the day (the screen shows its skeleton while the day loads, as the web's `loading.tsx`). Once the dials scroll under the header, the ring row appears. It appears once the dials (their labels included) have scrolled under the header, as on the web; the note under the dials does not count. No streak and no sync status yet (other streams). |
 | No band data | Dials show their reasons; one line "No band data yet" with an (i) opens the web's two-paragraph card; the phone's own tiles (steps, distance, calories, active minutes) replace the monitor cards. |
 | Coach card | One card: the check pill shows 1. Several: a second card peeks under; tapping the pill cycles with a quick fade and nothing below moves. |
-| My Day | Section title with the white "+" key at the right; the outlook or review banner (tap: centred info card); Today's activities (the expand icon opens All activities), sleep and nap rows, "Add activity" opens the info card "Add an activity"; Tonight's sleep (today only; arrow opens Sleep); My journal (seven circles, check badge on done days; Behaviour insights); Energy Bank. |
+| My Day | Section title with the white "+" key at the right; the outlook or review banner (tap: centred info card); Today's activities (the expand icon opens All activities), sleep and nap rows, "Add activity" opens the info card "Add an activity"; Tonight's sleep (today only; the arrow opens Sleep scrolled to its Tonight's sleep card); My journal (seven circles, check badge on done days; Behaviour insights); Energy Bank. |
 | Tonight's sleep | Bedtime and typical wake in the big numerals joined by a dashed rule; the Peak / Perform / Get by toggle changes the bedtime; "Need tonight". Times shrink on a narrow phone (32, 26, 22 px). |
 | My Dashboard | One card per chosen metric, in order; the Stress tile has the day's line; Strain & recovery chart under them (hidden with fewer than two scored days); CUSTOMIZE with the pencil. |
 | Bottom | "Your week in review" banner with the date range. |
@@ -113,7 +112,7 @@ flowchart LR
 | Sleep consistency | Five bars between 21:00 and 13:00 (axis in 4-hour steps), last night in blue with its bed and wake times, the two dashed lines of the usual times easing between nights. The lines are drawn in pixels once measured: check they run edge to edge with no gap at the sides. |
 | Sleep efficiency | Asleep bar cut where you woke, awake bar on the hatched track with the same marks, Wake events. |
 | Tonight's sleep | Four rows (Peak, Perform, Get by, Typical wake) with times; "Need tonight". |
-| Missing | No Sleep Stress card (off on the web too). No Weekly Trends at the foot yet, and opening Home's Tonight's sleep arrow lands on Sleep at the top, not scrolled to the planner (see the report). |
+| Missing | No Sleep Stress card (off on the web too). Weekly Trends closes the page: seven cards (Sleep Performance, Hours vs. Needed in hours and in %, Restorative Sleep, Sleep Consistency, Time in Bed, Sleep Efficiency). Home's Tonight's sleep arrow opens Sleep with the Tonight's sleep card at the top of the screen, as the web's `/sleep#planner` (not checked on a device: if it stays at the top, say so). |
 
 ### Nap (`/sleep/nap/[id]`)
 
@@ -262,22 +261,21 @@ Run in Expo Go on Android and in the development build on an iPhone, in light an
 | This week | Two column charts, Water and Food, the day highlighted, "avg ..." beside each title; drag across one for the tooltip. | none |
 | History | Rows with the day, up to two behaviour pills and "+N", the selected day marked at the left edge; Show 30 days / Show last week; the empty state "No check-ins yet. ..." with Check in. | none |
 | Insights teaser and `/journal/insights` | The coach-style card with the strongest effect; See all. The Insights page: Recovery / HRV / Sleep toggle (the URL param `m`), the ranked bars, "Keep logging to unlock" with progress bars, the footnote. Tap a row: the behaviour sheet (`/journal/impact`): the big signed figure, Days with / without, 90% confidence, averages. | none |
-| Check-in sheet (round button, or Check in / Edit check-in) | Full screen with the sand glow. Header: Journal, pencil and X. "<  TODAY  >" and the pill day strip; the heading ("What's happening today, October 8?"); Daytime, Nighttime, Status and Your behaviours sections, each question on its card with the grey X and check keys (X lights white, check lights blue); a Yes on Alcohol, Caffeine or Electrolytes opens its follow-up slider ("--" until moved). Notes; Save journal. | Add a behaviour (the field and its Add button above the keyboard); Notes (the box grows, stays above the keyboard) |
+| Check-in sheet (round button, or Check in / Edit check-in) | Full screen with the sand glow. Header: the X at the left, Journal in the middle, the pencil at the right (as the web). "<  TODAY  >" and the pill day strip; the heading ("What's happening today, October 8?"); Daytime, Nighttime, Status and Your behaviours sections, each question on its card with the grey X and check keys (X lights white, check lights blue); a Yes on Alcohol, Caffeine or Electrolytes opens its follow-up slider ("--" until moved). Notes; Save journal. | Add a behaviour (the field and its Add button above the keyboard); Notes (the box grows, stays above the keyboard) |
 | Check-in: save and close | Save journal shows the Saved screen for 1.6 s, then closes; the Journal card turns to "Checked in" and the strip day gets its badge. X, swipe down and Android Back ask "Dismiss journal?" when answers changed (the X always asks until the box is ticked); "No, complete journal" returns. A day change with unsaved answers asks the same. | |
 | Log water | Add +250 ml / +500 ml (saves at once), "Today: n ml", Other amount, Time; Save. | Amount: numeric keypad |
 | Log food | Meal chips, Name, Calories, Protein / Carbs / Fat, Time. | Name: text keyboard; Calories: numeric; macros: decimal |
 | Log weight | Weight and Body fat (optional), Time. | decimal keypad on both |
 | Log mood / symptoms / ovulation | Overall and Feelings chips; Symptoms chips (cycle ones only on a female profile); Result chips; Time. | none |
 | Log period (female profile) | First day and Last day (date pickers), flow chips. | none |
-| Time fields | iOS: the system compact date-time picker in the field. Android: tap the field for the date dialog, then the time dialog. Nothing later than now. | system picker |
+| Time fields | iOS: the system compact date-time picker in the field. Android: tap the field for the date dialog, then the time dialog. Nothing later than now. Expo Go: the picker is `@expo/ui/community/datetime-picker`, the drop-in for `@react-native-community/datetimepicker`; Expo's SDK 57 docs list it as included in Expo Go on Android and iOS (docs.expo.dev/versions/v57.0.0/sdk/ui/drop-in-replacements/datetimepicker), so these fields work in Expo Go without a development build. | system picker |
 | Not connected | Every log sheet shows "Connect Google to log to Google Health." and a Connect Google button (it opens Settings). Deleting an entry that Google holds shows "Reconnect Google in Settings to delete it there." as a toast. | none |
 | Entry sheet (tap a row in Logged today) | Title and caption (meal, day and time), the value (food: four tiles), Logged in, In Google Health, Delete entry (red) then Keep / Delete with the caption of where it is deleted; a weigh-in shows both values and "Delete weigh-in". | none |
-| Toasts | After a log save and a delete: a card at the foot, about 4 s (inside the sheet when it stays open). | none |
+| Toasts | After a log save and a delete: one card at the foot of the screen under the sheet, as Sonner's (popover fill, border, 16 px icon, 13 px text), about 4 s, a new one replacing the last. The Settings and More toasts are the same card. | none |
 
 Differences you will see, on purpose (React Native cannot do the web's version):
 
-- The check-in header keeps the X at the right beside the pencil and the title sits 22 px left of centre; the web has the X at the left. The kit places a header `action` where the X would be.
 - The check-in heading wraps at 285 px (the web's `16ch`); there is no `ch` unit.
 - Date and time fields use the system pickers (see docs/learning.md), so they look like each platform's, not like a browser's.
 - "Don't show me this message again" and the folded sections are remembered until the app is closed, not across launches (they need a settings key).
-- A toast is drawn by the screen that shows it (Journal and the log sheets), not by one app-wide host.
+- Sonner stacks several toasts; here one shows at a time. A toast is drawn under a sheet that is still open, so every toast in the app comes after its sheet closes.
