@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
-import { View } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { LinearGradient as NativeGradient } from "expo-linear-gradient";
 import Animated, { useAnimatedStyle, type DerivedValue } from "react-native-reanimated";
-import Svg, { Defs, LinearGradient, Rect, Stop } from "react-native-svg";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { cn } from "../cn";
 import { alpha } from "../color";
@@ -29,30 +29,33 @@ export function useHeaderHeight(rows = HEADER_ROW) {
  * frost). It is laid over the top of a screen (absolute); the web's is sticky and its 24 px fade is part of its height in
  * layout, so the screen's scroll content starts below `useHeaderHeight(rows) + HEADER_FADE` (<ScreenScroll> adds the fade). The web masks the fill with a CSS mask; here the fill is the ground painted at
  * the same screen position, and the fade a strip going from the ground's colour to transparent. `expanded` (a shared
- * value, px) grows the fill below the row, for the collapsing header's second row.
+ * value, px, 0 to `extra`) reveals the collapsing header's second row: a band of the ground `extra` px tall under the
+ * row, faded in, with the 24 px fade moved down below it.
+ *
+ * Nothing here animates a layout property: the fill and the band have fixed heights, and only the band's opacity and
+ * the fade's translateY change, on the UI thread. (Animating the fill's height left the grown part unpainted on the
+ * phone: the content showed through the collapsed row, 2026-10-11.) The band and fade are native gradients.
  */
-export function HeaderFrame({ children, rows = HEADER_ROW, expanded, onHeight }: { children: ReactNode; rows?: number; expanded?: DerivedValue<number>; /** Told the header's resting height (safe area plus its rows), so a screen can pad its content below it. */ onHeight?: (height: number) => void }) {
+export function HeaderFrame({ children, rows = HEADER_ROW, expanded, extra = 0, onHeight }: { children: ReactNode; rows?: number; expanded?: DerivedValue<number>; /** The second row's height: how far `expanded` goes. */ extra?: number; /** Told the header's resting height (safe area plus its rows), so a screen can pad its content below it. */ onHeight?: (height: number) => void }) {
   const { c } = useTheme();
   const top = useSafeAreaInsets().top;
   const solid = top + rows;
   const edge = groundColorAt(c, solid);
-  const fill = useAnimatedStyle(() => ({ height: solid + (expanded?.value ?? 0) }));
-  const fade = useAnimatedStyle(() => ({ top: solid + (expanded?.value ?? 0) }));
+  const low = groundColorAt(c, solid + extra);
+  const band = useAnimatedStyle(() => ({ opacity: extra ? Math.min(1, (expanded?.value ?? 0) / extra) : 0 }));
+  const fade = useAnimatedStyle(() => ({ transform: [{ translateY: expanded?.value ?? 0 }] }));
   return (
     <View pointerEvents="box-none" className="absolute inset-x-0 top-0 z-20">
-      <Animated.View pointerEvents="none" style={[{ position: "absolute", top: 0, left: 0, right: 0, overflow: "hidden" }, fill]}>
+      <View pointerEvents="none" style={{ position: "absolute", top: 0, left: 0, right: 0, height: solid, overflow: "hidden" }}>
         <Ground />
-      </Animated.View>
-      <Animated.View pointerEvents="none" style={[{ position: "absolute", left: 0, right: 0, height: HEADER_FADE }, fade]}>
-        <Svg width="100%" height={HEADER_FADE}>
-          <Defs>
-            <LinearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
-              <Stop offset={0} stopColor={edge} stopOpacity={1} />
-              <Stop offset={1} stopColor={alpha(edge, 0)} stopOpacity={1} />
-            </LinearGradient>
-          </Defs>
-          <Rect width="100%" height={HEADER_FADE} fill="url(#fade)" />
-        </Svg>
+      </View>
+      {extra > 0 && (
+        <Animated.View pointerEvents="none" style={[{ position: "absolute", top: solid, left: 0, right: 0, height: extra }, band]}>
+          <NativeGradient colors={[edge, low]} style={StyleSheet.absoluteFill} />
+        </Animated.View>
+      )}
+      <Animated.View pointerEvents="none" style={[{ position: "absolute", top: solid, left: 0, right: 0, height: HEADER_FADE }, fade]}>
+        <NativeGradient colors={[low, alpha(low, 0)]} style={StyleSheet.absoluteFill} />
       </Animated.View>
       <View pointerEvents="box-none" style={{ paddingTop: top }} onLayout={onHeight && ((e) => onHeight(e.nativeEvent.layout.height))}>
         {children}

@@ -41,7 +41,7 @@ export function CollapsingHeader({ compact, stats, progress, onHeight, ...row }:
   const center = useAnimatedStyle(() => ({ opacity: 1 - progress.value }));
   const hero = useAnimatedStyle(() => ({ opacity: progress.value, transform: [{ scale: 0.85 + 0.15 * progress.value }] }));
   return (
-    <HeaderFrame expanded={expanded} onHeight={onHeight}>
+    <HeaderFrame expanded={expanded} extra={COLLAPSE_ROW} onHeight={onHeight}>
       <View style={{ height: HEADER_ROW }}>
         <DetailHeaderRow {...row} centerStyle={center} />
         <View pointerEvents="none" className="absolute inset-x-0 flex-row items-center gap-2 px-4" style={{ top: HEADER_ROW, height: COLLAPSE_ROW }}>

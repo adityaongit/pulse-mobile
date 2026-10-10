@@ -67,7 +67,7 @@ export function HomeHeader({ rings, progress, right, streak }: { rings?: HeaderR
   // The ring row is invisible until the dials have scrolled away, and takes no taps until then either.
   const row = useAnimatedStyle(() => ({ opacity: progress.value, transform: [{ translateY: 6 * (1 - progress.value) }], pointerEvents: progress.value > 0.5 ? "auto" : "none" }));
   return (
-    <HeaderFrame expanded={expanded}>
+    <HeaderFrame expanded={expanded} extra={RING_ROW}>
       {/* As tall as both rows, so the ring row is inside its parent's bounds (Android only delivers touches there); the empty part passes taps through. */}
       <View pointerEvents="box-none" style={{ height: HEADER_ROW + RING_ROW }} className="px-4">
         {/* Equal side tracks keep the pill centred; each is at least its content. */}
