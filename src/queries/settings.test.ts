@@ -112,13 +112,13 @@ describe("the data source's state comes from the stored grant", () => {
 
 describe("More, Your data and Behaviours", () => {
   beforeAll(async () => {
-    await ctx.store.journal.ensureDefaultTags([{ tag: "alcohol", label: "Alcohol" }, { tag: "sauna", label: "Sauna" }]);
+    // The seeded database holds F2's nine default tags (alcohol first); show only alcohol.
     await ctx.store.journal.showOnly(["alcohol"]);
   });
 
   it("More counts the behaviours and finds the latest finished week and month", async () => {
     const vm = await getMore(ctx);
-    expect(vm.behaviours).toEqual({ total: 2, shown: 1 });
+    expect(vm.behaviours).toEqual({ total: 9, shown: 1 });
     expect(vm.reportCount).toBeGreaterThan(0);
     expect(vm.latestWeek?.period).toMatch(/^\d{4}-W\d{2}$/);
     expect(vm.latestMonth?.period).toMatch(/^\d{4}-\d{2}$/);
@@ -138,7 +138,10 @@ describe("More, Your data and Behaviours", () => {
 
   it("Behaviours lists every tag, hidden ones included, with the catalogue's question and section", async () => {
     const { tags } = await getBehaviours(ctx);
-    expect(tags.map((t) => [t.tag, t.hidden, t.section])).toEqual([["alcohol", false, "nighttime"], ["sauna", true, expect.any(String)]]);
+    expect(tags).toHaveLength(9);
+    expect([tags[0].tag, tags[0].hidden, tags[0].section]).toEqual(["alcohol", false, "nighttime"]);
+    expect(tags.slice(1).every((t) => t.hidden)).toBe(true);
+    expect(tags.find((t) => t.tag === "sauna")?.section).toEqual(expect.any(String));
     expect(tags[0].question).toMatch(/\?$/);
   });
 
