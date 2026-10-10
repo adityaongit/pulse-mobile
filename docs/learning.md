@@ -233,3 +233,11 @@ The database module opens its file when it is imported, so the only way to a fre
 ## Share sheet exports
 
 `expo-file-system` writes the CSV or JSON as a `File` in `Paths.cache`, and `expo-sharing`'s `shareAsync(file.uri)` hands it to the system share sheet (Save to Files, AirDrop, Drive). Both modules are imported inside the action, so the file builders stay testable in Node.
+
+## Date and time fields: the system picker through `@expo/ui`
+
+The web's `<input type="datetime-local">` and `type="date"` are the browser's own pickers. React Native has none, so the log sheets use `@expo/ui/community/datetime-picker`, a drop-in for `@react-native-community/datetimepicker` that is in Expo Go: on iOS the compact SwiftUI date picker sits inside the field, on Android the field opens the system date dialog and then the time dialog. The pickers work in the phone's local time while the app's wall times are in the profile's zone, so a value is a bare `YYYY-MM-DDTHH:mm` string and the picker is handed a `Date` with the same digits (`wallToDate`, `dateToWall` in `src/screens/log/form.ts`).
+
+## Asking before a sheet closes: `beforeRemove`
+
+The check-in must not lose answers to a swipe down or the Android back gesture. `navigation.addListener("beforeRemove", ...)` (from `useNavigation`) can cancel the removal with `e.preventDefault()` while the sheet has unsaved changes and show "Dismiss journal?"; `gestureEnabled: false` on the same screen stops the iOS swipe from starting. Confirming sets a ref and closes again, so the listener lets it through.

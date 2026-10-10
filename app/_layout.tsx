@@ -72,12 +72,15 @@ function Screens({ hasProfile }: { hasProfile: boolean }) {
           <Stack.Screen name="(tabs)" />
         </Stack.Protected>
         {/* Sheets are routes presented by the platform (src/ui/shells/sheets.ts says how to add one). */}
-        <Stack.Screen name="(sheets)/checkin" options={sheetOptions("tall", c)} />
         <Stack.Screen name="(sheets)/dashboard" options={sheetOptions("screen", c)} />
         <Stack.Screen name="(sheets)/plus" options={sheetOptions("default", c)} />
         <Stack.Screen name="(sheets)/trends-metric" options={sheetOptions("default", c)} />
         <Stack.Screen name="(sheets)/ecg" options={sheetOptions("default", c)} />
         <Stack.Screen name="(sheets)/profile" options={sheetOptions("tall", c)} />
+        <Stack.Screen name="(sheets)/checkin" options={sheetOptions("screen", c)} />
+        <Stack.Screen name="(sheets)/log" options={({ route }) => sheetOptions(["food", "mood", "symptoms"].includes((route.params as { kind?: string } | undefined)?.kind ?? "") ? "tall" : "default", c)} />
+        <Stack.Screen name="(sheets)/log-entry" options={sheetOptions("default", c)} />
+        <Stack.Screen name="journal/impact" options={sheetOptions("default", c)} />
         <Stack.Screen name="dev/sheet" options={({ route }) => sheetOptions((route.params as { size?: SheetSize } | undefined)?.size ?? "default", c)} />
       </Stack>
     </>
