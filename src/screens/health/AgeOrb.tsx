@@ -295,7 +295,8 @@ function OrbCanvas({ delta, size, compact }: { delta: number | null; size: numbe
   }, [g, settled]);
 
   const path = useDerivedValue(() => {
-    const p = Skia.Path.Make();
+    // Skia's PathBuilder (SkPath's moveTo/lineTo/close are deprecated); detach() hands over the finished path.
+    const p = Skia.PathBuilder.Make();
     const tbl = table.value;
     for (let i = 0; i < STEPS; i++) {
       const a = (i / STEPS) * TAU;
@@ -305,7 +306,7 @@ function OrbCanvas({ delta, size, compact }: { delta: number | null; size: numbe
       else p.moveTo(x, y);
     }
     p.close();
-    return p;
+    return p.detach();
   });
   // The rim and halo charge up as particles land: from 45 % to full (the body is there from frame 0).
   const eb = useDerivedValue(() => 0.45 + 0.55 * easeOutCubic(t.value / ORB.entry.duration));
