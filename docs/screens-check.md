@@ -3,6 +3,12 @@
 One section per screen stream. Put the phone next to the Pulse web app (the same install's data cannot be shown on both,
 so compare against the web app's demo or your own account in light and dark at about 390 px) and go through the list.
 
+## Every screen: the header
+
+At rest, the first line of content sits below the header's soft fade, not under it, on every screen (the web's sticky header
+takes its 24 px fade in layout): the Home wordmark, a detail screen's first card, a tab's first section. Scroll a little and
+content slides under the fade. Check Home, Health, Journal, More and a detail screen such as Recovery.
+
 ## Recovery, Strain and Activities
 
 Routes: `/recovery`, `/strain`, `/activities`, `/activity/<id>`. Open them from Home's rings and activity rows, or in Expo

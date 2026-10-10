@@ -26,8 +26,8 @@ export function useHeaderHeight(rows = HEADER_ROW) {
 
 /**
  * The header frame: ground fill, safe area, a 24 px fade at the bottom (no blur: the reference app fades, it does not
- * frost). It is laid over the top of a screen (absolute); the screen's scroll content starts under it with
- * `paddingTop: useHeaderHeight(rows)`. The web masks the fill with a CSS mask; here the fill is the ground painted at
+ * frost). It is laid over the top of a screen (absolute); the web's is sticky and its 24 px fade is part of its height in
+ * layout, so the screen's scroll content starts below `useHeaderHeight(rows) + HEADER_FADE` (<ScreenScroll> adds the fade). The web masks the fill with a CSS mask; here the fill is the ground painted at
  * the same screen position, and the fade a strip going from the ground's colour to transparent. `expanded` (a shared
  * value, px) grows the fill below the row, for the collapsing header's second row.
  */

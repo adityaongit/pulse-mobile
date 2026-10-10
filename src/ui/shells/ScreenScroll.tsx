@@ -9,6 +9,7 @@ import { haptic } from "../haptics";
 import { useTheme } from "../theme";
 import { FloatingCheckIn, showsCheckIn } from "./CheckInAction";
 import { setFocusedBlurTarget } from "./blurTarget";
+import { HEADER_FADE } from "./Header";
 import { useBottomClearance } from "./layout";
 
 /** A screen's scroll position as a shared value, and a 0-1 `collapsed` that eases to 1 once `threshold` is scrolled past. */
@@ -41,6 +42,7 @@ export function ScrollAnchor({ id, children }: { id: string; children: ReactNode
 
 export type ScreenScrollProps = {
   header: ReactNode;
+  /** The header's solid part (status-bar inset plus its rows). The content starts below it AND its 24 px fade: the web's sticky header takes that fade in layout (`pb-6`), so nothing sits under it at rest. */
   top: number;
   onScroll?: ReturnType<typeof useAnimatedScrollHandler>;
   bottomPad?: number;
@@ -52,9 +54,9 @@ export type ScreenScrollProps = {
 };
 
 /**
- * The scroll container every shell uses: the ground behind, the content padded under the header (`top`) and clear of the
+ * The scroll container every shell uses: the ground behind, the content padded below the header (`top` plus its fade) and clear of the
  * floating tab bar or check-in button (`bottom`), a header drawn over it (the header is absolute, so content scrolls under
- * its fade), the check-in button floating over the foot of a detail screen, and the platform's pull-to-refresh and
+ * it and its fade), the check-in button floating over the foot of a detail screen, and the platform's pull-to-refresh and
  * keyboard handling on the scroll view. The page sits in a blur target, so the glass floating over it blurs it on Android.
  */
 export function ScreenScroll({ header, top, onScroll, bottomPad, healthspan, onRefresh, children }: ScreenScrollProps) {
@@ -106,7 +108,7 @@ export function ScreenScroll({ header, top, onScroll, bottomPad, healthspan, onR
           ref={scroll}
           onScroll={onScroll}
           scrollEventThrottle={16}
-          contentContainerStyle={{ paddingTop: top, paddingBottom: bottomPad ?? clearance }}
+          contentContainerStyle={{ paddingTop: top + HEADER_FADE, paddingBottom: bottomPad ?? clearance }}
           showsVerticalScrollIndicator={false}
           contentInsetAdjustmentBehavior="never"
           // Forms: a tap on a button while the keyboard is up goes through; iOS scrolls the focused input clear of the keyboard.
