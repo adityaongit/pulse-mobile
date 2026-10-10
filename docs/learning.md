@@ -217,3 +217,8 @@ The headers are the shells' own views (centred title, date switcher, collapsing 
 ## A route's params instead of the URL for ranges and periods
 
 The web keeps the chart range, the Trend View period and the report period in the URL (`?r=`, `?p=`) and its links replace the entry. Here they are route params written with `router.setParams`, which updates the screen in place without growing the back stack, and `useLocalSearchParams` reads them. A sheet that must hand a choice back (the Trends metric picker) uses `router.dismissTo({ pathname, params })`, which pops the sheet and sets the params of the screen below.
+
+## The Pulse Age orb
+
+The web draws the orb on a 2D canvas from a `requestAnimationFrame` loop. Here the loop is Reanimated's `useFrameCallback` on the UI thread, writing shared values (time, touch, the outline table). Skia draws from them: the blob, glow and rim are declarative nodes with animated props, and the particles are one `<Atlas>` whose transforms are rewritten each frame by Skia's `useRSXformBuffer` (host objects mutated in place, no allocation). Nothing sets React state per frame. The per-frame functions are plain module functions marked `"worklet"`, not closures inside the component, so the React Compiler leaves them alone. The press is a `Gesture.Manual()`: it never activates, so the page still scrolls under a finger, and a scroll cancels the press (the web's `touch-action: pan-y`). The loop stops when the screen loses focus and after 30 idle seconds.
+

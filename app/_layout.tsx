@@ -65,6 +65,7 @@ function Screens() {
         <Stack.Screen name="(sheets)/dashboard" options={sheetOptions("screen", c)} />
         <Stack.Screen name="(sheets)/plus" options={sheetOptions("default", c)} />
         <Stack.Screen name="(sheets)/trends-metric" options={sheetOptions("default", c)} />
+        <Stack.Screen name="(sheets)/ecg" options={sheetOptions("default", c)} />
         <Stack.Screen name="dev/sheet" options={({ route }) => sheetOptions((route.params as { size?: SheetSize } | undefined)?.size ?? "default", c)} />
       </Stack>
     </>
