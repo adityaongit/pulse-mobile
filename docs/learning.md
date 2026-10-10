@@ -241,3 +241,7 @@ The web's `<input type="datetime-local">` and `type="date"` are the browser's ow
 ## Asking before a sheet closes: `beforeRemove`
 
 The check-in must not lose answers to a swipe down or the Android back gesture. `navigation.addListener("beforeRemove", ...)` (from `useNavigation`) can cancel the removal with `e.preventDefault()` while the sheet has unsaved changes and show "Dismiss journal?"; `gestureEnabled: false` on the same screen stops the iOS swipe from starting. Confirming sets a ref and closes again, so the listener lets it through.
+
+## Long work in chunks: `setTimeout(0)` between them
+
+React Native runs all JavaScript on one thread, and `await` on something that is already synchronous (the SQLite calls, a pure scorer) never lets it go: the progress bar and animations stop until the work ends. `loadDemoData` (`src/seed/load.ts`) cuts generating, writing and scoring into chunks of a day or a few and awaits `new Promise((r) => setTimeout(r, 0))` between them, which is a real turn of the event loop. Scoring (`src/pipeline`, which only awaits the repositories) is cut from outside by a Store wrapper that yields before a repository call once 8 ms have passed since the last turn.

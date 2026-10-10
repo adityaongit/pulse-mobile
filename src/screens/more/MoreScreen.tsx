@@ -2,7 +2,7 @@
 // loading.tsx: "Account & settings" (Profile, Data source, App, each a row to `/settings?s=`), Reports, Trends, Journal,
 // Help, Your data, then About. The account row is Profile (no accounts); no Coach row (the coach stream adds it).
 import { View } from "react-native";
-import { Archive, BookOpen, CalendarDays, CalendarRange, ChartLine, Database, ListChecks, Palette, Plug, UserRound } from "lucide-react-native";
+import { Archive, BookOpen, CalendarDays, CalendarRange, ChartLine, Database, FlaskConical, ListChecks, Palette, Plug, UserRound } from "lucide-react-native";
 import { formatDay, rangeLabel } from "@/lib/format";
 import { SCORING_VERSION } from "@/pipeline";
 import { APP_VERSION, getMore } from "@/queries/settings";
@@ -58,6 +58,7 @@ export function MoreScreen() {
         <LinkList title="Journal" rows={[{ icon: ListChecks, label: "Behaviours", aside: `${vm.behaviours.shown} of ${vm.behaviours.total} shown`, href: "/more/behaviours" }]} />
         <LinkList title="Help" rows={[{ icon: BookOpen, label: "How Pulse works", aside: `${SCORE_DOCS.length} scores`, href: "/more/how-it-works" }]} />
         <LinkList title="Your data" rows={[{ icon: Database, label: "Export", aside: "CSV, JSON", href: "/more/data" }]} />
+        {__DEV__ && <LinkList title="Development" rows={[{ icon: FlaskConical, label: "Load demo data", href: "/dev/demo" }]} />}
         <About version={vm.version} scoringVersion={vm.scoringVersion} />
       </View>
     </PageShell>
