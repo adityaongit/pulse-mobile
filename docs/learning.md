@@ -222,3 +222,14 @@ The web keeps the chart range, the Trend View period and the report period in th
 
 The web draws the orb on a 2D canvas from a `requestAnimationFrame` loop. Here the loop is Reanimated's `useFrameCallback` on the UI thread, writing shared values (time, touch, the outline table). Skia draws from them: the blob, glow and rim are declarative nodes with animated props, and the particles are one `<Atlas>` whose transforms are rewritten each frame by Skia's `useRSXformBuffer` (host objects mutated in place, no allocation). Nothing sets React state per frame. The per-frame functions are plain module functions marked `"worklet"`, not closures inside the component, so the React Compiler leaves them alone. The press is a `Gesture.Manual()`: it never activates, so the page still scrolls under a finger, and a scroll cancels the press (the web's `touch-action: pan-y`). The loop stops when the screen loses focus and after 30 idle seconds.
 
+## The profile gate: `Stack.Protected`
+
+A person without a profile must land on onboarding. `app/_layout.tsx` reads the profile once the migrations have run (`src/screens/onboarding/gate.ts`) and wraps the tabs in `<Stack.Protected guard={hasProfile}>` and onboarding in the opposite guard. A protected screen is not in the navigator at all, so Home never mounts without a profile, and when onboarding saves, the guards flip and the navigator moves to the first screen that is now available (the tabs). The same read applies the stored theme before the first frame.
+
+## Delete everything: close, delete, `reloadAppAsync`
+
+The database module opens its file when it is imported, so the only way to a fresh empty database is a restart. `deleteEverything` closes the handle, calls `deleteDatabaseAsync("pulse.db")` and then `reloadAppAsync()` from `expo` (it reloads the same bundle in a release build too, no `expo-updates` needed). The migrations run again on the new file and, with no profile, the gate sends the person to onboarding.
+
+## Share sheet exports
+
+`expo-file-system` writes the CSV or JSON as a `File` in `Paths.cache`, and `expo-sharing`'s `shareAsync(file.uri)` hands it to the system share sheet (Save to Files, AirDrop, Drive). Both modules are imported inside the action, so the file builders stay testable in Node.

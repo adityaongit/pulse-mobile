@@ -1,6 +1,4 @@
-import { PageShell } from "@/ui/shells/PageShell";
+import { MoreScreen } from "@/screens/more/MoreScreen";
 
-// Placeholder: the More screen is built from the kit in Phase 2.
-export default function More() {
-  return <PageShell title="More" />;
-}
+// More: the hub for everything that isn't configuration (src/screens/more/MoreScreen.tsx).
+export default MoreScreen;
