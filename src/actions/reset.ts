@@ -4,7 +4,7 @@
 // pulse avatar.ts `forgetSyncedData`). The journal, profile, dashboard, log and coach stay.
 import type { Store } from "../data/repos";
 import { dataChanged } from "../screens/useScreen";
-import type { ActionResult } from "./behaviours";
+import type { ActionResult } from "./journal";
 
 /**
  * Forgets the Google grant and everything synced from it, in one transaction: each owner's `clearSynced()`, then the

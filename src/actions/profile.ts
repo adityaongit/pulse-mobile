@@ -3,7 +3,7 @@
 import { saveProfile, ProfileInput } from "../profile";
 import type { Store } from "../data/repos";
 import { dataChanged } from "../screens/useScreen";
-import { DEFAULT_JOURNAL_TAGS } from "./behaviours";
+import { DEFAULT_JOURNAL_TAGS } from "../journalTags";
 
 export type ProfileFormState =
   | { ok: true; error?: undefined; fields?: undefined }

@@ -5,9 +5,7 @@ import { isDashboardKey } from "@/lib/dashboard";
 import type { Store } from "../data/repos";
 import { dashboardDefault } from "../queries/home";
 import { dataChanged } from "../screens/useScreen";
-
-/** `{ ok, data }` or `{ ok: false, error }`: the shape every write action returns (pulse actions/journal.ts). */
-export type ActionResult<T = undefined> = { ok: true; data: T } | { ok: false; error: string };
+import type { ActionResult } from "./journal";
 
 const Dashboard = z.object({
   keys: z

@@ -4,7 +4,8 @@ import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { SCOPES } from "../google/oauth";
 import type { SyncStateRow } from "../data/repos/settings";
 import { type QueryCtx, todayOf } from "./common";
-import { getAppPrefs, getBehaviours, getMore, getSettings, getShellStatus, getWearStreak, getYourData, hasCoachChats, syncErrorText } from "./settings";
+import { getAppPrefs, getMore, getSettings, getShellStatus, getWearStreak, getYourData, hasCoachChats, syncErrorText } from "./settings";
+import { getBehaviours } from "./journal";
 import { seededCtx } from "./testing";
 
 let ctx: QueryCtx;

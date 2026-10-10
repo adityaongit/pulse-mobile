@@ -1,12 +1,12 @@
 // More, Settings and the shell's status (spec §7.14, §4.2). Ported from pulse src/server/queries/settings.ts: reads go
 // through the repositories; there is no demo mode, no user id and no worker (the phone syncs itself, and the background
 // stream says whether a run is going: `getShellStatus`'s `syncing` argument).
-import { behavior, questionOf } from "@/lib/behaviors";
 import { missingScopes } from "../google/oauth";
 import { SCORING_VERSION } from "../pipeline";
 import { addDays, wholeYears } from "../time";
+import { latestReport } from "./home";
 import { firstDay, type QueryCtx, todayOf } from "./common";
-import type { BehavioursVM, JournalTag, MoreVM, SettingsVM, ShellStatusVM, YourDataVM } from "./types";
+import type { MoreVM, SettingsVM, ShellStatusVM, YourDataVM } from "./types";
 
 export const APP_VERSION = "0.1.0";
 const STALE_MS = 2 * 3600_000;
@@ -129,15 +129,6 @@ export async function getSettings(ctx: QueryCtx): Promise<SettingsVM> {
   };
 }
 
-/** The newest finished (not partial, with days) period of a kind. pulse queries/home.ts `latestReport` */
-async function latestReport(ctx: QueryCtx, kind: "week" | "month") {
-  for (const r of await ctx.store.scores.latestReports(kind, 3)) {
-    const d = r.data;
-    if (!d.partial && d.days > 0) return { period: r.period, start: d.start, end: d.end };
-  }
-  return null;
-}
-
 /** More `/more`. */
 export async function getMore(ctx: QueryCtx): Promise<MoreVM> {
   const [tags, latestWeek, latestMonth, reportCount] = await Promise.all([
@@ -153,19 +144,6 @@ export async function getMore(ctx: QueryCtx): Promise<MoreVM> {
 export async function getYourData(ctx: QueryCtx): Promise<YourDataVM> {
   const [first, days, answers] = await Promise.all([firstDay(ctx), ctx.store.scores.countDays(todayOf(ctx)), ctx.store.journal.answerCount()]);
   return { first, days: first ? days : 0, answers, mode: "google" };
-}
-
-/** More › Behaviours: every tag, hidden ones included, in check-in order. The same rows as pulse queries/journal.ts `getBehaviours` (that file's port is the Journal stream's). */
-export async function getBehaviours(ctx: QueryCtx): Promise<BehavioursVM> {
-  const tags: JournalTag[] = (await ctx.store.journal.tags()).map((r) => ({
-    tag: r.tag,
-    label: r.label,
-    question: questionOf(r.tag, r.label),
-    section: behavior(r.tag)?.section ?? "custom",
-    isDefault: r.isDefault,
-    hidden: r.hidden,
-  }));
-  return { tags };
 }
 
 /** Settings › App: the theme and the notification toggles (all off until the person turns them on). */

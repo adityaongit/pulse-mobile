@@ -2,8 +2,6 @@ import type { BodyKey } from "@/lib/dashboard";
 import { EXTRA_KEYS, type ExtraKey } from "@/lib/extraMetrics";
 import { clock, DAY, formatDay, type FormatKey } from "@/lib/format";
 import { RANGE_DAYS, RANGES, type TrendRange, weekOf } from "@/lib/url";
-import { appLabel, describeEntry, type LogType } from "@/lib/log";
-import type { LoggedEntryRow } from "../data/repos/log";
 import { addDays } from "../time";
 import {
   ACTIVITY_NAME,
@@ -23,36 +21,9 @@ import {
   todayOf,
   vitalReason,
 } from "./common";
+import { type LoggedEntry, toEntry } from "./log";
 import { TREND_METRICS } from "./trends";
 import type { GoodDirection, KeyStat, Metric } from "./types";
-
-/** A stored log entry as the screens show it. Ported from pulse src/server/log.ts (`LoggedEntry`, `toEntry`). */
-export type LoggedEntry = {
-  id: string;
-  type: LogType;
-  ts: number;
-  day: string;
-  title: string;
-  detail: string;
-  data: unknown;
-  atGoogle: boolean;
-  fromApp: boolean;
-  app: string;
-  createdAt: number;
-};
-
-const toEntry = (r: LoggedEntryRow): LoggedEntry => ({
-  id: r.id,
-  type: r.type as LogType,
-  ts: r.ts,
-  day: r.day,
-  ...describeEntry(r.type as LogType, r.data),
-  data: r.data,
-  atGoogle: r.googleName !== null,
-  fromApp: r.source === "google",
-  app: appLabel(r.source, r.app),
-  createdAt: r.createdAt,
-});
 
 export type VitalDetailKey = "hrv" | "rhr" | "resp" | "spo2" | "skin";
 export type DetailKey = "steps" | "calories" | VitalDetailKey | BodyKey | ExtraKey;

@@ -1,4 +1,5 @@
 import type { Report } from "@/core/algorithms/reports";
+import { latestReport } from "./home";
 import { finite, loadDays, none, ok, type QueryCtx, toStrain } from "./common";
 import type { DriverItem, KeyStat, Metric, ReportVM, StackedSegment } from "./types";
 
@@ -6,15 +7,6 @@ const readReport = (ctx: QueryCtx, period: string) => ctx.store.scores.readRepor
 
 /** The nearest same-kind period before (`dir` -1) or after (+1) `period`, or null. */
 const neighbour = (ctx: QueryCtx, kind: "week" | "month", period: string, dir: -1 | 1) => ctx.store.scores.reportNeighbour(kind, period, dir);
-
-/** The newest finished (not partial) period of a kind among the latest three, with its dates. Ported from home.ts `latestReport`. */
-export async function latestReport(ctx: QueryCtx, kind: "week" | "month") {
-  for (const r of await ctx.store.scores.latestReports(kind, 3)) {
-    const d = r.data as { partial: boolean; start: string; end: string; days: number };
-    if (!d.partial && d.days > 0) return { period: r.period, start: d.start, end: d.end };
-  }
-  return null;
-}
 
 const BALANCE = {
   LOAD_SWEET_SPOT: { status: "balanced", word: "Balanced", line: "Your strain matched your recovery most days." },

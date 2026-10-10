@@ -4,7 +4,9 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { type Store } from "../data/repos";
 import { testStore } from "../data/testing";
 import { saveProfile } from "../profile";
-import { addCustomTag, DEFAULT_JOURNAL_TAGS, loadBehaviours, MAX_TAGS, saveBehaviors, tagKey } from "./behaviours";
+import { loadBehaviours, saveBehaviors } from "./behaviours";
+import { addCustomTag } from "./journal";
+import { DEFAULT_JOURNAL_TAGS, MAX_TAGS, tagKey } from "../journalTags";
 
 const h = vi.hoisted(() => ({ changed: vi.fn() }));
 vi.mock("../screens/useScreen", () => ({ dataChanged: h.changed }));

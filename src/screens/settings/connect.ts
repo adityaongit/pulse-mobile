@@ -10,7 +10,7 @@
 //  - forgetGoogleTokens(): delete the refresh token and any cached access token from expo-secure-store.
 //  - syncNow(): ask the background stream for a sync run past its 5-minute gate.
 
-import type { ActionResult } from "@/actions/behaviours";
+import type { ActionResult } from "@/actions/journal";
 
 const NOT_YET = "isn’t available in this build yet.";
 
