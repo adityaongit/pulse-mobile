@@ -1,10 +1,23 @@
-import { useRef, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useRef, type ReactNode } from "react";
 import { View } from "react-native";
 import { Text } from "../Text";
 import type { DateSwitcherProps } from "./DateSwitcher";
 import { HomeHeader, type HeaderRings } from "./HomeHeader";
 import { HEADER_ROW, TitleHeader, useHeaderHeight } from "./Header";
 import { ScreenScroll, type ScreenScrollProps, useCollapse } from "./ScreenScroll";
+
+const SentinelContext = createContext<((node: View) => void) | null>(null);
+
+/**
+ * Marks the end of Home's collapse distance (the web's HEADER_SENTINEL): put it right after the dials row, inside `slots.top`,
+ * with `-mt-3` if the column has a 12 px gap, so it sits at the dials' bottom edge. Past it the dials are under the header and
+ * the header's ring row takes over. A zero-height marker, not a wrapper: the note under the dials is not part of the distance.
+ */
+export function HeaderSentinel({ className }: { className?: string }) {
+  const mark = useContext(SentinelContext);
+  const node = useRef<View>(null);
+  return <View ref={node} collapsable={false} accessibilityElementsHidden className={className ?? "h-0"} onLayout={() => node.current && mark?.(node.current)} />;
+}
 
 /** Home: `top` (the dials) then `main` (My Day), `aside` (My Dashboard) and `bottom`, in phone reading order (web: laptop columns, D-L4). */
 export type HomeSlots = { top: ReactNode; main: ReactNode; aside: ReactNode; bottom?: ReactNode };
@@ -36,7 +49,13 @@ export function PageShell({ title, dateSwitcher, actions, layout = "stack", slot
   const home = layout === "home";
   const top = useHeaderHeight(HEADER_ROW + (dateSwitcher && !home ? 40 : 0));
   const base = useHeaderHeight(HEADER_ROW);
-  const dials = useRef<View>(null);
+  const mark = useCallback(
+    (node: View) =>
+      node.measureInWindow((_x, y) => {
+        threshold.value = Math.max(0, y + scrollY.value - base);
+      }),
+    [threshold, scrollY, base],
+  );
 
   const header = home ? <HomeHeader rings={rings} progress={progress} right={headerRight} /> : <TitleHeader title={title} dateSwitcher={dateSwitcher} right={headerRight} />;
   return (
@@ -46,17 +65,9 @@ export function PageShell({ title, dateSwitcher, actions, layout = "stack", slot
         {actions && <View className="mb-4 flex-row justify-end gap-2">{actions}</View>}
         {home && slots ? (
           <View className="gap-8">
-            {/* The dials' bottom is where the header's ring row takes over: past it, the dials are under the header. */}
-            <View
-              ref={dials}
-              onLayout={() =>
-                dials.current?.measureInWindow((_x, y, _w, h) => {
-                  threshold.value = Math.max(0, y + h + scrollY.value - base);
-                })
-              }
-            >
-              {slots.top}
-            </View>
+            <SentinelContext.Provider value={mark}>
+              <View>{slots.top}</View>
+            </SentinelContext.Provider>
             <View className="min-w-0">{slots.main}</View>
             <View className="min-w-0">{slots.aside}</View>
             {slots.bottom && <View className="min-w-0">{slots.bottom}</View>}
