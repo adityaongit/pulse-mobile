@@ -72,20 +72,51 @@ function Screens({ hasProfile }: { hasProfile: boolean }) {
         <Stack.Protected guard={!hasProfile}>
           <Stack.Screen name="onboarding" options={{ gestureEnabled: false }} />
         </Stack.Protected>
+        {/* Every other route needs a profile, so a deep link cannot open a screen before onboarding. A route is guarded only
+            when it is declared here: a new route file is added to this list. */}
         <Stack.Protected guard={hasProfile}>
           <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="activities" />
+          <Stack.Screen name="activity/[id]" />
+          <Stack.Screen name="health/fitness" />
+          <Stack.Screen name="health/healthspan" />
+          <Stack.Screen name="health/heart-rate" />
+          <Stack.Screen name="health/monitor" />
+          <Stack.Screen name="health/stress" />
+          <Stack.Screen name="journal/insights" />
+          <Stack.Screen name="metric/[key]" />
+          <Stack.Screen name="more/behaviours" />
+          <Stack.Screen name="more/data" />
+          <Stack.Screen name="more/how-it-works" />
+          <Stack.Screen name="more/how-it-works/[score]" />
+          <Stack.Screen name="recovery" />
+          <Stack.Screen name="reports" />
+          <Stack.Screen name="reports/[period]" />
+          <Stack.Screen name="settings" />
+          <Stack.Screen name="sleep" />
+          <Stack.Screen name="sleep/nap/[id]" />
+          <Stack.Screen name="strain" />
+          <Stack.Screen name="trend/[key]" />
+          <Stack.Screen name="trends" />
+          <Stack.Screen name="dev/kit" />
+          <Stack.Screen name="dev/kit/charts" />
+          <Stack.Screen name="dev/kit/detail" />
+          <Stack.Screen name="dev/kit/home" />
+          <Stack.Screen name="dev/kit/metrics" />
+          <Stack.Screen name="dev/parity" />
+          <Stack.Screen name="dev/time" />
+          {/* Sheets are routes presented by the platform (src/ui/shells/sheets.ts says how to add one). */}
+          <Stack.Screen name="(sheets)/dashboard" options={sheetOptions("screen", c)} />
+          <Stack.Screen name="(sheets)/plus" options={sheetOptions("default", c)} />
+          <Stack.Screen name="(sheets)/trends-metric" options={sheetOptions("default", c)} />
+          <Stack.Screen name="(sheets)/ecg" options={sheetOptions("default", c)} />
+          <Stack.Screen name="(sheets)/profile" options={sheetOptions("tall", c)} />
+          <Stack.Screen name="(sheets)/checkin" options={sheetOptions("screen", c)} />
+          <Stack.Screen name="(sheets)/log" options={({ route }) => sheetOptions(["food", "mood", "symptoms"].includes((route.params as { kind?: string } | undefined)?.kind ?? "") ? "tall" : "default", c)} />
+          <Stack.Screen name="(sheets)/log-entry" options={sheetOptions("default", c)} />
+          <Stack.Screen name="journal/impact" options={sheetOptions("default", c)} />
+          <Stack.Screen name="dev/sheet" options={({ route }) => sheetOptions((route.params as { size?: SheetSize } | undefined)?.size ?? "default", c)} />
         </Stack.Protected>
-        {/* Sheets are routes presented by the platform (src/ui/shells/sheets.ts says how to add one). */}
-        <Stack.Screen name="(sheets)/dashboard" options={sheetOptions("screen", c)} />
-        <Stack.Screen name="(sheets)/plus" options={sheetOptions("default", c)} />
-        <Stack.Screen name="(sheets)/trends-metric" options={sheetOptions("default", c)} />
-        <Stack.Screen name="(sheets)/ecg" options={sheetOptions("default", c)} />
-        <Stack.Screen name="(sheets)/profile" options={sheetOptions("tall", c)} />
-        <Stack.Screen name="(sheets)/checkin" options={sheetOptions("screen", c)} />
-        <Stack.Screen name="(sheets)/log" options={({ route }) => sheetOptions(["food", "mood", "symptoms"].includes((route.params as { kind?: string } | undefined)?.kind ?? "") ? "tall" : "default", c)} />
-        <Stack.Screen name="(sheets)/log-entry" options={sheetOptions("default", c)} />
-        <Stack.Screen name="journal/impact" options={sheetOptions("default", c)} />
-        <Stack.Screen name="dev/sheet" options={({ route }) => sheetOptions((route.params as { size?: SheetSize } | undefined)?.size ?? "default", c)} />
       </Stack>
     </>
   );
