@@ -62,7 +62,6 @@ function Screens() {
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: c.background } }}>
         {/* Sheets are routes presented by the platform (src/ui/shells/sheets.ts says how to add one). */}
         <Stack.Screen name="(sheets)/checkin" options={sheetOptions("tall", c)} />
-        <Stack.Screen name="(sheets)/info" options={sheetOptions("tall", c)} />
         <Stack.Screen name="dev/sheet" options={({ route }) => sheetOptions((route.params as { size?: SheetSize } | undefined)?.size ?? "default", c)} />
       </Stack>
     </>

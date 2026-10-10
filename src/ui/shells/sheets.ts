@@ -1,5 +1,4 @@
 import type { ComponentProps } from "react";
-import { Platform } from "react-native";
 import { router, type Href, type Stack } from "expo-router";
 import type { Palette } from "../palette";
 
@@ -16,22 +15,31 @@ import type { Palette } from "../palette";
 // Pass the same size to the options and to <SheetScreen>: the options decide the detents, the component decides whether
 // its body scrolls.
 
-/** default: as tall as its content (`fitToContents`). tall: opens half-way, drags to full. screen: the whole phone (a modal, for the Journal-style full tasks). */
+/**
+ * default: as tall as its content (`fitToContents`, as the web's drawer grows to at most 92 % of the screen).
+ * tall: 92 % of the screen, the web's `h-[92svh]`. screen: the whole phone (a modal, for the Journal-style full tasks).
+ */
 export type SheetSize = "default" | "tall" | "screen";
 
 type Options = Exclude<NonNullable<ComponentProps<typeof Stack.Screen>["options"]>, (...args: never[]) => unknown>;
 
-/** The `options` of a sheet's <Stack.Screen>. `c` is the palette in force: the sheet's own fill behind the native frame. */
+/** The web drawer's top radius (`rounded-t-[28px]`). */
+const RADIUS = 28;
+
+/**
+ * The `options` of a sheet's <Stack.Screen>. `c` is the palette in force: the sheet's own fill behind the native frame.
+ * The platform gives the behaviour (drag, dismiss, dim, back gesture); the look is the web's on both platforms: its
+ * radius, its handle (drawn by <SheetScreen>, so the iOS system grabber is off) and its heights.
+ */
 export function sheetOptions(size: SheetSize, c: Palette): Options {
   const contentStyle = { backgroundColor: c.sheet };
   if (size === "screen") return { headerShown: false, presentation: "modal", contentStyle };
   return {
     headerShown: false,
     presentation: "formSheet",
-    // Android takes at most three detents and no `flex: 1` content with "fitToContents".
-    sheetAllowedDetents: size === "tall" ? [0.5, 1] : "fitToContents",
-    sheetGrabberVisible: true, // iOS only; <SheetScreen> draws its own handle on Android
-    sheetCornerRadius: Platform.OS === "android" ? 24 : undefined, // iOS keeps the system radius (it is concentric with the device)
+    sheetAllowedDetents: size === "tall" ? [0.92] : "fitToContents",
+    sheetGrabberVisible: false,
+    sheetCornerRadius: RADIUS,
     contentStyle,
   };
 }

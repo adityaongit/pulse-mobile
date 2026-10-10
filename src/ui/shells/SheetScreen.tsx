@@ -80,9 +80,9 @@ export function SheetScreen({ title, description, children, footer, size = "defa
         style={StyleSheet.absoluteFill}
       />
       {screen && <StatusBar style={scheme === "dark" ? "light" : "dark"} />}
-      {/* iOS draws its own grabber (sheetGrabberVisible); Android's native sheet has none. */}
-      {Platform.OS === "android" && !screen && <View className="mt-2 h-1.5 w-10 self-center rounded-full" style={{ backgroundColor: alpha(c.foreground, 0.25) }} />}
-      <View style={[fit ? undefined : styles.fill, { paddingTop: Platform.OS === "ios" ? 14 : screen ? insets.top + 8 : 8 }]}>
+      {/* The web drawer's handle on both platforms: 40 × 6, 10 px from the top, foreground at 25 % (the system grabber is off). */}
+      {!screen && <View className="mt-2.5 h-1.5 w-10 self-center rounded-full" style={{ backgroundColor: alpha(c.foreground, 0.25) }} />}
+      <View style={[fit ? undefined : styles.fill, { paddingTop: screen ? insets.top + 8 : 8 }]}>
         {done ? (
           <View style={fit ? styles.doneFit : styles.fill}>
             <DoneScreen {...done} />

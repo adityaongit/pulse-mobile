@@ -1,16 +1,18 @@
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-/** The round check-in button is 62 px. */
-export const FAB_SIZE = 62;
-/** The gap between the button and the edge it floats over (the tab bar, or the screen's foot), and to the page's edge. */
-export const FAB_GAP = 12;
+/** The tab bar and the round check-in action are 62 px tall (spec §4.2). */
+export const TAB_BAR_HEIGHT = 62;
+export const FAB_SIZE = TAB_BAR_HEIGHT;
 
-/**
- * The room a scrolling screen leaves at its foot so its last content clears the check-in button (the web's `main`
- * padding-bottom). Call it below <ScreenScroll>'s own SafeAreaProvider: there `insets.bottom` is the platform's, which
- * on a tab screen includes the native tab bar (iOS) or leaves it outside the screen (Android), so this needs no
- * tab-bar height, which Expo Router's native tabs do not expose.
- */
+/** The tab roots: the bar shows here, with the check-in action beside it. */
+export const TAB_ROOTS = ["/", "/health", "/journal", "/more"];
+
+/** How far above the bottom edge the floating bar (and the lone action on detail screens) sits: the safe area less 6 px, never under 12. */
+export function useTabBarBottom() {
+  return Math.max(useSafeAreaInsets().bottom - 6, 12);
+}
+
+/** The room a scrolling screen leaves at its foot so its last content clears the floating bar (the web's `main` padding-bottom). */
 export function useBottomClearance() {
-  return useSafeAreaInsets().bottom + FAB_SIZE + 2 * FAB_GAP;
+  return TAB_BAR_HEIGHT + useTabBarBottom() + 24;
 }

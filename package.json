@@ -6,7 +6,6 @@
     "@expo-google-fonts/barlow": "^0.4.1",
     "@expo-google-fonts/figtree": "^0.4.1",
     "@expo/ui": "~57.0.22",
-    "@gorhom/bottom-sheet": "^5.2.14",
     "@noble/hashes": "^2.4.0",
     "@shopify/react-native-skia": "2.6.2",
     "date-fns": "4.4.0",

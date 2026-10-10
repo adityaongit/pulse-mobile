@@ -258,7 +258,7 @@ export default function Kit() {
           <Frame name="header title (Strain calendar)" center><DateSwitcher mode="day" placement="header" calendar="strain" /></Frame>
           <Frame name="narrow pill at 320 px" narrow center><DateSwitcher mode="day" narrow /></Frame>
         </Entry>
-        <Entry name="InfoButton, InfoSheet" file="src/ui/shells/InfoButton.tsx" use="Every “i”: card headers (card) and detail headers (header). Opens the info sheet (route app/(sheets)/info.tsx)." props={["info: { title, body, icon?, chip?, action? }", "label", "variant: card | header"]}>
+        <Entry name="InfoButton, InfoDialog" file="src/ui/shells/InfoButton.tsx" use="Every “i”: card headers (card) and detail headers (header). Opens the centred info card over the dim, as the web." props={["info: { title, body, icon?, chip?, action? }", "label", "variant: card | header"]}>
           <Frame name="card" center><InfoButton variant="card" label="What shaped it" info={INFO} /></Frame>
           <Frame name="header, with icon, chip and action" center>
             <InfoButton variant="header" label="Respiratory rate" info={{ title: "Respiratory rate", icon: <Icon icon={HeartPulse} size={28} tone="foreground-secondary" strokeWidth={1.5} />, chip: { tone: "optimal", text: "Within 14.1 - 16.9" }, body: <Text className="text-[15px] leading-[22px] text-foreground/85">Breaths per minute while you sleep, against your own normal range.</Text>, action: { label: "Open trend view", href: "/dev/kit/charts" } }} />
@@ -276,7 +276,7 @@ export default function Kit() {
         <Entry name="Page shells" file="src/ui/shells/" use="Shells that only render as a whole page. Each one is live somewhere.">
           <Frame name="where to see each one">
             <View className="gap-3">
-              {[["AppShell, TabBar", "The tab bar and the round action", "The foot of the app's tab screens"], ["PageShell, TitleHeader", "Tab roots: header, content", "Health, Journal, More tabs"], ["HomeHeader", "Home's collapsing header and ring row", "Home demo"], ["DetailShell, DetailHeader, CollapsingHeader", "Detail screens: hero, notch, summary", "Detail demo"], ["CalendarPanel", "The month calendar behind the date pill", "Open a date pill above"]].map(([n, w, where]) => (
+              {[["TabBar", "The glass tab bar and the round action", "The foot of the app's tab screens"], ["PageShell, TitleHeader", "Tab roots: header, content", "Health, Journal, More tabs"], ["HomeHeader", "Home's collapsing header and ring row", "Home demo"], ["DetailShell, DetailHeader, CollapsingHeader", "Detail screens: hero, notch, summary", "Detail demo"], ["CalendarPanel", "The month calendar behind the date pill", "Open a date pill above"]].map(([n, w, where]) => (
                 <View key={n} className="gap-0.5">
                   <Text className="text-[13px] font-semibold leading-5">{n}</Text>
                   <Text className="text-[13px] leading-5 text-foreground-secondary">{w}</Text>

@@ -1,11 +1,10 @@
 import { Pressable, View } from "react-native";
 import Svg, { Circle, Defs, LinearGradient, Stop } from "react-native-svg";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Glass } from "../Glass";
 import { haptic } from "../haptics";
 import { Text } from "../Text";
 import { useTheme } from "../theme";
-import { FAB_GAP, FAB_SIZE } from "./layout";
+import { FAB_SIZE, TAB_ROOTS, useTabBarBottom } from "./layout";
 import { openSheet } from "./sheets";
 
 /** The reference app's ringed monogram: "P" in a 30 px circle with the indigo-to-blue rim. */
@@ -50,17 +49,17 @@ export function CheckInAction({ label = "Check in", onPress }: { label?: string;
   );
 }
 
-/** Not on Settings, the coach or the dev kit (except its detail demo, which shows how a detail screen looks). */
+/**
+ * Floats alone on detail screens (spec §4.2). Not on the tab roots (the tab bar carries it there), Settings, the coach
+ * or the dev kit (except its detail demo, which shows how a detail screen looks).
+ */
 export function showsCheckIn(pathname: string) {
-  return !(pathname.startsWith("/settings") || pathname.startsWith("/coach") || (pathname.startsWith("/dev") && !pathname.startsWith("/dev/kit/detail")));
+  return !(TAB_ROOTS.includes(pathname) || pathname.startsWith("/settings") || pathname.startsWith("/coach") || (pathname.startsWith("/dev") && !pathname.startsWith("/dev/kit/detail")));
 }
 
-/**
- * The action floating over a screen, bottom right, above the platform's tab bar on a tab screen or alone on a detail
- * screen (spec §4.2). It sits inside <ScreenScroll>, whose SafeAreaProvider knows where that is.
- */
+/** The action floating alone at the foot of a detail screen, where the tab bar would sit. Rendered by <ScreenScroll>. */
 export function FloatingCheckIn() {
-  const bottom = useSafeAreaInsets().bottom + FAB_GAP;
+  const bottom = useTabBarBottom();
   return (
     <View pointerEvents="box-none" className="absolute right-3" style={{ bottom }}>
       <CheckInAction />

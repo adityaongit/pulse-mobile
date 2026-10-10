@@ -1,13 +1,13 @@
-import { useRef, useState, type ReactNode } from "react";
+import { useCallback, useRef, useState, type ReactNode } from "react";
 import { Platform, RefreshControl, StyleSheet, View } from "react-native";
 import { BlurTargetView } from "expo-blur";
-import { usePathname } from "expo-router";
+import { useFocusEffect, usePathname } from "expo-router";
 import Animated, { useAnimatedScrollHandler, useDerivedValue, useSharedValue, withTiming } from "react-native-reanimated";
-import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Ground } from "../Ground";
 import { BlurTargetContext } from "../Glass";
 import { useTheme } from "../theme";
 import { FloatingCheckIn, showsCheckIn } from "./CheckInAction";
+import { setFocusedBlurTarget } from "./blurTarget";
 import { useBottomClearance } from "./layout";
 
 /** A screen's scroll position as a shared value, and a 0-1 `collapsed` that eases to 1 once `threshold` is scrolled past. */
@@ -35,25 +35,21 @@ export type ScreenScrollProps = {
 
 /**
  * The scroll container every shell uses: the ground behind, the content padded under the header (`top`) and clear of the
- * check-in button (`bottom`), a header drawn over it (the header is absolute, so content scrolls under its fade), the
- * check-in button floating over the foot, and the platform's pull-to-refresh and keyboard handling on the scroll view.
- *
- * It owns a SafeAreaProvider so the insets below are measured on this screen's own native view: on a tab screen they
- * include the native tab bar on iOS (Expo Router's native tabs cannot be measured otherwise).
+ * floating tab bar or check-in button (`bottom`), a header drawn over it (the header is absolute, so content scrolls under
+ * its fade), the check-in button floating over the foot of a detail screen, and the platform's pull-to-refresh and
+ * keyboard handling on the scroll view. The page sits in a blur target, so the glass floating over it blurs it on Android.
  */
-export function ScreenScroll(props: ScreenScrollProps) {
-  return (
-    <SafeAreaProvider>
-      <ScreenFrame {...props} />
-    </SafeAreaProvider>
-  );
-}
-
-function ScreenFrame({ header, top, onScroll, bottomPad, healthspan, onRefresh, children }: ScreenScrollProps) {
+export function ScreenScroll({ header, top, onScroll, bottomPad, healthspan, onRefresh, children }: ScreenScrollProps) {
   const { c } = useTheme();
   const clearance = useBottomClearance();
   const blurTarget = useRef<View>(null);
   const checkIn = showsCheckIn(usePathname());
+  // The tab bar's glass blurs the screen in view (Android; see blurTarget.ts).
+  useFocusEffect(
+    useCallback(() => {
+      setFocusedBlurTarget(blurTarget);
+    }, []),
+  );
   const [refreshing, setRefreshing] = useState(false);
   const refresh = async () => {
     setRefreshing(true);

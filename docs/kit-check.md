@@ -42,7 +42,7 @@ Check each frame in light and in dark. "Same" means the same number, copy, colou
 | SectionShell | Section title 22 px, card title caps, the chevron on a whole-card link, the info button, "View all" link. |
 | CollapsibleSection, EmptyState, MetricState | The chevron turns; the five states (loading, empty, reason, provisional, value) in one list; each reason code's icon and copy. |
 | DateSwitcher, CalendarPanel | Pill sizes and labels ("Today", "Yesterday", "Mon., Sep. 28"); steppers grey out at today; the calendar drops from the top, colours Recovery days, shows a dashed ring on today and the legend; the week pill. |
-| InfoButton, LinkList, SheetScreen | The info sheet (a native form sheet: title caps, chip, outline action); 56 px link rows; the sheet demos (Open sheet, tall, screen): handle, centred caps title, X at the right, pill footer, the three sizes. |
+| InfoButton, LinkList, SheetScreen | The info card (centred over the dim, as the web: title caps, chip, outline action); 56 px link rows; the sheet demos (Open sheet, tall, screen): handle, centred caps title, X at the right, pill footer, the three sizes. |
 | ScoreDial | The 4 degree gap at 12 o'clock; band colours (green 67+, yellow 34 to 66, red below); the Strain Target band and white tick; the stress gauge's gradient arc and needle; every reason code in the large ring; tags stack; compact form; loading; arc thickness against the web at each size. |
 | MiniRing | Track and fill at 0, mid, max; no value. |
 | KeyStatRow | Row, card and tile: label caps, value and unit, the average under the value, arrow direction and tone, the status segments, chips, tags, the wide tile with a sparkline, reasons, loading. |
@@ -62,7 +62,7 @@ Touch checks: drag across a chart (a cursor and a tooltip; a vertical swipe stil
 
 ## Differences you will see, on purpose
 
-- Tab bar, sheets and the info card are the platform's own components, so their shapes, motion and (on iOS 26) Liquid Glass are the OS's, not the web's drawings. The tab icons are the nearest SF Symbols and Material Symbols to the web's. The info card is a bottom sheet, not a centred card.
+- Everything looks as the web does, on both platforms: Pulse's glass tab bar, its drawers (28 px top radius, the 40 × 6 handle) and its centred info card. Only the behaviour is the platform's: the sheets' drag and dismissal, swipe-back, haptics.
 - Only the round check-in button is blurred glass (as on the web). The headers keep their ground fill and fade: the web does not blur them either.
 - Charts are Skia, not SVG in the DOM: curves match (Recharts' monotone curve is reimplemented), but anti-aliasing differs a little. Hover tooltips are touch tooltips.
 - The Home header shows the ring row with a fade (the web's laptop behaviour) instead of morphing each dial into its ring on scroll.
@@ -79,11 +79,11 @@ Run it on Android in Expo Go (`npx expo start --go`) and on an iPhone in the dev
 
 | Check | How | Pass when |
 |---|---|---|
-| Tabs | Open the app. Tap Home, Health, Journal, More; tap the active tab again. | The platform bar (iOS 26: floating Liquid Glass, Android: Material bar with a pill indicator), icons house / ECG line / book (pencil on Android) / three lines, in that order, labels in Figtree, active tab in the foreground colour. Switching keeps the ground colour (no white flash), in light and dark. |
+| Tabs | Open the app. Tap Home, Health, Journal, More; tap the active tab again. | Pulse's floating glass bar, as the web: 62 px squircle, the lens slides to the active tab (150 ms), the round P check-in action beside it; content blurs behind the glass on iOS and Android; a light tick on each tab change. Same on both platforms, in light and dark. |
 | Check-in button | On Health, Journal and More. Then open `/dev/kit/detail`. | A round "P" button floats bottom right, **fully above the tab bar** (a 12 px gap), not behind it, on both platforms. On the detail demo it sits above the home indicator. The last content of a page scrolls clear of it. If it touches or hides behind the bar on iOS, say so: the bar's height is read from the screen's safe area, which Expo Router does not document. |
-| Check-in sheet | Tap the button. | A sheet opens at half height with a grabber (iOS) or handle (Android); drag up and it goes full height; drag down or tap the dim and it closes. Title CHECK IN, X at the right, Save pill; Save shows "Saved" with a check, then closes. |
-| Sheet detents, drag | `/dev/kit`, the sheet demos. | Open sheet: as tall as its content, no half step. Open tall sheet: opens half height, drags to full. Open screen sheet: the whole phone as a modal with the sand glow. Each closes by drag down (screen: iOS swipe down from the top, Android back), the X and Cancel. |
-| Info sheet | Tap any "i" (the kit's cards and detail demo). | A half-height sheet with the title and text; long text scrolls inside it. |
+| Check-in sheet | Tap the button. | A drawer opens at 92 % height with Pulse's handle and 28 px corners, on both platforms; drag down or tap the dim and it closes. Title CHECK IN, X at the right, Save pill; Save shows "Saved" with a check, then closes. |
+| Sheet detents, drag | `/dev/kit`, the sheet demos. | Open sheet: as tall as its content, no half step. Open tall sheet: 92 % of the screen, as the web. Open screen sheet: the whole phone as a modal with the sand glow. Each closes by drag down (screen: iOS swipe down from the top, Android back), the X and Cancel. |
+| Info card | Tap any "i" (the kit's cards and detail demo). | The web's centred card over a strong dim; long text scrolls inside it; tap the dim or X to close. |
 | Swipe-back | Kit, open Detail demo or any kit sub-screen. iPhone: swipe from the left edge. Android: back gesture or button. | The screen slides away with your finger (iOS) and returns to the previous one. Also works from the sheets: Android back closes a sheet; iOS swipes it down. |
 | Predictive back | Development build, Android 13+ (before Android 15: Settings, Developer options, Predictive back animations). Hold the back gesture on a detail screen and on a tab root. | The system shows its back preview (on a root: the app shrinking toward the launcher) and the gesture still goes back or closes the sheet when released. If back stops working anywhere, set `predictiveBackGestureEnabled` back to false and report. |
 | Haptics | Phone not on silent / Low Power Mode off (iOS). Tap the check-in button, flip a Segmented control (kit), pick a sleep-stage radio, fold a CollapsibleSection, Save in a sheet. | A light tap on the button, a tick on choices and folds, a success buzz on Save. Nothing on tab presses or plain taps. |

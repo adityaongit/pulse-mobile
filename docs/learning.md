@@ -126,9 +126,9 @@ On the web `body` sets `text-foreground` and everything inherits it. In React Na
 
 `src/ui/providers.tsx` wraps the app once. `GestureHandlerRootView` is required for any gesture (chart scrubbing); `SafeAreaProvider` gives headers the notch and home-indicator insets; `ShellCalendarProvider` carries today's date. Sheets need no provider any more: they are routes (see "Sheets are routes", below), and `@gorhom/bottom-sheet` is no longer used.
 
-## Expo Router native tabs
+## The tab bar: Pulse's own glass bar
 
-`app/(tabs)/_layout.tsx` uses `NativeTabs` from `expo-router/unstable-native-tabs`: the platform's own tab bar (a UITabBarController with Liquid Glass on iOS 26, a Material 3 navigation bar on Android), so it animates, themes and handles accessibility the way the OS does. The parentheses make `(tabs)` a route group: it groups screens without adding to the URL, so Home stays `/`. Detail screens live outside the group, in the root `Stack`, so they cover the tab bar. The old JavaScript glass bar and its sliding lens were deleted.
+`app/(tabs)/_layout.tsx` uses Expo Router's `<Tabs>` with a custom `tabBar`: Pulse's floating glass bar from the web (`src/ui/shells/TabBar.tsx`), with the round check-in action beside it, identical on iOS and Android. Native tabs (the system bar: Liquid Glass on iOS 26, Material 3 on Android) were tried and dropped on 2026-10-11: the owner wants every screen to look as the Pulse PWA does. `<Tabs>` still gives the native behaviour that matters: each tab's screen stays alive, and the parentheses make `(tabs)` a route group (no URL segment, so Home stays `/`). Detail screens live outside the group, in the root `Stack`, so they cover the bar.
 
 ## Reanimated for header motion
 
@@ -142,9 +142,9 @@ Scroll position lives in a Reanimated shared value updated on the UI thread (`us
 
 The score dials, mini rings, wordmark, page ground, header fade and hatched tracks are small static drawings: react-native-svg is bundled in Expo Go and draws them with the same arc and gradient vocabulary the web used. Plain two-colour gradients (cards, the insight hairline, glass) are `expo-linear-gradient` instead, see "Native gradients and the card fill".
 
-## Bottom sheets and the info card
+## The info card
 
-The calendar panel is still a plain React Native `<Modal>`: it drops from the top (not a sheet) and writes the screen's `?d=` param, which a separate route would fight over. A `<Modal>` closes on the Android back gesture for free. Everything the user opens as a task is a route: see "Sheets are routes".
+Every "i" opens the web's centred card over a strong dim (`InfoDialog`), a React Native `<Modal>` with a fade: the OS back gesture closes it, and taps on the dim close it.
 
 ## Gestures: scrubbing a chart
 
@@ -164,7 +164,7 @@ React Native 0.86 on the new architecture takes a CSS-like `boxShadow` string, i
 
 ## Why the kit runs in Expo Go
 
-Everything the kit uses (Skia, Reanimated, gesture handler, SVG, safe-area, expo-font) is bundled in Expo Go for SDK 57; NativeWind and the icons are plain JavaScript; native tabs, form sheets, `expo-blur`, `expo-linear-gradient` and `expo-haptics` are in Expo Go too (haptics: the docs do not print the badge, so the checklist confirms it). So `npx expo start --go` is enough on Android. An iPhone needs a development build, since the App Store's Expo Go stops at SDK 54.
+Everything the kit uses (Skia, Reanimated, gesture handler, SVG, safe-area, expo-font) is bundled in Expo Go for SDK 57; NativeWind and the icons are plain JavaScript; form sheets, `expo-blur`, `expo-linear-gradient` and `expo-haptics` are in Expo Go too (haptics: the docs do not print the badge, so the checklist confirms it). So `npx expo start --go` is enough on Android. An iPhone needs a development build, since the App Store's Expo Go stops at SDK 54.
 
 ## Sheets are routes (`presentation: "formSheet"`)
 
@@ -172,11 +172,11 @@ A task sheet (check-in, logs, info) is a file under `app/(sheets)/` registered i
 
 ## Detents
 
-`sheetAllowedDetents` is a list of screen fractions the sheet snaps to (`[0.5, 1]`: half, then full) or `"fitToContents"` (as tall as its content: no `flex: 1` inside). Android takes at most three. Full-screen tasks use `presentation: "modal"` instead, which is a full page on both platforms.
+`sheetAllowedDetents` is a list of screen fractions the sheet snaps to, or `"fitToContents"` (as tall as its content: no `flex: 1` inside). Pulse uses the web drawer's heights: `"fitToContents"` for a default sheet and `[0.92]` for a tall one (the web's `h-[92svh]`). The system grabber is off and `<SheetScreen>` draws the web's 40 × 6 handle, and the corner radius is the web's 28 px, so a sheet looks the same on both platforms while the drag and dismissal stay the platform's. Full-screen tasks use `presentation: "modal"`.
 
-## A route cannot carry JSX: the info sheet
+## Why info is not a sheet route
 
-Route params are strings, but an info card's body is React nodes. `openInfo(content)` leaves the content in a module variable, then pushes `/info`; the route reads it once on mount. If the app is restored on `/info` with nothing there, the sheet closes itself.
+A route's params are strings, so content made of components cannot ride in one. The info card is therefore not a route: each `InfoButton` owns its `<Modal>` and passes the content straight in.
 
 ## Native gradients and the card fill
 
@@ -190,9 +190,9 @@ Route params are strings, but an info card's body is React nodes. `openInfo(cont
 
 `src/ui/haptics.ts` maps four moments (`tap`, `select`, `toggle`, `success`) to iOS feedback generators and to Android's own haptic constants, which `expo-haptics` recommends over raw vibration. Used on the check-in button, segmented controls, radio rows, section toggles and a finished save; not on tab presses (the system tab bar has none) and not on every tap.
 
-## The check-in button above a native tab bar
+## The check-in button and the bar's blur
 
-Expo Router's native tabs cannot report the tab bar's height. So `ScreenScroll` owns a nested `SafeAreaProvider`: it measures this screen's own native view, whose bottom inset includes the tab bar on iOS and sits above it on Android. The button and the scroll padding both read that inset, so there is no tab-bar height constant to get wrong. The button is drawn by `ScreenScroll`, so a tab screen must use `PageShell` (or `DetailShell`).
+On the tab roots the round action sits in the tab bar, beside the bar; on detail screens `ScreenScroll` floats it alone where the bar would be (`useTabBarBottom`). Both are glass: iOS blurs whatever is behind on its own; Android blurs only the inside of a `BlurTargetView`, so each `ScreenScroll` wraps its page in one and, when it comes into view, hands it to the tab bar (`src/ui/shells/blurTarget.ts`).
 
 ## Pull to refresh
 
