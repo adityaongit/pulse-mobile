@@ -8,6 +8,7 @@ import { reasonCopy } from "@/lib/reasons"
 import { activityHref, parseDay, trendHref } from "@/lib/url"
 import { todayOf } from "@/queries/common"
 import { getStrain } from "@/queries/strain"
+import { getWeeklyTrends, type TrendViewKey } from "@/queries/trendView"
 import type { StrainVM } from "@/queries/types"
 import { cn } from "@/ui/cn"
 import { Card } from "@/ui/Card"
@@ -27,19 +28,24 @@ import { InfoButton } from "@/ui/shells/InfoButton"
 import { SectionShell } from "@/ui/shells/SectionShell"
 import { STRAIN_INFO, STRAIN_TARGET_INFO } from "@/screens/_lib/info"
 import { CAPTION, hrSeries, LABEL, statProps, TodayVsLegend } from "@/screens/_lib/view"
-import { DialDetailSkeleton, Divided, ScreenError, WEEKLY_STRAIN, WeeklyTrendsSlot, WeeklyTrendsSlotSkeleton } from "@/screens/recovery/shared"
+import { DialDetailSkeleton, Divided, ScreenError } from "@/screens/recovery/shared"
+import { WeeklyTrends, WeeklyTrendsSkeleton } from "@/screens/trends/WeeklyTrends"
 import { useScreen } from "@/screens/useScreen"
+
+/** Weekly Trends in the reference app's order (strain-25..38). */
+const WEEKLY: readonly TrendViewKey[] = ["strain", "zones13", "zones45", "steps", "calories", "strength"]
 
 export function StrainScreen() {
   const { d: raw } = useLocalSearchParams<{ d?: string }>()
   const { data, error, reload } = useScreen(async (ctx) => {
     const today = todayOf(ctx)
     const { d } = parseDay(raw, today)
-    return { d, today, timeZone: ctx.timeZone, vm: await getStrain(ctx, d) }
+    const [vm, weekly] = await Promise.all([getStrain(ctx, d), getWeeklyTrends(WEEKLY, d, ctx)])
+    return { d, today, timeZone: ctx.timeZone, vm, weekly }
   }, [raw])
 
   if (!data) return error ? <ScreenError retry={reload} /> : <StrainSkeleton />
-  const { d, today, timeZone, vm } = data
+  const { d, today, timeZone, vm, weekly } = data
   const s = vm.strain
   const t = vm.target.value
 
@@ -83,7 +89,7 @@ export function StrainScreen() {
           )}
         </SectionShell>,
       ]}
-      footer={<WeeklyTrendsSlot keys={WEEKLY_STRAIN} d={d} today={today} />}
+      footer={<WeeklyTrends cards={weekly} d={d} today={today} />}
     />
   )
 }
@@ -147,7 +153,7 @@ function StrainSkeleton() {
           </View>
         </SectionShell>,
       ]}
-      footer={<WeeklyTrendsSlotSkeleton titles={["Strain", "HR Zones 1-3", "HR Zones 4-5", "Steps", "Calories", "Strength Activity Time"]} />}
+      footer={<WeeklyTrendsSkeleton titles={["Strain", "HR Zones 1-3", "HR Zones 4-5", "Steps", "Calories", "Strength Activity Time"]} />}
     />
   )
 }

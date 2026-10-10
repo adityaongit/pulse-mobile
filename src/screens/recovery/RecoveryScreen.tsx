@@ -3,6 +3,7 @@
 import { useLocalSearchParams } from "expo-router"
 import { dayHref, parseDay, trendHref } from "@/lib/url"
 import { getRecovery } from "@/queries/recovery"
+import { getWeeklyTrends, type TrendViewKey } from "@/queries/trendView"
 import { todayOf } from "@/queries/common"
 import { Card } from "@/ui/Card"
 import { InsightCard } from "@/ui/metrics/InsightCard"
@@ -11,20 +12,25 @@ import { ScoreDial } from "@/ui/metrics/ScoreDial"
 import { DetailShell } from "@/ui/shells/DetailShell"
 import { RECOVERY_INFO } from "@/screens/_lib/info"
 import { statProps, TodayVsLegend } from "@/screens/_lib/view"
+import { WeeklyTrends, WeeklyTrendsSkeleton } from "@/screens/trends/WeeklyTrends"
 import { useScreen } from "@/screens/useScreen"
 import { BehaviorInsights } from "./BehaviorInsights"
-import { DialDetailSkeleton, Divided, ScreenError, WEEKLY_RECOVERY, WeeklyTrendsSlot, WeeklyTrendsSlotSkeleton } from "./shared"
+import { DialDetailSkeleton, Divided, ScreenError } from "./shared"
+
+/** Weekly Trends: Recovery and HRV as captured (recovery-12..15), then the other contributors in row order. */
+const WEEKLY: readonly TrendViewKey[] = ["recovery", "hrv", "rhr", "resp", "sleep"]
 
 export function RecoveryScreen() {
   const { d: raw } = useLocalSearchParams<{ d?: string }>()
   const { data, error, reload } = useScreen(async (ctx) => {
     const today = todayOf(ctx)
     const { d } = parseDay(raw, today)
-    return { d, today, vm: await getRecovery(ctx, d) }
+    const [vm, weekly] = await Promise.all([getRecovery(ctx, d), getWeeklyTrends(WEEKLY, d, ctx)])
+    return { d, today, vm, weekly }
   }, [raw])
 
   if (!data) return error ? <ScreenError retry={reload} /> : <RecoverySkeleton />
-  const { d, today, vm } = data
+  const { d, today, vm, weekly } = data
   const r = vm.recovery
 
   return (
@@ -46,7 +52,7 @@ export function RecoveryScreen() {
       }
       insight={vm.insight ? <InsightCard body={vm.insight} action={{ label: "Explore your recovery insights", href: trendHref("recovery", { d, today }) }} /> : null}
       primary={<BehaviorInsights chips={vm.behaviors} href={dayHref("/journal/insights", d, today)} />}
-      footer={<WeeklyTrendsSlot keys={WEEKLY_RECOVERY} d={d} today={today} />}
+      footer={<WeeklyTrends cards={weekly} d={d} today={today} />}
     />
   )
 }
@@ -59,7 +65,7 @@ function RecoverySkeleton() {
       dial="recovery"
       labels={["Heart rate variability", "Resting heart rate", "Respiratory rate", "Sleep performance"]}
       legend="Today vs. last 30 days"
-      footer={<WeeklyTrendsSlotSkeleton titles={["Recovery", "Heart Rate Variability", "Resting Heart Rate", "Respiratory Rate", "Sleep Performance"]} />}
+      footer={<WeeklyTrendsSkeleton titles={["Recovery", "Heart Rate Variability", "Resting Heart Rate", "Respiratory Rate", "Sleep Performance"]} />}
     />
   )
 }

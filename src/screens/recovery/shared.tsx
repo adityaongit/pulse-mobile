@@ -19,22 +19,6 @@ export function ScreenError({ retry }: { retry: () => void }) {
   return <DetailShell title="Pulse" primary={<View accessibilityRole="alert" className="pt-16"><EmptyState icon={CircleAlert} body="Couldn’t load this screen." action={{ label: "Try again", onClick: retry }} /></View>} />
 }
 
-/**
- * Weekly Trends (the closing stack of Recovery and Strain, spec §11 R32). Its chart (`TrendViewChart`) and its data
- * (`getWeeklyTrends`, trendView.ts) belong to the Trends stream and are not on this branch, so nothing is drawn here yet.
- * When they land, replace these two with the Trends stream's <WeeklyTrends cards d today /> and its skeleton; the
- * screens already pass the day, today and the web's card keys.
- */
-export const WEEKLY_RECOVERY = ["recovery", "hrv", "rhr", "resp", "sleep"] as const
-export const WEEKLY_STRAIN = ["strain", "zones13", "zones45", "steps", "calories", "strength"] as const
-export function WeeklyTrendsSlot(_: { keys: readonly string[]; d: string; today: string }): ReactNode {
-  return null
-}
-export function WeeklyTrendsSlotSkeleton(_: { titles: string[] }): ReactNode {
-  return null
-}
-
-
 /** Recovery and Strain's loading shape (pulse's skeletons.tsx `DialDetail`): the dial, the notched summary card, the insight card, then the page's own cards. */
 export function DialDetailSkeleton({
   title,

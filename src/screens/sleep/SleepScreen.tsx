@@ -1,11 +1,11 @@
-// Sleep `/sleep` (spec §7.4), ported from pulse src/app/(app)/sleep/page.tsx. Left out, each for a reason in the report:
-// the Sleep Stress card (`FEATURES.sleepStress`, off), Weekly Trends (the footer: its query and cards belong to the
-// Trends stream) and the `#planner` scroll (the kit's scroll view takes no ref).
+// Sleep `/sleep` (spec §7.4), ported from pulse src/app/(app)/sleep/page.tsx. Left out: the Sleep Stress card
+// (`FEATURES.sleepStress`, off).
 import { Fragment } from "react";
 import { View } from "react-native";
 import { clock, hmm } from "@/lib/format";
 import { trendHref } from "@/lib/url";
 import { getSleep } from "@/queries/sleep";
+import { getWeeklyTrends, type TrendViewKey, type TrendViewVM } from "@/queries/trendView";
 import type { SleepVM } from "@/queries/types";
 import { cn } from "@/ui/cn";
 import { Card } from "@/ui/Card";
@@ -24,7 +24,11 @@ import { SLEEP_INFO, TONIGHT_INFO } from "../_lib/info";
 import { statProps } from "../_lib/view";
 import { useScreen } from "../useScreen";
 import { HoursVsNeed, SleepConsistency, SleepEfficiency } from "./SleepCards";
+import { WeeklyTrends } from "../trends/WeeklyTrends";
 import { SleepSkeleton } from "./SleepSkeleton";
+
+/** Weekly Trends, in the reference app's order (sleep-28..34). */
+const WEEKLY: readonly TrendViewKey[] = ["sleep", "hours", "hours_need", "restorative", "consistency", "time_in_bed", "efficiency"];
 
 const STATUS_LEGEND = [
   ["bg-warning", "Poor"],
@@ -35,13 +39,16 @@ const STATUS_LEGEND = [
 export function SleepScreen() {
   const [d] = useSelectedDay();
   const { timeZone } = useShellCalendar();
-  const { data } = useScreen((ctx) => getSleep(ctx, d), [d]);
+  const { data } = useScreen(async (ctx) => {
+    const [vm, weekly] = await Promise.all([getSleep(ctx, d), getWeeklyTrends(WEEKLY, d, ctx)]);
+    return { vm, weekly };
+  }, [d]);
   // The web shows its skeleton on every navigation: another day's data is not this day's.
-  const vm = data?.day === d && timeZone ? data : undefined;
-  return vm && timeZone ? <Sleep vm={vm} timeZone={timeZone} /> : <SleepSkeleton />;
+  const shown = data?.vm.day === d && timeZone ? data : undefined;
+  return shown && timeZone ? <Sleep vm={shown.vm} weekly={shown.weekly} timeZone={timeZone} /> : <SleepSkeleton />;
 }
 
-function Sleep({ vm, timeZone }: { vm: SleepVM; timeZone: string }) {
+function Sleep({ vm, weekly, timeZone }: { vm: SleepVM; weekly: TrendViewVM[]; timeZone: string }) {
   const { today } = useShellCalendar();
   const d = vm.day;
   const p = vm.performance;
@@ -101,6 +108,7 @@ function Sleep({ vm, timeZone }: { vm: SleepVM; timeZone: string }) {
           <Planner vm={vm} timeZone={timeZone} />
         </SectionShell>,
       ]}
+      footer={<WeeklyTrends cards={weekly} d={d} today={today} />}
     />
   );
 }
