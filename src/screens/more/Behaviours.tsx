@@ -17,7 +17,7 @@ import { SectionShell } from "@/ui/shells/SectionShell";
 import { SheetSection } from "@/ui/shells/SheetScreen";
 import { Text } from "@/ui/Text";
 import { TextField } from "../settings/controls";
-import { toast, ToastHost } from "../settings/toast";
+import { toast } from "@/ui/Toast";
 import { useScreen } from "../useScreen";
 import { BehaviorPicker, saveSelection, shownOf } from "./BehaviorPicker";
 
@@ -123,7 +123,6 @@ function Behaviours({ vm }: { vm: BehavioursVM }) {
           </Button>
         </Animated.View>
       )}
-      <ToastHost />
     </View>
   );
 }

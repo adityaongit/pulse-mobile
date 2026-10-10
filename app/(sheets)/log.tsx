@@ -13,7 +13,7 @@ import { DateTimeField } from "@/screens/log/DateTimeField";
 import { Chips, Field, FormAlert, Input } from "@/screens/log/fields";
 import { CONNECT_HREF } from "@/screens/log/connect";
 import { defaultAt, EMPTY, toInput, wallNow, type Form } from "@/screens/log/form";
-import { toast, ToastHost } from "@/screens/log/toast";
+import { toast } from "@/ui/Toast";
 import { useScreen } from "@/screens/useScreen";
 import { Button } from "@/ui/Button";
 import { haptic } from "@/ui/haptics";
@@ -66,7 +66,6 @@ export default function LogSheet() {
       else setError(r.error);
       return;
     }
-    haptic.success();
     if (close) closeSheet();
     toast.success(`${KIND_LABEL[input.kind]} saved to Google Health`);
   };
@@ -209,7 +208,6 @@ export default function LogSheet() {
           )}
         </View>
       )}
-      <ToastHost bottom={8} />
     </SheetScreen>
   );
 }

@@ -17,7 +17,7 @@ import { DetailShell } from "@/ui/shells/DetailShell";
 import { SectionShell } from "@/ui/shells/SectionShell";
 import { Text } from "@/ui/Text";
 import { BODY } from "../settings/controls";
-import { toast, ToastHost } from "../settings/toast";
+import { toast } from "@/ui/Toast";
 import { useScreen } from "../useScreen";
 
 const grouped = new Intl.NumberFormat("en");
@@ -119,7 +119,6 @@ export function YourDataScreen() {
           </View>
         }
       />
-      <ToastHost />
     </View>
   );
 }

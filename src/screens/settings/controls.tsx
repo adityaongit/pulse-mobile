@@ -139,24 +139,6 @@ export function SmallButton({ label, accessibilityLabel, onPress, icon, solid, c
   );
 }
 
-/** The web's `outline` button (border-border bg-background; dark: border-input bg-input/30) at the touch size. */
-export function OutlineButton({ children, onPress, disabled, tone, className }: { children: string; onPress?: () => void; disabled?: boolean; tone?: "danger"; className?: string }) {
-  return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityState={{ disabled: !!disabled }}
-      disabled={disabled}
-      onPress={() => {
-        haptic.tap();
-        onPress?.();
-      }}
-      className={cn("h-11 flex-row items-center justify-center rounded-xl border border-border bg-background px-4 active:scale-[0.96] dark:border-input dark:bg-input/30", disabled && "opacity-50", className)}
-    >
-      <Text className={cn("text-[13px] font-bold uppercase tracking-[0.1em]", tone === "danger" && "text-recovery-red-text")}>{children}</Text>
-    </Pressable>
-  );
-}
-
 /** The web's Switch (default size: 32 × 18.4 track, 16 px thumb), with a larger touch area. */
 export function Switch({ value, onValueChange, disabled, label }: { value: boolean; onValueChange: (v: boolean) => void; disabled?: boolean; label: string }) {
   const thumb = useAnimatedStyle(() => ({ transform: [{ translateX: withTiming(value ? 14 : 0, { duration: 150 }) }] }), [value]);
@@ -246,9 +228,9 @@ export function ConfirmDialog({
                 {pending ? pendingLabel : confirmLabel}
               </Button>
             ) : (
-              <OutlineButton tone="danger" onPress={onConfirm} disabled={pending}>
+              <Button variant="outline" haptic textClassName="text-recovery-red-text" onPress={onConfirm} disabled={pending}>
                 {pending ? pendingLabel : confirmLabel}
-              </OutlineButton>
+              </Button>
             )}
           </View>
         </Pressable>

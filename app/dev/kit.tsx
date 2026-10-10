@@ -142,7 +142,7 @@ export default function Kit() {
             </View>
           </Frame>
         </Entry>
-        <Entry name="Button" file="src/ui/Button.tsx" use="The touch sizes: text buttons in content and sheets, the sheet footer pills." props={["variant: default | secondary | ghost | outline-pill", "size: touch | icon-touch | sheet"]}>
+        <Entry name="Button" file="src/ui/Button.tsx" use="The touch sizes: text buttons in content and sheets, the sheet footer pills." props={["variant: default | outline | secondary | ghost | outline-pill", "size: touch | icon-touch | sheet"]}>
           <Frame name="variants">
             <View className="flex-row flex-wrap gap-2">
               <Button>Default</Button>

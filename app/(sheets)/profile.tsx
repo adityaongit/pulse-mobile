@@ -1,6 +1,6 @@
 import { View } from "react-native";
 import { ProfileForm, SaveButton } from "@/screens/onboarding/ProfileForm";
-import { toast } from "@/screens/settings/toast";
+import { toast } from "@/ui/Toast";
 import { useScreen } from "@/screens/useScreen";
 import { SheetScreen } from "@/ui/shells/SheetScreen";
 import { closeSheet } from "@/ui/shells/sheets";
