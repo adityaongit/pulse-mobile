@@ -209,3 +209,8 @@ Sheets wrap their body in React Native's `KeyboardAvoidingView` (`padding` on iO
 ## Headers stay custom, on the native stack
 
 The headers are the shells' own views (centred title, date switcher, collapsing hero) laid over a `Stack` whose native header is off. The native stack still gives the iOS edge swipe-back and the Android back gesture on every pushed route, because those belong to the screen, not the header.
+
+## The Pulse Age orb
+
+The web draws the orb on a 2D canvas from a `requestAnimationFrame` loop. Here the loop is Reanimated's `useFrameCallback` on the UI thread, writing shared values (time, touch, the outline table). Skia draws from them: the blob, glow and rim are declarative nodes with animated props, and the particles are one `<Atlas>` whose transforms are rewritten each frame by Skia's `useRSXformBuffer` (host objects mutated in place, no allocation). Nothing sets React state per frame. The per-frame functions are plain module functions marked `"worklet"`, not closures inside the component, so the React Compiler leaves them alone. The press is a `Gesture.Manual()`: it never activates, so the page still scrolls under a finger, and a scroll cancels the press (the web's `touch-action: pan-y`). The loop stops when the screen loses focus and after 30 idle seconds.
+
