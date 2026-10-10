@@ -20,6 +20,9 @@ const subscribe = (l: () => void) => {
   return () => listeners.delete(l);
 };
 
+/** Changes whenever `dataChanged()` runs: for a loader that sits outside any screen (src/screens/ShellData.tsx). */
+export const useDataVersion = () => useSyncExternalStore(subscribe, () => version);
+
 export type ScreenState<T> = { data?: T; error?: Error; loading: boolean; reload: () => void };
 
 /**
@@ -27,7 +30,7 @@ export type ScreenState<T> = { data?: T; error?: Error; loading: boolean; reload
  * reloads. While a reload runs, the previous data stays on screen, so a refresh never flashes a skeleton.
  */
 export function useScreen<T>(query: (ctx: QueryCtx) => Promise<T>, key: unknown[]): ScreenState<T> {
-  const v = useSyncExternalStore(subscribe, () => version);
+  const v = useDataVersion();
   const [tick, setTick] = useState(0);
   // One string per request: loading is "the last finished request is not this one".
   const sig = `${JSON.stringify(key)}|${v}|${tick}`;

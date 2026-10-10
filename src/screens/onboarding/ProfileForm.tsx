@@ -3,6 +3,7 @@
 // zone (on first run the device's, one line, "Change" opens the picker), and, in Settings, height and max heart rate.
 // `footer` renders the submit, so each host places it (onboarding pins it to the bottom, the sheet to its foot).
 import { useState, type ReactNode } from "react";
+import { haptic } from "@/ui/haptics";
 import { View } from "react-native";
 import { saveProfileAction, type ProfileFormState } from "@/actions/profile";
 import { store } from "@/data/store";
@@ -45,8 +46,8 @@ export function ProfileForm({
     const r = await saveProfileAction(store, { birthDate, sex, maxHr, heightCm, timeZone: timeZone || null }, { onboarding });
     setPending(false);
     setState(r);
-    // haptic.error() when !r.ok (the kit has it after the phase-2 merge); a save's success tick comes with its toast or its host.
     if (r.ok) onSaved?.();
+    else haptic.error();
   };
 
   return (

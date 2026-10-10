@@ -1,7 +1,8 @@
 // Pulse has no test for src/server/queries/reports.ts; this one checks the port on the scored F2 database.
 import { beforeAll, describe, expect, it } from "vitest";
 import type { QueryCtx } from "./common";
-import { getReport, getReportArchive, latestReport } from "./reports";
+import { latestReport } from "./home";
+import { getReport, getReportArchive } from "./reports";
 import { seededCtx } from "./testing";
 
 let ctx: QueryCtx;

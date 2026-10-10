@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Pressable, View } from "react-native";
+import { View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { deleteLogEntry } from "@/actions/log";
 import { store } from "@/data/store";
@@ -8,7 +8,7 @@ import { MEALS, RECONNECT, type LogData } from "@/lib/log";
 import { parseDay } from "@/lib/url";
 import { getLogEntries, type LoggedEntry } from "@/queries/log";
 import { todayOf } from "@/queries/common";
-import { toast, ToastHost } from "@/screens/log/toast";
+import { toast } from "@/ui/Toast";
 import { useScreen } from "@/screens/useScreen";
 import { cn } from "@/ui/cn";
 import { Button } from "@/ui/Button";
@@ -17,11 +17,9 @@ import { CAPTION } from "@/ui/metrics/primitives";
 import { SheetScreen } from "@/ui/shells/SheetScreen";
 import { closeSheet } from "@/ui/shells/sheets";
 import { Text } from "@/ui/Text";
-import { useTheme } from "@/ui/theme";
 
 const n = (v: number) => v.toLocaleString("en-US");
 const MEAL_LABEL = Object.fromEntries(MEALS) as Record<string, string>;
-const RED = "text-[15px] font-bold uppercase leading-5 tracking-[0.1em] text-recovery-red-text";
 
 type Loaded = Awaited<ReturnType<typeof getLogEntries>>;
 
@@ -45,7 +43,6 @@ function heading({ entries, day, today, timeZone }: Loaded) {
 export default function LogEntrySheet() {
   const { ids = "", d } = useLocalSearchParams<{ ids?: string; d?: string }>();
   const { data } = useScreen((ctx) => getLogEntries(ctx, ids.split(",").filter(Boolean), parseDay(d, todayOf(ctx)).d), [ids, d]);
-  const { c, scheme } = useTheme();
   const [confirming, setConfirming] = useState(false);
   const [removing, setRemoving] = useState(false);
   // Kept while the entries are deleted underneath it, so the sheet never empties or changes mid-way.
@@ -66,11 +63,7 @@ export default function LogEntrySheet() {
     setRemoving(false);
     setConfirming(false);
     closeSheet();
-    if (!failed) {
-      haptic.success();
-      return void toast.success("Deleted");
-    }
-    // haptic.error() (arrives with the kit merge): a delete that fails.
+    if (!failed) return void toast.success("Deleted");
     const why = failed.error === RECONNECT ? "Reconnect Google in Settings to delete it there." : failed.error === "network" ? "Try again." : failed.error;
     // A weigh-in is two points: say which one stayed when the first went.
     toast.error(failed.e === shown.entries[0] ? `Couldn’t delete. ${why}` : `${failed.e.title} wasn’t deleted. ${why}`);
@@ -98,28 +91,17 @@ export default function LogEntrySheet() {
               <Button size="sheet" variant="secondary" className="flex-1" disabled={removing} onPress={() => setConfirming(false)}>
                 Keep
               </Button>
-              {/* The web's outline button: a 1 px border and the page background (the kit has no such variant yet). */}
-              <Pressable
-                accessibilityRole="button"
-                accessibilityState={{ disabled: removing }}
-                disabled={removing}
-                onPress={() => {
-                  haptic.tap();
-                  void remove();
-                }}
-                className={cn("h-14 flex-1 items-center justify-center rounded-full border active:scale-[0.96]", removing && "opacity-50")}
-                style={{ backgroundColor: c.background, borderColor: scheme === "dark" ? c.input : c.border }}
-              >
-                <Text className={RED}>{removing ? "Deleting…" : "Delete"}</Text>
-              </Pressable>
+              <Button size="sheet" variant="outline" className="flex-1" textClassName="text-recovery-red-text" disabled={removing} onPress={() => void remove()}>
+                {removing ? "Deleting…" : "Delete"}
+              </Button>
             </View>
           </View>
         ) : (
-          <Button size="sheet" variant="secondary" onPress={() => {
-            // haptic.warning() (arrives with the kit merge): the delete confirm appears.
+          <Button size="sheet" variant="secondary" textClassName="text-recovery-red-text" onPress={() => {
+            haptic.warning();
             setConfirming(true);
           }}>
-            <Text className={RED}>{shown.entries.length > 1 ? "Delete weigh-in" : "Delete entry"}</Text>
+            {shown.entries.length > 1 ? "Delete weigh-in" : "Delete entry"}
           </Button>
         )
       }
@@ -159,7 +141,6 @@ export default function LogEntrySheet() {
         </View>
         {foreign && <Text className={CAPTION}>Logged in another app. To change it, edit it there; Pulse picks up the change on the next sync.</Text>}
       </View>
-      <ToastHost bottom={8} />
     </SheetScreen>
   );
 }

@@ -65,7 +65,7 @@ export function ActivityScreen() {
         // the reference app draws the heart rate and the zone rows on the ground, not in cards [latest-activity-1].
         primary={
           noHr ? (
-            <Card className="items-center px-4" style={{ paddingVertical: 8 }}>
+            <Card className="items-center gap-0 px-4 py-2">
               <ReasonPlaceholder reason={vm.hr.reason} size="md" copy={noHrCopy(vm.hr.reason)} />
             </Card>
           ) : (

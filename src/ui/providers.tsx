@@ -4,6 +4,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { todayIn } from "@/lib/url";
 import { ShellCalendarProvider } from "./shells/ShellStatus";
+import { ToastHost } from "./Toast";
 
 /**
  * What the kit's components need above them, once, at the root:
@@ -19,6 +20,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
       <SafeAreaProvider>
         <ShellCalendarProvider value={calendar}>
           {children}
+          <ToastHost />
         </ShellCalendarProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

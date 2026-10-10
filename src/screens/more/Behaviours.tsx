@@ -5,9 +5,9 @@ import { useRef, useState } from "react";
 import { View, type TextInput } from "react-native";
 import Animated, { FadeInDown, FadeOut } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { addCustomTag } from "@/actions/behaviours";
+import { addCustomTag } from "@/actions/journal";
 import { store } from "@/data/store";
-import { getBehaviours } from "@/queries/settings";
+import { getBehaviours } from "@/queries/journal";
 import type { BehavioursVM } from "@/queries/types";
 import { Button } from "@/ui/Button";
 import { haptic } from "@/ui/haptics";
@@ -17,7 +17,7 @@ import { SectionShell } from "@/ui/shells/SectionShell";
 import { SheetSection } from "@/ui/shells/SheetScreen";
 import { Text } from "@/ui/Text";
 import { TextField } from "../settings/controls";
-import { toast, ToastHost } from "../settings/toast";
+import { toast } from "@/ui/Toast";
 import { useScreen } from "../useScreen";
 import { BehaviorPicker, saveSelection, shownOf } from "./BehaviorPicker";
 
@@ -123,7 +123,6 @@ function Behaviours({ vm }: { vm: BehavioursVM }) {
           </Button>
         </Animated.View>
       )}
-      <ToastHost />
     </View>
   );
 }

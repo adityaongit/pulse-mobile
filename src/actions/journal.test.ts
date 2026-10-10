@@ -4,7 +4,8 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vites
 import { needsRecompute } from "../pipeline";
 import { seededCtx } from "../queries/testing";
 import type { Store } from "../data/repos";
-import { addCustomTag, loadCheckIn, MAX_TAGS, saveCheckIn, saveJournalEntry, saveJournalNote, tagKey } from "./journal";
+import { addCustomTag, loadCheckIn, saveCheckIn, saveJournalEntry, saveJournalNote } from "./journal";
+import { MAX_TAGS, tagKey } from "../journalTags";
 
 const h = vi.hoisted(() => ({ changed: vi.fn() }));
 vi.mock("../screens/useScreen", () => ({ dataChanged: h.changed }));

@@ -10,6 +10,7 @@ import { getJournal } from "../queries/journal";
 import { ctxOf } from "../queries/common";
 import type { JournalVM } from "../queries/types";
 import { dataChanged } from "../screens/useScreen";
+import { MAX_TAGS, tagKey } from "../journalTags";
 import { userTimeZone } from "../profile";
 import { localDay } from "../time";
 import { inDayRange } from "@/lib/url";
@@ -107,16 +108,6 @@ export async function saveCheckIn(store: Store, day: string, answers: Omit<z.inp
     if (wrote) dataChanged();
   }
 }
-
-/** A custom tag's key: the label as snake_case ("Cold plunge" → "cold_plunge"); "" when it has no letter or digit. */
-export const tagKey = (label: string) =>
-  label
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "_")
-    .replace(/^_|_$/g, "");
-
-/** Most tags (defaults included) a person can have. Insights bootstrap every tag on every recompute, so this bounds that work. */
-export const MAX_TAGS = 60;
 
 const CustomTag = z.object({ label: z.string().trim().min(1).max(40) });
 

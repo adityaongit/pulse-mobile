@@ -87,8 +87,10 @@ export function EditDashboardSheet({ keys: rawKeys, empty: rawEmpty }: { keys?: 
     setFailed(false);
     const r = await saveDashboard(store, { keys: shown }).catch(() => ({ ok: false as const, error: "storage" }));
     setSaving(false);
-    // haptic.error() once the kit has it (phase 2 merge)
-    if (!r.ok) return setFailed(true);
+    if (!r.ok) {
+      haptic.error();
+      return setFailed(true);
+    }
     setDone(true);
   };
 

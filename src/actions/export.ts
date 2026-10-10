@@ -2,58 +2,23 @@
 // src/server/export.ts and src/app/export/*/route.ts: the same tables and files; a download becomes a file written to the
 // app's cache and handed to the share sheet. No export ever carries Google tokens or the coach provider key: the files
 // read only the tables below (the tokens and the key are in the secure store, never in SQLite).
-import { EXTRA_METRICS, type ExtraKey } from "@/lib/extraMetrics";
-import type { FormatKey } from "@/lib/format";
 import type { Store } from "../data/repos";
-import { type DayRow, ctxOf, finite, firstDay, loadDays, type QueryCtx, todayOf, toStrain } from "../queries/common";
-import type { ActionResult } from "./behaviours";
+import { ctxOf, firstDay, loadDays, type QueryCtx, todayOf } from "../queries/common";
+import { TREND_METRICS } from "../queries/trends";
+import type { ActionResult } from "./journal";
 
 type Cell = string | number | null;
 export type Table = { columns: string[]; rows: Cell[][] };
 
-/** Export column: the key plus its unit ("distance_km", "glucose_mg_dl"); h:mm metrics export minutes. (pulse queries/trends.ts `columnOf`) */
-const columnOf = (key: string, unit: string | undefined, format: FormatKey) =>
-  unit ? `${key}_${unit.replace("°", "").replace("/", "_").toLowerCase()}` : format === "duration" && !key.endsWith("_minutes") ? `${key}_minutes` : key;
-
-type Column = { column: string; format: FormatKey; partialToday?: boolean; pick: (r: DayRow) => number | null | undefined };
-
-// ponytail: the column list is a copy of pulse's TREND_METRICS (column, format, partialToday, pick); when the Trends
-// stream's src/queries/trends.ts lands, import its TREND_METRICS here instead and delete this list.
-const CORE: Column[] = [
-  { column: "recovery_pct", format: "int", pick: (r) => r.recovery?.value },
-  { column: "strain", format: "decimal1", partialToday: true, pick: (r) => (finite(r.s1?.effort) ? toStrain(r.s1.effort) : null) },
-  { column: "sleep_performance_pct", format: "int", pick: (r) => r.sleep?.performance },
-  { column: "sleep_minutes", format: "duration", pick: (r) => r.sleep?.main?.asleepMin },
-  { column: "sleep_consistency_pct", format: "int", pick: (r) => r.sleep?.consistency },
-  { column: "hrv_ms", format: "int", pick: (r) => r.metrics?.hrvMs },
-  { column: "resting_hr_bpm", format: "int", pick: (r) => r.metrics?.rhrBpm ?? r.sessionRhr },
-  { column: "respiratory_rate_rpm", format: "decimal1", pick: (r) => r.metrics?.respBpm },
-  { column: "spo2_pct", format: "int", pick: (r) => r.metrics?.spo2Pct },
-  { column: "skin_temperature_deviation_c", format: "decimal1", pick: (r) => r.recovery?.inputs.skinTempDev },
-  { column: "stress_avg", format: "decimal1", partialToday: true, pick: (r) => r.stress?.average },
-  { column: "steps", format: "grouped", partialToday: true, pick: (r) => r.metrics?.steps },
-  { column: "weight_kg", format: "decimal1", pick: (r) => r.metrics?.weightKg },
-  { column: "body_fat_pct", format: "decimal1", pick: (r) => r.metrics?.bodyFatPct },
-];
-const COLUMNS: Column[] = [
-  ...CORE,
-  ...EXTRA_METRICS.map((m): Column => ({
-    column: columnOf(m.key, "unit" in m ? m.unit : undefined, m.format),
-    format: m.format,
-    ...("partialToday" in m && { partialToday: m.partialToday }),
-    pick: (r) => r.extra[m.key as ExtraKey],
-  })),
-];
-
 /** Every day from the first stored day to today: one column per daily metric, rounded as the app shows it. */
 export async function dailyTable(ctx: QueryCtx): Promise<Table> {
-  const columns = ["day", ...COLUMNS.map((m) => m.column)];
+  const columns = ["day", ...TREND_METRICS.map((m) => m.column)];
   const first = await firstDay(ctx);
   if (!first) return { columns, rows: [] };
   const today = todayOf(ctx);
   const rows: Cell[][] = [];
   for (const [day, r] of await loadDays(ctx, first, today)) {
-    const values = COLUMNS.map((m) => {
+    const values = TREND_METRICS.map((m) => {
       const v = m.partialToday && day === today ? null : m.pick(r);
       const k = m.format === "decimal2" ? 100 : 10; // distance keeps its 10 m
       return typeof v === "number" && Number.isFinite(v) ? Math.round(v * k) / k : null;

@@ -7,6 +7,7 @@ import { reasonCopy } from "@/lib/reasons";
 import { dayHref, metricHref } from "@/lib/url";
 import { getMonitor } from "@/queries/health";
 import type { MonitorVM } from "@/queries/types";
+import { Card } from "@/ui/Card";
 import { cn } from "@/ui/cn";
 import { Icon } from "@/ui/Icon";
 import { KeyStatRow, KeyStatRowSkeleton } from "@/ui/metrics/KeyStatRow";
@@ -22,7 +23,6 @@ import { useDayScreen } from "./day";
 import { ErrorView } from "./ErrorView";
 import { HeartRhythm } from "./HeartRhythm";
 import { MONITOR_INFO } from "./info";
-import { Surface } from "./Surface";
 import { VitalTiles, VitalTilesSkeleton } from "./VitalTiles";
 
 const CHIP = {
@@ -46,7 +46,7 @@ function Divided({ children }: { children: ReactNode }) {
 
 function Measurements({ rows, at }: { rows: MonitorVM["measurements"]; at: (href: string) => string }) {
   return (
-    <Surface className="px-4 py-1">
+    <Card className="gap-0 px-4 py-1">
       <Divided>
         {rows.map((m) => (
           <KeyStatRow
@@ -67,7 +67,7 @@ function Measurements({ rows, at }: { rows: MonitorVM["measurements"]; at: (href
         ))}
       </Divided>
       <Text className={LEGEND}>Latest reading vs. the 30 days before it</Text>
-    </Surface>
+    </Card>
   );
 }
 
@@ -97,7 +97,7 @@ function Count({ count }: { count: MonitorVM["count"] }) {
 function IllnessAlert() {
   const { c } = useTheme();
   return (
-    <Surface ring={alpha(c["recovery-red"], 0.6)} className="flex-row gap-3 px-4 py-3">
+    <Card ring={alpha(c["recovery-red"], 0.6)} className="flex-row gap-3 px-4 py-3">
       <View accessibilityRole="alert" className="flex-row gap-3">
         <View className="mt-px">
           <Icon icon={CircleAlert} size={20} tone="recovery-red-text" strokeWidth={1.75} />
@@ -109,7 +109,7 @@ function IllnessAlert() {
           </Text>
         </View>
       </View>
-    </Surface>
+    </Card>
   );
 }
 
@@ -171,12 +171,12 @@ function MonitorLoading() {
             <Skeleton className="h-14 w-full rounded-2xl" />
           </SectionShell>
           <SectionShell variant="section" title="Measurements">
-            <Surface className="px-4 py-1">
+            <Card className="gap-0 px-4 py-1">
               <Divided>
                 <KeyStatRowSkeleton variant="row" label="Weight" icon={STAT_ICON.weight ? <Icon icon={STAT_ICON.weight} size={20} tone="muted-foreground" /> : undefined} />
                 <KeyStatRowSkeleton variant="row" label="Body fat" icon={STAT_ICON.body_fat ? <Icon icon={STAT_ICON.body_fat} size={20} tone="muted-foreground" /> : undefined} />
               </Divided>
-            </Surface>
+            </Card>
           </SectionShell>
         </View>
       }

@@ -13,7 +13,6 @@ import { LoadError } from "@/screens/journal/LoadError";
 import { LogTiles } from "@/screens/journal/LogTiles";
 import { JournalSkeleton } from "@/screens/journal/skeleton";
 import { WeekCard } from "@/screens/journal/WeekCard";
-import { ToastHost } from "@/screens/log/toast";
 import { useScreen } from "@/screens/useScreen";
 import { DayStrip } from "@/ui/metrics/DayStrip";
 import { InsightCard } from "@/ui/metrics/InsightCard";
@@ -37,7 +36,6 @@ export default function Journal() {
       <PageShell title="Journal" dateSwitcher={{ mode: "day" }} loading={loading && !data}>
         {data ? <Page vm={data.vm} log={data.log} onSelect={setDay} /> : error ? <LoadError retry={reload} /> : <JournalSkeleton />}
       </PageShell>
-      <ToastHost />
     </View>
   );
 }

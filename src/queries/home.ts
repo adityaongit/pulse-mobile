@@ -3,10 +3,12 @@ import { EXTRA_METRICS, type ExtraKey, type ExtraMetric } from "@/lib/extraMetri
 import { hmm } from "@/lib/format";
 import type { ReasonCode } from "@/lib/reasons";
 import { metricHref, trendHref } from "@/lib/url";
-import type { ChargeDriver } from "@/core/scoring/drivers";
 import type { Store } from "../data/repos";
 import { addDays, localMinutes } from "../time";
+import { insightOf as recoveryInsight } from "./recovery";
 import { insightOf as sleepInsight } from "./sleep";
+import { coach } from "./strain";
+import { worn, zoneSum } from "./trendView";
 import {
   activityKind,
   type DayRow,
@@ -37,48 +39,6 @@ import {
   toStrain,
 } from "./common";
 import type { ActivityKind, EnergyBankVM, HomeVM, KeyStat, Metric, VitalKey } from "./types";
-
-// ponytail: copies of four small helpers that live in other query files (recovery.ts `insightOf`, strain.ts `coach`,
-// trendView.ts `worn` and `zoneSum`), which streams F and H port. Once those land, import them and delete these.
-function recoveryInsight(drivers: ChargeDriver[]): string {
-  const up = drivers.filter((d) => d.deltaPoints > 0).map((d) => d.label);
-  const down = drivers.filter((d) => d.deltaPoints < 0).map((d) => d.label);
-  const phrase = (l: ChargeDriver["label"], good: boolean) =>
-    ({
-      HEART_RATE_VARIABILITY: good ? "your HRV is above your baseline" : "your HRV is below your baseline",
-      RESTING_HEART_RATE: good ? "your resting heart rate is lower than usual" : "your resting heart rate is higher than usual",
-      RESPIRATORY_RATE: good ? "your breathing rate is steady" : "your breathing rate is up",
-      SLEEP_QUALITY: good ? "you slept well" : "your sleep fell short",
-      SKIN_TEMPERATURE: good ? "your skin temperature is normal" : "your skin temperature moved from your normal",
-    })[l];
-  const cap = (s: string) => s[0].toUpperCase() + s.slice(1);
-  if (up.length && !down.length) return `${cap(phrase(up[0], true))}, which lifted Recovery today.`;
-  if (down.length && !up.length) return `${cap(phrase(down[0], false))}, which held Recovery back today.`;
-  if (up.length && down.length) return `${cap(phrase(up[0], true))}, but ${phrase(down[0], false)}. Together they shaped today’s Recovery.`;
-  return "Your signals sit close to your baseline, so Recovery is near your usual level.";
-}
-
-/** Strain Coach copy (spec §7.3), by position against today's target. */
-function coach(strain: Metric<number>, target: { low: number; high: number } | null, row: DayRow | undefined): string | null {
-  if (strain.value == null || !target) return null;
-  const { low, high } = target;
-  const range = `${f1(low)} - ${f1(high)}`;
-  if (row?.recovery?.value != null && row.recovery.value < 34) return `Your body needs rest today. Keep strain between ${range.replace(" - ", " and ")}.`;
-  if (strain.value < low) {
-    // ponytail: about 8 minutes of moderate activity per strain point near the target; a rough guide, not a model.
-    const minutes = Math.max(10, Math.round(((low - strain.value) * 8) / 5) * 5);
-    return `Your target today is ${range}. You are at ${f1(strain.value)}, so about ${minutes} minutes of moderate activity would put you in range.`;
-  }
-  if (strain.value <= high) return `You are inside today’s target of ${range}. More strain from here adds load faster than benefit.`;
-  return "You are past today’s target. Prioritise sleep tonight to recover.";
-}
-
-const zoneMin = (r: DayRow, i: number) => (r.s1 && r.s1.hrCount > 0 ? r.s1.zoneSeconds[i] / 60 : null);
-const zoneSum = (from: number, to: number) => (r: DayRow) => {
-  const xs = Array.from({ length: to - from }, (_, k) => zoneMin(r, from + k));
-  return xs.every(finite) ? xs.reduce((a, b) => a + b, 0) : null;
-};
-const worn = (r: DayRow) => (r.s1?.hrCount ?? 0) > 0;
 
 export const VITAL_LABEL: Record<VitalKey, string> = {
   resp: "Respiratory rate",

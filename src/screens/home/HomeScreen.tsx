@@ -1,7 +1,7 @@
-// Home `/` (spec §7.1), ported from pulse src/app/(app)/(home)/page.tsx. One difference in structure: the kit's PageShell
-// measures the whole `top` slot to know when the header's ring row takes over, and the web measures the dials only
-// (HEADER_SENTINEL). So `top` holds the wordmark, the dials and their note, and everything the web puts under them in
-// the same column (monitor cards, coach card, alert) opens `main`, pulled up by 8 px so the gaps are the web's 24.
+// Home `/` (spec §7.1), ported from pulse src/app/(app)/(home)/page.tsx. One difference in structure: `top` holds the
+// wordmark, the dials and their note, and everything the web puts under them in the same column (monitor cards, coach card,
+// alert) opens `main`, pulled up by 8 px so the gaps are the web's 24. The collapse distance ends at the dials' bottom, as on
+// the web, through <HeaderSentinel> (HEADER_SENTINEL there).
 import { useMemo, useState, type ReactNode } from "react";
 import { Pressable, View } from "react-native";
 import { router, type Href } from "expo-router";
@@ -31,7 +31,7 @@ import { EmptyState } from "@/ui/shells/EmptyState";
 import { InfoCardTrigger } from "@/ui/shells/InfoButton";
 import { InfoDialog } from "@/ui/shells/InfoDialog";
 import { MetricState } from "@/ui/shells/MetricState";
-import { PageShell } from "@/ui/shells/PageShell";
+import { HeaderSentinel, PageShell } from "@/ui/shells/PageShell";
 import { SectionShell } from "@/ui/shells/SectionShell";
 import { useSelectedDay } from "@/ui/shells/DateSwitcher";
 import { useShellCalendar } from "@/ui/shells/ShellStatus";
@@ -119,6 +119,8 @@ function Home({ vm, timeZone }: { vm: HomeVM; timeZone: string }) {
                 </View>
                 <View className="flex-1 items-center"><ScoreDial variant="strain" size="md" value={dials.strain.value} reason={dials.strain.reason} target={dials.strainTarget} href={at("/strain")} /></View>
               </View>
+              {/* The end of the collapse distance: the dials' bottom (the web's sentinel; -mt-3 cancels this column's gap). */}
+              <HeaderSentinel className="-mt-3 h-0" />
               {dials.reason && (
                 <View className="items-center pt-3">
                   {vm.phone ? (
@@ -178,7 +180,7 @@ function Home({ vm, timeZone }: { vm: HomeVM; timeZone: string }) {
                 </SectionShell>
                 {/* Phone: Tonight's sleep (today only), then My journal, as in the reference app (home-09, home-03); Energy Bank is Pulse's own and follows. */}
                 {vm.isToday && (
-                  <SectionShell variant="card" title="Tonight’s sleep" info={TONIGHT_INFO} fill action={<IconLink href={at("/sleep#planner")} label="Open Sleep Planner" icon={ChevronRight} />}>
+                  <SectionShell variant="card" title="Tonight’s sleep" info={TONIGHT_INFO} fill action={<IconLink href={at("/sleep?section=planner")} label="Open Sleep Planner" icon={ChevronRight} />}>
                     <MetricState
                       metric={vm.tonight}
                       skeleton={null}

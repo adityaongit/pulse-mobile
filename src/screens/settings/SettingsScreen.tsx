@@ -14,7 +14,6 @@ import { Divider, ROW } from "./controls";
 import { DataSource } from "./DataSource";
 import { DeleteEverything } from "./DeleteEverything";
 import { ProfileCard } from "./ProfileCard";
-import { ToastHost } from "./toast";
 
 type SectionId = "profile" | "source" | "app";
 const SECTIONS: SectionId[] = ["profile", "source", "app"];
@@ -105,7 +104,6 @@ export function SettingsScreen() {
           </View>
         }
       />
-      <ToastHost />
     </View>
   );
 }

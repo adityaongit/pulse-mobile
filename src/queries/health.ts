@@ -4,17 +4,17 @@ import { factorCopy } from "@/core/algorithms/healthspanFactor";
 import type { HealthspanContribution } from "@/core/algorithms/healthspan";
 import { minChronic } from "@/core/scoring/readiness";
 import { standardConfig } from "@/core/scoring/trainingLoad";
-import { ZONE_NAMES } from "@/core/scoring/zones";
 import { acwrTone } from "@/lib/bands";
 import { dayLabel, formatDay } from "@/lib/format";
 import { trendHref, weekOf } from "@/lib/url";
 import { minuteMeanHr } from "@/core/algorithms/stress";
 import { addDays, daysBetween, fractionalYears, localMidnight, wall } from "../time";
+import { zoneBounds, zoneNote, zoneRows } from "./strain";
+import { illnessRaised, VITAL_LABEL } from "./home";
 import {
   type DayRow,
   dayStartOf,
   finite,
-  hrReason,
   loadDays,
   loadSeries,
   meanSd,
@@ -47,33 +47,7 @@ import type {
   StressVM,
   Vital,
   VitalKey,
-  ZoneRow,
 } from "./types";
-
-// ponytail: pulse imports these four from queries/home.ts and queries/strain.ts, which other streams port. Local copies
-// (same code) until both land; then import them from there and delete these.
-const VITAL_LABEL: Record<VitalKey, string> = {
-  resp: "Respiratory rate",
-  spo2: "Blood oxygen",
-  restingHr: "Resting heart rate",
-  hrv: "Heart rate variability",
-  skinTempDev: "Skin temperature",
-};
-const illnessRaised = (hm: DayRow["healthMonitor"]) =>
-  !!hm && hm.reason === null && (hm.illness.level === "raised" || (hm.illness.level === "alreadyUnwell" && hm.illness.score >= 50 && hm.illness.signalCount >= 2));
-const zoneBounds = (lower: number[]): ZoneRow[] =>
-  lower.map((min, i) => ({ zone: i + 1, label: ZONE_NAMES[i], min: Math.round(min), max: i < lower.length - 1 ? Math.round(lower[i + 1]) - 1 : null, seconds: 0 }));
-const zoneNote = (row: DayRow | undefined, ctx: QueryCtx) =>
-  `Zones on your heart-rate reserve: resting ${Math.round(row?.s1?.restingHr ?? 0)} to max ${row?.s1?.maxHr ?? ctx.profile.maxHr} bpm.`;
-function zoneRows(row: DayRow | undefined): Metric<ZoneRow[]> {
-  const s1 = row?.s1;
-  const seconds = s1?.zoneSeconds;
-  if (!s1 || s1.hrCount === 0 || !seconds) return none(hrReason(s1 ?? null));
-  const rows = zoneBounds(s1.zoneLower).map((z, i) => ({ ...z, seconds: Math.round(seconds[i]) }));
-  // Zone 0: time under Zone 1, from the Zone 1 floor. Days stored before it was kept have no such row.
-  if (s1.zoneBelowSeconds != null) rows.push({ zone: 0, label: "Zone 0", min: 0, max: rows[0].min - 1, seconds: Math.round(s1.zoneBelowSeconds) });
-  return ok(rows);
-}
 
 const lastStored = async (ctx: QueryCtx, today: string) => (await ctx.store.scores.lastStoredDay(today)) ?? today;
 

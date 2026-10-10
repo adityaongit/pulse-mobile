@@ -18,9 +18,9 @@ import { CAPTION } from "@/ui/metrics/primitives";
 import { SectionShell } from "@/ui/shells/SectionShell";
 import { Text } from "@/ui/Text";
 import { connectGoogle, forgetGoogleTokens, syncNow } from "./connect";
-import { BODY, ConfirmDialog, Divider, OutlineButton, ProgressBar, ROW_LABEL } from "./controls";
+import { BODY, ConfirmDialog, Divider, ProgressBar, ROW_LABEL } from "./controls";
 import { GoogleFit } from "./GoogleFit";
-import { toast } from "./toast";
+import { toast } from "@/ui/Toast";
 
 /** Where a Google account without a Google Health profile sets one up (pulse src/lib/google.ts). */
 const HEALTH_SIGNUP_URL = "https://fitbit.google.com/auth/signup";
@@ -159,9 +159,9 @@ function DisconnectButton() {
   };
   return (
     <>
-      <OutlineButton tone="danger" className="flex-1" onPress={() => setOpen(true)}>
+      <Button variant="outline" textClassName="text-recovery-red-text" className="flex-1" onPress={() => setOpen(true)}>
         Disconnect
-      </OutlineButton>
+      </Button>
       <ConfirmDialog
         open={open}
         title="Disconnect Google?"
