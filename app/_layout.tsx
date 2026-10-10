@@ -1,10 +1,11 @@
 import "../global.css";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
+import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
+import * as SystemUI from "expo-system-ui";
 import { StatusBar } from "expo-status-bar";
 import { Text, View } from "react-native";
 import { Barlow_500Medium } from "@expo-google-fonts/barlow/500Medium";
@@ -61,8 +62,17 @@ export default function RootLayout() {
 
 function Screens({ hasProfile }: { hasProfile: boolean }) {
   const { c, scheme } = useTheme();
+  // Without a theme React Navigation paints its own white card and light grey ground while a screen slides in or out, and the
+  // window itself is the system's default: a white flash on every push, back and sheet. Both are the app's ground instead.
+  const theme = useMemo(() => {
+    const base = scheme === "dark" ? DarkTheme : DefaultTheme;
+    return { ...base, colors: { ...base.colors, primary: c.primary, background: c.background, card: c.background, text: c.foreground, border: c.border } };
+  }, [scheme, c]);
+  useEffect(() => {
+    SystemUI.setBackgroundColorAsync(c.background).catch(() => {});
+  }, [c.background]);
   return (
-    <>
+    <ThemeProvider value={theme}>
       <StatusBar style={scheme === "dark" ? "light" : "dark"} />
       {/* The native stack: detail screens push with the platform's transition, iOS swipe-back from the left edge and the
           Android back gesture work on every route that is not a root. The headers are the shells' own, so the native one is off. */}
@@ -118,6 +128,6 @@ function Screens({ hasProfile }: { hasProfile: boolean }) {
           <Stack.Screen name="dev/sheet" options={({ route }) => sheetOptions((route.params as { size?: SheetSize } | undefined)?.size ?? "default", c)} />
         </Stack.Protected>
       </Stack>
-    </>
+    </ThemeProvider>
   );
 }

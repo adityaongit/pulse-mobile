@@ -9,6 +9,11 @@ At rest, the first line of content sits below the header's soft fade, not under 
 takes its 24 px fade in layout): the Home wordmark, a detail screen's first card, a tab's first section. Scroll a little and
 content slides under the fade. Check Home, Health, Journal, More and a detail screen such as Recovery.
 
+## Every screen: no white flash
+
+Push a detail screen, go back, switch tabs and open a sheet, in dark mode first: the ground behind the moving screen is the
+app's own (dark in dark mode, the light grey in light mode), never white. A cold start still shows the splash first.
+
 ## Recovery, Strain and Activities
 
 Routes: `/recovery`, `/strain`, `/activities`, `/activity/<id>`. Open them from Home's rings and activity rows, or in Expo
