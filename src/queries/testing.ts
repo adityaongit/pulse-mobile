@@ -19,6 +19,15 @@ export function seededCtx(): Promise<QueryCtx> {
     const { ctx } = loadF6();
     const { store } = testDb();
     await loadSeed(store, f2);
+    // loadSeed fills what the pipeline reads; the screens also read these (F6 was recorded with them in place).
+    const t = f2.tables;
+    await store.daily.upsertDailyValues(t.daily_values.map((r) => ({ day: r.day as string, key: r.key as string, value: r.value as number })));
+    await store.daily.upsertHealthRecords(t.health_records.map((r) => ({ id: r.id as string, kind: r.kind as "ecg" | "irn", ts: r.ts as number, day: r.day as string, data: r.data })));
+    // All nine are visible defaults (position 0); seq order is the order they were created in.
+    const tags = [...t.journal_tags].sort((a, b) => (a.seq as number) - (b.seq as number));
+    await store.journal.ensureDefaultTags(tags.map((r) => ({ tag: r.tag as string, label: r.label as string })));
+    for (const r of t.sync_state)
+      await store.settings.setSyncState(r.type as string, { syncedThrough: r.synced_through as number | null, backfillDaysDone: r.backfill_days_done as number | null, backfillDaysTotal: r.backfill_days_total as number | null, lastAttemptAt: r.last_attempt_at as number | null, lastSuccessAt: r.last_success_at as number | null, lastError: r.last_error as string | null });
     const { birthDate, sex, maxHr, maxHrSource, heightCm, timeZone } = ctx.profile;
     await saveProfile(store, { birthDate, sex, maxHr: maxHrSource === "set" ? maxHr : null, heightCm, timeZone });
     await recompute(store, { timeZone, profile: ctx.profile });
