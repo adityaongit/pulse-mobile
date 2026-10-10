@@ -186,10 +186,14 @@ A route's params are strings, so content made of components cannot ride in one. 
 
 `expo-blur`'s `BlurView` blurs what is behind it on iOS by itself. On Android it can only blur what sits inside a `BlurTargetView`, so `ScreenScroll` wraps the scrolling page in one and shares its ref through `BlurTargetContext`. Only the round check-in button is glass; the web's headers do not blur (the spec's header frame: "a fade, not frosted text"), so the headers keep their ground fill.
 
-## Haptics: few, and per platform
+## Haptics: felt everywhere it means something
 
-`src/ui/haptics.ts` maps four moments (`tap`, `select`, `toggle`, `success`) to iOS feedback generators and to Android's own haptic constants, which `expo-haptics` recommends over raw vibration. Used on the check-in button, segmented controls, radio rows, section toggles and a finished save; not on tab presses (the system tab bar has none) and not on every tap.
-
+`src/ui/haptics.ts` speaks each platform's own vocabulary (iOS feedback generators, Android's system haptic constants):
+a light tap for an action (primary and sheet buttons, the check-in button, pull to refresh), a selection tick for a
+choice or a step (tabs, segmented controls, days, and each data point while you scrub a chart, at most one per 35 ms so a
+dense day of minutes feels like a fine texture), a toggle for open and close, and success, warning and error for a save,
+a destructive confirm and a failure. Never on a tap that only navigates. Haptics need no permission and cost nothing when
+the phone has no motor.
 ## The check-in button and the bar's blur
 
 On the tab roots the round action sits in the tab bar, beside the bar; on detail screens `ScreenScroll` floats it alone where the bar would be (`useTabBarBottom`). Both are glass: iOS blurs whatever is behind on its own; Android blurs only the inside of a `BlurTargetView`, so each `ScreenScroll` wraps its page in one and, when it comes into view, hands it to the tab bar (`src/ui/shells/blurTarget.ts`).

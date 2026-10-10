@@ -5,6 +5,7 @@ import { useFocusEffect, usePathname } from "expo-router";
 import Animated, { useAnimatedScrollHandler, useDerivedValue, useSharedValue, withTiming } from "react-native-reanimated";
 import { Ground } from "../Ground";
 import { BlurTargetContext } from "../Glass";
+import { haptic } from "../haptics";
 import { useTheme } from "../theme";
 import { FloatingCheckIn, showsCheckIn } from "./CheckInAction";
 import { setFocusedBlurTarget } from "./blurTarget";
@@ -52,6 +53,7 @@ export function ScreenScroll({ header, top, onScroll, bottomPad, healthspan, onR
   );
   const [refreshing, setRefreshing] = useState(false);
   const refresh = async () => {
+    haptic.tap();
     setRefreshing(true);
     try {
       await onRefresh?.();

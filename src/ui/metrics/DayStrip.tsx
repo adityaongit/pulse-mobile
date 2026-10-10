@@ -1,3 +1,4 @@
+import { haptic } from "../haptics";
 import { useEffect, useRef, useState } from "react";
 import { Pressable, ScrollView, View, type LayoutRectangle } from "react-native";
 import { Check } from "lucide-react-native";
@@ -64,7 +65,13 @@ function Strip({ indicator, days, variant = "tile", value: controlled, onSelect 
             accessibilityLabel={label}
             accessibilityState={{ selected: on }}
             onLayout={(e) => boxes.current.set(day.date, e.nativeEvent.layout)}
-            onPress={() => (onSelect ? onSelect(day.date) : setUrlDay(day.date))}
+            onPress={() => {
+              // The route's day changes through useSelectedDay, which ticks; an owner's onSelect ticks here.
+              if (onSelect) {
+                haptic.select();
+                onSelect(day.date);
+              } else setUrlDay(day.date);
+            }}
             // Sized by its contents with 8 px above and below, so the badge sits fully inside the lit tile (SYM1).
             className={cn("items-center justify-center active:scale-[0.96]", pill ? "w-12 gap-1.5 rounded-full py-3" : "w-11 gap-1 rounded-xl py-2", pill ? "bg-foreground/[0.07]" : on && "bg-foreground/10")}
             style={pill && on ? { boxShadow: `inset 0 0 0 2px ${c.foreground}` } : undefined}

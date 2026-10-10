@@ -16,7 +16,7 @@ import { useTheme } from "../theme";
 import { EmptyState } from "../shells/EmptyState";
 import { MetricState } from "../shells/MetricState";
 import { useOptionalShellCalendar } from "../shells/ShellStatus";
-import { ChartFigure, ChartLabel, DashedLine, GlowDot, GridLines, labelGutter, Pill, PlotCanvas, ScrubLayer, wholeTick } from "./ChartFrame";
+import { ChartFigure, ChartLabel, DashedLine, GlowDot, GridLines, labelGutter, Pill, PlotCanvas, ScrubLayer, ScrubTick, wholeTick } from "./ChartFrame";
 import { areaPath, bandCenters, evenTicks, linePath, linearScale, nearestIndex } from "./geometry";
 import { bandPaint, FadeFill, StrokePath } from "./paint";
 
@@ -322,6 +322,7 @@ function Trend({ points, p }: { points: TrendPoint[]; p: TrendChartProps }) {
                 {range === "w" && p.line && rows.map((r, i) => (r.value === null ? null : <ChartLabel key={r.date} x={xs[i]} y={y(r.value) - 18} className="font-semibold text-foreground-secondary">{`${r.text}${p.unit === "%" ? "%" : ""}`}</ChartLabel>))}
                 {range === "w" && p.stack && rows.map((r, i) => (r.value === null ? null : <ChartLabel key={r.date} x={xs[i]} y={y(r.value) - 11} className="text-[11px] text-foreground">{formatValue(p.format, r.value)}</ChartLabel>))}
                 <ScrubLayer width={width} height={height} onScrub={setX} />
+                <ScrubTick index={ai} />
               </>
             );
           }}

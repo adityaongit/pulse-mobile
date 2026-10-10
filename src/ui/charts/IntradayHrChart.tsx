@@ -11,7 +11,7 @@ import { useOptionalShellCalendar } from "../shells/ShellStatus";
 import { Skeleton } from "../Skeleton";
 import { Text } from "../Text";
 import { useTheme } from "../theme";
-import { ChartFigure, ChartLabel, DashedLine, GlowDot, GridLines, PlotCanvas, ScrubLayer, TooltipCard, TooltipLine } from "./ChartFrame";
+import { ChartFigure, ChartLabel, DashedLine, GlowDot, GridLines, PlotCanvas, ScrubLayer, ScrubTick, TooltipCard, TooltipLine } from "./ChartFrame";
 import { areaPath, linePath, linearScale, nearestIndex, thin, ticksIn } from "./geometry";
 import { bandPaint, FadeFill, StrokePath } from "./paint";
 import { SpanFills, SpanHeads, zoneBands, zoneStrips, ZoneStripBars, ZoneStripLabels, type ChartSpan, type HrZone } from "./spans";
@@ -113,6 +113,7 @@ function Chart({ hr, variant }: { hr: HrSeries; variant: "day" | "activity" }) {
               <ChartLabel key={t} x={tx(t)} y={y1 + 16} className={workout ? "text-xs font-bold text-foreground" : undefined}>{clock(t, tz)}</ChartLabel>
             ))}
             <ScrubLayer width={width} height={h} onScrub={setX} />
+            <ScrubTick index={ai} />
             {a && a.bpm !== null && (
               <TooltipCard x={tx(a.t)} width={width} title={clock(a.t, tz)}>
                 <TooltipLine color={css(bandColor(a.bpm, bands))}>{`${a.bpm} bpm`}</TooltipLine>

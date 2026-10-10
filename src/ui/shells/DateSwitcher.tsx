@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react-native";
 import { pillLabel, rangeLabel } from "@/lib/format";
 import { parseDay, stepDay, weekOf } from "@/lib/url";
 import { cn } from "../cn";
+import { haptic } from "../haptics";
 import { Icon } from "../Icon";
 import { calendarContext, type CalendarContext } from "@/lib/calendar";
 import { Text } from "../Text";
@@ -35,7 +36,10 @@ export function useSelectedDay() {
   const { d: raw } = useLocalSearchParams<{ d?: string }>();
   const { d } = parseDay(raw, today);
   // replace, not push: Back leaves the screen instead of stepping through days (spec §8). Today is written as "", which parseDay reads as today.
-  const setDay = (day: string) => router.setParams({ d: day === today ? "" : day });
+  const setDay = (day: string) => {
+    haptic.select();
+    router.setParams({ d: day === today ? "" : day });
+  };
   return [d, setDay] as const;
 }
 

@@ -12,7 +12,7 @@ import { MetricState } from "../shells/MetricState";
 import { useOptionalShellCalendar } from "../shells/ShellStatus";
 import { Skeleton } from "../Skeleton";
 import { useTheme } from "../theme";
-import { ChartFigure, ChartLabel, DashedLine, PlotCanvas, ScrubLayer, TooltipCard, TooltipLine } from "./ChartFrame";
+import { ChartFigure, ChartLabel, DashedLine, PlotCanvas, ScrubLayer, ScrubTick, TooltipCard, TooltipLine } from "./ChartFrame";
 import { linePath, linearScale } from "./geometry";
 
 export type HypnogramNight = { bed: number; wake: number; segments: StageSegment[] };
@@ -85,6 +85,7 @@ export function HypnogramChart({ night }: { night: HypnogramNight }) {
             ))}
             <ChartLabel x={x1} y={y1 + 16} anchor="end" className="font-bold text-foreground">{clock(night.wake, tz)}</ChartLabel>
             <ScrubLayer width={width} height={height} onScrub={setX} />
+            <ScrubTick index={seg ? seg.start : -1} />
             {seg && x !== null && (
               <TooltipCard x={x} width={width} title={`${clock(seg.start, tz)} to ${clock(seg.end, tz)}`}>
                 <TooltipLine color={css(DATA_COLORS[`stage-${seg.stage}`].css)}>{`${STAGE_NAME[seg.stage]}, ${Math.round((seg.end - seg.start) / 60000)} min`}</TooltipLine>

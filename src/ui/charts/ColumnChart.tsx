@@ -6,7 +6,7 @@ import { alpha } from "../color";
 import { Skeleton } from "../Skeleton";
 import { useTheme } from "../theme";
 import { evenTicks, bandCenters, linearScale, nearestIndex } from "./geometry";
-import { ChartFigure, ChartLabel, DashedLine, GridLines, labelGutter, Pill, PlotCanvas, ScrubLayer, TooltipCard, TooltipLine } from "./ChartFrame";
+import { ChartFigure, ChartLabel, DashedLine, GridLines, labelGutter, Pill, PlotCanvas, ScrubLayer, ScrubTick, TooltipCard, TooltipLine } from "./ChartFrame";
 
 export type Column = {
   /** Axis label ("06:00", "Mon", "Sep 21"). */
@@ -79,6 +79,7 @@ export function ColumnChart({ summary, data, format, unit, tickEvery = 1, refere
             {data.map((d, i) => (i % tickEvery === 0 ? <ChartLabel key={i} x={centers[i]} y={y1 + 8 + 8} anchor="middle" w={Math.max(36, step * tickEvery)}>{d.label}</ChartLabel> : null))}
             {reference && <Pill x={x1 + 4} y={y(reference.y)} text={reference.label} />}
             <ScrubLayer width={width} height={height} onScrub={setX} />
+            <ScrubTick index={active} />
             {a && (
               <TooltipCard x={centers[active]} width={width} title={a.title ?? a.label}>
                 <TooltipLine color={!any || a.highlight ? ON : c["dial-track"]}>{a.value === null ? "No data" : `${formatValue(format, a.value)}${unitText}`}</TooltipLine>

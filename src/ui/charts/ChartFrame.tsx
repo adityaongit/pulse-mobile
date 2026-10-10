@@ -1,3 +1,4 @@
+import { haptic } from "../haptics";
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { type LayoutChangeEvent, View } from "react-native";
 import { Canvas, Circle, DashPathEffect, Path } from "@shopify/react-native-skia";
@@ -184,6 +185,24 @@ export function ScrubLayer({ width, height, onScrub, children }: Size & { onScru
       <View style={{ position: "absolute", left: 0, top: 0, width, height }}>{children}</View>
     </GestureDetector>
   );
+}
+
+let lastTick = 0;
+
+/**
+ * A selection tick each time the scrubbed point moves to another data point, as a picker wheel ticks per item. Render it
+ * beside the cursor with the active index (-1: none). Ticks are at least 35 ms apart, so a dense series (a day of minutes)
+ * reads as a fine texture rather than a buzz.
+ */
+export function ScrubTick({ index }: { index: number }) {
+  useEffect(() => {
+    if (index < 0) return;
+    const now = Date.now();
+    if (now - lastTick < 35) return;
+    lastTick = now;
+    haptic.select();
+  }, [index]);
+  return null;
 }
 
 /** The scrubbed point's readout: a popover card (rounded-xl, ring) near the cursor, kept inside the chart. */

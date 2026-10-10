@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Pressable } from "react-native";
 import { cn } from "./cn";
+import { haptic } from "./haptics";
 import { Text } from "./Text";
 
 // shadcn's Button in Pulse's touch sizes (web: components/ui/button.tsx). Only the variants the kit uses.
@@ -29,9 +30,11 @@ export type ButtonProps = {
   children: ReactNode;
   className?: string;
   accessibilityLabel?: string;
+  /** The tap haptic. On by default for actions (the primary variant and sheet buttons); pass false for a button that only navigates. */
+  haptic?: boolean;
 };
 
-export function Button({ variant = "default", size = "touch", onPress, disabled, children, className, accessibilityLabel }: ButtonProps) {
+export function Button({ variant = "default", size = "touch", onPress, disabled, children, className, accessibilityLabel, haptic: feel = variant === "default" || size === "sheet" }: ButtonProps) {
   const v = VARIANT[variant];
   const s = SIZE[size];
   return (
@@ -40,7 +43,10 @@ export function Button({ variant = "default", size = "touch", onPress, disabled,
       accessibilityLabel={accessibilityLabel}
       accessibilityState={{ disabled: !!disabled }}
       disabled={disabled}
-      onPress={onPress}
+      onPress={() => {
+        if (feel) haptic.tap();
+        onPress?.();
+      }}
       className={cn("flex-row items-center justify-center active:scale-[0.96]", s.box, v.box, disabled && "opacity-50", className)}
     >
       {typeof children === "string" ? <Text className={cn(s.text, v.text)}>{children}</Text> : children}

@@ -12,7 +12,7 @@ import { MetricState } from "../shells/MetricState";
 import { useOptionalShellCalendar } from "../shells/ShellStatus";
 import { Skeleton } from "../Skeleton";
 import { useTheme } from "../theme";
-import { ChartFigure, ChartLabel, DashedLine, GlowDot, GridLines, Pill, PlotCanvas, ScrubLayer, TooltipCard, TooltipLine } from "./ChartFrame";
+import { ChartFigure, ChartLabel, DashedLine, GlowDot, GridLines, Pill, PlotCanvas, ScrubLayer, ScrubTick, TooltipCard, TooltipLine } from "./ChartFrame";
 import { areaPath, linePath, linearScale, nearestIndex, thin } from "./geometry";
 import { bandPaint, FadeFill, StrokePath } from "./paint";
 import { SpanFills, SpanHeads } from "./spans";
@@ -95,6 +95,7 @@ function Chart({ e }: { e: EnergySeries }) {
               return v === null ? null : <Pill key={d.t} x={tx(d.t)} y={y(v) - 12} anchor="middle" text={`${formatValue("int", -d.amount)} ${d.label}`} fill={mix(c.warning, c.card, 0.16)} color={c.warning} />;
             })}
             <ScrubLayer width={width} height={height} onScrub={setX} />
+            <ScrubTick index={ai} />
             {a && a.value !== null && (
               <TooltipCard x={tx(a.t)} width={width} title={clock(a.t, tz)}>
                 <TooltipLine color={css(DATA_COLORS[recoveryColor(a.value)].css)}>{`${formatValue("int", a.value)}%`}</TooltipLine>

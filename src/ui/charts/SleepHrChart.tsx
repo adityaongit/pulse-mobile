@@ -10,7 +10,7 @@ import { MetricState } from "../shells/MetricState";
 import { useOptionalShellCalendar } from "../shells/ShellStatus";
 import { Skeleton } from "../Skeleton";
 import { useTheme } from "../theme";
-import { ChartFigure, ChartLabel, DashedLine, GlowDot, GridLines, Pill, PlotCanvas, ScrubLayer, TooltipCard, TooltipLine } from "./ChartFrame";
+import { ChartFigure, ChartLabel, DashedLine, GlowDot, GridLines, Pill, PlotCanvas, ScrubLayer, ScrubTick, TooltipCard, TooltipLine } from "./ChartFrame";
 import { areaPath, linePath, linearScale, nearestIndex } from "./geometry";
 import { FadeFill, StrokePath } from "./paint";
 
@@ -100,6 +100,7 @@ function Chart({ hr, highlight }: { hr: SleepHr; highlight?: { start: number; en
             ))}
             {low && <Pill x={tx(low.t)} y={y(low.v) + 14} anchor="middle" text={`Low ${low.v}`} />}
             <ScrubLayer width={width} height={height} onScrub={setX} />
+            <ScrubTick index={ai} />
             {a && a.v !== null && (
               <TooltipCard x={tx(a.t)} width={width} title={clock(a.t, tz)}>
                 <TooltipLine color={c.foreground}>{`${a.v} bpm`}</TooltipLine>

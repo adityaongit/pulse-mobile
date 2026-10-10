@@ -12,7 +12,7 @@ import { useOptionalShellCalendar } from "../shells/ShellStatus";
 import { Skeleton } from "../Skeleton";
 import { Text } from "../Text";
 import { useTheme } from "../theme";
-import { ChartFigure, ChartLabel, DashedLine, GlowDot, GridLines, PlotCanvas, ScrubLayer, TooltipCard, TooltipLine } from "./ChartFrame";
+import { ChartFigure, ChartLabel, DashedLine, GlowDot, GridLines, PlotCanvas, ScrubLayer, ScrubTick, TooltipCard, TooltipLine } from "./ChartFrame";
 import { areaPath, linePath, linearScale, nearestIndex, thin } from "./geometry";
 import { bandPaint, FadeFill, StrokePath } from "./paint";
 import { SpanFills, SpanHeads, type ChartSpan } from "./spans";
@@ -94,6 +94,7 @@ function Chart({ s, variant }: { s: StressSeries; variant: "full" | "spark" }) {
               );
             })}
             {full && <ScrubLayer width={width} height={height} onScrub={setX} />}
+            <ScrubTick index={ai} />
             {a && a.value !== null && (
               <TooltipCard x={tx(a.t)} width={width} title={clock(a.t, tz)}>
                 <TooltipLine color={css(DATA_COLORS[STRESS_COLOR[stressLevel(a.value)]].css)}>{`${formatValue("decimal1", a.value)} ${STRESS_WORD[stressLevel(a.value)]}`}</TooltipLine>

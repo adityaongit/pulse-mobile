@@ -11,7 +11,12 @@ Every screen stream follows these. A stream brief adds its own scope on top.
   visuals: no Material components, no system headers or tab bars, no new visual ideas. If React Native cannot reproduce
   something the web does, say so in the report with the exact difference; do not invent a substitute.
 - Native only in behaviour: the native stack's push and swipe-back, sheets as routes (`src/ui/shells/sheets.ts`), the
-  centred info card (`InfoButton`), haptics only through `src/ui/haptics.ts` and its rules (not on plain taps).
+  centred info card (`InfoButton`).
+- Haptics, always through `src/ui/haptics.ts` (its header lists where each kind fires). The kit already fires them for
+  `Button` (primary and sheet buttons), tabs, segmented controls, day changes, chart scrubbing and pull to refresh. A
+  screen adds: `haptic.tap()` on a custom action control, `haptic.success()` after a save (DoneScreen does it),
+  `haptic.error()` when a save fails, `haptic.warning()` when a destructive confirm appears, `haptic.toggle(on)` on a
+  switch. Never on a row or link that only navigates.
 - Every metric renders its five states through `MetricState` with the reason codes of `src/lib/reasons.ts`.
 - The web's `loading.tsx` skeleton for a route is what the screen shows while its data loads.
 
