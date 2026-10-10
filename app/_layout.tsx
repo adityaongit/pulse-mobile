@@ -17,6 +17,7 @@ import { Figtree_700Bold } from "@expo-google-fonts/figtree/700Bold";
 
 import { db } from "@/data/db";
 import migrations from "@/data/migrations/migrations";
+import { ShellData } from "@/screens/ShellData";
 import { useProfileGate } from "@/screens/onboarding/gate";
 import { AppProviders } from "@/ui/providers";
 import { sheetOptions, type SheetSize } from "@/ui/shells/sheets";
@@ -50,7 +51,10 @@ export default function RootLayout() {
   if (!success || !fontsDone || hasProfile === null) return null;
   return (
     <AppProviders>
-      <Screens hasProfile={hasProfile} />
+      {/* The calendar's today, first day, zone and month loader, read once for every date switcher. */}
+      <ShellData>
+        <Screens hasProfile={hasProfile} />
+      </ShellData>
     </AppProviders>
   );
 }
