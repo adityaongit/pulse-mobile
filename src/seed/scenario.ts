@@ -1,7 +1,7 @@
 // The demo person's story. Day indices are 0-based from the first seeded day (the anchor), so the
 // first "today" is index SEED_DAYS - 1. Days past it are ordinary days on the same weekly rhythm.
 // generate.ts turns this into rows; nothing here draws randomness.
-import { DEFAULT_JOURNAL_TAGS } from "../actions/behaviours";
+import { DEFAULT_JOURNAL_TAGS } from "../journalTags";
 
 export const SEED_DAYS = 180;
 

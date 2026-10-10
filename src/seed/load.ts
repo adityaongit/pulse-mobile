@@ -2,7 +2,7 @@
 // scripts/seed-demo-user.mts. Saves the demo profile, makes the default journal tags, generates SEED_DAYS days ending at
 // `now` (today a partial day), writes them and runs the pipeline. A phone has one JavaScript thread, so every step is cut
 // into chunks with a turn of the event loop between them: the progress bar and animations keep running.
-import { DEFAULT_JOURNAL_TAGS } from "../actions/behaviours";
+import { DEFAULT_JOURNAL_TAGS } from "../journalTags";
 import type { Repos, Store } from "../data/repos";
 import { recompute } from "../pipeline";
 import { getProfile, saveProfile } from "../profile";
