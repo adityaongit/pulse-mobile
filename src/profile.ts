@@ -27,6 +27,7 @@ export const ProfileInput = z.object({
   heightCm: z.coerce.number().min(100, "Between 100 and 250 cm").max(250, "Between 100 and 250 cm").nullable(),
   timeZone: z.string().refine(isTimeZone, "Choose a time zone"),
 });
+// eslint-disable-next-line @typescript-eslint/no-redeclare -- pulse's pattern: the schema and its type share a name
 export type ProfileInput = z.infer<typeof ProfileInput>;
 
 /**
