@@ -209,3 +209,15 @@ Sheets wrap their body in React Native's `KeyboardAvoidingView` (`padding` on iO
 ## Headers stay custom, on the native stack
 
 The headers are the shells' own views (centred title, date switcher, collapsing hero) laid over a `Stack` whose native header is off. The native stack still gives the iOS edge swipe-back and the Android back gesture on every pushed route, because those belong to the screen, not the header.
+
+## The profile gate: `Stack.Protected`
+
+A person without a profile must land on onboarding. `app/_layout.tsx` reads the profile once the migrations have run (`src/screens/onboarding/gate.ts`) and wraps the tabs in `<Stack.Protected guard={hasProfile}>` and onboarding in the opposite guard. A protected screen is not in the navigator at all, so Home never mounts without a profile, and when onboarding saves, the guards flip and the navigator moves to the first screen that is now available (the tabs). The same read applies the stored theme before the first frame.
+
+## Delete everything: close, delete, `reloadAppAsync`
+
+The database module opens its file when it is imported, so the only way to a fresh empty database is a restart. `deleteEverything` closes the handle, calls `deleteDatabaseAsync("pulse.db")` and then `reloadAppAsync()` from `expo` (it reloads the same bundle in a release build too, no `expo-updates` needed). The migrations run again on the new file and, with no profile, the gate sends the person to onboarding.
+
+## Share sheet exports
+
+`expo-file-system` writes the CSV or JSON as a `File` in `Paths.cache`, and `expo-sharing`'s `shareAsync(file.uri)` hands it to the system share sheet (Save to Files, AirDrop, Drive). Both modules are imported inside the action, so the file builders stay testable in Node.

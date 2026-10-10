@@ -17,6 +17,7 @@ import { Figtree_700Bold } from "@expo-google-fonts/figtree/700Bold";
 
 import { db } from "@/data/db";
 import migrations from "@/data/migrations/migrations";
+import { useProfileGate } from "@/screens/onboarding/gate";
 import { AppProviders } from "@/ui/providers";
 import { sheetOptions, type SheetSize } from "@/ui/shells/sheets";
 import { useTheme } from "@/ui/theme";
@@ -30,9 +31,11 @@ export default function RootLayout() {
   const [fonts, fontError] = useFonts({ Figtree_400Regular, Figtree_500Medium, Figtree_600SemiBold, Figtree_700Bold, Barlow_500Medium, Barlow_600SemiBold, Barlow_700Bold });
   // Migrations run at app start, as they run at boot on the web app.
   const { success, error } = useMigrations(db, migrations);
+  // Whether the person has a profile yet (pulse's (app) layout sends a person without one to onboarding).
+  const hasProfile = useProfileGate(success);
   // A font that fails to load must not strand the app on the splash screen: the text falls back to the system font.
   const fontsDone = fonts || !!fontError;
-  const ready = (success || !!error) && fontsDone;
+  const ready = (success || !!error) && fontsDone && (!success || hasProfile !== null);
   useEffect(() => {
     if (ready) SplashScreen.hideAsync().catch(() => {});
   }, [ready]);
@@ -44,15 +47,15 @@ export default function RootLayout() {
       </View>
     );
   }
-  if (!success || !fontsDone) return null;
+  if (!success || !fontsDone || hasProfile === null) return null;
   return (
     <AppProviders>
-      <Screens />
+      <Screens hasProfile={hasProfile} />
     </AppProviders>
   );
 }
 
-function Screens() {
+function Screens({ hasProfile }: { hasProfile: boolean }) {
   const { c, scheme } = useTheme();
   return (
     <>
@@ -60,8 +63,17 @@ function Screens() {
       {/* The native stack: detail screens push with the platform's transition, iOS swipe-back from the left edge and the
           Android back gesture work on every route that is not a root. The headers are the shells' own, so the native one is off. */}
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: c.background } }}>
+        {/* First run: without a profile the person lands on onboarding and the tabs are out of reach; saving the profile
+            flips the guards, and the navigator moves to the tabs (Stack.Protected). Declared first so each is the first screen. */}
+        <Stack.Protected guard={!hasProfile}>
+          <Stack.Screen name="onboarding" options={{ gestureEnabled: false }} />
+        </Stack.Protected>
+        <Stack.Protected guard={hasProfile}>
+          <Stack.Screen name="(tabs)" />
+        </Stack.Protected>
         {/* Sheets are routes presented by the platform (src/ui/shells/sheets.ts says how to add one). */}
         <Stack.Screen name="(sheets)/checkin" options={sheetOptions("tall", c)} />
+        <Stack.Screen name="(sheets)/profile" options={sheetOptions("tall", c)} />
         <Stack.Screen name="dev/sheet" options={({ route }) => sheetOptions((route.params as { size?: SheetSize } | undefined)?.size ?? "default", c)} />
       </Stack>
     </>
