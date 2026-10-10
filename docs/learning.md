@@ -209,3 +209,7 @@ Sheets wrap their body in React Native's `KeyboardAvoidingView` (`padding` on iO
 ## Headers stay custom, on the native stack
 
 The headers are the shells' own views (centred title, date switcher, collapsing hero) laid over a `Stack` whose native header is off. The native stack still gives the iOS edge swipe-back and the Android back gesture on every pushed route, because those belong to the screen, not the header.
+
+## A route's params instead of the URL for ranges and periods
+
+The web keeps the chart range, the Trend View period and the report period in the URL (`?r=`, `?p=`) and its links replace the entry. Here they are route params written with `router.setParams`, which updates the screen in place without growing the back stack, and `useLocalSearchParams` reads them. A sheet that must hand a choice back (the Trends metric picker) uses `router.dismissTo({ pathname, params })`, which pops the sheet and sets the params of the screen below.
