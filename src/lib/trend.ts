@@ -1,5 +1,5 @@
-import { formatDay } from "@/lib/format";
-import { addDays } from "@/lib/url";
+import { formatDay } from "./format";
+import { addDays } from "./url";
 
 // The Trend View's arithmetic (spec §11 R29): period windows, the relative change, 6M month segments, weekly
 // totals, the breakdown counts and the verdict sentence. Pure, so the query and the tests share it.

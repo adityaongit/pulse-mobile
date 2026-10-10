@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { addDays } from "@/lib/url";
+import { addDays } from "./url";
 import { bandCounts, monthSegments, parseOffset, periodLabel, periodWindow, relativeChange, verdict, weeklyTotals, windowDays } from "./trend";
 
 const days = (from: string, values: (number | null)[]) => values.map((value, i) => ({ day: addDays(from, i), value }));

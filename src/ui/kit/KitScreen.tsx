@@ -1,4 +1,4 @@
-import { Children, Fragment, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import { router } from "expo-router";
 import { useColorScheme } from "nativewind";
@@ -12,6 +12,7 @@ import { Segmented } from "../Segmented";
 import { type CalendarDay, ShellCalendarProvider } from "../shells/ShellStatus";
 import { Text } from "../Text";
 import * as fx from "../fixtures/kit";
+import { Divided } from "../Divided";
 
 // The frame of the kit screens (app/dev/kit*): the web kit page's Entry and Frame, as React Native. Not part of the
 // app: only the dev kit uses it.
@@ -145,20 +146,7 @@ export const ROW = "flex-row flex-wrap items-start justify-center gap-2";
 /** A list of rows in a card (KeyStatRow rows). */
 export const ROWS = "rounded-xl bg-card px-4 py-1";
 
-/** The web's `divide-y divide-border`: a hairline between neighbouring children. */
-export function Divided({ children }: { children: ReactNode }) {
-  const items = Children.toArray(children);
-  return (
-    <>
-      {items.map((child, i) => (
-        <Fragment key={i}>
-          {i > 0 && <View className="h-px bg-border" />}
-          {child}
-        </Fragment>
-      ))}
-    </>
-  );
-}
+export { Divided };
 
 /** The calendar fixtures alone, for the whole-screen demos (home, detail), which bring their own scroll view and header. */
 export function KitCalendar({ children }: { children: ReactNode }) {

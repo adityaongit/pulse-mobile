@@ -1,5 +1,5 @@
 import { deltaTone, type GoodDirection, type Tone } from "@/lib/bands";
-import { FEATURES } from "@/screens/trends/lib/features";
+import { FEATURES } from "@/lib/features";
 import { formatDay, formatValue, type FormatKey } from "@/lib/format";
 import {
   bandCounts,
@@ -15,7 +15,7 @@ import {
   type TrendAgg,
   type TrendViewBar,
   type TrendViewRange,
-} from "@/screens/trends/lib/trend";
+} from "@/lib/trend";
 import { addDays, localMinutes } from "../time";
 import { activityKind, exercisesBetween, finite, firstDay, loadDays, meanSd, todayOf, toStrain, type DayRow, type ExerciseRow, type QueryCtx } from "./common";
 

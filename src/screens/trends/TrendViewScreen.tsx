@@ -22,7 +22,7 @@ import { SectionShell } from "@/ui/shells/SectionShell";
 import { useSelectedDay } from "@/ui/shells/DateSwitcher";
 import { Text } from "@/ui/Text";
 import { useTheme } from "@/ui/theme";
-import { parseOffset, parseTrendRange, TREND_VIEW_RANGES, type TrendViewRange } from "./lib/trend";
+import { parseOffset, parseTrendRange, TREND_VIEW_RANGES, type TrendViewRange } from "@/lib/trend";
 import { LoadError } from "./parts";
 import { TrendMetricMenu } from "./TrendMetricMenu";
 import { TrendViewChart } from "./TrendViewChart";

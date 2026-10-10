@@ -3,7 +3,7 @@
 // not per frame, and so Node can test them. Nothing here reads the theme or the width.
 import type { GoodDirection } from "@/lib/bands";
 import type { FormatKey } from "@/lib/format";
-import type { MonthSegment, TrendViewBar, TrendViewRange } from "./lib/trend";
+import type { MonthSegment, TrendViewBar, TrendViewRange } from "@/lib/trend";
 
 export type ChartKind = "bars" | "line" | "stack" | "range" | "pair";
 export type ColorBy = "band" | "strain" | "sleep" | "single" | "stress";

@@ -1,5 +1,5 @@
 // Shared by the Trends, Metric detail and Reports screens (web: trends/parts.tsx and the loading shapes).
-import { Children, Fragment, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import { Pressable, View } from "react-native";
 import { router } from "expo-router";
 import { CircleAlert } from "lucide-react-native";
@@ -10,6 +10,7 @@ import { TrendChart, type TrendChartProps } from "@/ui/charts/TrendChart";
 import { Segmented } from "@/ui/Segmented";
 import { DetailShell } from "@/ui/shells/DetailShell";
 import { EmptyState } from "@/ui/shells/EmptyState";
+import { Divided } from "@/ui/Divided";
 
 export const PERIOD: Record<TrendRange, { label: string; prior: string }> = {
   w: { label: "Last 7 days", prior: "the 7 days before" },
@@ -60,16 +61,4 @@ export function LoadError({ title, reload }: { title: string; reload: () => void
   return <DetailShell title={title} primary={<View accessibilityRole="alert" className="pt-16"><EmptyState icon={CircleAlert} body="Couldn’t load this screen." action={{ label: "Try again", onClick: reload }} /></View>} />;
 }
 
-/** The web's `divide-y divide-border`: a hairline between neighbouring children (the kit's copy lives in its demo screen). */
-export function Divided({ children }: { children: ReactNode }) {
-  return (
-    <>
-      {Children.toArray(children).map((child, i) => (
-        <Fragment key={i}>
-          {i > 0 && <View className="h-px bg-border" />}
-          {child}
-        </Fragment>
-      ))}
-    </>
-  );
-}
+export { Divided };

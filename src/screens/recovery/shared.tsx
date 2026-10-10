@@ -1,5 +1,5 @@
 // Small pieces the Recovery, Strain and Activity screens share (src/screens/{recovery,strain,activity}).
-import { Children, Fragment, type ReactNode } from "react"
+import { type ReactNode } from "react"
 import { View } from "react-native"
 import { CircleAlert } from "lucide-react-native"
 import { Card } from "@/ui/Card"
@@ -10,20 +10,9 @@ import { Text } from "@/ui/Text"
 import { DetailShell } from "@/ui/shells/DetailShell"
 import { EmptyState } from "@/ui/shells/EmptyState"
 import { LEGEND } from "@/screens/_lib/view"
+import { Divided } from "@/ui/Divided"
 
-/** The web's `divide-y divide-border`: a hairline between neighbouring children. */
-export function Divided({ children }: { children: ReactNode }) {
-  return (
-    <>
-      {Children.toArray(children).map((child, i) => (
-        <Fragment key={i}>
-          {i > 0 && <View className="h-px bg-border" />}
-          {child}
-        </Fragment>
-      ))}
-    </>
-  )
-}
+export { Divided }
 
 /** pulse's (app)/error.tsx: every screen's error view, with a retry that runs the query again. */
 export function ScreenError({ retry }: { retry: () => void }) {
