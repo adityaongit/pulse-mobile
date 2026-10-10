@@ -1,8 +1,9 @@
 // A birth date picker (U19). Ported from pulse src/components/profile/BirthDatePicker.tsx: the field opens three wheels
 // (month, day, year) inline under it, so nothing floats over the form and it works the same inside a sheet. Each wheel is
-// a snapping list whose centred row is the value; scrolling or tapping a row picks.
+// a snapping scroll view whose centred row is the value; scrolling or tapping a row picks. A plain ScrollView, not a
+// FlatList: a wheel has at most about 110 rows, and a virtualized list may not nest inside the form's scroll view.
 import { useEffect, useMemo, useRef, useState } from "react";
-import { FlatList, Pressable, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { CalendarDays } from "lucide-react-native";
 import { DAY, formatDay } from "@/lib/format";
@@ -27,18 +28,18 @@ const daysIn = (year: number, month: number) => new Date(year, month + 1, 0).get
 
 /** One wheel column: the row at `index` sits in the middle; a scroll that comes to rest on another row, or a tap on one, picks it. */
 function Wheel({ label, items, index, onIndex }: { label: string; items: string[]; index: number; onIndex: (i: number) => void }) {
-  const ref = useRef<FlatList<string>>(null);
+  const ref = useRef<ScrollView>(null);
   const offset = useRef(index * ROW);
   // Follow outside changes (open, a shorter month) without fighting the user's own scroll: only when the wheel is not already there.
   useEffect(() => {
     if (Math.round(offset.current / ROW) !== index) {
       offset.current = index * ROW;
-      ref.current?.scrollToOffset({ offset: index * ROW, animated: false });
+      ref.current?.scrollTo({ y: index * ROW, animated: false });
     }
   }, [index, items.length]);
   const go = (i: number) => {
     const next = Math.max(0, Math.min(items.length - 1, i));
-    ref.current?.scrollToOffset({ offset: next * ROW, animated: true });
+    ref.current?.scrollTo({ y: next * ROW, animated: true });
     if (next !== index) {
       haptic.select();
       onIndex(next);
@@ -61,12 +62,9 @@ function Wheel({ label, items, index, onIndex }: { label: string; items: string[
       onAccessibilityAction={(e) => go(index + (e.nativeEvent.actionName === "increment" ? 1 : -1))}
       style={{ height: HEIGHT }}
     >
-      <FlatList
+      <ScrollView
         ref={ref}
-        data={items}
-        keyExtractor={(item) => item}
-        getItemLayout={(_, i) => ({ length: ROW, offset: ROW * i, index: i })}
-        initialScrollIndex={index}
+        contentOffset={{ x: 0, y: index * ROW }}
         snapToInterval={ROW}
         snapToAlignment="start"
         decelerationRate="fast"
@@ -80,12 +78,13 @@ function Wheel({ label, items, index, onIndex }: { label: string; items: string[
         onScrollEndDrag={settle}
         // The first and last row can reach the middle: a row of space above and below.
         contentContainerStyle={{ paddingVertical: ROW }}
-        renderItem={({ item, index: i }) => (
-          <Pressable accessible={false} onPress={() => go(i)} className="items-center justify-center" style={{ height: ROW }}>
+      >
+        {items.map((item, i) => (
+          <Pressable key={item} accessible={false} onPress={() => go(i)} className="items-center justify-center" style={{ height: ROW }}>
             <Text className={cn("text-[17px] tabular-nums", i === index ? "font-semibold text-foreground" : "text-muted-foreground")}>{item}</Text>
           </Pressable>
-        )}
-      />
+        ))}
+      </ScrollView>
     </View>
   );
 }

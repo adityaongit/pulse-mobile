@@ -3,7 +3,7 @@
 // forced by touch: there is no hover or arrow-key highlight (the row last pressed is the active one), and the list closes
 // when a zone is picked or the chevron is tapped, not when the field loses focus (the press on a row would be lost).
 import { useMemo, useRef, useState, type RefObject } from "react";
-import { FlatList, Pressable, View, type TextInput } from "react-native";
+import { Pressable, ScrollView, View, type TextInput } from "react-native";
 import { Check, ChevronDown, Search } from "lucide-react-native";
 import { cn } from "@/ui/cn";
 import { haptic } from "@/ui/haptics";
@@ -81,23 +81,23 @@ export function TimeZonePicker({ value, onChange, invalid, inputRef }: { value: 
           {matches.length === 0 ? (
             <Text className="px-3 py-3 text-[15px] leading-5 text-muted-foreground">No time zone matches “{query}”.</Text>
           ) : (
-            <FlatList
+            // A plain ScrollView, not a FlatList: a virtualized list may not nest inside the form's scroll view. About 420
+            // rows at most, drawn only while the list is open. ponytail: move the list into its own sheet if opening it hitches.
+            <ScrollView
               // A new search is a new list, from its first row.
               key={query}
-              data={matches}
-              extraData={active}
-              keyExtractor={(z) => z.id}
-              getItemLayout={(_, i) => ({ length: ROW, offset: ROW * i, index: i })}
-              initialScrollIndex={query ? 0 : Math.max(0, start - 1)}
+              contentOffset={{ x: 0, y: (query ? 0 : Math.max(0, start - 1)) * ROW }}
               snapToInterval={ROW}
               decelerationRate="fast"
               nestedScrollEnabled
               keyboardShouldPersistTaps="handled"
               showsVerticalScrollIndicator={false}
-              renderItem={({ item: z, index: i }) => {
+            >
+              {matches.map((z, i) => {
                 const selected = z.id === canonicalZone(value);
                 return (
                   <Pressable
+                    key={z.id}
                     accessibilityRole="button"
                     accessibilityState={{ selected }}
                     accessibilityLabel={`${z.city}, ${z.region}, ${z.offset}`}
@@ -115,8 +115,8 @@ export function TimeZonePicker({ value, onChange, invalid, inputRef }: { value: 
                     </View>
                   </Pressable>
                 );
-              }}
-            />
+              })}
+            </ScrollView>
           )}
         </View>
       )}
