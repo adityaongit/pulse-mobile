@@ -1,10 +1,14 @@
 import { Pressable, View } from "react-native";
+import { useGlobalSearchParams } from "expo-router";
 import Svg, { Circle, Defs, LinearGradient, Stop } from "react-native-svg";
+import { dayLabel } from "@/lib/format";
+import { parseDay } from "@/lib/url";
 import { Glass } from "../Glass";
 import { haptic } from "../haptics";
 import { Text } from "../Text";
 import { useTheme } from "../theme";
 import { FAB_SIZE, TAB_ROOTS, useTabBarBottom } from "./layout";
+import { useShellCalendar } from "./ShellStatus";
 import { openSheet } from "./sheets";
 
 /** The reference app's ringed monogram: "P" in a 30 px circle with the indigo-to-blue rim. */
@@ -28,17 +32,23 @@ function Monogram() {
 
 /**
  * The "Check in" action (spec §4.2.1): indigo-rimmed glass with the "P" monogram. It opens the check-in sheet, the route
- * app/(sheets)/checkin.tsx, over the screen you are on. Where the coach is on, this button opens the coach instead (the
- * web's coach access); that wiring arrives with the coach stream, through `onPress`.
+ * app/(sheets)/checkin.tsx, over the screen you are on, for the day that screen shows: `/checkin?d=` carries the screen's
+ * `d` as the web keeps `?d=` beside `?checkin=1`. (The tab bar sits in the tabs layout, so the day is the focused route's:
+ * the global params, not the layout's own.) Where the coach is on, this button opens the coach instead (the web's coach
+ * access); that wiring arrives with the coach stream, through `onPress`.
  */
-export function CheckInAction({ label = "Check in", onPress }: { label?: string; onPress?: () => void }) {
+export function CheckInAction({ onPress }: { onPress?: () => void }) {
+  const { today } = useShellCalendar();
+  const { d: raw } = useGlobalSearchParams<{ d?: string }>();
+  const { d } = parseDay(raw, today);
+  const label = `Check in for ${dayLabel(d, today)}`;
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={label}
       onPress={() => {
         haptic.tap();
-        (onPress ?? (() => openSheet("/checkin")))();
+        (onPress ?? (() => openSheet(`/checkin?d=${d}`)))();
       }}
       className="active:scale-[0.96]"
     >

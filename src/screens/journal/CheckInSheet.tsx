@@ -219,26 +219,20 @@ export function CheckInSheet() {
         title="Journal"
         size="screen"
         glow
-        // ponytail: the kit puts `action` where the X would be, so both sit at the right. The web has the X at the left and
-        // the pencil at the right; once SheetScreen keeps the X on the left when `action` is set, drop the X from here.
+        onClose={close}
         action={
-          <View className="flex-row">
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Select behaviours"
-              onPress={() => {
-                haptic.tap();
-                picked.current = true;
-                router.push("/more/behaviours" as never);
-              }}
-              className="size-11 items-center justify-center rounded-full active:bg-foreground/8"
-            >
-              <Pencil size={22} color={c.foreground} strokeWidth={1.75} />
-            </Pressable>
-            <Pressable accessibilityRole="button" accessibilityLabel="Close" onPress={close} className="size-11 items-center justify-center rounded-full active:bg-foreground/8">
-              <X size={22} color={c.foreground} strokeWidth={1.75} />
-            </Pressable>
-          </View>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Select behaviours"
+            onPress={() => {
+              haptic.tap();
+              picked.current = true;
+              router.push("/more/behaviours" as never);
+            }}
+            className="size-11 items-center justify-center rounded-full active:bg-foreground/8"
+          >
+            <Pencil size={22} color={c.foreground} strokeWidth={1.75} />
+          </Pressable>
         }
         done={done ? { title: "Saved", body: "Have a great day!", onDone: finish } : null}
         footer={
