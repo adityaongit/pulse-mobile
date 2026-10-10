@@ -4,7 +4,7 @@
 set -euo pipefail
 
 # The src/lib files the app uses, plus every src/lib file they import. Each one's .test.ts comes along when it exists.
-LIB=(format url bands reasons behaviors dashboard extraMetrics log calendar charts collapse)
+LIB=(format url bands reasons behaviors dashboard extraMetrics log calendar charts collapse timeZone)
 
 pulse="$(cd "${1:-../pulse}" && pwd)"
 cd "$(dirname "$0")/.."
