@@ -3,6 +3,7 @@ import { Pressable, View } from "react-native";
 import Animated, { useAnimatedStyle, withTiming } from "react-native-reanimated";
 import { ChevronDown } from "lucide-react-native";
 import { cn } from "../cn";
+import { haptic } from "../haptics";
 import { Icon } from "../Icon";
 import { Text } from "../Text";
 
@@ -34,6 +35,7 @@ export function CollapsibleSection({ id, title, defaultOpen = true, action, clas
           accessibilityLabel={title}
           accessibilityState={{ expanded: open }}
           onPress={() => {
+            haptic.toggle(!open);
             setOpen(!open);
             onToggle?.(id, !open);
           }}

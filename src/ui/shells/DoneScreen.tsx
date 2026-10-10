@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { View } from "react-native";
 import Animated, { FadeIn, ZoomIn } from "react-native-reanimated";
 import { Check } from "lucide-react-native";
+import { haptic } from "../haptics";
 import { Text } from "../Text";
 import { useTheme } from "../theme";
 
@@ -10,7 +11,7 @@ export const DONE_MS = 1600;
 
 /**
  * The reference app's confirmation after a full-screen task saves ("SAVED / Have a great day!", "SUCCESS"): a green
- * ring with a check, a caps title and one line. It closes itself after `DONE_MS`.
+ * ring with a check, a caps title and one line, and a success haptic. It closes itself after `DONE_MS`.
  */
 export function DoneScreen({ title, body, onDone }: { title: string; body: string; onDone: () => void }) {
   const { c } = useTheme();
@@ -19,6 +20,7 @@ export function DoneScreen({ title, body, onDone }: { title: string; body: strin
     done.current = onDone;
   });
   useEffect(() => {
+    haptic.success();
     const t = setTimeout(() => done.current(), DONE_MS);
     return () => clearTimeout(t);
   }, []);

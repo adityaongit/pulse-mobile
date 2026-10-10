@@ -11,6 +11,9 @@ import { DetailShell } from "@/ui/shells/DetailShell";
 import { SectionShell } from "@/ui/shells/SectionShell";
 import { Text } from "@/ui/Text";
 
+// Stands in for "sync now": the spinner shows until this settles.
+const fakeSync = () => new Promise<void>((done) => setTimeout(done, 1200));
+
 /** DetailShell (spec §4.4): the date as the header title, the hero ring, the coach card, then cards. Scroll: the hero ring shrinks into the header's second row (spec §4.3a). */
 export default function KitDetail() {
   return (
@@ -21,6 +24,7 @@ export default function KitDetail() {
         dateSwitcher={{ mode: "day", placement: "header", calendar: "recovery", steppers: true }}
         hero={<ScoreDial variant="recovery" size="lg" value={85} provisional />}
         collapse
+        onRefresh={fakeSync}
         stats={{ left: { value: "124", label: "HRV ms" }, right: { value: "49", label: "Resting HR", tone: "optimal" } }}
         insight={<InsightCard {...fx.insight} />}
         primary={

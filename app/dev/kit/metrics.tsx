@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { View } from "react-native";
+import { openSheet } from "@/ui/shells/sheets";
 import { Activity, Droplet, Footprints, Heart, Moon, Rabbit, Thermometer, Timer, Turtle, Wind, Zap, type LucideIcon } from "lucide-react-native";
 import { REASON_CODES } from "@/lib/reasons";
 import { Card } from "@/ui/Card";
@@ -21,8 +22,6 @@ import { Sparkline } from "@/ui/metrics/Sparkline";
 import { TickScale } from "@/ui/metrics/TickScale";
 import { BreakdownBar } from "@/ui/metrics/BreakdownBar";
 import { TrendLegend } from "@/ui/metrics/TrendLegend";
-import { ResponsiveSheet } from "@/ui/shells/ResponsiveSheet";
-import { Button } from "@/ui/Button";
 import { Text } from "@/ui/Text";
 import { useTheme } from "@/ui/theme";
 
@@ -31,17 +30,10 @@ const statIcon = (key: string, stroke = 1.75): ReactNode => (STAT_ICON[key] ? <I
 const reasons = REASON_CODES.map((r) => ({ r, metric: fx.why<number>(r, 4) }));
 const HOUR = 3_600_000;
 
+// The vital's and the factor's detail sheets are placeholders: they open the kit's demo sheet route (app/dev/sheet.tsx).
 function SelectableTile() {
-  const [open, setOpen] = useState(false);
   const v = fx.vitals[0];
-  return (
-    <>
-      <KeyStatRow variant="tile" icon={<Icon icon={Wind} size={20} tone="muted-foreground" strokeWidth={1.5} />} direction="neutral" label={v.label} metric={v.metric} unit={v.unit} format={v.format} chip={v.chip} onSelect={() => setOpen(true)} />
-      <ResponsiveSheet open={open} onOpenChange={setOpen} title="Respiratory rate">
-        <Text className="text-[15px] leading-[22px] text-foreground-secondary">Vital detail sheet (journey 6).</Text>
-      </ResponsiveSheet>
-    </>
-  );
+  return <KeyStatRow variant="tile" icon={<Icon icon={Wind} size={20} tone="muted-foreground" strokeWidth={1.5} />} direction="neutral" label={v.label} metric={v.metric} unit={v.unit} format={v.format} chip={v.chip} onSelect={() => openSheet("/dev/sheet?size=default&title=Respiratory%20rate")} />;
 }
 
 function SelectableImpact() {
@@ -50,18 +42,12 @@ function SelectableImpact() {
 }
 
 function HealthspanList() {
-  const [open, setOpen] = useState(false);
   return (
-    <>
-      <Divided>
-        {fx.healthspan.map(({ key, ...h }) => (
-          <ContributorRow key={key} variant="healthspan" icon={statIcon("rhr")} onSelect={() => setOpen(true)} {...h} />
-        ))}
-      </Divided>
-      <ResponsiveSheet open={open} onOpenChange={setOpen} title="Healthspan factor" footer={<Button size="sheet" onPress={() => setOpen(false)}>Close</Button>}>
-        <Text className="text-[15px] leading-[22px] text-foreground-secondary">The factor&apos;s detail sheet opens here.</Text>
-      </ResponsiveSheet>
-    </>
+    <Divided>
+      {fx.healthspan.map(({ key, ...h }) => (
+        <ContributorRow key={key} variant="healthspan" icon={statIcon("rhr")} onSelect={() => openSheet("/dev/sheet?size=default&title=Healthspan%20factor")} {...h} />
+      ))}
+    </Divided>
   );
 }
 

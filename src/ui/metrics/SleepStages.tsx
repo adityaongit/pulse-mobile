@@ -7,6 +7,7 @@ import { HypnogramChart } from "../charts/Hypnogram";
 import { SleepHrChart, SleepHrChartSkeleton, type SleepHr } from "../charts/SleepHrChart";
 import { cn } from "../cn";
 import { Gradient } from "../Gradient";
+import { haptic } from "../haptics";
 import { Hatch } from "../Hatch";
 import { Segmented } from "../Segmented";
 import { EmptyState } from "../shells/EmptyState";
@@ -139,7 +140,10 @@ function Rows({ night, selected, onSelect, restorative }: { night: SleepStagesNi
                 accessibilityRole="radio"
                 accessibilityState={{ checked: on }}
                 accessibilityLabel={`${ROW_LABEL[r.stage]}, ${Math.round(r.pct)} percent, ${hmm(r.minutes)}. Typical ${r.typical[0]} to ${r.typical[1]} percent`}
-                onPress={() => onSelect(r.stage)}
+                onPress={() => {
+                  if (!on) haptic.select();
+                  onSelect(r.stage);
+                }}
                 className="gap-3"
               >
                 <View className="flex-row items-center gap-3">

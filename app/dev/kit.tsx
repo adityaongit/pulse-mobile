@@ -19,7 +19,6 @@ import { EmptyState } from "@/ui/shells/EmptyState";
 import { InfoButton } from "@/ui/shells/InfoButton";
 import { LinkList } from "@/ui/shells/LinkList";
 import { MetricState } from "@/ui/shells/MetricState";
-import { ResponsiveSheet, SheetSection } from "@/ui/shells/ResponsiveSheet";
 import { SectionShell } from "@/ui/shells/SectionShell";
 import { Text } from "@/ui/Text";
 import { useTheme } from "@/ui/theme";
@@ -84,32 +83,11 @@ const TYPE = [
 ] as const;
 
 function SheetDemo() {
-  const [open, setOpen] = useState<false | "default" | "tall" | "screen">(false);
   return (
     <View className="flex-row flex-wrap gap-2">
-      <Button variant="secondary" onPress={() => setOpen("default")}>Open sheet</Button>
-      <Button variant="secondary" onPress={() => setOpen("tall")}>Open tall sheet</Button>
-      <Button variant="secondary" onPress={() => setOpen("screen")}>Open screen sheet</Button>
-      <ResponsiveSheet
-        open={!!open}
-        onOpenChange={(o) => !o && setOpen(false)}
-        size={open || "default"}
-        title="How Recovery works"
-        description="Updated each morning"
-        glow={open === "screen"}
-        footer={
-          <>
-            <Button size="sheet" onPress={() => setOpen(false)}>Save</Button>
-            <Button size="sheet" variant="outline-pill" onPress={() => setOpen(false)}>Cancel</Button>
-          </>
-        }
-      >
-        <View className="gap-4">
-          <SheetSection>Why</SheetSection>
-          <Text className={BODY}>Recovery shows how ready your body is to take on strain, from 0 to 100%. Pulse scores it each morning from last night&apos;s heart rate variability, resting heart rate, respiratory rate, sleep performance and skin temperature, each compared with your own baseline.</Text>
-          <Text className={BODY}>Recovery needs 7 nights of HRV before the first score and stays provisional until 14.</Text>
-        </View>
-      </ResponsiveSheet>
+      <Button variant="secondary" onPress={() => go("/dev/sheet?size=default")}>Open sheet</Button>
+      <Button variant="secondary" onPress={() => go("/dev/sheet?size=tall")}>Open tall sheet</Button>
+      <Button variant="secondary" onPress={() => go("/dev/sheet?size=screen")}>Open screen sheet</Button>
     </View>
   );
 }
@@ -280,7 +258,7 @@ export default function Kit() {
           <Frame name="header title (Strain calendar)" center><DateSwitcher mode="day" placement="header" calendar="strain" /></Frame>
           <Frame name="narrow pill at 320 px" narrow center><DateSwitcher mode="day" narrow /></Frame>
         </Entry>
-        <Entry name="InfoButton, InfoDialog" file="src/ui/shells/InfoButton.tsx" use="Every “i”: card headers (card) and detail headers (header). Opens the centred info card." props={["info: { title, body, icon?, chip?, action? }", "label", "variant: card | header"]}>
+        <Entry name="InfoButton, InfoSheet" file="src/ui/shells/InfoButton.tsx" use="Every “i”: card headers (card) and detail headers (header). Opens the info sheet (route app/(sheets)/info.tsx)." props={["info: { title, body, icon?, chip?, action? }", "label", "variant: card | header"]}>
           <Frame name="card" center><InfoButton variant="card" label="What shaped it" info={INFO} /></Frame>
           <Frame name="header, with icon, chip and action" center>
             <InfoButton variant="header" label="Respiratory rate" info={{ title: "Respiratory rate", icon: <Icon icon={HeartPulse} size={28} tone="foreground-secondary" strokeWidth={1.5} />, chip: { tone: "optimal", text: "Within 14.1 - 16.9" }, body: <Text className="text-[15px] leading-[22px] text-foreground/85">Breaths per minute while you sleep, against your own normal range.</Text>, action: { label: "Open trend view", href: "/dev/kit/charts" } }} />
@@ -292,7 +270,7 @@ export default function Kit() {
           </Frame>
           <Frame name="long label at 320 px" narrow><LinkList title="Data" rows={[{ label: "Export everything Pulse has stored", href: "/dev/kit", icon: BookOpen, aside: "CSV" }]} /></Frame>
         </Entry>
-        <Entry name="ResponsiveSheet" file="src/ui/shells/ResponsiveSheet.tsx" use="Every sheet: a bottom sheet (journal entries, vitals, contributors), or the whole screen for a full task. Replaces the web's Vaul drawer with @gorhom/bottom-sheet." props={["open, onOpenChange", "title, description", "footer", "size: default | tall | screen", "glow, action, done"]}>
+        <Entry name="SheetScreen" file="src/ui/shells/SheetScreen.tsx" use="Every sheet: a route presented by the platform (iOS form sheet, Android bottom sheet) for a task: journal entries, vitals, contributors; or a modal for a full-screen task. Replaces the web's Vaul drawer. Routes: app/(sheets)/, see sheets.ts." props={["title, description", "footer", "size: default | tall | screen", "glow, action, done"]}>
           <Frame name="default, tall and screen (opens)"><SheetDemo /></Frame>
         </Entry>
         <Entry name="Page shells" file="src/ui/shells/" use="Shells that only render as a whole page. Each one is live somewhere.">

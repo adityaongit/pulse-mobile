@@ -1,5 +1,6 @@
 import { Pressable, View } from "react-native";
 import { cn } from "./cn";
+import { haptic } from "./haptics";
 import { Text } from "./Text";
 
 /**
@@ -32,7 +33,11 @@ export function Segmented<T extends string>({
             accessibilityRole="tab"
             accessibilityLabel={o.accessibilityLabel ?? o.label}
             accessibilityState={{ selected: on }}
-            onPress={() => !on && onChange(o.value)}
+            onPress={() => {
+              if (on) return;
+              haptic.select();
+              onChange(o.value);
+            }}
             className={cn("h-10 items-center justify-center rounded-md px-3", fill ? "flex-1" : "min-w-11", on && "bg-secondary")}
           >
             <Text className={cn(textClassName, on ? "text-foreground" : "text-muted-foreground")}>{o.label}</Text>

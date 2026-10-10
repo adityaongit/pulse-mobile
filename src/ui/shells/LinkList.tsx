@@ -3,7 +3,7 @@ import { Pressable, View } from "react-native";
 import { router, type Href } from "expo-router";
 import { ArrowUpRight, ChevronRight, type LucideIcon } from "lucide-react-native";
 import * as Linking from "expo-linking";
-import { CARD_CLASS, useCardStyle } from "../Card";
+import { CARD_CLASS, CardFill, useCardStyle } from "../Card";
 import { cn } from "../cn";
 import { Icon } from "../Icon";
 import { SkeletonText } from "../Skeleton";
@@ -50,6 +50,7 @@ export function LinkList({ title, rows, className }: { title: string; rows: Link
             className={cn(CARD_CLASS, ROW, "active:scale-[0.96]")}
             style={shadow}
           >
+            <CardFill />
             {r.icon && <Icon icon={r.icon} size={22} tone="foreground-secondary" strokeWidth={1.5} />}
             <View className="min-w-0 flex-1">
               <Text className={ROW_LABEL}>{r.label}</Text>
@@ -73,6 +74,7 @@ export function LinkListSkeleton({ title, rows }: { title: string; rows: Omit<Li
       <View className="gap-2">
         {rows.map((r, i) => (
           <View key={i} className={cn(CARD_CLASS, ROW)} style={shadow}>
+            <CardFill />
             {r.icon && <Icon icon={r.icon} size={22} tone="foreground-secondary" strokeWidth={1.5} />}
             <View className="min-w-0 flex-1">
               {r.label ? <Text className={ROW_LABEL}>{r.label}</Text> : <SkeletonText className="w-28" />}
