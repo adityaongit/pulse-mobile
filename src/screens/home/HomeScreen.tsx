@@ -178,7 +178,7 @@ function Home({ vm, timeZone }: { vm: HomeVM; timeZone: string }) {
                 </SectionShell>
                 {/* Phone: Tonight's sleep (today only), then My journal, as in the reference app (home-09, home-03); Energy Bank is Pulse's own and follows. */}
                 {vm.isToday && (
-                  <SectionShell variant="card" title="Tonight’s sleep" info={TONIGHT_INFO} fill action={<IconLink href={at("/sleep#planner")} label="Open Sleep Planner" icon={ChevronRight} />}>
+                  <SectionShell variant="card" title="Tonight’s sleep" info={TONIGHT_INFO} fill action={<IconLink href={at("/sleep?section=planner")} label="Open Sleep Planner" icon={ChevronRight} />}>
                     <MetricState
                       metric={vm.tonight}
                       skeleton={null}

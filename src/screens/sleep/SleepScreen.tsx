@@ -104,7 +104,7 @@ function Sleep({ vm, weekly, timeZone }: { vm: SleepVM; weekly: TrendViewVM[]; t
         <SectionShell key="efficiency" variant="card" title="Sleep efficiency">
           <SleepEfficiency vm={vm} />
         </SectionShell>,
-        <SectionShell key="planner" variant="card" title="Tonight’s sleep" info={TONIGHT_INFO}>
+        <SectionShell key="planner" id="planner" variant="card" title="Tonight’s sleep" info={TONIGHT_INFO}>
           <Planner vm={vm} timeZone={timeZone} />
         </SectionShell>,
       ]}
