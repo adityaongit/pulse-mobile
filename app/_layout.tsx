@@ -61,7 +61,10 @@ function Screens() {
           Android back gesture work on every route that is not a root. The headers are the shells' own, so the native one is off. */}
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: c.background } }}>
         {/* Sheets are routes presented by the platform (src/ui/shells/sheets.ts says how to add one). */}
-        <Stack.Screen name="(sheets)/checkin" options={sheetOptions("tall", c)} />
+        <Stack.Screen name="(sheets)/checkin" options={sheetOptions("screen", c)} />
+        <Stack.Screen name="(sheets)/log" options={({ route }) => sheetOptions(["food", "mood", "symptoms"].includes((route.params as { kind?: string } | undefined)?.kind ?? "") ? "tall" : "default", c)} />
+        <Stack.Screen name="(sheets)/log-entry" options={sheetOptions("default", c)} />
+        <Stack.Screen name="journal/impact" options={sheetOptions("default", c)} />
         <Stack.Screen name="dev/sheet" options={({ route }) => sheetOptions((route.params as { size?: SheetSize } | undefined)?.size ?? "default", c)} />
       </Stack>
     </>
