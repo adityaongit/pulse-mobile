@@ -717,3 +717,31 @@ flowchart LR
   HRV --> S1[Stage 1: night mean in sleep, the day's samples]
   S1 --> S2[Stage 2: Recovery, Stress, Energy Bank]
 ```
+
+## The keyboard, measured
+
+Android used to resize the window for the keyboard (`adjustResize`), so the Coach composer and the task pages turned
+`KeyboardAvoidingView` off on Android. An edge-to-edge window, which Android 15 makes the rule and Expo SDK 57 always
+uses, is not resized on many phones, and the keyboard covered the composer (reported from the launch thread). It
+still resizes on others, where padding on top of the resize lifted the composer into the middle of the screen. So
+`useKeyboardInset` (`src/ui/keyboard.ts`) assumes neither: on `keyboardDidShow`, `keyboardDidHide` and the view's own
+`onLayout` it measures the view's bottom in the window against the keyboard's top and pads by the overlap. A window
+that resizes shrinks the view, the overlap falls to zero, and nothing is added twice. Coach, `TaskPage`, `ScreenScroll`
+and the onboarding `Frame` all use it; `automaticallyAdjustKeyboardInsets` is iOS-only and is gone.
+
+```mermaid
+flowchart LR
+  K[keyboardDidShow / DidHide] --> M[measureInWindow of the screen's root view]
+  L[root view onLayout] --> M
+  M --> O["inset = max(0, view bottom − keyboard top)"]
+  O --> P[paddingBottom: inset]
+```
+
+## Chart paths Skia cannot parse
+
+Skia's `<Path path="…">` throws on a string it cannot parse, and a throw while drawing closes the app. A NaN reaches a
+path when a scale's domain is NaN: `evenTicks` returned no ticks when a line chart's ends differed only by float noise
+(a flat series' mean ± a zero SD), and the 6M and 1Y charts, which are lines, then built every point from `undefined`.
+The tick functions now compare ends at the precision their step arithmetic works in, and the charts draw through
+`src/ui/charts/path.tsx`, which parses the string once with `Skia.Path.MakeFromSVGString` and skips a mark it cannot
+parse instead of crashing.
