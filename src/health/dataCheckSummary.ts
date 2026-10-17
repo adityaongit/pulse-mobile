@@ -1,6 +1,7 @@
 // Data check, pure part: per local day, what Health Connect holds for each metric — split by the app and device that
 // wrote it — next to what Pulse stored. Lets a mismatch with the Fitbit app be traced to its cause (another source,
 // a day boundary, a missing record, or Pulse's own mapping). The Health Connect reads live in dataCheck.ts.
+import { clock } from "@/lib/format";
 import { localDay } from "@/lib/time";
 import type { Metrics, Session } from "@/data/types";
 import { DEVICE_NAME, isFitbit } from "./sourcePolicy";
@@ -40,11 +41,7 @@ const startOf = (r: RawRecord): number | null => {
   return Number.isFinite(ms) ? Math.floor(ms / 1000) : null;
 };
 
-const hhmm = (s: number, tz: string) => {
-  const d = new Date(s * 1000);
-  const f = new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZone: tz });
-  return f.format(d);
-};
+const hhmm = (s: number, tz: string) => clock(s * 1000, tz);
 
 export type SourceLine = { source: string; fitbit: boolean; records: number; value: number | null; detail: string };
 export type MetricLine = { key: string; label: string; unit: string; pulse: number | null; sources: SourceLine[] };

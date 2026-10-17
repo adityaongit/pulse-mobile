@@ -5,8 +5,8 @@
 // copy and the inputs (strain_target, health_monitor, the reports, sleep_planner) are Pulse's own.
 import { isoWeek, type Report } from "@/core/algorithms/reports";
 import type { ScoreRow } from "@/data/store";
-import { rangeLabel } from "@/lib/format";
-import { addDays, localDay, localMidnight, localMinutes, wall } from "@/lib/time";
+import { clock, rangeLabel } from "@/lib/format";
+import { addDays, localDay, localMidnight, localMinutes } from "@/lib/time";
 import type { SleepPlannerRow } from "@/pipeline/types";
 import { illnessRaised, VITAL_LABEL } from "@/queries/home";
 import { DEEP_LINK, isOwnData, sentFor, type Alert, type AlertSource, type MarkedMonitorLevel, type Markers } from "./decide";
@@ -195,7 +195,6 @@ export type BedtimeAction =
 /** Lead minutes as saved, within WindDownStore's 0–120; 30 when unreadable. */
 export const leadOf = (min: number) => (Number.isFinite(min) ? Math.min(120, Math.max(0, Math.round(min))) : 30);
 
-const hhmm = (s: number, tz: string) => wall(s, tz).time.slice(0, 5);
 
 /**
  * WindDownScheduler's nudge, fed by the sleep planner instead of a fixed wake time: one local notification `leadMin`
@@ -218,7 +217,7 @@ export function planBedtime(i: BedtimeInput): BedtimeAction {
       const bedtime = Math.round((localMidnight(planner.wakeDay, i.timeZone) + full.bedtimeMin * 60) / 60) * 60;
       const at = bedtime - lead;
       if (at <= i.now) return [];
-      return [{ title: "Wind down", body: `Bed by ${hhmm(bedtime, i.timeZone)} to meet tonight’s sleep need.`, url: DEEP_LINK.planner, day, at, bedtime }];
+      return [{ title: "Wind down", body: `Bed by ${clock(bedtime * 1000, i.timeZone)} to meet tonight’s sleep need.`, url: DEEP_LINK.planner, day, at, bedtime }];
     })
     .sort((a, b) => a.at - b.at);
   const next = ahead[0];

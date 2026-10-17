@@ -45,7 +45,7 @@ describe("recentEntries", () => {
     await saveEntries(store, [{ type: "symptoms", ts: T, data: { symptoms: ["HEADACHE"] } }], { tz: TZ, now: T });
     await saveEntries(store, [{ type: "hydration-log", ts: T + 60, data: { ml: 1250 } }], { tz: TZ, now: T + 60 });
     expect(await recentEntries(store, T - 60)).toMatchObject([
-      { type: "hydration-log", title: "Water", detail: "1,250 ml", atGoogle: false, source: "pulse" },
+      { type: "hydration-log", title: "Water", detail: "1,250\u00a0ml", atGoogle: false, source: "pulse" },
       { type: "symptoms", title: "Symptoms", detail: "Headache", atGoogle: false, source: "pulse" },
     ]);
     expect(await recentEntries(store, T + 1)).toHaveLength(1);
@@ -57,8 +57,8 @@ describe("recentEntries", () => {
       { id: "hc-water-1", type: "hydration-log", ts: T + 60, day: "2026-10-02", data: { ml: 330 }, createdAt: T + 60, source: "health_connect" },
     ]);
     expect(await recentEntries(store, 0)).toMatchObject([
-      { id: "hc-water-1", title: "Water", detail: "330 ml", source: "health_connect" },
-      { title: "Water", detail: "250 ml", source: "pulse" },
+      { id: "hc-water-1", title: "Water", detail: "330\u00a0ml", source: "health_connect" },
+      { title: "Water", detail: "250\u00a0ml", source: "pulse" },
     ]);
   });
 });
@@ -124,7 +124,7 @@ describe("getLog", () => {
   it("lists the last 14 days only", async () => {
     await saveEntries(store, [{ type: "hydration-log", ts: T - 14 * 86_400, data: { ml: 100 } }], { tz: TZ, now: T });
     await saveEntries(store, [{ type: "hydration-log", ts: T - 13 * 86_400, data: { ml: 200 } }], { tz: TZ, now: T });
-    expect((await getLog(ctxOf("male"))).recent.map((e) => e.detail)).toEqual(["200 ml"]);
+    expect((await getLog(ctxOf("male"))).recent.map((e) => e.detail)).toEqual(["200\u00a0ml"]);
   });
 
   it("shows Fitbit's entries beside Pulse's, cycle ones to a female profile only", async () => {

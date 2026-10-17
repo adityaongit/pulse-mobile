@@ -6,6 +6,7 @@ import { useState, type ReactNode } from "react";
 import { haptic } from "@/ui/haptics";
 import { View } from "react-native";
 import { saveProfileAction, type ProfileFormState } from "@/actions/profile";
+import { displayPrefs, feetInches, fromFeetInches } from "@/lib/units";
 import { appState, saveProfile } from "@/state/app";
 import { Button } from "@/ui/Button";
 import { Text } from "@/ui/Text";
@@ -36,6 +37,12 @@ export function ProfileForm({
   const [sex, setSex] = useState<"male" | "female" | null>(defaults.sex);
   const [edited, setTimeZone] = useState<string | null>(null);
   const [heightCm, setHeightCm] = useState(defaults.heightCm?.toString() ?? "");
+  // Imperial: feet and inches, sent on as cm (src/lib/units.ts).
+  const imperial = displayPrefs().units === "imperial";
+  const startHeight = defaults.heightCm != null ? feetInches(defaults.heightCm) : null;
+  const [feet, setFeet] = useState(startHeight ? String(startHeight.feet) : "");
+  const [inches, setInches] = useState(startHeight ? String(startHeight.inches) : "");
+  const typedHeight = !imperial ? heightCm : feet.trim() || inches.trim() ? String(Math.round(fromFeetInches(Number(feet || 0), Number(inches || 0)) * 10) / 10) : "";
   const [maxHr, setMaxHr] = useState(defaults.maxHr?.toString() ?? "");
   const [pending, setPending] = useState(false);
   const [state, setState] = useState<ProfileFormState | null>(null);
@@ -47,7 +54,7 @@ export function ProfileForm({
 
   const submit = async () => {
     setPending(true);
-    const r = await saveProfileAction({ birthDate, sex, maxHr, heightCm, timeZone: timeZone || null, name }, appState().profile, saveProfile);
+    const r = await saveProfileAction({ birthDate, sex, maxHr, heightCm: typedHeight, timeZone: timeZone || null, name }, appState().profile, saveProfile);
     setPending(false);
     setState(r);
     if (r.ok) onSaved?.();
@@ -55,6 +62,8 @@ export function ProfileForm({
   };
   const compact = !!sheet;
   const variant = compact ? "compact" : "field";
+  // The unit after a number that has a partner (5 ft 10 in), in the field's own type size and padding.
+  const unitSuffix = (unit: string) => <Text className={compact ? "pr-3.5 text-[15px] text-muted-foreground" : "pr-4 text-[17px] text-muted-foreground"}>{unit}</Text>;
   const gap = compact ? "gap-4" : "gap-6";
 
   const fields = (
@@ -105,8 +114,19 @@ export function ProfileForm({
 
       {!onboarding && (
         <View className={gap}>
-          <Field label="Height" hint="In cm. Adds lean body mass to Pulse Age." error={f?.heightCm} optional>
-            <TextField variant={variant} accessibilityLabel="Height in cm" keyboardType="decimal-pad" placeholder="cm" value={heightCm} onChangeText={setHeightCm} invalid={!!f?.heightCm} />
+          <Field label="Height" hint="Adds lean body mass to Pulse Age." error={f?.heightCm} optional>
+            {imperial ? (
+              <View className="flex-row gap-2">
+                <View className="flex-1">
+                  <TextField variant={variant} accessibilityLabel="Height, feet" keyboardType="number-pad" right={unitSuffix("ft")} value={feet} onChangeText={setFeet} invalid={!!f?.heightCm} />
+                </View>
+                <View className="flex-1">
+                  <TextField variant={variant} accessibilityLabel="Height, inches" keyboardType="number-pad" right={unitSuffix("in")} value={inches} onChangeText={setInches} invalid={!!f?.heightCm} />
+                </View>
+              </View>
+            ) : (
+              <TextField variant={variant} accessibilityLabel="Height in cm" keyboardType="decimal-pad" placeholder="cm" value={heightCm} onChangeText={setHeightCm} invalid={!!f?.heightCm} />
+            )}
           </Field>
           <Field label="Max heart rate" hint="Leave blank to estimate it from your age." error={f?.maxHr} optional>
             <TextField variant={variant} accessibilityLabel="Max heart rate in bpm" keyboardType="number-pad" placeholder="bpm" value={maxHr} onChangeText={setMaxHr} invalid={!!f?.maxHr} />

@@ -55,7 +55,8 @@ const SHOW: Record<string, { format: FormatKey; unit?: string; scale?: number }>
   steps: { format: "grouped" },
   vo2max: { format: "decimal1", unit: "ml/kg/min" },
   restingHr: { format: "int", unit: "bpm" },
-  leanMass: { format: "decimal1", unit: "kg" },
+  // Lean mass as a share of body weight, the engine’s term (health.ts HS_META), not kilograms.
+  leanMass: { format: "decimal1", unit: "%" },
 };
 
 const withUnit = (text: string, unit?: string) => (unit ? `${text}${isSymbolUnit(unit) ? "" : NBSP}${unit}` : text);

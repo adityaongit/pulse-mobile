@@ -401,6 +401,9 @@ Rem values assume 16 px root. "Caps" means the source string is sentence case an
 - Every number that can change uses `tabular-nums` (Barlow figures are proportional by default).
 - Units sit after the value with a thin gap (`ml-0.5` for symbols, `ml-1` for words), in the unit role: `72<span>%</span>`, `124<span> ms</span>`.
 - Negative numbers use the real minus sign `−` (U+2212). Positive deltas carry `+`.
+- Units and times follow Settings › App: metric or imperial (lb, mi, ft, in, °F, fl oz), a 24-hour ("22:05") or
+  12-hour ("10:05 PM") clock. A chart's whole-hour tick on the 12-hour clock is just "10 PM" (`clockTick`). Height in
+  imperial reads "5′ 10″" and is typed as two fields, feet and inches.
 - No data: `--` in the same role as the value would have been, `text-muted-foreground`.
 - Large text: never below `tracking-[-0.04em]`; `text-balance` on titles; `text-pretty` on body; `truncate` with `min-w-0` on every flex child holding a name.
 

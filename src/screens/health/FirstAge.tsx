@@ -2,7 +2,7 @@
 // Pulse Age exists, what it is waiting for. The profile's optional height is asked here, where it is used.
 import { View } from "react-native";
 import { Check, ChevronRight, Circle } from "lucide-react-native";
-import { AGE_LABEL } from "@/lib/format";
+import { AGE_LABEL, heightText } from "@/lib/format";
 import type { HealthspanVM } from "@/queries/types";
 import { daysBetween } from "@/lib/time";
 import { Icon } from "@/ui/Icon";
@@ -59,7 +59,7 @@ export function FirstAge({ vm }: { vm: HealthspanVM }) {
           const ready = all.filter((c) => c.metric.value !== null).length;
           return <Row key={group} done={ready === all.length} title={label} detail={`${ready} of ${all.length} measures ready`} />;
         })}
-        <Row done={height !== null} title="Height" detail={height !== null ? `${height} cm` : "Optional. Adds lean body mass."} onPress={() => push("/profile")} />
+        <Row done={height !== null} title="Height" detail={height !== null ? heightText(height) : "Optional. Adds lean body mass."} onPress={() => push("/profile")} />
       </View>
     </SectionShell>
   );

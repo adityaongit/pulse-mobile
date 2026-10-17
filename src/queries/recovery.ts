@@ -1,4 +1,5 @@
 // Recovery `/recovery` (spec §7.2). Ported from Pulse's src/server/queries/recovery.ts.
+import { quantity } from "@/lib/units";
 import type { ChargeDriver } from "@/core/scoring/drivers";
 import { addDays } from "@/lib/time";
 import {
@@ -108,6 +109,10 @@ export function contributors(row: DayRow | undefined, isToday: boolean, rows?: M
   const missing = r?.value != null ? "no_data" : vitalReason(row, isToday);
   const inputs = r?.inputs;
   const b = r?.baselines;
+  // Skin temperature is a deviation from its baseline: in °F it scales by 1.8, without the 32 (src/lib/units.ts).
+  const temp = quantity("°C");
+  // The source's 30-night SD when it gives one, else Pulse's own baseline spread.
+  const tempSd = row?.metrics?.tempSdC ? row.metrics.tempSdC : b?.skinTemp && usable(b.skinTemp) ? b.skinTemp.sd : null;
   return [
     {
       key: "hrv",
@@ -148,10 +153,9 @@ export function contributors(row: DayRow | undefined, isToday: boolean, rows?: M
     {
       key: "skinTemp",
       label: "Skin temperature",
-      unit: "°C",
-      metric: metric("skinTemp", inputs?.skinTempDev, row?.metrics?.nightlyTempC != null ? "calibrating" : missing),
-      // The source's 30-night SD when it gives one, else Pulse's own baseline spread.
-      baseline: row?.metrics?.tempSdC ? { mean: 0, sd: row.metrics.tempSdC } : b?.skinTemp && usable(b.skinTemp) ? { mean: 0, sd: b.skinTemp.sd } : null,
+      unit: temp.unit,
+      metric: metric("skinTemp", finite(inputs?.skinTempDev) ? temp.change(inputs.skinTempDev) : null, row?.metrics?.nightlyTempC != null ? "calibrating" : missing),
+      baseline: tempSd ? { mean: 0, sd: temp.change(tempSd) } : null,
       points: pts("skinTemp"),
       direction: "toward_zero",
     },

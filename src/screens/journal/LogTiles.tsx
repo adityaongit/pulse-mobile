@@ -3,7 +3,7 @@
 // day strip above it.
 import { ScrollView, View } from "react-native";
 import { CalendarHeart, Droplet, FlaskConical, HeartPulse, Plus, Scale, Smile, Thermometer, Utensils, type LucideIcon } from "lucide-react-native";
-import { DAY, formatDay } from "@/lib/format";
+import { DAY, formatDay, quantityText } from "@/lib/format";
 import { KIND_LABEL, MOODS, VALENCES, type LogData, type LogKind } from "@/queries/log";
 import type { DayLogVM as LogVM } from "@/queries/journalExtras";
 import { CARD_CLASS, CardFill, useCardStyle } from "@/ui/Card";
@@ -30,12 +30,12 @@ const MOOD_LABEL = Object.fromEntries([...MOODS, ...VALENCES].map(([v, l]) => [v
 function tileValue(k: LogKind, vm: LogVM): { value: string; sub?: string } | null {
   switch (k) {
     case "water":
-      return vm.water.total ? { value: `${n(vm.water.total)} ml` } : { value: "None" };
+      return vm.water.total ? { value: quantityText(vm.water.total, "ml", "grouped") } : { value: "None" };
     case "food":
       return vm.food.kcal ? { value: `${n(vm.food.kcal)} kcal` } : { value: "None" };
     case "weight": {
       const w = vm.body.latest;
-      return w ? { value: `${w.kg} kg`, sub: w.day === vm.day ? undefined : formatDay(w.day, DAY.monthDay) } : null;
+      return w ? { value: quantityText(w.kg, "kg", "decimal1"), sub: w.day === vm.day ? undefined : formatDay(w.day, DAY.monthDay) } : null;
     }
     case "spo2":
       return vm.spo2 !== null ? { value: `${vm.spo2}%` } : null;

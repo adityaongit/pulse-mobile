@@ -1,6 +1,7 @@
 // Daily goals (Fitbit-style, a phone-only addition): how far `day` has come toward each target the person set, with a
 // week of history for the rings and streaks, and Active Zone Minutes against the weekly target. Pulse's own screens
 // never set goals; they are kept on the phone (src/state/goals.ts) and come in as `goals`. Pure over the Store.
+import { inUnits, quantity } from "@/lib/units";
 import { addDays } from "@/lib/time";
 import { type FormatKey, metricHref, weekOf } from "./_lib";
 import { type DayRow, finite, loadDays, nightNeedMin, type QueryCtx, todayOf } from "./common";
@@ -124,7 +125,9 @@ function dayOf(key: GoalKey, goals: Goals, rows: Map<string, DayRow>, day: strin
   const value = valueOf(key, rows.get(day));
   const target = targetOf(key, goals, rows, day);
   const progress = value === null ? null : target > 0 ? clamp01(value / target) : 0;
-  return { day, value, target, progress, done: value !== null && target > 0 && value >= target };
+  // Shown in the person's units (src/lib/units.ts); progress and done are the same either way.
+  const q = quantity(GOAL_META[key].unit);
+  return { day, value: value === null ? null : q.value(value), target: q.value(target), progress, done: value !== null && target > 0 && value >= target };
 }
 
 /** The goals for `day`. `goals` are the phone's targets and switches (src/state/goals.ts). */
@@ -149,7 +152,7 @@ export async function getGoalsDay(day: string, ctx: QueryCtx, goals: Goals): Pro
       d = addDays(d, -1);
     }
     out.push({
-      ...meta,
+      ...inUnits(meta),
       value: current.value,
       target: current.target,
       progress: current.progress ?? 0,

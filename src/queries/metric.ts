@@ -2,10 +2,11 @@
 // day's value against its 30-day average, history over W / M / 6M / 1Y with the range's stats, where the number comes
 // from), plus the sections that make that metric useful, chosen per key below. Ported from Pulse's
 // src/server/queries/metric.ts; the hourly section reads the day's steps from store.readSteps.
+import { clockTick, formatValue, NBSP } from "@/lib/format";
+import { quantity } from "@/lib/units";
 import { addDays, localMidnight } from "@/lib/time";
 import {
   type BodyKey,
-  clock,
   DAY,
   EXTRA_KEYS,
   EXTRA_METRICS,
@@ -39,7 +40,7 @@ import {
   vitalReason,
 } from "./common";
 import { recentEntries } from "./log";
-import { TREND_METRICS } from "./trends";
+import { trendMetric } from "./trends";
 import type { KeyStat, Metric } from "./types";
 
 export type VitalDetailKey = "hrv" | "rhr" | "resp" | "spo2" | "skin";
@@ -83,7 +84,7 @@ const CONFIG: Record<DetailKey, Config> = {
   rhr: { group: "vitals", baseline: true, sections: ["outliers"], about: "Your resting heart rate as Fitbit reports it to Health Connect, or Pulse's estimate from your night's sleep when Fitbit has none for the day. Recovery and Health Monitor score this same number." },
   resp: { group: "vitals", baseline: true, sections: ["outliers"], about: "Breaths per minute during sleep, measured by your band." },
   spo2: { group: "vitals", baseline: true, sections: ["outliers"], about: "Estimated blood oxygen saturation during sleep, measured by your band." },
-  skin: { group: "vitals", baseline: true, sections: ["outliers"], about: "Nightly skin temperature above or below your personal baseline, in degrees Celsius. This is a temperature difference, not your body temperature." },
+  skin: { group: "vitals", baseline: true, sections: ["outliers"], about: "Nightly skin temperature above or below your personal baseline. This is a temperature difference, not your body temperature." },
   weight: { group: "body", reading: true, sections: ["readings"], about: "Your weight, from a connected scale or a manual log in your health app." },
   body_fat: { group: "body", reading: true, sections: ["readings"], about: "Body fat percentage, from a smart scale or a manual log." },
   distance: { group: "activity", total: true, stack: "distance", sections: ["weekday"], about: "Distance covered on foot and in workouts, from your steps and GPS." },
@@ -137,7 +138,7 @@ const CALORIES = {
 };
 
 function defOf(key: DetailKey) {
-  const t = key === "calories" ? CALORIES : TREND_METRICS.find((m) => m.key === key)!;
+  const t = key === "calories" ? CALORIES : trendMetric(key);
   // mobile: an extra Pulse derives itself (activity minutes, AZM, average HR) says so in place of the group's source line.
   const note = (EXTRA_METRICS as readonly ExtraMetric[]).find((m) => m.key === key)?.note;
   return { key, label: t.label, unit: t.unit, format: t.format, direction: t.direction, pick: t.pick, partialToday: !!t.partialToday, note, ...CONFIG[key] };
@@ -290,7 +291,8 @@ function partsOf(stack: "calories" | "distance", r: DayRow | undefined, total: n
     const active = Math.min(Math.max(0, a), total);
     return { resting: total - active, active };
   }
-  const workouts = Math.min(exs.filter((e) => e.day === r.day).reduce((a, e) => a + (e.distanceM ?? 0), 0) / 1000, total);
+  // `total` is in the person's units (the metric's pick), so the workouts' metres convert the same way.
+  const workouts = Math.min(quantity("km").value(exs.filter((e) => e.day === r.day).reduce((a, e) => a + (e.distanceM ?? 0), 0) / 1000), total);
   return { workouts, everyday: total - workouts };
 }
 
@@ -459,11 +461,13 @@ const BUILD: Record<Exclude<SectionKind, "outliers">, (s: SectionCtx, key: Detai
     // Protein's reference: 0.8 g per kg of the latest weight on or before the day.
     let weight: number | null = null;
     for (let k = 0; k < 2 * SPAN && weight === null; k++) weight = s.rows.get(addDays(s.day, -k))?.metrics?.weightKg ?? null;
+    // In the person's units: 0.36 g per lb at 154.3 lb.
+    const kg = quantity("kg");
     if (weight)
       rows.push({
         key: "protein_target",
         label: "Protein reference",
-        caption: `${PROTEIN_G_PER_KG} g per kg at ${weight.toFixed(1)} kg`,
+        caption: `${Number((PROTEIN_G_PER_KG / kg.change(1)).toFixed(2))} g per ${kg.unit} at ${formatValue("decimal1", kg.value(weight))}${NBSP}${kg.unit}`,
         metric: ok(weight * PROTEIN_G_PER_KG),
         average: null,
         direction: "none",
@@ -480,7 +484,7 @@ const BUILD: Record<Exclude<SectionKind, "outliers">, (s: SectionCtx, key: Detai
       const v = s.raw(d);
       if (v !== null) items.push({ day: d, value: v });
     }
-    const unit = key === "weight" ? "kg" : "%";
+    const unit = trendMetric(key).unit;
     const change = (n: 30 | 90): KeyStat => {
       const latest = items[0];
       const before = latest && items.find((x) => x.day <= addDays(latest.day, -n));
@@ -512,7 +516,7 @@ async function hourly(s: SectionCtx, still: boolean): Promise<Extract<Section, {
   const now = s.isToday ? Math.floor((s.ctx.now - start) / 3600) : n;
   const sums = new Array<number>(n).fill(0);
   for (const m of mins) sums[Math.min(n - 1, Math.floor((m.ts - start) / 3600))] += m.steps;
-  const hours = sums.map((v, h) => ({ t: ms(start + h * 3600), label: clock(ms(start + h * 3600), s.ctx.timeZone), value: h > now ? null : v }));
+  const hours = sums.map((v, h) => ({ t: ms(start + h * 3600), label: clockTick(ms(start + h * 3600), s.ctx.timeZone), value: h > now ? null : v }));
   let gap: { from: number; to: number; minutes: number } | null = null;
   if (still) {
     // ponytail: daytime is 07:00-22:00 so a night's sleep never reads as sitting; sleep times would be exact with a band.

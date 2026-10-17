@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { View } from "react-native";
 import { Circle } from "@shopify/react-native-skia";
-import { clock } from "@/lib/format";
+import { clock, clockTick } from "@/lib/format";
 import type { Metric } from "@/lib/reasons";
 import { paddedDomain } from "@/lib/charts";
 import { ReasonPlaceholder } from "../metrics/ReasonPlaceholder";
@@ -96,7 +96,7 @@ function Chart({ hr, highlight }: { hr: SleepHr; highlight?: { start: number; en
               <ChartLabel key={t} x={yTickX(x0)} y={y(t)} anchor="end" w={x0}>{String(t)}</ChartLabel>
             ))}
             {[bed, wake].map((t) => (
-              <ChartLabel key={t} x={tx(t)} y={xTickY(y1)} color={c["foreground-secondary"]}>{clock(t, tz)}</ChartLabel>
+              <ChartLabel key={t} x={tx(t)} y={xTickY(y1)} color={c["foreground-secondary"]}>{clockTick(t, tz)}</ChartLabel>
             ))}
             {low && <Pill x={tx(low.t)} y={y(low.v) + 14} anchor="middle" text={`Low ${low.v}`} />}
             <ScrubLayer width={width} height={height} onScrub={setX} />

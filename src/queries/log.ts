@@ -7,6 +7,8 @@
 // `atGoogle` is always false.
 import type { LoggedEntryRow, Store } from "@/data/store";
 import { addDays, localDay, localMidnight } from "@/lib/time";
+import { quantityText } from "@/lib/format";
+import { quantity } from "@/lib/units";
 import { FORMATS, LOG_TYPES, type LoggedEntry, type LogType } from "./_lib";
 import { type QueryCtx, todayOf } from "./common";
 import { type FoodData, nutritionOn } from "./food";
@@ -48,7 +50,8 @@ export const KIND_LABEL: Record<LogKind, string> = {
 };
 export const isCycleKind = (k: LogKind) => k === "period" || k === "ovulation";
 
-export const WATER_STEPS = [250, 500] as const;
+/** The water page's one-tap amounts in the person's units: a glass and a bottle, 250 and 500 ml, or 8 and 16 fl oz. */
+export const waterSteps = (): readonly number[] => (quantity("ml").unit === "ml" ? [250, 500] : [8, 16]);
 
 export const MEALS = [
   ["BREAKFAST", "Breakfast"],
@@ -154,7 +157,7 @@ export function describeEntry(type: LogType, data: unknown): { title: string; de
   const n = (v: number) => FORMATS.grouped(v);
   switch (type) {
     case "hydration-log":
-      return { title: "Water", detail: `${n((data as LogData[typeof type]).ml)} ml` };
+      return { title: "Water", detail: quantityText((data as LogData[typeof type]).ml, "ml", "grouped") };
     case "nutrition-log": {
       const f = data as LogData[typeof type];
       const macros = [f.protein != null && `${f.protein} g protein`, f.carbs != null && `${f.carbs} g carbs`, f.fat != null && `${f.fat} g fat`];
@@ -163,7 +166,7 @@ export function describeEntry(type: LogType, data: unknown): { title: string; de
       return { title: f.name ?? meal, detail: f.portion ? `${f.portion} · ${detail}` : detail };
     }
     case "weight":
-      return { title: "Weight", detail: `${(data as LogData[typeof type]).kg} kg` };
+      return { title: "Weight", detail: quantityText((data as LogData[typeof type]).kg, "kg", "decimal1") };
     case "body-fat":
       return { title: "Body fat", detail: `${(data as LogData[typeof type]).pct}%` };
     case "oxygen-saturation":

@@ -13,7 +13,7 @@ import { setPhoto, useApp } from "@/state/app";
 import { Button } from "@/ui/Button";
 import { toast } from "@/ui/Toast";
 import { UserAvatar } from "@/ui/shells/UserAvatar";
-import { DAY, formatDay } from "@/lib/format";
+import { DAY, formatDay, heightText } from "@/lib/format";
 import type { SettingsVM } from "@/queries/types";
 import { CAPTION } from "@/ui/metrics/primitives";
 import { SectionShell } from "@/ui/shells/SectionShell";
@@ -28,7 +28,7 @@ export function ProfileCard({ profile }: { profile: SettingsVM["profile"] }) {
     ["Birth date", formatDay(profile.birthDate, DAY.full)],
     ["Age", String(profile.age)],
     ["Sex", profile.sex === "male" ? "Male" : "Female"],
-    ["Height", profile.heightCm ? `${profile.heightCm} cm` : "Not set"],
+    ["Height", profile.heightCm ? heightText(profile.heightCm) : "Not set"],
     ["Max heart rate", `${profile.maxHr} bpm, ${profile.maxHrSource}`],
     ["Time zone", profile.timeZone],
   ];

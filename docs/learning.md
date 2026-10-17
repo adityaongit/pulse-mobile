@@ -794,3 +794,29 @@ flowchart LR
   E -->|yes| F[throws: Text strings must be rendered within Text]
   D & F --> G[ScreenError shows; the app stays open]
 ```
+
+## Units and the clock
+
+Pulse stores every value in metric (kg, km, cm, °C, ml, m). The person picks metric or imperial and a 24- or 12-hour
+clock in Settings › App; the choice lives in the profile (`display`, a JSON column), and before they pick, the phone's
+own region and clock decide (`expo-localization`: `measurementSystem === "us"` and `uses24hourClock`). The app state
+applies it whenever the profile changes (`src/state/display.ts`), and so does the background task before it posts a
+notification.
+
+The conversion sits where a view model reads a stored value: each metric spec goes through `inUnits` (`src/lib/units.ts`),
+which swaps its unit and wraps its `pick`. Everything after the pick is linear, so averages, changes, chart scales, goal
+lines and the sentences built from them all come out in the shown units, and the chart and row components never see a
+unit system. A difference from a baseline (skin temperature) is marked `deviation` and scales without the °F offset:
++0.5 °C is +0.9 °F. Typed values (height, weight, water, goal targets) go the other way through `quantity(unit).stored`.
+The daily export stays metric, with metric column names. Times print through `clock` and `timeOfDay`
+(`src/lib/format.ts`), built from the hour and minute rather than Intl's 12-hour output, whose space before AM/PM
+differs between engines (some print U+202F, which the app's fonts lack).
+
+```mermaid
+flowchart LR
+  S[(stored: kg, km, °C)] --> P["spec.pick"]
+  P --> U["inUnits: unit and pick in lb, mi, °F"]
+  U --> VM[view model: values, averages, ranges]
+  VM --> UI[rows and charts, unit-blind]
+  T[typed: lb, ft in, fl oz] --> B["quantity(unit).stored"] --> S
+```

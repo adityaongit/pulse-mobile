@@ -1,4 +1,5 @@
 // Home `/` (spec §7.1). Ported from Pulse's src/server/queries/home.ts.
+import { inUnits, shownValue } from "@/lib/units";
 import { addDays, localMinutes } from "@/lib/time";
 import { energyBand } from "@/core/engine/energyBank";
 import {
@@ -261,7 +262,13 @@ const spec = (
   direction: KeyStat["direction"],
   href?: string,
   format?: KeyStat["format"],
-): StatSpec => ({ pick, metric, ...(unit && { unit }), direction, ...(href && { href }), ...(format && { format }) });
+  deviation = false,
+): StatSpec => {
+  // In the person's units (src/lib/units.ts): the day's value, and the pick its average reads.
+  const s = inUnits({ unit, pick, deviation });
+  const value = metric.value === null ? metric : { ...metric, value: shownValue(unit, metric.value, deviation) };
+  return { pick: s.pick, metric: value, ...(s.unit && { unit: s.unit }), direction, ...(href && { href }), ...(format && { format }) };
+};
 
 /** Each dashboard metric on `row`'s day: its value path (for averages), the metric with its reason, unit and link. */
 function statSpecs(row: DayRow | undefined, isToday: boolean): Record<DashboardKey, StatSpec> {
@@ -278,7 +285,7 @@ function statSpecs(row: DayRow | undefined, isToday: boolean): Record<DashboardK
     calories: spec((r) => r.metrics?.calories, maybe(m?.calories, dailyReason), "kcal", "neutral", metricHref("calories")),
     steps: spec((r) => r.metrics?.steps, maybe(m?.steps, dailyReason), undefined, "up", metricHref("steps")),
     spo2: spec((r) => r.metrics?.spo2Pct, maybe(m?.spo2Pct, vitalReason(row, isToday)), "%", "up", "/health/monitor"),
-    skin: spec(skin, maybe(row && skin(row), skinReason), "°C", "toward_zero", "/health/monitor"),
+    skin: spec(skin, maybe(row && skin(row), skinReason), "°C", "toward_zero", "/health/monitor", undefined, true),
   } as Record<DashboardKey, StatSpec>;
   // Shown-only readings: missing simply means the source had none for the day.
   for (const b of BODY_METRICS) {

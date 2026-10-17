@@ -4,6 +4,7 @@
 // views behind the day charts (heart rate, Day Strain as it builds, stress, Energy Bank, the night's stages and heart
 // rate). Built from the same day rows and series as the screens' own queries, so every number matches the card it was
 // opened from.
+import { inUnits } from "@/lib/units";
 import { timeline } from "@/core/engine/context";
 import { addDays, fractionalYears } from "@/lib/time";
 import { type FormatKey, type GoodDirection } from "./_lib";
@@ -41,6 +42,8 @@ export type ChartDef = {
   sparse?: boolean;
   /** Shade the normal range (mean ± 1 σ of the last 90 days). */
   baseline?: boolean;
+  /** A difference from a baseline (skin temperature): converts without a unit's offset (src/lib/units.ts). */
+  deviation?: boolean;
   reference?: { y: number; label: string };
   /** A fixed y domain (band and stress metrics). */
   domain?: [number, number];
@@ -72,6 +75,7 @@ export const CHART_METRICS: readonly ChartDef[] = [
       colorBy: m.colorBy,
       direction: m.direction,
       pick: m.pick,
+      ...(m.deviation && { deviation: true }),
       ...(m.provisional && { provisional: m.provisional }),
       ...(m.partialToday && { partialToday: true }),
       mark: LINE.has(m.key) ? "line" : "bar",
@@ -110,7 +114,7 @@ export const CHART_METRICS: readonly ChartDef[] = [
   { key: "debt", label: "Sleep debt", group: "Recovery & sleep", unit: "h", format: "decimal1", colorBy: "sleep", direction: "down", pick: (r) => (r.sleep?.main ? r.sleep.debtMin / 60 : null), mark: "bar", day: "sleep" },
   { key: "energy", label: "Energy Bank", group: "Recovery & sleep", unit: "%", format: "int", colorBy: "band", direction: "up", pick: (r) => r.energyBank?.value, mark: "bar", domain: [0, 100], day: "energy" },
   { key: "spo2", label: "Blood oxygen", group: "Vitals", unit: "%", format: "decimal1", colorBy: "single", direction: "up", pick: (r) => r.metrics?.spo2Pct, mark: "line", baseline: true },
-  { key: "skin_temp", label: "Skin temp (from baseline)", group: "Vitals", unit: "°C", format: "signed1", colorBy: "single", direction: "neutral", pick: (r) => r.recovery?.inputs.skinTempDev, mark: "line", baseline: true },
+  { key: "skin_temp", label: "Skin temp (from baseline)", group: "Vitals", unit: "°C", format: "signed1", colorBy: "single", direction: "neutral", pick: (r) => r.recovery?.inputs.skinTempDev, mark: "line", baseline: true, deviation: true },
   { key: "vo2max", label: "VO2 max", group: "Vitals", unit: "ml/kg/min", format: "decimal1", colorBy: "single", direction: "up", pick: (r) => r.metrics?.vo2maxRun ?? r.metrics?.vo2maxDaily, mark: "line", sparse: true },
   {
     key: "pulse_age",
@@ -129,7 +133,11 @@ export const CHART_METRICS: readonly ChartDef[] = [
 /** The picker's sections, Trends' order, each with its metrics. */
 export const CHART_GROUPS = TREND_GROUPS.map((group) => ({ group, metrics: CHART_METRICS.filter((m) => m.group === group) })).filter((g) => g.metrics.length > 0);
 
-export const chartDef = (key: string | undefined): ChartDef | null => CHART_METRICS.find((m) => m.key === key) ?? null;
+/** A metric as the explorer shows it: in the person's units (src/lib/units.ts), its unit and its values alike. */
+export const chartDef = (key: string | undefined): ChartDef | null => {
+  const def = CHART_METRICS.find((m) => m.key === key);
+  return def ? inUnits(def) : null;
+};
 
 /** The day views' series names (the legend's and the readout's), units and formats. */
 export const DAY_VIEW: Record<DayView, { label: string; unit?: string; format: FormatKey }> = {
@@ -160,7 +168,7 @@ export type ChartSeriesVM = {
 };
 
 export async function getChartSeries(key: string, ctx: QueryCtx): Promise<ChartSeriesVM> {
-  const def = chartDef(key) ?? CHART_METRICS[0];
+  const def = chartDef(key) ?? inUnits(CHART_METRICS[0]);
   const today = todayOf(ctx);
   const earliest = addDays(today, -(MAX_DAYS - 1));
   const first = (await firstDay(ctx)) ?? today;

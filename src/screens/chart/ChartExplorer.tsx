@@ -163,7 +163,7 @@ export default function ChartExplorer() {
   const { today } = useShellCalendar();
   const { goals } = useGoals();
 
-  const def: ChartDef = chartDef(params.metric) ?? CHART_METRICS[0];
+  const def: ChartDef = chartDef(params.metric) ?? chartDef(CHART_METRICS[0].key)!;
   const range: Range = parseRange(typeof params.r === "string" ? params.r : undefined, !!def.day);
   const mode = range === "day" ? "day" : "daily";
   const view = mode === "day" ? def.day! : null;

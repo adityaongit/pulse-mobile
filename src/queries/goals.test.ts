@@ -198,7 +198,7 @@ describe("the goal model (src/state/goals.ts)", () => {
   it("keeps targets inside their limits", () => {
     expect(validateTarget("steps", 10_000)).toBeNull();
     expect(validateTarget("steps", 500)).toBe("Between 1,000 and 50,000");
-    expect(validateTarget("steps", 10_000.5)).toBe("Whole numbers only");
+    expect(parseTarget("steps", "10000.5")).toEqual({ value: null, error: "Whole numbers only" });
     expect(validateTarget("distance", 8.5)).toBeNull();
     expect(validateTarget("sleep", null)).toBeNull();
     expect(validateTarget("water", null)).toBe("Enter a number");

@@ -3,8 +3,14 @@
 import { z } from "zod";
 import type { Profile } from "@/data/types";
 import { defaultSleepGoal } from "@/core/engine/sleep";
+import { heightText } from "@/lib/format";
 import { wholeYears } from "@/lib/time";
 import { isTimeZone } from "@/lib/timeZone";
+
+/** Heights the profile takes, kept in cm. */
+const HEIGHT_CM = { min: 100, max: 250 };
+/** The height limits in the person's units: "Between 100 cm and 250 cm", or "Between 3′ 3″ and 8′ 2″". */
+const heightRange = () => `Between ${heightText(HEIGHT_CM.min)} and ${heightText(HEIGHT_CM.max)}`;
 
 /** What onboarding and Settings submit. Ages 13 to 100. */
 export const ProfileInput = z.object({
@@ -14,7 +20,7 @@ export const ProfileInput = z.object({
   }, "Enter a birth date between 13 and 100 years ago"),
   sex: z.enum(["male", "female"], "Choose one"),
   maxHr: z.coerce.number().int().min(100, "Between 100 and 240").max(240, "Between 100 and 240").nullable(),
-  heightCm: z.coerce.number().min(100, "Between 100 and 250 cm").max(250, "Between 100 and 250 cm").nullable(),
+  heightCm: z.coerce.number().min(HEIGHT_CM.min, { error: heightRange }).max(HEIGHT_CM.max, { error: heightRange }).nullable(),
   timeZone: z.string().refine(isTimeZone, "Choose a time zone"),
   name: z.string().max(60, "Up to 60 characters").nullable(),
 });

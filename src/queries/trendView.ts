@@ -1,4 +1,5 @@
 import { deltaTone, type GoodDirection, type Tone } from "@/lib/bands";
+import { inUnits } from "@/lib/units";
 import { FEATURES } from "@/lib/features";
 import { formatDay, formatValue, type FormatKey } from "@/lib/format";
 import {
@@ -293,7 +294,8 @@ export const TREND_VIEW = {
 
 export type TrendViewKey = keyof typeof TREND_VIEW;
 export const isTrendViewKey = (k: string): k is TrendViewKey => k in TREND_VIEW && !flagOff(k as TrendViewKey);
-const def = (k: TrendViewKey): Def => TREND_VIEW[k];
+/** A metric in the person's units (src/lib/units.ts), its unit and its values alike. */
+const def = (k: TrendViewKey): Def => inUnits<Def>(TREND_VIEW[k]);
 const flagOff = (k: TrendViewKey) => {
   const f = def(k).flag;
   return f !== undefined && !FEATURES[f];

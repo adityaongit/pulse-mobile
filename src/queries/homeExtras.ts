@@ -2,6 +2,7 @@
 // (Recovery, sleep consistency, hours, restorative sleep, debt, Day Strain, weekly zones and strength, VO2 max, lean
 // mass), the Stress Monitor tile, body and the shown-only extras. halo's getHome carries only the v1 rows, body and
 // extras, so the rows and the editor's "No data yet" marks are built here, as the earlier Pulse query built them.
+import { inUnits, shownValue } from "@/lib/units";
 import { BODY_METRICS, DASHBOARD_DEFAULT, DASHBOARD_LABEL, DASHBOARD_METRICS, type DashboardKey, isDashboardKey, PHONE_DEFAULT, type ScoredKey } from "@/lib/dashboard";
 import { EXTRA_METRICS, type ExtraKey, type ExtraMetric } from "@/lib/extraMetrics";
 import type { ReasonCode } from "@/lib/reasons";
@@ -31,7 +32,13 @@ const spec = (
   direction: KeyStat["direction"],
   href?: string,
   format?: KeyStat["format"],
-): StatSpec => ({ pick, metric, ...(unit && { unit }), direction, ...(href && { href }), ...(format && { format }) });
+  deviation = false,
+): StatSpec => {
+  // In the person's units (src/lib/units.ts): the day's value, and the pick its average reads.
+  const s = inUnits({ unit, pick, deviation });
+  const value = metric.value === null ? metric : { ...metric, value: shownValue(unit, metric.value, deviation) };
+  return { pick: s.pick, metric: value, ...(s.unit && { unit: s.unit }), direction, ...(href && { href }), ...(format && { format }) };
+};
 
 /** Strength-workout minutes per day over [from, to]. */
 async function strengthMinutes(ctx: QueryCtx, from: string, to: string): Promise<Map<string, number>> {
@@ -60,7 +67,7 @@ function statSpecs(row: DayRow | undefined, isToday: boolean, rows: Map<string, 
     calories: spec((r) => r.metrics?.calories, maybe(m?.calories, dailyReason), "kcal", "neutral", metricHref("calories")),
     steps: spec((r) => r.metrics?.steps, maybe(m?.steps, dailyReason), undefined, "up", metricHref("steps")),
     spo2: spec((r) => r.metrics?.spo2Pct, maybe(m?.spo2Pct, vitalReason(row, isToday)), "%", "up", metricHref("spo2")),
-    skin: spec(skin, maybe(row && skin(row), skinReason), "°C", "toward_zero", metricHref("skin")),
+    skin: spec(skin, maybe(row && skin(row), skinReason), "°C", "toward_zero", metricHref("skin"), undefined, true),
     stress: spec((r) => r.stress?.average, maybe(row?.stress?.average, dailyReason), undefined, "down", "/health/stress", "int"),
   } as Record<DashboardKey, StatSpec>;
   // The reference app's rows (dashboard-03..09); each opens its Trend View, or its screen where it has none.

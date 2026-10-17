@@ -6,7 +6,8 @@
 import { useState } from "react";
 import { Modal, Platform, Pressable } from "react-native";
 import { DateTimePicker } from "@expo/ui/community/datetime-picker";
-import { DAY, formatDay } from "@/lib/format";
+import { DAY, formatDay, timeOfDay } from "@/lib/format";
+import { displayPrefs } from "@/lib/units";
 import { Button } from "@/ui/Button";
 import { haptic } from "@/ui/haptics";
 import { Panel } from "@/ui/Panel";
@@ -33,7 +34,7 @@ export function DateTimeField({ value, onChange, mode, max, min, label }: DateTi
   const clamp = (w: string) => (max && w > max ? max : min && w < min ? min : w);
   const maximumDate = max ? wallToDate(max) : undefined;
   const minimumDate = min ? wallToDate(min) : undefined;
-  const shown = value ? (date ? formatDay(value, DAY.full) : `${formatDay(value.slice(0, 10), DAY.full)}, ${value.slice(11, 16)}`) : date ? "Choose a day" : "Choose a time";
+  const shown = value ? (date ? formatDay(value, DAY.full) : `${formatDay(value.slice(0, 10), DAY.full)}, ${timeOfDay(Number(value.slice(11, 13)), Number(value.slice(14, 16)))}`) : date ? "Choose a day" : "Choose a time";
   const current = wallToDate(value || (date ? dateToDay(new Date()) : dateToWall(new Date())));
 
   const field = (
@@ -109,7 +110,7 @@ export function DateTimeField({ value, onChange, mode, max, min, label }: DateTi
           }}
         />
       )}
-      {step === "time" && <DateTimePicker value={wallToDate(value)} mode="time" is24Hour onDismiss={() => setStep(null)} onValueChange={(_e, d) => (setStep(null), onChange(clamp(`${value.slice(0, 10)}T${dateToWall(d).slice(11)}`)))} />}
+      {step === "time" && <DateTimePicker value={wallToDate(value)} mode="time" is24Hour={displayPrefs().hours === 24} onDismiss={() => setStep(null)} onValueChange={(_e, d) => (setStep(null), onChange(clamp(`${value.slice(0, 10)}T${dateToWall(d).slice(11)}`)))} />}
     </>
   );
 }

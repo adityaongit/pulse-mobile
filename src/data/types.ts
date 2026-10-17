@@ -2,6 +2,8 @@
 // src/server/pipeline/data.ts and its Postgres schema, so the ported pipeline and queries stay line-for-line.
 // All timestamps are unix seconds. `day` is a local civil date "YYYY-MM-DD".
 
+import type { DisplayPrefs } from "@/lib/units";
+
 export type Sex = "male" | "female";
 
 export type Profile = {
@@ -24,6 +26,8 @@ export type Profile = {
    * study, shared-machinery.md § Sleep goal). Absent: 7.5 h. Onboarding sets the age default, automatic.
    */
   sleepGoal?: { hours: number; method: "manual" | "automatic" } | null;
+  /** Units and the clock (Settings › App). Absent: the phone's own (src/lib/units.ts deviceDisplayPrefs). */
+  display?: DisplayPrefs | null;
 };
 
 /** One sleep session; `day` is the local wake day. */

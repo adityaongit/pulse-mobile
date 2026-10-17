@@ -3,6 +3,7 @@
 // with no UI) finds the task before anything renders. The task opens the store, checks the setting, the source and
 // its access (Health Connect's background read permission), runs the shared runSync, and logs the outcome (log.ts).
 // Copied from halo's src/background/task.ts without the Google source.
+import { applyDisplay } from "@/state/display";
 import * as BackgroundTask from "expo-background-task";
 import * as TaskManager from "expo-task-manager";
 import { permissionState } from "@/health/connect";
@@ -24,6 +25,8 @@ export async function runBackgroundTask(): Promise<BackgroundTask.BackgroundTask
     const settings = await readSettings();
     const store = await backgroundStore();
     const [profile, source] = await Promise.all([store.getProfile(), readSource()]);
+    // The notifications it may post print times and values on the person's clock and units.
+    applyDisplay(profile);
     const perms = source === "health_connect" ? await permissionState().catch(() => null) : null;
     const skip = taskSkipReason({ enabled: settings.backgroundSync, hasProfile: !!profile, source, background: !!perms?.background });
     if (skip || !profile || source !== "health_connect") {

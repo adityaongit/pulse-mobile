@@ -1,5 +1,7 @@
 // The log sheets' form state and its translation to the log action's input: the pure half of pulse's
 // (app)/journal/Log.tsx (EMPTY, toInput, num, wallNow), unchanged, so it is tested in Node (form.test.ts).
+import { unitWord } from "@/lib/format";
+import { quantity } from "@/lib/units";
 import type { FoodItemInput, LogInput } from "@/actions/log";
 import type { LogKind, Meal } from "@/queries/log";
 import { wall } from "@/lib/time";
@@ -65,8 +67,10 @@ export function toInput(kind: LogKind, f: Form, at: string): LogInput | string {
   const a = (k: string) => f[k] as string[];
   switch (kind) {
     case "water": {
-      const ml = num(s("ml"));
-      return ml && Number.isInteger(ml) ? { kind, ml, at } : "Enter the amount in millilitres.";
+      // Typed in the person's units (a whole number of ml or fl oz), kept as whole millilitres.
+      const typed = num(s("ml"));
+      const q = quantity("ml");
+      return typed && Number.isInteger(typed) ? { kind, ml: Math.round(q.stored(typed)), at } : `Enter the amount in ${unitWord(q.unit)}.`;
     }
     case "food": {
       const [kcal, protein, carbs, fat] = ["kcal", "protein", "carbs", "fat"].map((k) => num(s(k)));
@@ -76,11 +80,13 @@ export function toInput(kind: LogKind, f: Form, at: string): LogInput | string {
       return { kind, name: s("name"), meal: s("meal") as never, kcal, protein, carbs, fat, at };
     }
     case "weight": {
-      const kg = num(s("kg"));
+      // Typed in the person's units, kept in kg.
+      const typed = num(s("kg"));
       const fatPct = num(s("fat"));
-      if (kg == null || Number.isNaN(kg)) return "Enter your weight in kilograms.";
+      const q = quantity("kg");
+      if (typed == null || Number.isNaN(typed)) return `Enter your weight in ${unitWord(q.unit)}.`;
       if (Number.isNaN(fatPct)) return "Body fat is a percentage, as a number.";
-      return { kind, kg, fatPct, at };
+      return { kind, kg: q.stored(typed), fatPct, at };
     }
     case "spo2": {
       const pct = num(s("pct"));

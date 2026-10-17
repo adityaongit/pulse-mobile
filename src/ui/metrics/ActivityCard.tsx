@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { View } from "react-native";
 import { clock, formatValue, spoken } from "@/lib/format";
+import { quantity } from "@/lib/units";
 import type { Metric } from "@/lib/reasons";
 import { cn } from "../cn";
 import { Icon } from "../Icon";
@@ -36,10 +37,13 @@ export type ActivityCardProps = {
   paceS?: number | null;
 };
 
-/** "5.21 km at 5:32 /km", "18.40 km", or null with no distance. */
+/** "5.21 km at 5:32 /km", "3.24 mi at 8:55 /mi", "18.40 km", or null with no distance: in the person's units. */
 export function distanceText(km: number | null | undefined, paceS?: number | null) {
   if (km == null) return null;
-  return paceS == null ? `${formatValue("decimal2", km)} km` : `${formatValue("decimal2", km)} km at ${formatValue("pace", paceS)} /km`;
+  const d = quantity("km");
+  const p = quantity("/km");
+  const distance = `${formatValue("decimal2", d.value(km))} ${d.unit}`;
+  return paceS == null ? distance : `${distance} at ${formatValue("pace", p.value(paceS))} ${p.unit}`;
 }
 
 // Rows are 10 px inside a 16 px card with a 6 px inset; the chip is 8 px inside the row (concentric, spec §2.4).
@@ -99,7 +103,8 @@ export function ActivityCard({ name, kind, strain, start, end, href, timeZone, d
   const noStrain = strain.value === null;
   // The full reason when it is the only caption; beside a distance, the short form keeps the row on one line.
   const caption = distance ? (noStrain ? `${distance} · No strain` : distance) : noStrain ? "No strain: not enough heart-rate data" : undefined;
-  const spokenDistance = distanceKm == null ? "" : `, ${spoken(formatValue("decimal2", distanceKm), "km")}${paceS == null ? "" : ` at ${spoken(formatValue("pace", paceS), "/km")}`}`;
+  const [d, p] = [quantity("km"), quantity("/km")];
+  const spokenDistance = distanceKm == null ? "" : `, ${spoken(formatValue("decimal2", d.value(distanceKm)), d.unit)}${paceS == null ? "" : ` at ${spoken(formatValue("pace", p.value(paceS)), p.unit)}`}`;
   return (
     <TimelineRow
       href={href}

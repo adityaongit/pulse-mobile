@@ -2,6 +2,8 @@
 // oxygen, mood, symptoms, or (female profiles) a period or ovulation test. Every entry stays on the phone
 // (`logged_entries`, source "pulse"): nothing is written to Health Connect or Google. Same validation and messages as
 // pulse's src/server/actions/log.ts.
+import { limitText, unitWord } from "@/lib/format";
+import { quantity } from "@/lib/units";
 import { addDays, fromWall, localDay } from "@/lib/time";
 import {
   CYCLE_SYMPTOMS,
@@ -68,15 +70,15 @@ function invalid(v: LogInput): string | null {
   if ("at" in v && v.at !== undefined && !validAt(v.at)) return "Choose a time";
   switch (v.kind) {
     case "water":
-      if (!num(v.ml) || !Number.isInteger(v.ml)) return "Enter the amount in millilitres.";
-      if (v.ml < 10) return "At least 10 ml";
-      if (v.ml > 5000) return "At most 5,000 ml";
+      if (!num(v.ml) || !Number.isInteger(v.ml)) return `Enter the amount in ${unitWord(quantity("ml").unit)}.`;
+      if (v.ml < 10) return `At least ${limitText(10, "ml", "min")} ${quantity("ml").unit}`;
+      if (v.ml > 5000) return `At most ${limitText(5000, "ml", "max")} ${quantity("ml").unit}`;
       return null;
     case "food":
       if (!MEAL_KEYS.has(v.meal) || (v.via !== undefined && !VIA_KEYS.has(v.via))) return ENUM;
       return invalidFood(v);
     case "weight":
-      if (!num(v.kg) || v.kg < 20 || v.kg > 300) return "Between 20 and 300 kg";
+      if (!num(v.kg) || v.kg < 20 || v.kg > 300) return `Between ${limitText(20, "kg", "min")} and ${limitText(300, "kg", "max")} ${quantity("kg").unit}`;
       if (v.fatPct !== null && (!num(v.fatPct) || v.fatPct < 2 || v.fatPct > 75)) return "Between 2 and 75%";
       return null;
     case "spo2":

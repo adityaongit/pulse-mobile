@@ -1,7 +1,7 @@
 // A metric screen's own sections (web: metric/[key]/sections.tsx): what the metric is made of, by kind.
 import type { ReactNode } from "react";
 import { View } from "react-native";
-import { clock, DAY, durationWords, formatDay, formatValue, hmm } from "@/lib/format";
+import { clock, clockTick, DAY, durationWords, formatDay, formatValue, hmm } from "@/lib/format";
 import type { Metric } from "@/lib/reasons";
 import { activityHref } from "@/lib/url";
 import type { MetricDetailVM, Section } from "@/queries/metric";
@@ -187,7 +187,7 @@ function Hourly({ s, vm, timeZone }: Ctx & { s: Extract<Section, { kind: "hourly
             <>
               <ColumnChart
                 summary={`Steps by hour${peak?.value ? `, most at ${peak.label} with ${formatValue("grouped", peak.value)}` : ""}.`}
-                data={hours.map((h, i) => ({ label: h.label, title: `${h.label} - ${hours[i + 1]?.label ?? "24:00"}`, value: h.value }))}
+                data={hours.map((h, i) => ({ label: h.label, title: `${h.label} - ${hours[i + 1]?.label ?? clockTick(h.t + 3_600_000, timeZone)}`, value: h.value }))}
                 format="grouped"
                 unit="steps"
                 tickEvery={6}

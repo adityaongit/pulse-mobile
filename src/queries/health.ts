@@ -1,10 +1,11 @@
 // Health hub and its four detail screens (spec §7.6–7.10). Ported from Pulse's src/server/queries/health.ts.
+import { inUnits, quantity, shownValue } from "@/lib/units";
 import { fitnessLevel } from "@/core/algorithms/fitnessLevel";
 import { HEALTHSPAN_TERM_COUNT, healthspanConfig, type HealthspanContribution } from "@/core/algorithms/healthspan";
 import { minuteMeanHr } from "@/core/algorithms/stress";
 import type { LoadStatus } from "@/core/engine/strain";
-import { addDays, daysBetween, fractionalYears, localMidnight, wall } from "@/lib/time";
-import { acwrTone, dayLabel, formatDay, weekOf } from "./_lib";
+import { addDays, daysBetween, fractionalYears, localMidnight } from "@/lib/time";
+import { acwrTone, clock, dayLabel, formatDay, weekOf } from "./_lib";
 import {
   type DayRow,
   dayStartOf,
@@ -263,10 +264,11 @@ export async function getHealthspan(day: string, ctx: QueryCtx): Promise<Healths
   };
 }
 
-/** Lean body mass's caption: the body composition behind the % (lean and fat mass in kg, and per m² of height). */
+/** Lean body mass's caption: the body composition behind the % (lean and fat mass in the person's units; FFMI and FMI are kg/m² by definition). */
 function leanCaption(c: HealthspanContribution, b: HealthspanBody | null | undefined, age: number) {
   const parts = [`${(100 - c.value).toFixed(1)}% body fat`];
-  if (b?.leanKg != null && b.fatKg != null) parts.push(`${b.leanKg.toFixed(1)} kg lean, ${b.fatKg.toFixed(1)} kg fat`);
+  const kg = quantity("kg");
+  if (b?.leanKg != null && b.fatKg != null) parts.push(`${kg.value(b.leanKg).toFixed(1)} ${kg.unit} lean, ${kg.value(b.fatKg).toFixed(1)} ${kg.unit} fat`);
   if (b?.ffmi != null && b.fmi != null) parts.push(`FFMI ${b.ffmi.toFixed(1)}, FMI ${b.fmi.toFixed(1)} kg/m²`);
   const note = c.estimated
     ? " Body fat estimated from your BMI."
@@ -339,8 +341,11 @@ export async function getMonitor(day: string, ctx: QueryCtx, preloaded?: Map<str
     const reading = hm && hm.reason === null ? hm.vitals.find((x) => x.key === v.key) : undefined;
     // The value Health Monitor judged, so the number, its chip and the count agree; the day's own reading only where
     // the monitor had none (no status then).
-    const value = reading?.value ?? (row ? v.pick(row) : null);
-    const range = reading?.range ?? null;
+    // In the person's units (src/lib/units.ts); skin temperature is a deviation, so it scales without the offset.
+    const q = inUnits({ unit: v.unit, pick: v.pick, deviation: v.signed });
+    const f = (x: number) => shownValue(v.unit, x, v.signed);
+    const value = reading?.value != null ? f(reading.value) : row ? q.pick(row) : null;
+    const range = reading?.range ? { low: f(reading.range.low), high: f(reading.range.high) } : null;
     const status = reading?.status ?? "no_data";
     let chip: Vital["chip"] = null;
     if (range && finite(value)) {
@@ -358,13 +363,13 @@ export async function getMonitor(day: string, ctx: QueryCtx, preloaded?: Map<str
       key: v.key,
       label: v.key === "skinTempDev" ? "Skin temp" : VITAL_LABEL[v.key],
       short: v.short,
-      unit: v.unit,
+      unit: q.unit,
       metric: finite(value) ? ok(value, false, [...tags]) : none(reason),
       range,
       status,
       chip,
       trend: {
-        points: trendPoints(rows, day, v.pick, 30),
+        points: trendPoints(rows, day, q.pick, 30),
         baseline: range && v.key !== "spo2" ? { mean: (range.low + range.high) / 2, sd: (range.high - range.low) / 2 } : null,
       },
     };
@@ -425,7 +430,7 @@ async function heartRhythm(ctx: QueryCtx, day: string): Promise<HeartRhythm> {
     .map((r): EcgReading => {
       const d = r.data as { result?: string; avgBpm?: number | null };
       const result = d.result ?? "RESULT_CLASSIFICATION_UNSPECIFIED";
-      return { id: r.id, at: ms(r.ts), day: r.day, time: wall(r.ts, ctx.timeZone).time.slice(0, 5), result, ...(ECG_RESULT[result] ?? NO_RESULT), avgBpm: finite(d.avgBpm) ? d.avgBpm : null };
+      return { id: r.id, at: ms(r.ts), day: r.day, time: clock(ms(r.ts), ctx.timeZone), result, ...(ECG_RESULT[result] ?? NO_RESULT), avgBpm: finite(d.avgBpm) ? d.avgBpm : null };
     });
   const irn = all.filter((r) => r.kind === "irn");
   return { ecg, irn: { count: irn.length, latestAt: irn[0] ? ms(irn[0].ts) : null, latestDay: irn[0]?.day ?? null } };
@@ -459,14 +464,15 @@ async function measurements(ctx: QueryCtx, day: string, today: string): Promise<
     const rs = all[i];
     if (!m.always && !rs.length) continue;
     const latest = rs.find((r) => r.day <= day);
-    const prior = latest ? rs.filter((r) => r.day >= addDays(latest.day, -30) && r.day < latest.day).map((r) => r.value) : [];
+    const u = quantity(m.unit);
+    const prior = latest ? rs.filter((r) => r.day >= addDays(latest.day, -30) && r.day < latest.day).map((r) => u.value(r.value)) : [];
     const { mean, sd } = meanSd(prior);
     out.push({
       key: m.key,
       label: m.label,
-      unit: m.unit,
+      unit: u.unit,
       format: m.format,
-      metric: latest ? ok(latest.value) : none("no_data"),
+      metric: latest ? ok(u.value(latest.value)) : none("no_data"),
       average: mean,
       sd,
       direction: "neutral",
@@ -526,7 +532,7 @@ function stressInsight(st: NonNullable<DayRow["stress"]>, tz: string) {
   const lead = `Most of your time was in ${top} stress.`;
   if (!total) return null;
   if (st.longestHigh && st.longestHigh.minutes >= 10) {
-    const at = wall(st.longestHigh.start, tz).time.slice(0, 5);
+    const at = clock(ms(st.longestHigh.start), tz);
     return `${lead} Your longest high-stress stretch started at ${at} and lasted ${st.longestHigh.minutes} minutes.`;
   }
   return `${lead} You had no long stretch of high stress.`;

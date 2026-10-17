@@ -1,5 +1,6 @@
 // Trends `/trends?metric=&r=` (More): one daily metric over up to a year, with each range's average against
 // the range before it. Ported from Pulse's src/server/queries/trends.ts.
+import { inUnits } from "@/lib/units";
 import { addDays } from "@/lib/time";
 import { EXTRA_METRICS, type ExtraKey, type FormatKey, type GoodDirection, metricHref, RANGE_DAYS, RANGES, type TrendRange } from "./_lib";
 import { type DayRow, finite, loadDays, none, ok, type QueryCtx, todayOf, dayStrainOf } from "./common";
@@ -42,6 +43,8 @@ export type TrendMetric = {
   provisional?: (r: DayRow) => boolean;
   /** Accrues through the day (Strain, steps): today is a gap, not a low bar. */
   partialToday?: boolean;
+  /** A difference from a baseline (skin temperature): converts without a unit's offset (src/lib/units.ts). */
+  deviation?: boolean;
 };
 
 /** Where each extra sits in the picker; typed by key, so a new extra metric must pick a section. */
@@ -79,7 +82,7 @@ const CORE: readonly TrendMetric[] = [
   { key: "rhr", group: "Vitals", label: "Resting heart rate", unit: "bpm", format: "int", colorBy: "single", direction: "down", href: metricHref("rhr"), column: "resting_hr_bpm", pick: (r) => r.rhr },
   { key: "resp", group: "Vitals", label: "Respiratory rate", unit: "rpm", format: "decimal1", colorBy: "single", direction: "neutral", href: metricHref("resp"), column: "respiratory_rate_rpm", pick: (r) => r.metrics?.respBpm },
   { key: "spo2", group: "Vitals", label: "Blood oxygen", unit: "%", format: "int", colorBy: "single", direction: "up", href: metricHref("spo2"), column: "spo2_pct", pick: (r) => r.metrics?.spo2Pct },
-  { key: "skin", group: "Vitals", label: "Skin temperature", unit: "°C", format: "decimal1", colorBy: "single", direction: "toward_zero", href: metricHref("skin"), column: "skin_temperature_deviation_c", pick: (r) => r.recovery?.inputs.skinTempDev },
+  { key: "skin", group: "Vitals", label: "Skin temperature", unit: "°C", format: "decimal1", colorBy: "single", direction: "toward_zero", href: metricHref("skin"), column: "skin_temperature_deviation_c", pick: (r) => r.recovery?.inputs.skinTempDev, deviation: true },
   { key: "stress", group: "Recovery & sleep", label: "Stress", format: "int", colorBy: "stress", direction: "down", href: "/health/stress", column: "stress_avg", pick: (r) => r.stress?.average, provisional: (r) => !!r.stress?.provisional, partialToday: true },
   { key: "steps", group: "Activity", label: "Steps", format: "grouped", colorBy: "single", direction: "up", href: metricHref("steps"), column: "steps", pick: (r) => r.metrics?.steps, partialToday: true },
   { key: "weight", group: "Body", label: "Weight", unit: "kg", format: "decimal1", colorBy: "single", direction: "neutral", href: metricHref("weight"), column: "weight_kg", pick: (r) => r.metrics?.weightKg },
@@ -104,10 +107,13 @@ export const TREND_METRICS: readonly TrendMetric[] = [
   })),
 ];
 
-export const parseTrendMetric = (raw: string | string[] | undefined): TrendMetric => {
-  const v = Array.isArray(raw) ? raw[0] : raw;
-  return TREND_METRICS.find((m) => m.key === v) ?? TREND_METRICS[0];
-};
+/**
+ * A metric as the screens show it: in the person's units (src/lib/units.ts), its unit and its values alike. Unknown
+ * keys fall back to the first. The daily export reads TREND_METRICS itself, in metric.
+ */
+export const trendMetric = (key: string | undefined): TrendMetric => inUnits(TREND_METRICS.find((m) => m.key === key) ?? TREND_METRICS[0]);
+
+export const parseTrendMetric = (raw: string | string[] | undefined): TrendMetric => trendMetric(Array.isArray(raw) ? raw[0] : raw);
 
 /** The longest range, and the days the chart gets. */
 const SPAN = RANGE_DAYS["1y"];
@@ -133,7 +139,7 @@ function emptyReason(m: TrendMetric, rows: Map<string, DayRow>, today: string): 
 }
 
 export async function getTrends(metric: TrendMetricKey, ctx: QueryCtx): Promise<TrendsVM> {
-  const m = TREND_METRICS.find((x) => x.key === metric) ?? TREND_METRICS[0];
+  const m = trendMetric(metric);
   const today = todayOf(ctx);
   // Two years: the 1Y average needs the year before it.
   const from = addDays(today, -(2 * SPAN - 1));

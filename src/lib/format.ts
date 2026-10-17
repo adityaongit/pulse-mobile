@@ -1,4 +1,5 @@
 import type { DeltaDir, Tone } from "./bands";
+import { displayPrefs, feetInches, quantity } from "./units";
 
 // Number, date and spoken-label formatting (spec §3.3, §6). Formatters are referenced by key so a
 // server component can hand them to a client component (functions do not cross that boundary).
@@ -125,15 +126,62 @@ export function pillLabel(date: string, today: string) {
 export const rangeLabel = (from: string, to: string) => `${formatDay(from, DAY.monthDay)} - ${formatDay(to, DAY.monthDay)}`;
 
 const clocks = new Map<string, Intl.DateTimeFormat>();
-/** Epoch ms → 24-hour "HH:mm" in `timeZone` (default: the runtime zone). */
-export function clock(ms: number, timeZone?: string) {
+/** The local hour (0-23) and minute of `ms` in `timeZone` (default: the runtime zone). */
+function hourMinute(ms: number, timeZone?: string) {
   const key = timeZone ?? "";
   let f = clocks.get(key);
-  if (!f) {
-    f = new Intl.DateTimeFormat(LOCALE, { hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZone });
-    clocks.set(key, f);
-  }
-  return f.format(ms);
+  if (!f) clocks.set(key, (f = new Intl.DateTimeFormat("en-GB", { hour: "numeric", minute: "numeric", hourCycle: "h23", timeZone })));
+  const parts = f.formatToParts(ms);
+  const get = (t: string) => Number(parts.find((p) => p.type === t)?.value ?? 0);
+  // `% 24`: some Intl engines print midnight as hour "24" even with hourCycle h23.
+  return { h: get("hour") % 24, m: get("minute") };
+}
+
+// Built from the parts, not Intl's 12-hour output: engines differ in the space before AM/PM (some print U+202F, which
+// the app's fonts lack).
+const twelve = (h: number) => h % 12 || 12;
+const period = (h: number) => (h < 12 ? "AM" : "PM");
+
+/** A time of day (hour 0-23) on the person's clock (Settings › App): "22:05", or "10:05 PM". */
+export const timeOfDay = (h: number, m: number) => (displayPrefs().hours === 24 ? `${pad(h)}:${pad(m)}` : `${twelve(h)}:${pad(m)}${NBSP}${period(h)}`);
+
+/** Epoch ms → the time on the person's clock, in `timeZone` (default: the runtime zone). */
+export function clock(ms: number, timeZone?: string) {
+  const { h, m } = hourMinute(ms, timeZone);
+  return timeOfDay(h, m);
+}
+
+/** A chart's time tick: `clock`, but a whole hour on the 12-hour clock is just "10 PM", short enough for an axis. */
+export function clockTick(ms: number, timeZone?: string) {
+  const { h, m } = hourMinute(ms, timeZone);
+  return displayPrefs().hours === 12 && m === 0 ? `${twelve(h)}${NBSP}${period(h)}` : clock(ms, timeZone);
+}
+
+/** A value stored in `unit`, in the person's units with its unit: "2,000 ml" or "68 fl oz", "70.0 kg" or "154.3 lb". */
+export function quantityText(v: number, unit: string, format: FormatKey) {
+  const q = quantity(unit);
+  return `${formatValue(format, q.value(v))}${isSymbolUnit(q.unit) ? "" : NBSP}${q.unit}`;
+}
+
+/**
+ * A limit kept in `unit`, as a number in the person's units, rounded inward so the shown number is itself allowed: as a
+ * minimum 20 kg reads "45" (lb), as a maximum 300 kg reads "661". Whole numbers from 10 up, one decimal below.
+ */
+export function limitText(v: number, unit: string, side: "min" | "max") {
+  const x = quantity(unit).value(v);
+  const step = Math.abs(x) >= 10 ? 1 : 0.1;
+  const inward = (side === "min" ? Math.ceil(x / step - 1e-9) : Math.floor(x / step + 1e-9)) * step;
+  return formatValue(step === 1 ? "grouped" : "decimal1", inward);
+}
+
+/** A unit as a word: "millilitres", "fluid ounces". */
+export const unitWord = (unit: string) => UNIT_WORDS[unit] ?? unit;
+
+/** Height as the person reads it: "178 cm", or "5′ 10″". */
+export function heightText(cm: number) {
+  if (displayPrefs().units === "metric") return `${Math.round(cm)}${NBSP}cm`;
+  const { feet, inches } = feetInches(cm);
+  return `${feet}′${NBSP}${inches}″`;
 }
 
 /** "38 minutes", "1 hour 12 minutes". */
@@ -173,7 +221,8 @@ const UNIT_WORDS: Record<string, string> = {
   ms: "milliseconds",
   bpm: "beats per minute",
   rpm: "breaths per minute",
-  "°C": "degrees",
+  "°C": "degrees Celsius",
+  "°F": "degrees Fahrenheit",
   kcal: "calories",
   "ml/kg/min": "millilitres per kilo per minute",
   x: "times",
@@ -181,13 +230,23 @@ const UNIT_WORDS: Record<string, string> = {
   h: "hours",
   km: "kilometres",
   "/km": "per kilometre",
+  mi: "miles",
+  "/mi": "per mile",
+  kg: "kilograms",
+  lb: "pounds",
+  m: "metres",
+  ft: "feet",
+  cm: "centimetres",
+  in: "inches",
+  ml: "millilitres",
+  "fl oz": "fluid ounces",
 };
 
 /** "124 milliseconds", "−0.4 degrees" → reads the minus sign as "minus". */
 export function spoken(value: string, unit?: string) {
   const v = value.replace(MINUS, "minus ");
   if (!unit) return v;
-  return `${v} ${UNIT_WORDS[unit] ?? unit}`;
+  return `${v} ${unitWord(unit)}`;
 }
 
 export type DialAria = {

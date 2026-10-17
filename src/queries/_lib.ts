@@ -78,17 +78,8 @@ export function dayLabel(date: string, today: string) {
   return formatDay(date, DAY.short);
 }
 
-const clocks = new Map<string, Intl.DateTimeFormat>();
-/** Epoch ms → 24-hour "HH:mm" in `timeZone`. */
-export function clock(ms: number, timeZone?: string) {
-  const key = timeZone ?? "";
-  let f = clocks.get(key);
-  if (!f) {
-    f = new Intl.DateTimeFormat(LOCALE, { hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZone });
-    clocks.set(key, f);
-  }
-  return f.format(ms);
-}
+/** The person's clock (src/lib/format.ts), which reads their 12- or 24-hour choice. */
+export { clock } from "@/lib/format";
 
 // ── url.ts ──────────────────────────────────────────────────────────────────
 

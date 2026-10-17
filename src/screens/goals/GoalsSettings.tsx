@@ -10,7 +10,8 @@ import { GOAL_KEYS, GOAL_META, type GoalKey } from "@/queries/goals";
 import { PLAN_KEYS, PLAN_META, type PlanKey } from "@/queries/weeklyPlan";
 import { STAT_ICON } from "@/screens/_lib/view";
 import { BODY, HINT, ROW_LABEL, ROW_RULE, Switch, TextField } from "@/screens/settings/controls";
-import { useGoals, isDefaultGoals, parseTarget, TARGET_LIMITS, withEnabled, withTarget, type TargetKey } from "@/state/goals";
+import { quantity } from "@/lib/units";
+import { useGoals, isDefaultGoals, parseTarget, TARGET_LIMITS, targetText, withEnabled, withTarget, type TargetKey } from "@/state/goals";
 import { useWeeklyPlan } from "@/state/weeklyPlan";
 import { Button } from "@/ui/Button";
 import { cn } from "@/ui/cn";
@@ -44,10 +45,10 @@ function TargetField({ icon, label, on, onToggle, unit, error, hint, field, rule
       <View className="flex-row items-center gap-3">
         <Icon icon={icon} size={20} tone={on ? "foreground" : "muted-foreground"} />
         <Text className={cn(ROW_LABEL, "min-w-0 flex-1", !on && "text-muted-foreground")}>{label}</Text>
-        {/* The unit sits beside the number (the card's title already says daily or weekly). */}
+        {/* The unit sits beside the number in the person's units (the card's title already says daily or weekly). */}
         <View className={cn("flex-row items-center gap-1.5", !on && "opacity-40")}>
           <View className="w-[70px]">{field}</View>
-          <Text numberOfLines={1} className="w-9 text-[13px] leading-[18px] text-muted-foreground">{shortUnit(unit)}</Text>
+          <Text numberOfLines={1} className="w-9 text-[13px] leading-[18px] text-muted-foreground">{unit}</Text>
         </View>
         <Switch value={on} onValueChange={onToggle} label={`${label} target`} />
       </View>
@@ -60,8 +61,6 @@ function TargetField({ icon, label, on, onToggle, unit, error, hint, field, rule
   );
 }
 
-/** "steps a day" → "steps": the card's title already says daily, weekly or nightly. */
-const shortUnit = (unit: string) => unit.replace(/ (a|per) (day|week|night)$/, "");
 
 /** Drafts and errors for typed targets: a field shows what is typed until it loses focus, then the stored value. */
 function useDrafts<K extends string>() {
@@ -86,7 +85,7 @@ function NumberField({ value, onChange, onBlur, placeholder, invalid, label, dec
 function DailyGoals() {
   const { goals, update, reset } = useGoals();
   const d = useDrafts<TargetKey>();
-  const text = (k: TargetKey) => d.drafts[k] ?? (goals.targets[k] === null ? "" : String(goals.targets[k]));
+  const text = (k: TargetKey) => d.drafts[k] ?? targetText(k, goals.targets[k]);
   const field = (k: GoalKey, targetKey: TargetKey, rule: boolean) => {
     const l = TARGET_LIMITS[targetKey];
     const label = targetKey === "azmWeek" ? "Active Zone Minutes a week" : GOAL_META[k].label;
@@ -98,7 +97,7 @@ function DailyGoals() {
         label={label}
         on={goals.enabled[k]}
         onToggle={(on) => void update((g) => withEnabled(g, k, on))}
-        unit={l.unit}
+        unit={quantity(l.unit).unit}
         error={d.errors[targetKey]}
         field={
           <NumberField
@@ -109,7 +108,7 @@ function DailyGoals() {
               if (!r.error) void update((g) => withTarget(g, targetKey, r.value));
             }}
             onBlur={() => d.blur(targetKey)}
-            placeholder={l.optional ? "Auto" : String(l.min)}
+            placeholder={l.optional ? "Auto" : targetText(targetKey, l.min)}
             invalid={!!d.errors[targetKey]}
             label={`${label} target`}
             decimals={l.decimals}

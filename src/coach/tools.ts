@@ -18,7 +18,7 @@ import { getRecovery } from "@/queries/recovery";
 import { getReport } from "@/queries/reports";
 import { getSleep } from "@/queries/sleep";
 import { getStrain } from "@/queries/strain";
-import { TREND_METRICS, type TrendMetricKey } from "@/queries/trends";
+import { TREND_METRICS, trendMetric, type TrendMetricKey } from "@/queries/trends";
 import { defaultTexts, type Texts } from "./texts";
 
 const round = (v: number, dp = 0) => Math.round(v * 10 ** dp) / 10 ** dp;
@@ -63,7 +63,8 @@ export async function trendDigest(ctx: QueryCtx, metric: TrendMetricKey, start?:
   const priorEnd = addDays(from, -1);
   const priorStart = addDays(from, -count);
   const rows = await loadDays(ctx, priorStart, to);
-  const m = TREND_METRICS.find((m) => m.key === metric)!;
+  // In the person's units, as the screens show it.
+  const m = trendMetric(metric);
   const points = (a: string, b: string) => {
     const out = [];
     for (let day = a; day <= b; day = addDays(day, 1)) {

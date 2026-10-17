@@ -1,4 +1,5 @@
 // Strain `/strain` (spec §7.3). Ported from Pulse's src/server/queries/strain.ts.
+import { inUnits } from "@/lib/units";
 import { ZONE_NAMES } from "@/core/scoring/zones";
 import { addDays } from "@/lib/time";
 import { type ExtraKey, extraMetric, metricHref } from "./_lib";
@@ -59,9 +60,11 @@ export async function getStrain(day: string, ctx: QueryCtx): Promise<StrainVM> {
   const zoneMin = (r: DayRow | undefined, from: number, to: number) =>
     r?.s1 && r.s1.hrCount > 0 ? r.s1.zoneSeconds.slice(from, to).reduce((a, b) => a + b, 0) / 60 : null;
   const reason = hrReason(row?.s1 ?? null);
-  const stat = (key: string, label: string, pick: (d: string) => number | null, unit: string | undefined, why = reason): KeyStat => {
+  const stat = (key: string, label: string, read: (d: string) => number | null, unit: string | undefined, why = reason): KeyStat => {
+    // In the person's units (src/lib/units.ts): distance in miles, elevation in feet.
+    const { pick, unit: shown } = inUnits({ unit, pick: read });
     const prior = meanSd(Array.from({ length: 30 }, (_, k) => pick(addDays(day, -k - 1))));
-    return { key, label, metric: maybe(pick(day), why), ...(unit && { unit }), average: prior.mean, ...(prior.sd !== undefined && { sd: prior.sd }), direction: "up" };
+    return { key, label, metric: maybe(pick(day), why), ...(shown && { unit: shown }), average: prior.mean, ...(prior.sd !== undefined && { sd: prior.sd }), direction: "up" };
   };
   // The source's roll-ups beside Steps: a missing one is the band left off, or a day the account has none.
   const extra = (key: ExtraKey): KeyStat => {

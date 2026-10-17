@@ -3,7 +3,7 @@ import { View } from "react-native";
 import { RoundedRect } from "@shopify/react-native-skia";
 import { Path } from "@/ui/charts/path";
 import { DATA_COLORS } from "@/lib/bands";
-import { clock, durationWords } from "@/lib/format";
+import { clock, clockTick, durationWords } from "@/lib/format";
 import type { Metric } from "@/lib/reasons";
 import { hourTicks, hypnogramSeries, STAGES, type Stage, type StageSegment } from "@/lib/charts";
 import { alpha } from "../color";
@@ -82,7 +82,7 @@ export function HypnogramChart({ night }: { night: HypnogramNight }) {
             {/* Bed and wake times at the ends, bold (WHOOP), and the whole hours between that keep clear of them. */}
             <ChartLabel x={x0} y={y1 + 16} anchor="start" className="font-bold text-foreground">{clock(night.bed, tz)}</ChartLabel>
             {hours.map((h) => (
-              <ChartLabel key={h} x={tx(h)} y={y1 + 16}>{clock(h, tz)}</ChartLabel>
+              <ChartLabel key={h} x={tx(h)} y={y1 + 16}>{clockTick(h, tz)}</ChartLabel>
             ))}
             <ChartLabel x={x1} y={y1 + 16} anchor="end" className="font-bold text-foreground">{clock(night.wake, tz)}</ChartLabel>
             <ScrubLayer width={width} height={height} onScrub={setX} />

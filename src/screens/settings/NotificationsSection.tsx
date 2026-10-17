@@ -15,7 +15,8 @@ import type { BedtimeReminder } from "@/background/smart";
 import { applyCheckIn } from "@/background/startup";
 import { backgroundSyncAvailable, isBackgroundSyncRegistered, runBackgroundTask, syncRegistration } from "@/background/task";
 import { askBackgroundPermission, permissionState } from "@/health/connect";
-import { clock, DAY, formatDay } from "@/lib/format";
+import { clock, DAY, formatDay, timeOfDay } from "@/lib/format";
+import { displayPrefs } from "@/lib/units";
 import { localDay } from "@/lib/time";
 import { deviceTimeZone, useApp } from "@/state/app";
 import { Button } from "@/ui/Button";
@@ -182,7 +183,7 @@ function BackgroundCard({ s, timeZone }: { s: Prefs; timeZone: string }) {
 
 // ── Notifications ────────────────────────────────────────────────────────────
 
-/** The check-in time: the value as a button that opens the system's 24-hour time picker. */
+/** The check-in time: the value as a button that opens the system's time picker, on the person's clock. */
 function TimeRow({ value, onCommit, disabled }: { value: string; onCommit: (v: string) => void; disabled?: boolean }) {
   const [open, setOpen] = useState(false);
   const t = parseTime(value) ?? { hour: 21, minute: 0 };
@@ -191,12 +192,12 @@ function TimeRow({ value, onCommit, disabled }: { value: string; onCommit: (v: s
   return (
     <View className={cn(ROW, ROW_RULE, disabled && "opacity-disabled")} pointerEvents={disabled ? "none" : "auto"}>
       <Text className={ROW_LABEL}>Check-in time</Text>
-      <SmallButton label={value} accessibilityLabel={`Check-in time, ${value}`} onPress={() => setOpen(true)} />
+      <SmallButton label={timeOfDay(t.hour, t.minute)} accessibilityLabel={`Check-in time, ${timeOfDay(t.hour, t.minute)}`} onPress={() => setOpen(true)} />
       {open && (
         <DateTimePicker
           value={date}
           mode="time"
-          is24Hour
+          is24Hour={displayPrefs().hours === 24}
           onDismiss={() => setOpen(false)}
           onValueChange={(_e, d) => {
             setOpen(false);

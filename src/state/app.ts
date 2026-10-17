@@ -18,8 +18,10 @@ import type { Profile, SyncState } from "@/data/types";
 import { askPermissions, availability, permissionState, type Availability, type PermissionState } from "@/health/connect";
 import { forgetChanges } from "@/health/sync";
 import { localDay } from "@/lib/time";
+import type { DisplayPrefs } from "@/lib/units";
 import type { QueryCtx } from "@/queries/ctx";
 import { ensureDefaultTags } from "@/queries/journal";
+import { applyDisplay } from "./display";
 
 export type { Source };
 export type Status = "booting" | "needs_profile" | "needs_permissions" | "syncing" | "ready" | "error";
@@ -67,6 +69,7 @@ const subscribe = (l: () => void) => {
   return () => listeners.delete(l);
 };
 function patch(p: Partial<AppInfo>) {
+  if ("profile" in p) applyDisplay(p.profile ?? null);
   state = { ...state, ...p };
   for (const l of listeners) l();
 }
@@ -237,6 +240,16 @@ export async function setPhoto(photo: string | null): Promise<void> {
   await store.setProfile(p);
   patch({ profile: p });
   if (profile.photo && profile.photo !== photo) deletePhoto(profile.photo);
+}
+
+/** Sets the units and the clock (Settings › App). No rescore: the scores are stored in metric; every screen redraws. */
+export async function setDisplay(display: DisplayPrefs): Promise<void> {
+  const { store, profile } = state;
+  if (!store || !profile) return;
+  const p = { ...profile, display };
+  await store.setProfile(p);
+  patch({ profile: p });
+  dataChanged();
 }
 
 /** "Explore with sample data": halo's demo person, 180 days, no Health Connect needed. */

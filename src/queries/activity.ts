@@ -1,4 +1,5 @@
 // Activity `/activity/[id]` (spec §7.4). Ported from Pulse's src/server/queries/activity.ts.
+import { inUnits } from "@/lib/units";
 import type { Metric } from "@/lib/reasons";
 import { addDays } from "@/lib/time";
 import {
@@ -45,9 +46,11 @@ export async function getActivity(id: string, ctx: QueryCtx): Promise<ActivityVM
   // 30-day averages over the same activity kind, before this one.
   const same = recent.filter((x) => x.id !== id && x.startTs < e.startTs && activityKind(x.type) === kind);
   const statOf = (x: ExerciseRow) => rows.get(x.day)?.activities.find((y) => y.id === x.id);
+  // In the person's units (src/lib/units.ts): km and pace per km show as miles and per mile in imperial.
   const tile = (key: string, label: string, v: number | null | undefined, unit: string | undefined, prior: (number | null | undefined)[], r = reason): KeyStat => {
-    const { mean, sd } = meanSd(prior);
-    return { key, label, metric: maybe(v, r), ...(unit && { unit }), average: mean, ...(sd !== undefined && { sd }), direction: "neutral" };
+    const q = inUnits({ unit, pick: (x: number | null | undefined) => x });
+    const { mean, sd } = meanSd(prior.map(q.pick));
+    return { key, label, metric: maybe(q.pick(v), r), ...(q.unit && { unit: q.unit }), average: mean, ...(sd !== undefined && { sd }), direction: "neutral" };
   };
   const durationMin = (x: ExerciseRow) => (x.endTs - x.startTs) / 60;
   // Distance for the kinds that travel (pace for runs and walks), before the heart-rate tiles (spec §11 EX3).

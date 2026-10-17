@@ -3,8 +3,9 @@ import { View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { Droplet } from "lucide-react-native";
 import { logEntry, type LogInput } from "@/actions/log";
-import { dayLabel } from "@/lib/format";
-import { CYCLE_SYMPTOMS, FLOWS, KIND_LABEL, LOG_KINDS, MEALS, MOODS, OVULATION_RESULTS, SYMPTOMS, VALENCES, WATER_STEPS, type LogKind } from "@/queries/log";
+import { dayLabel, quantityText } from "@/lib/format";
+import { quantity } from "@/lib/units";
+import { CYCLE_SYMPTOMS, FLOWS, KIND_LABEL, LOG_KINDS, MEALS, MOODS, OVULATION_RESULTS, SYMPTOMS, VALENCES, waterSteps, type LogKind } from "@/queries/log";
 import { getDayLog } from "@/queries/journalExtras";
 import { todayOf } from "@/queries/common";
 import { parseDay } from "@/lib/url";
@@ -25,6 +26,8 @@ import { goBack } from "@/ui/navigate";
 
 /** A log sheet (spec §11 LG1): /log?kind=water&d=2026-10-02, the web's `?log=water` over Journal's day. */
 export default function LogPage() {
+  // Water and weight are typed in the person's units (src/lib/units.ts) and kept in ml and kg.
+  const water = quantity("ml");
   const { kind: raw, d } = useLocalSearchParams<{ kind?: string; d?: string }>();
   const kind = (LOG_KINDS as readonly string[]).includes(raw ?? "") ? (raw as LogKind) : "water";
   const { data: vm } = useScreen((ctx) => getDayLog(parseDay(d, todayOf(ctx)).d, ctx), ["log", d]);
@@ -99,19 +102,19 @@ export default function LogPage() {
             <>
               <Section title="Add">
                 <View className="flex-row gap-2">
-                  {WATER_STEPS.map((ml) => (
-                    <Button key={ml} variant="secondary" disabled={saving} className="h-14 flex-1 gap-2" onPress={() => void send({ kind: "water", ml, at: time }, false)}>
+                  {waterSteps().map((step) => (
+                    <Button key={step} variant="secondary" disabled={saving} className="h-14 flex-1 gap-2" onPress={() => void send({ kind: "water", ml: Math.round(water.stored(step)), at: time }, false)}>
                       <Icon icon={Droplet} size={20} strokeWidth={1.75} tone="secondary-foreground" />
-                      <Text className="text-[15px] font-bold uppercase tracking-[0.1em] text-secondary-foreground">+{ml} ml</Text>
+                      <Text className="text-[15px] font-bold uppercase tracking-[0.1em] text-secondary-foreground">+{step} {water.unit}</Text>
                     </Button>
                   ))}
                 </View>
                 <Text accessibilityLiveRegion="polite" className={cn(CAPTION, "tabular-nums")}>
-                  {dayLabel(vm.day, vm.today)}: {vm.water.total.toLocaleString("en-US")} ml
+                  {dayLabel(vm.day, vm.today)}: {quantityText(vm.water.total, "ml", "grouped")}
                 </Text>
               </Section>
               <Section title="Other amount">
-                {field("ml", "Amount", "(ml)", { mode: "numeric", placeholder: "e.g. 330" })}
+                {field("ml", "Amount", `(${water.unit})`, { mode: "numeric", placeholder: `e.g. ${waterSteps()[0]}` })}
                 {timeField}
               </Section>
             </>
@@ -136,7 +139,7 @@ export default function LogPage() {
           {kind === "weight" && (
             <Section title="Measurement">
               <View className="flex-row gap-2">
-                {field("kg", "Weight", "(kg)", { mode: "decimal", className: "flex-1" })}
+                {field("kg", "Weight", `(${quantity("kg").unit})`, { mode: "decimal", className: "flex-1" })}
                 {field("fat", "Body fat", "(%)", { mode: "decimal", placeholder: "Optional", className: "flex-1" })}
               </View>
               {timeField}

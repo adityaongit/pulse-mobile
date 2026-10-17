@@ -4,6 +4,7 @@
 // is src/queries/goals.ts.
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as React from "react";
+import { quantity } from "@/lib/units";
 import { GOAL_KEYS, type GoalKey, type Goals, type GoalTargets } from "@/queries/goals";
 
 export type { GoalKey, Goals, GoalTargets } from "@/queries/goals";
@@ -28,41 +29,54 @@ export type TargetLimit = {
   max: number;
   /** Decimal places the field keeps (0: whole numbers). */
   decimals: number;
-  /** After the field: "steps a day", "km a day", "min a week". */
+  /** The unit the target is kept in ("steps", "km"), shown beside the field in the person's units (src/lib/units.ts). */
   unit: string;
   /** May be empty: sleep follows Pulse's need. */
   optional?: boolean;
 };
 
 export const TARGET_LIMITS: Record<TargetKey, TargetLimit> = {
-  steps: { min: 1000, max: 50_000, decimals: 0, unit: "steps a day" },
-  distance: { min: 1, max: 100, decimals: 1, unit: "km a day" },
-  floors: { min: 1, max: 200, decimals: 0, unit: "floors a day" },
-  azm: { min: 1, max: 600, decimals: 0, unit: "min a day" },
-  azmWeek: { min: 10, max: 3000, decimals: 0, unit: "min a week" },
-  active_minutes: { min: 5, max: 600, decimals: 0, unit: "min a day" },
-  active_calories: { min: 50, max: 5000, decimals: 0, unit: "kcal a day" },
-  water: { min: 250, max: 10_000, decimals: 0, unit: "ml a day" },
-  sleep: { min: 4, max: 12, decimals: 1, unit: "hours a night", optional: true },
+  steps: { min: 1000, max: 50_000, decimals: 0, unit: "steps" },
+  distance: { min: 1, max: 100, decimals: 1, unit: "km" },
+  floors: { min: 1, max: 200, decimals: 0, unit: "floors" },
+  azm: { min: 1, max: 600, decimals: 0, unit: "min" },
+  azmWeek: { min: 10, max: 3000, decimals: 0, unit: "min" },
+  active_minutes: { min: 5, max: 600, decimals: 0, unit: "min" },
+  active_calories: { min: 50, max: 5000, decimals: 0, unit: "kcal" },
+  water: { min: 250, max: 10_000, decimals: 0, unit: "ml" },
+  sleep: { min: 4, max: 12, decimals: 1, unit: "hours", optional: true },
 };
 
-const fmt = (key: TargetKey, v: number) => new Intl.NumberFormat("en-US", { maximumFractionDigits: TARGET_LIMITS[key].decimals }).format(v);
+/** A kept target as the field shows it: in the person's units, to the field's decimals ("8" km is "5" mi). */
+export function targetText(key: TargetKey, value: number | null) {
+  const l = TARGET_LIMITS[key];
+  return value === null ? "" : String(Number(quantity(l.unit).value(value).toFixed(l.decimals)));
+}
 
-/** Null when `value` is allowed for `key`, else why not ("Between 1,000 and 50,000"). */
+const fmt = (key: TargetKey, v: number) => {
+  const l = TARGET_LIMITS[key];
+  return new Intl.NumberFormat("en-US", { maximumFractionDigits: l.decimals }).format(quantity(l.unit).value(v));
+};
+
+/** Null when the kept `value` is allowed for `key`, else why not, in the person's units ("Between 1,000 and 50,000"). */
 export function validateTarget(key: TargetKey, value: number | null): string | null {
   const l = TARGET_LIMITS[key];
   if (value === null) return l.optional ? null : "Enter a number";
   if (!Number.isFinite(value)) return "Enter a number";
-  if (l.decimals === 0 && !Number.isInteger(value)) return "Whole numbers only";
   if (value < l.min || value > l.max) return `Between ${fmt(key, l.min)} and ${fmt(key, l.max)}`;
   return null;
 }
 
-/** A field's text → the target it means (blank: null) and the error to show, if any. */
+/** A field's text, in the person's units → the target it means, kept in metric (blank: null), and the error, if any. */
 export function parseTarget(key: TargetKey, text: string): { value: number | null; error: string | null } {
+  const l = TARGET_LIMITS[key];
   const t = text.trim().replace(",", ".");
-  const value = t === "" ? null : Number(t);
-  const error = value !== null && Number.isNaN(value) ? "Enter a number" : validateTarget(key, value);
+  const typed = t === "" ? null : Number(t);
+  if (typed !== null && Number.isNaN(typed)) return { value: null, error: "Enter a number" };
+  // Whole numbers apply to what is typed: 68 fl oz of water is kept as 2,011 ml and change.
+  if (typed !== null && l.decimals === 0 && !Number.isInteger(typed)) return { value: null, error: "Whole numbers only" };
+  const value = typed === null ? null : quantity(l.unit).stored(typed);
+  const error = validateTarget(key, value);
   return { value: error ? null : value, error };
 }
 
@@ -104,7 +118,9 @@ export const withEnabled = (goals: Goals, key: GoalKey, on: boolean): Goals => (
 export function trendGoal(goals: Goals, metricKey: string): number | null {
   const keys: GoalKey[] = ["steps", "distance", "floors", "azm", "active_minutes", "active_calories", "water"];
   const k = keys.find((x) => x === metricKey);
-  return k && goals.enabled[k] ? goals.targets[k] : null;
+  const target = k && goals.enabled[k] ? goals.targets[k] : null;
+  // In the person's units, as the trend it is drawn on.
+  return k && target !== null ? quantity(TARGET_LIMITS[k].unit).value(target) : null;
 }
 
 // ── Persistence ─────────────────────────────────────────────────────────────

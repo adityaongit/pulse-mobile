@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { View } from "react-native";
 import { Circle, Group } from "@shopify/react-native-skia";
-import { clock } from "@/lib/format";
+import { clock, clockTick } from "@/lib/format";
 import type { Metric } from "@/lib/reasons";
 import { bandColor, clockTicks, hourTicks, paddedDomain } from "@/lib/charts";
 import { ReasonPlaceholder } from "../metrics/ReasonPlaceholder";
@@ -75,7 +75,7 @@ function Chart({ hr, variant }: { hr: HrSeries; variant: "day" | "activity" }) {
         const yTicks = ticksIn(domain[0], domain[1], 4);
         const tickTimes = workout ? [workout.start, workout.end] : variant === "day" ? hourTicks(first, last, 6, tz) : clockTicks(first, last, last - first <= 3_600_000 ? 15 : last - first <= 3 * 3_600_000 ? 30 : 60, tz);
         // A workout's two ends always show (interval 0); else the web's interval="preserveStartEnd" minTickGap={24}.
-        const shownTicks = workout ? tickTimes.map((t) => ({ t, x: tx(t) })) : preserveStartEnd(tickTimes.map((t) => ({ x: tx(t), size: tickTextWidth(clock(t, tz)) })), 0, width, 24).map((k) => ({ t: tickTimes[k.index], x: k.x }));
+        const shownTicks = workout ? tickTimes.map((t) => ({ t, x: tx(t) })) : preserveStartEnd(tickTimes.map((t) => ({ x: tx(t), size: tickTextWidth(clockTick(t, tz)) })), 0, width, 24).map((k) => ({ t: tickTimes[k.index], x: k.x }));
         const mk = (key: "hot" | "cool") => rows.map((r) => ({ x: tx(r.t), y: r[key] === null ? null : y(r[key]!) }));
         const strips = variant === "day" ? zoneStrips(hr.zones, domain, y, x1) : [];
         const valid = rows.filter((r) => r.bpm !== null);
@@ -111,7 +111,7 @@ function Chart({ hr, variant }: { hr: HrSeries; variant: "day" | "activity" }) {
               <ChartLabel key={t} x={yTickX(x0)} y={y(t)} anchor="end" w={x0}>{String(t)}</ChartLabel>
             ))}
             {shownTicks.map(({ t, x }) => (
-              <ChartLabel key={t} x={x} y={xTickY(y1)} className={workout ? "text-xs font-bold text-foreground" : undefined}>{clock(t, tz)}</ChartLabel>
+              <ChartLabel key={t} x={x} y={xTickY(y1)} className={workout ? "text-xs font-bold text-foreground" : undefined}>{clockTick(t, tz)}</ChartLabel>
             ))}
             <ScrubLayer width={width} height={h} onScrub={setX} />
             <ScrubTick index={ai} />

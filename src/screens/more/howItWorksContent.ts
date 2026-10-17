@@ -384,7 +384,7 @@ export const SCORE_DOCS: ScoreDoc[] = [
           { term: "Resting heart rate", detail: "Your mean heart rate while you slept, in bpm." },
           { term: "Heart rate variability", detail: "The mean of Fitbit’s HRV readings while you slept, in ms." },
           { term: "Respiratory rate", detail: "Breaths per minute asleep, in rpm." },
-          { term: "Skin temperature", detail: "Last night against your skin-temperature baseline, in °C." },
+          { term: "Skin temperature", detail: "Last night against your skin-temperature baseline, in degrees." },
         ],
       },
       {

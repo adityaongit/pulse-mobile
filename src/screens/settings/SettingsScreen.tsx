@@ -54,9 +54,17 @@ function SectionSkeleton({ section }: { section: SectionId }) {
     );
   if (section === "app")
     return (
-      <SectionShell variant="card" title="Appearance">
-        <Skeleton className="h-[52px] rounded-[14px]" />
-      </SectionShell>
+      <>
+        <SectionShell variant="card" title="Appearance">
+          <Skeleton className="h-[52px] rounded-[14px]" />
+        </SectionShell>
+        <SectionShell variant="card" title="Units and time">
+          <View className="gap-4">
+            <Skeleton className="h-[52px] rounded-[14px]" />
+            <Skeleton className="h-[52px] rounded-[14px]" />
+          </View>
+        </SectionShell>
+      </>
     );
   return (
     <SectionShell variant="card" title="Profile" action={<Skeleton className="h-5 w-14 rounded-full" />}>

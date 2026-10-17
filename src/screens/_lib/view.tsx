@@ -88,7 +88,7 @@ export function TodayVsLegend({ period }: { period: string }) {
 export const mapMetric = <A, B>(m: Metric<A>, f: (a: A) => B): Metric<B> =>
   ({ ...m, value: m.value === null ? null : f(m.value) })
 
-const FORMAT_BY_UNIT: Record<string, FormatKey> = { ms: "int", bpm: "int", rpm: "decimal1", "%": "int", kcal: "grouped", "°C": "signed1", min: "duration" }
+const FORMAT_BY_UNIT: Record<string, FormatKey> = { ms: "int", bpm: "int", rpm: "decimal1", "%": "int", kcal: "grouped", "°C": "signed1", "°F": "signed1", min: "duration" }
 
 export const STAT_ICON: Record<string, LucideIcon> = {
   hrv: Activity,

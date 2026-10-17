@@ -2,7 +2,7 @@ import { useState } from "react";
 import { View } from "react-native";
 import { Circle } from "@shopify/react-native-skia";
 import { DATA_COLORS, recoveryColor } from "@/lib/bands";
-import { clock, formatValue } from "@/lib/format";
+import { clock, clockTick, formatValue } from "@/lib/format";
 import type { Metric } from "@/lib/reasons";
 import { bandColor, hourTicks, type Band } from "@/lib/charts";
 import { ReasonPlaceholder } from "../metrics/ReasonPlaceholder";
@@ -58,7 +58,7 @@ function Chart({ e }: { e: EnergySeries }) {
         const pts = e.points.map((p) => ({ x: tx(p.t), y: p.value === null ? null : y(p.value) }));
         const hours = hourTicks(first, last, 6, tz);
         // The web's interval="preserveStartEnd" minTickGap={24}.
-        const ticks = preserveStartEnd(hours.map((t) => ({ x: tx(t), size: tickTextWidth(clock(t, tz)) })), 0, width, 24).map((k) => ({ t: hours[k.index], x: k.x }));
+        const ticks = preserveStartEnd(hours.map((t) => ({ x: tx(t), size: tickTextWidth(clockTick(t, tz)) })), 0, width, 24).map((k) => ({ t: hours[k.index], x: k.x }));
         const valid = e.points.filter((p) => p.value !== null);
         const ai = x === null ? -1 : nearestIndex(valid.map((p) => tx(p.t)), x);
         const a = ai >= 0 ? valid[ai] : null;
@@ -88,7 +88,7 @@ function Chart({ e }: { e: EnergySeries }) {
               <ChartLabel key={v} x={yTickX(x0, 4)} y={y(v)} anchor="end" w={24}>{String(v)}</ChartLabel>
             ))}
             {ticks.map(({ t, x }) => (
-              <ChartLabel key={t} x={x} y={xTickY(y1)}>{clock(t, tz)}</ChartLabel>
+              <ChartLabel key={t} x={x} y={xTickY(y1)}>{clockTick(t, tz)}</ChartLabel>
             ))}
             <ScrubLayer width={width} height={height} onScrub={setX} />
             <ScrubTick index={ai} />
