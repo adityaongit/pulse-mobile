@@ -121,6 +121,18 @@ Biggest recurring problems: six-month chart crashes, missing imported data, miss
 - **Proposed fix (needs the owner's choice of the retention length):** keep raw intraday samples for a rolling window that covers the longest look-back any score reads from raw data, and keep daily metrics and stored scores forever (they are small). Prune older raw buckets after each sync, then reclaim the space (`PRAGMA auto_vacuum = INCREMENTAL` and `incremental_vacuum`). A `SCORING_VERSION` bump then rescores only the window that still has raw data, and older days keep their stored scores; an older day's screen shows its summary without the intraday chart. Show the database's size in Settings › Data.
 - **Status:** Built on `fix/reddit-bugs`: raw heart rate older than 30 days is compacted to one mean per minute after each sync, freed space is vacuumed back, and Settings › Your data shows the database's size. See [reddit-fixes-plan.md](reddit-fixes-plan.md) and the "Storage that stops growing" section of [learning.md](learning.md).
 
+### B16. History bars hide day-to-day changes
+
+- **Reporter:** a user after the launch: the bar chart in a metric's detail page is "too zoomed out, so daily variations are not clear", and asked for a dot per day on Explore's line charts.
+- **Cause found in code:** the History chart (`TrendChart`) drew every single-colour metric as bars from zero at W and M. For a level such as resting heart rate (52 to 60 bpm), a day's change was a few pixels at the top of tall bars. Explore drew daily lines with no mark for each day.
+- **Status:** Fixed on `fix/reddit-bugs`: vitals and body measurements (and VO2 max, Pulse Age) draw a line on their own range at every length, with labelled dots at W and a dot per day after; amounts (steps, minutes, calories, food) keep bars from zero at W and M. Explore's daily lines get a dot per day once each day has room for one.
+
+### B17. RHR on Health Monitor differs from the RHR page
+
+- **Reporter:** a user after the launch, with screenshots: Health Monitor's RHR tile reads 52 bpm, the Resting Heart Rate page 57.
+- **Cause found in code:** two definitions under one name. Recovery and Health Monitor scored the engine's own aggregates (the mean heart rate over the night's sleep minutes, and the mean of the night's HRV samples in sleep stages), while Home, Trends and the detail pages showed Fitbit's values from Health Connect. HRV had the same split; respiratory rate, skin temperature and SpO2 already read Fitbit's values everywhere.
+- **Status:** Fixed on `fix/reddit-bugs`, on the owner's call that Fitbit's values are the source of truth: one resting HR (`dayRestingHr`: Fitbit's daily value, else Pulse's sleep-session estimate) and Fitbit's nightly HRV feed Recovery, its baselines, Health Monitor, HRV Status, Pulse Age, the reports and every screen. `SCORING_VERSION` 29 rescores the history.
+
 ## Feature requests
 
 These are requests from the thread, not accepted scope. OP's replies are historical responses, not evidence that a feature has shipped. iOS and server integrations would require a separate scope decision under the current Android-only, on-device project rules.
