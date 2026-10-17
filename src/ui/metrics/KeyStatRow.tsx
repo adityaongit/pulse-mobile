@@ -16,6 +16,7 @@ import { CAPTION, DeltaMark, LABEL, StatusChip, ValueUnit } from "./primitives";
 import { Sparkline } from "./Sparkline";
 import { push } from "../navigate";
 import { Press } from "../Press";
+import { BAR_CORNERS } from "@/ui/radius";
 
 export type SleepStatus = "poor" | "sufficient" | "optimal";
 
@@ -108,7 +109,7 @@ function Row({ p, c }: { p: KeyStatRowProps; c: Computed }) {
       {p.status && (
         <View className="shrink-0 flex-row gap-1">
           {(["poor", "sufficient", "optimal"] as const).map((k) => (
-            <View key={k} className={cn("h-1 w-4 rounded-sm", !c.reason && p.status === k ? STATUS_ACTIVE[k] : "bg-dial-track")} />
+            <View key={k} className={cn("h-1 w-4", BAR_CORNERS, !c.reason && p.status === k ? STATUS_ACTIVE[k] : "bg-dial-track")} />
           ))}
         </View>
       )}

@@ -20,6 +20,7 @@ import { useDayScreen } from "./day";
 import { ErrorView } from "./ErrorView";
 import { BreatheCard } from "../breathe/BreatheScreen";
 import { STRESS_INFO } from "./info";
+import { BAR_CORNERS } from "@/ui/radius";
 
 const EMPTY = "No stress scored yet today.";
 const LABEL = "text-xs font-bold uppercase leading-4 tracking-[0.1em]";
@@ -32,7 +33,7 @@ const LEVEL_KEYS = [
 
 function LevelBar({ m, className }: { m: { lowMin: number; mediumMin: number; highMin: number }; className: string }) {
   return (
-    <View accessibilityElementsHidden className={cn("flex-row gap-0.5 overflow-hidden rounded-sm", className)}>
+    <View accessibilityElementsHidden className={cn("flex-row gap-0.5 overflow-hidden", BAR_CORNERS, className)}>
       {LEVEL_KEYS.map((k) => m[k.key] > 0 && <View key={k.key} className={k.bar} style={{ flexGrow: m[k.key], flexBasis: 0 }} />)}
     </View>
   );

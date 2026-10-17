@@ -12,6 +12,7 @@ import { Skeleton, SkeletonText } from "../Skeleton";
 import { Text } from "../Text";
 import { push } from "../navigate";
 import { SECONDARY_ROW } from "../Card";
+import { BAR_CORNERS } from "@/ui/radius";
 
 /** `zone` 0-5 orders the rows (0 is time under Zone 1: `min` 0, `max` the bpm below Zone 1); `label` names it ("Zone 1"). */
 export type ZoneRow = {
@@ -150,7 +151,7 @@ function Stacked({ segments, unit }: { segments: StackedSegment[]; unit: "days" 
   const count = (n: number) => (unit === "days" ? `${n}x` : hmm(n));
   return (
     <View>
-      <View accessibilityElementsHidden className="h-3 flex-row gap-0.5 overflow-hidden rounded-sm">
+      <View accessibilityElementsHidden className={cn("h-3 flex-row gap-0.5 overflow-hidden", BAR_CORNERS)}>
         {shown.map((s) => (
           <View key={s.key} className={cn("h-full", DATA_COLORS[s.color].bg)} style={{ flexGrow: s.count, flexBasis: 0 }} />
         ))}

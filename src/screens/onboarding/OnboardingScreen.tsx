@@ -15,6 +15,8 @@ import { Frame } from "./Frame";
 import { ConnectButton, TextButton } from "./buttons";
 import { HeartbeatMark } from "./HeartbeatMark";
 import { ProfileForm, SaveButton } from "./ProfileForm";
+import { cn } from "@/ui/cn";
+import { BAR_CORNERS } from "@/ui/radius";
 
 type Step = "welcome" | "profile" | "connect";
 
@@ -39,8 +41,8 @@ function ProgressFooter({ progress, fallback }: { progress: Progress | null; fal
   const pct = Math.round(fraction(progress) * 100);
   return (
     <View accessibilityLiveRegion="polite" className="h-[132px] items-center justify-center gap-3 px-6">
-      <View accessibilityRole="progressbar" accessibilityValue={{ min: 0, max: 100, now: pct }} className="h-2 w-full overflow-hidden rounded-full bg-fill-pressed">
-        <View className="h-full rounded-full bg-primary" style={{ width: `${pct}%` }} />
+      <View accessibilityRole="progressbar" accessibilityValue={{ min: 0, max: 100, now: pct }} className={cn("h-2 w-full overflow-hidden bg-fill-pressed", BAR_CORNERS)}>
+        <View className="h-full bg-primary" style={{ width: `${pct}%` }} />
       </View>
       <Text className="text-[13px] leading-[18px] text-foreground-secondary">{progress ? stepLabel(progress.step) : fallback}…</Text>
     </View>

@@ -13,6 +13,7 @@ import { useTheme } from "../theme";
 import { CAPTION, LABEL, ValueUnit } from "./primitives";
 import { push } from "../navigate";
 import { Press } from "../Press";
+import { BAR_CORNERS } from "@/ui/radius";
 
 type Common = {
   icon?: ReactNode;
@@ -87,8 +88,8 @@ function RecoveryRow({ p, value, meta }: { p: Extract<ContributorRowProps, { var
           )
         }
       />
-      <View className="h-1.5 rounded-full bg-dial-track">
-        <View className="absolute inset-y-0 rounded-full bg-foreground/20" style={{ left: pct(mean - sd, lo, hi), width: `${(100 * 2) / 6}%` }} />
+      <View className={cn("h-1.5 bg-dial-track", BAR_CORNERS)}>
+        <View className={cn("absolute inset-y-0 bg-foreground/20", BAR_CORNERS)} style={{ left: pct(mean - sd, lo, hi), width: `${(100 * 2) / 6}%` }} />
         {value !== null && <View className={cn("absolute size-3.5 rounded-full border-2 border-card", MARKER[tone])} style={{ left: pct(value, lo, hi), top: -4, marginLeft: -7 }} />}
       </View>
       <View className="flex-row flex-wrap items-center gap-2">
@@ -224,7 +225,7 @@ export function ContributorRowSkeleton({ variant = "recovery" }: { variant?: Con
           <SkeletonText lh={24} fs={20} />
         </View>
       </View>
-      <View className="h-1.5 rounded-full bg-dial-track" />
+      <View className={cn("h-1.5 bg-dial-track", BAR_CORNERS)} />
       <SkeletonText className="w-28" />
     </View>
   );

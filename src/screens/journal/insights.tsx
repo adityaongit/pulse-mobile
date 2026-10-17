@@ -11,6 +11,7 @@ import { SEGMENT, SEGMENT_ON } from "@/ui/Segmented";
 import { DriverList } from "@/ui/metrics/DriverList";
 import { Text } from "@/ui/Text";
 import { push } from "@/ui/navigate";
+import { BAR_CORNERS } from "@/ui/radius";
 
 export const WORD: Record<ImpactMetricKey, string> = { recovery: "Recovery", hrv: "HRV", sleep: "sleep performance" };
 export const TITLE: Record<ImpactMetricKey, string> = { recovery: "Recovery", hrv: "HRV", sleep: "Sleep" };
@@ -99,7 +100,7 @@ export function Unlock({ needsMore, word }: { needsMore: JournalInsightsVM["need
                 </Text>
                 <Text className="shrink-0 font-numeric text-[13px] font-semibold leading-4 tabular-nums text-foreground-secondary">{have}/10</Text>
               </View>
-              <View accessible accessibilityRole="progressbar" accessibilityLabel={`${n.label}: ${have} of 10 days logged`} accessibilityValue={{ min: 0, max: 10, now: have }} className="h-1.5 overflow-hidden rounded-full bg-muted">
+              <View accessible accessibilityRole="progressbar" accessibilityLabel={`${n.label}: ${have} of 10 days logged`} accessibilityValue={{ min: 0, max: 10, now: have }} className={cn("h-1.5 overflow-hidden bg-muted", BAR_CORNERS)}>
                 <View className="h-full bg-optimal" style={{ width: `${(have / 10) * 100}%` }} />
               </View>
               <Text className="text-xs font-medium leading-4 tabular-nums text-muted-foreground">

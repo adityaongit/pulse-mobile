@@ -11,6 +11,8 @@ import { FadeFill, StrokePath } from "@/ui/charts/paint";
 import { alpha } from "@/ui/color";
 import { Text } from "@/ui/Text";
 import { useTheme } from "@/ui/theme";
+import { cn } from "@/ui/cn";
+import { BAR_CORNERS } from "@/ui/radius";
 
 const LABELS = { ctl: "Fitness", atl: "Fatigue", tsb: "Form" } as const;
 const HEIGHT = 220;
@@ -108,8 +110,8 @@ export function LoadChart({ load }: { load: FitnessVM["load"] }) {
         <View accessibilityElementsHidden className="mt-3 flex-row flex-wrap justify-center gap-x-5 gap-y-1">
           {(
             [
-              ["ctl", <View key="m" className="h-0.5 w-3.5 rounded-full bg-chart-1" />, formatValue("int", last.ctl)],
-              ["atl", <View key="m" className="h-0.5 w-3.5 rounded-full bg-chart-4" />, formatValue("int", last.atl)],
+              ["ctl", <View key="m" className={cn("h-0.5 w-3.5 bg-chart-1", BAR_CORNERS)} />, formatValue("int", last.ctl)],
+              ["atl", <View key="m" className={cn("h-0.5 w-3.5 bg-chart-4", BAR_CORNERS)} />, formatValue("int", last.atl)],
               ["tsb", <View key="m" className="h-2.5 w-1 rounded-[1px] bg-chart-2" />, formatValue("signedInt", last.tsb)],
             ] as const
           ).map(([k, mark, v]) => (

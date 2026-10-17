@@ -12,6 +12,7 @@ import { useTheme } from "../theme";
 import { useSelectedDay } from "../shells/DateSwitcher";
 import { Icon } from "../Icon";
 import { Press } from "../Press";
+import { BAR_CORNERS } from "@/ui/radius";
 
 export type DayStripDay = {
   /** YYYY-MM-DD. */
@@ -86,7 +87,7 @@ function Strip({ indicator, days, variant = "tile", value: controlled, onSelect 
               {formatDay(day.date, { day: "numeric" })}
             </Text>
             {indicator === "recovery" ? (
-              <View className={cn("h-1 w-4 rounded-full", r === null ? "bg-dial-track" : DATA_COLORS[recoveryColor(r)].bg)} />
+              <View className={cn("h-1 w-4", BAR_CORNERS, r === null ? "bg-dial-track" : DATA_COLORS[recoveryColor(r)].bg)} />
             ) : (
               <View
                 className={cn("items-center justify-center rounded-full", pill ? "size-5" : "size-4", day.done ? (pill ? "bg-optimal" : "bg-optimal/20") : "border border-border")}

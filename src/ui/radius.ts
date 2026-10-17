@@ -4,5 +4,11 @@
  */
 export const RADIUS = { xs: 2, sm: 4, md: 8, lg: 10, xl: 12, "2xl": 16, "3xl": 24, "4xl": 28 } as const;
 
+/**
+ * Bars, tracks and dashes (progress, ranges, breakdowns, the status dashes): WHOOP draws them square with barely softened
+ * corners, never with pill ends, so every one takes the 2 px `rounded-xs`.
+ */
+export const BAR_CORNERS = "rounded-xs";
+
 /** The floating glass chrome (tab bar, check-in action): the web's rounded-[22px]. */
 export const GLASS_RADIUS = 22;

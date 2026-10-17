@@ -13,6 +13,7 @@ import { MetricState } from "../shells/MetricState";
 import { SkeletonText } from "../Skeleton";
 import { Text } from "../Text";
 import { Press } from "../Press";
+import { BAR_CORNERS } from "@/ui/radius";
 
 export type DriverItem = {
   key: string;
@@ -85,8 +86,8 @@ function Item({ i, max, p }: { i: DriverItem; max: number; p: DriverListProps })
   const impact = p.variant === "impact";
   const value = <Text className={cn("shrink-0 font-numeric text-base font-bold tabular-nums", e === "positive" ? "text-optimal-text" : e === "negative" ? "text-warning-text" : "text-foreground-secondary")}>{fmt(i.delta, p.unit)}</Text>;
   const track = (
-    <Hatch className={cn("h-2 rounded-sm", impact && "flex-1")}>
-      {i.delta !== 0 && <View className={cn("absolute inset-y-0 rounded-sm", i.delta > 0 ? "left-1/2" : "right-1/2", e === "positive" ? "bg-optimal" : e === "negative" ? "bg-warning" : "bg-muted-foreground")} style={{ width: `${(Math.abs(i.delta) / (max || 1)) * 50}%` }} />}
+    <Hatch className={cn("h-2", BAR_CORNERS, impact && "flex-1")}>
+      {i.delta !== 0 && <View className={cn("absolute inset-y-0", BAR_CORNERS, i.delta > 0 ? "left-1/2" : "right-1/2", e === "positive" ? "bg-optimal" : e === "negative" ? "bg-warning" : "bg-muted-foreground")} style={{ width: `${(Math.abs(i.delta) / (max || 1)) * 50}%` }} />}
       <View className={cn("absolute left-1/2 top-1/2 -ml-[5px] -mt-[5px] size-2.5 rounded-full border-2 bg-foreground", inCard ? "border-secondary" : "border-card")} />
     </Hatch>
   );
@@ -188,7 +189,7 @@ export function DriverListSkeleton({ variant = "impact", unit = "%", rows = 3 }:
               {!impact && value}
             </View>
             <View className={cn(impact && "flex-row items-center gap-3")}>
-              <Hatch className={cn("h-2 rounded-sm", impact && "flex-1")} />
+              <Hatch className={cn("h-2", BAR_CORNERS, impact && "flex-1")} />
               {impact && value}
             </View>
             {impact && <SkeletonText className="w-56" />}

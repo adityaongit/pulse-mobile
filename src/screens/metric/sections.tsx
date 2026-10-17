@@ -15,6 +15,7 @@ import { MetricState } from "@/ui/shells/MetricState";
 import { SectionShell } from "@/ui/shells/SectionShell";
 import { Text } from "@/ui/Text";
 import { INSET_ROW } from "@/ui/Card";
+import { BAR_CORNERS } from "@/ui/radius";
 
 type Ctx = { vm: MetricDetailVM; timeZone?: string };
 
@@ -216,9 +217,9 @@ function Weekly({ s, vm }: Ctx & { s: Extract<Section, { kind: "weekly" }> }) {
         accessibilityRole="progressbar"
         accessibilityLabel={`${vm.label} this week`}
         accessibilityValue={{ min: 0, max: s.target, now: Math.round(s.week.total) }}
-        className="mb-1 mt-2 h-2 overflow-hidden rounded-full bg-dial-track"
+        className={cn("mb-1 mt-2 h-2 overflow-hidden bg-dial-track", BAR_CORNERS)}
       >
-        <View className="h-full rounded-full bg-optimal" style={{ width: `${pct}%` }} />
+        <View className="h-full bg-optimal" style={{ width: `${pct}%` }} />
       </View>
       <Text className={cn(CAPTION, "mb-4")}>
         {formatDay(s.week.from, DAY.monthDay)} - {formatDay(s.week.to, DAY.monthDay)}, toward the {s.target} minutes a week the WHO recommends

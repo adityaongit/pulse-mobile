@@ -189,14 +189,15 @@ Explicit scale in `@theme inline` (shadcn's multiplier scale stays replaced):
 
 | Token | Value | Use | Evidence |
 |---|---|---|---|
-| `rounded-sm` | 4 px | Meter segments, legend swatches | v1 |
+| `rounded-xs` (`BAR_CORNERS`) | 2 px | Every bar, track and dash: progress, ranges, breakdowns, the Poor / Sufficient / Optimal dashes, impact bars, sleep-stage bars, the Trend View's month segments (square caps). Never a pill, whatever the bar's height | WHOOP's plan progress, HR zones breakdown and status dashes (pulse `docs/research/whoop-walkthrough`: home-my-plan-card-top, strain-hr-zones-1-3-goal, sleep-performance-dial-top, recovery-respiratory-rate-trend-6m) |
+| `rounded-sm` | 4 px | Legend swatches | v1 |
 | `rounded-md` | 8 px | Status chips, activity chips' inner badge | chips [latest-health-monitor-1] |
 | `rounded-lg` | 10 px | Rows inside cards (activity rows, zone rows), inputs, fields | activity rows 10 pt inside a 16 pt card with a 6 pt inset [latest-home-collapsed-1] |
 | `rounded-xl` | 12 px | Buttons inside cards and sheets, segmented tracks | "ADD ACTIVITY" button [latest-home-collapsed-1] |
 | `rounded-2xl` | 16 px | Cards, alerts, banners, insight cards | 16 pt measured on [latest-home-top-1] (v1 12) |
 | `rounded-3xl` | 24 px | Info card | [latest-popover-info-1] |
 | `rounded-[28px]` | 28 px | Sheet top corners, the top calendar panel's bottom corners, the laptop sidebar | [latest-sheet-edit-1]; panel corners inferred to match |
-| `rounded-full` | pill | Tab bar, rail items, date pill, streak pill, tags, dials, dots, primary buttons in sheets | [latest-tabbar-1], [latest-sheet-edit-1] |
+| `rounded-full` | pill | Tab bar, rail items, date pill, streak pill, tags, dials, dots, primary buttons in sheets. Never a bar | [latest-tabbar-1], [latest-sheet-edit-1] |
 
 Concentric rule: a row inset 6 px inside a 16 px card is 10 px (`rounded-lg`); a 1 px gradient hairline around a `rounded-2xl` card has an inner `rounded-[15px]`; the tab bar's active lens inset 4 px inside a 31 px half-height capsule is `rounded-full`. Surfaces inset more than 16 px are separate and keep their own radius.
 

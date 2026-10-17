@@ -163,7 +163,7 @@ function Plot({ p, m, width, height }: { p: TrendViewChartProps; m: Model; width
         )}
 
         {/* 6M: a level segment per month. */}
-        {segs.map((s) => <Path key={s.month} path={`M${s.x1 + 2},${s.cy}L${s.x2 - 2},${s.cy}`} style="stroke" strokeWidth={3} strokeCap="round" color={SEG_COLOR[s.tone](c)} />)}
+        {segs.map((s) => <Path key={s.month} path={`M${s.x1 + 2},${s.cy}L${s.x2 - 2},${s.cy}`} style="stroke" strokeWidth={3} color={SEG_COLOR[s.tone](c)} />)}
       </PlotCanvas>
 
       {/* Y ticks, right-aligned in the axis gutter. */}

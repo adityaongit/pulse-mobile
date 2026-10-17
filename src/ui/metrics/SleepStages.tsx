@@ -17,6 +17,7 @@ import { Text } from "../Text";
 import { useTheme } from "../theme";
 import { DeltaMark, LABEL } from "./primitives";
 import { ReasonPlaceholder } from "./ReasonPlaceholder";
+import { BAR_CORNERS } from "@/ui/radius";
 
 type Stage = "awake" | "rem" | "light" | "deep";
 export type SleepStagesNight = {
@@ -159,8 +160,8 @@ function Rows({ night, selected, onSelect, restorative }: { night: SleepStagesNi
                   <Text className="font-numeric text-[22px] font-bold leading-7 tabular-nums">{hmm(r.minutes)}</Text>
                 </View>
                 {/* WHOOP's row: the stage's share of the night filled over the hatched track, the typical range boxed. */}
-                <Hatch className="h-3.5 rounded-sm" style={{ overflow: "visible" }}>
-                  <View className="absolute inset-y-0 left-0 rounded-sm" style={{ width: `${Math.min(100, r.pct)}%`, backgroundColor: css(color.css) }} />
+                <Hatch className={cn("h-3.5", BAR_CORNERS)} style={{ overflow: "visible" }}>
+                  <View className={cn("absolute inset-y-0 left-0", BAR_CORNERS)} style={{ width: `${Math.min(100, r.pct)}%`, backgroundColor: css(color.css) }} />
                   <View className={cn("absolute -inset-y-1.5", RANGE_BOX)} style={{ left: `${r.typical[0]}%`, width: `${r.typical[1] - r.typical[0]}%` }} />
                 </Hatch>
               </Pressable>
@@ -225,7 +226,7 @@ function StageRowsSkeleton() {
               <SkeletonText lh={24} fs={20} />
             </View>
           </View>
-          <Skeleton className="h-3.5 rounded-sm bg-skeleton" />
+          <Skeleton className={cn("h-3.5 bg-skeleton", BAR_CORNERS)} />
         </View>
       ))}
     </View>

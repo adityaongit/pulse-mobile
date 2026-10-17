@@ -5,6 +5,7 @@ import { cn } from "../cn";
 import { Text } from "../Text";
 import { useTheme } from "../theme";
 import { LABEL } from "./primitives";
+import { BAR_CORNERS } from "@/ui/radius";
 
 export type BreakdownItem = { key: string; label: string; detail?: string; value: number };
 
@@ -24,9 +25,9 @@ export function BreakdownBar({ title, unit, items }: { title: string; unit: "day
       <Text accessibilityRole="header" className={cn(LABEL, "text-foreground")}>
         {name} {!!aside && <Text className="text-muted-foreground">{aside}</Text>}
       </Text>
-      <View accessibilityElementsHidden className="mt-3 h-2.5 flex-row gap-0.5 overflow-hidden rounded-full bg-muted">
+      <View accessibilityElementsHidden className={cn("mt-3 h-2.5 flex-row gap-0.5 overflow-hidden bg-muted", BAR_CORNERS)}>
         {/* `{ key, value }` destructured: Reanimated's Babel plugin warns on any `x.value` inside an inline style. */}
-        {total > 0 && live.map(({ key, value }, k) => <View key={key} className={cn("h-full", k === 0 && "rounded-l-full", k === live.length - 1 && "rounded-r-full")} style={{ flexGrow: value, flexBasis: 0, backgroundColor: css(partColor(key)) }} />)}
+        {total > 0 && live.map(({ key, value }, k) => <View key={key} className="h-full" style={{ flexGrow: value, flexBasis: 0, backgroundColor: css(partColor(key)) }} />)}
       </View>
       <View className="mt-3 gap-2">
         {items.map((i) => (

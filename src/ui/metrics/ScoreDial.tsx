@@ -18,6 +18,7 @@ import { ARC_FROM, ARC_SWEEP } from "./MiniRing";
 import { capTrim, type TagKind } from "./primitives";
 import { push } from "../navigate";
 import { Press } from "../Press";
+import { BAR_CORNERS } from "@/ui/radius";
 
 export type DialSize = "sm" | "md" | "lg";
 export type DialVariant = "recovery" | "strain" | "sleep" | "stat" | "gauge";
@@ -236,7 +237,7 @@ export function ScoreDial(props: ScoreDialProps) {
             {props.status && !empty && !loading && (
               <View className="flex-row gap-1" style={{ marginTop: 8 * cqi }}>
                 {(["poor", "sufficient", "optimal"] as const).map((k) => (
-                  <View key={k} className={cn("h-1 w-5 rounded-full", props.status === k ? STATUS_LIT[k] : "bg-dial-track")} />
+                  <View key={k} className={cn("h-1 w-5", BAR_CORNERS, props.status === k ? STATUS_LIT[k] : "bg-dial-track")} />
                 ))}
               </View>
             )}
