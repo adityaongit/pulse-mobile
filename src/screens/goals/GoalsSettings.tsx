@@ -102,7 +102,7 @@ function SleepChoice({ goals, update }: Pick<ReturnType<typeof useGoals>, "goals
   const fixed = goals.targets.sleep;
   const value: SleepChoiceKey = !goals.enabled.sleep ? "off" : fixed === null ? "need" : "fixed";
   const options: SelectOption<SleepChoiceKey>[] = [
-    { value: "need", label: "Sleep need", detail: "What Pulse sets for each night" },
+    { value: "need", label: "Sleep need" },
     ...(fixed === null ? [] : [{ value: "fixed" as const, label: `${hmm(fixed * 60)} a night` }]),
     { value: "off", label: "Off" },
   ];

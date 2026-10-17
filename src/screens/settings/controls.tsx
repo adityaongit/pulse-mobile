@@ -1,7 +1,7 @@
 // The form and settings pieces Settings, onboarding and Behaviours share. The web draws them with its shadcn components
 // (Input, Switch, Dialog, outline Button, Progress) and a few class strings; the kit has none of these, so they are
 // built here from the same classes and tokens, never from a platform control.
-import { useEffect, useState, type ReactNode, type Ref } from "react";
+import { useEffect, useImperativeHandle, useRef, useState, type ReactNode, type Ref } from "react";
 import { Modal, Pressable, TextInput, View, type TextInputProps } from "react-native";
 import Animated, { interpolateColor, useAnimatedStyle, useDerivedValue, withTiming } from "react-native-reanimated";
 import { Check, ChevronDown, type LucideIcon } from "lucide-react-native";
@@ -88,11 +88,17 @@ export function TextField({ invalid, left, right, variant = "field", ...props }:
   const [focus, setFocus] = useState(false);
   const v = FIELDS[variant];
   const ring = invalid ? c["recovery-red-text"] : focus ? c["focus-ring"] : null;
+  // The caller's ref and our own, so a tap anywhere in the box (its padding, a unit beside the number) focuses the input,
+  // as a web label does.
+  const input = useRef<TextInput>(null);
+  const { ref, ...rest } = props;
+  useImperativeHandle(ref, () => input.current!, []);
   return (
-    <View className={cn("w-full min-w-0 flex-row items-center", v.box, props.multiline && MULTILINE.box)} style={BORDERED.includes(variant) ? (ring ? { borderColor: ring, boxShadow: ringLayer(alpha(ring, 0.35), { width: 2, inset: false }) } : undefined) : ringStyle(ring)}>
+    <Pressable accessible={false} onPress={() => input.current?.focus()} className={cn("w-full min-w-0 flex-row items-center", v.box, props.multiline && MULTILINE.box)} style={BORDERED.includes(variant) ? (ring ? { borderColor: ring, boxShadow: ringLayer(alpha(ring, 0.35), { width: 2, inset: false }) } : undefined) : ringStyle(ring)}>
       {left}
       <TextInput
-        {...props}
+        {...rest}
+        ref={input}
         onFocus={(e) => {
           setFocus(true);
           props.onFocus?.(e);
@@ -108,7 +114,7 @@ export function TextField({ invalid, left, right, variant = "field", ...props }:
         style={[{ fontFamily: FACES.sans.regular, fontVariant: ["tabular-nums"], textAlignVertical: props.multiline ? "top" : "center" }, props.multiline ? null : { paddingVertical: 0 }, left ? { paddingLeft: 0 } : null, right ? { paddingRight: 0 } : null, props.style]}
       />
       {right}
-    </View>
+    </Pressable>
   );
 }
 
