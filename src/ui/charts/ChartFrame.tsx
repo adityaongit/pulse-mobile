@@ -1,7 +1,8 @@
 import { haptic } from "../haptics";
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { type LayoutChangeEvent, View } from "react-native";
-import { Canvas, Circle, DashPathEffect, Path } from "@shopify/react-native-skia";
+import { Canvas, Circle, DashPathEffect } from "@shopify/react-native-skia";
+import { Path } from "@/ui/charts/path";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { runOnJS } from "react-native-reanimated";
 import { cn } from "../cn";

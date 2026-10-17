@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { View } from "react-native";
-import { Path, RoundedRect } from "@shopify/react-native-skia";
+import { RoundedRect } from "@shopify/react-native-skia";
+import { Path } from "@/ui/charts/path";
 import { DATA_COLORS } from "@/lib/bands";
 import { clock, durationWords } from "@/lib/format";
 import type { Metric } from "@/lib/reasons";

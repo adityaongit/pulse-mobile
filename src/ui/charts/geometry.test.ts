@@ -73,6 +73,11 @@ describe("nearestIndex and ticks", () => {
     expect(ticksIn(40, 180, 4)).toEqual([40, 90, 140, 180]);
     expect(ticksIn(50, 170, 4)).toEqual([50, 90, 130, 170]);
   });
+  it("treats ends that differ only by float noise as one value (a flat series' mean ± a zero SD)", () => {
+    expect(evenTicks(42.3, 42.300000000000004, 3)).toEqual(evenTicks(42.3, 42.3, 3));
+    expect(evenTicks(0.1 + 0.2, 0.3, 3)).toEqual(evenTicks(0.3, 0.3, 3));
+    expect(ticksIn(61, 61.00000000000007, 4)).toEqual([61]);
+  });
 });
 
 describe("tick thinning (Recharts)", () => {

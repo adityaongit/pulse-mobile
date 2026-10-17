@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { View } from "react-native";
-import { DashPathEffect, Group, LinearGradient, Path, RoundedRect, vec } from "@shopify/react-native-skia";
+import { DashPathEffect, Group, LinearGradient, RoundedRect, vec } from "@shopify/react-native-skia";
+import { Path } from "@/ui/charts/path";
 import { DATA_COLORS, deltaTone, recoveryBand, recoveryColor, STRESS_COLOR, stressLevel, type GoodDirection } from "@/lib/bands";
 import { DAY, dayLabel, formatDay, formatValue, spoken, type FormatKey } from "@/lib/format";
 import type { Metric } from "@/lib/reasons";

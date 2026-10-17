@@ -1,4 +1,5 @@
-import { LinearGradient, Path, vec } from "@shopify/react-native-skia";
+import { LinearGradient, vec } from "@shopify/react-native-skia";
+import { Path } from "@/ui/charts/path";
 import { bandColor, bandStops, type Band } from "@/lib/charts";
 import { alpha } from "../color";
 

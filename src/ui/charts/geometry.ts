@@ -142,7 +142,8 @@ export function nearestIndex(xs: readonly number[], x: number): number {
 export function evenTicks(lo: number, hi: number, count: number): number[] {
   if (lo > hi) [lo, hi] = [hi, lo];
   const n = Math.max(count, 2);
-  return lo === hi ? singleTicks(lo, n) : niceTicks(lo, hi, n, 0);
+  // Ends that only differ past the step arithmetic's precision (float noise in a mean) are one value: a zero step draws no ticks.
+  return exact(lo) === exact(hi) ? singleTicks(lo, n) : niceTicks(lo, hi, n, 0);
 }
 
 const exact = (v: number) => +v.toFixed(10);
@@ -191,7 +192,7 @@ function singleTicks(v: number, count: number): number[] {
  */
 export function ticksIn(lo: number, hi: number, count: number): number[] {
   if (lo > hi) [lo, hi] = [hi, lo];
-  if (lo === hi) return [lo];
+  if (exact(lo) === exact(hi)) return [lo];
   const step = adaptiveStep((hi - lo) / (Math.max(count, 2) - 1), 0);
   const out: number[] = [];
   for (let v = lo; v < hi; v = exact(v + step)) out.push(v);

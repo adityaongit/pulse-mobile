@@ -2,7 +2,7 @@
 // src/app/(app)/health/fitness/LoadChart.tsx: Recharts' ComposedChart as Skia marks on the kit's chart frame.
 import { useMemo, useState } from "react";
 import { View } from "react-native";
-import { Path } from "@shopify/react-native-skia";
+import { Path } from "@/ui/charts/path";
 import { DAY, formatDay, formatValue } from "@/lib/format";
 import type { FitnessVM } from "@/queries/types";
 import { ChartFigure, ChartLabel, DashedLine, GlowDot, GridLines, PlotCanvas, ScrubLayer, TooltipCard, TooltipLine } from "@/ui/charts/ChartFrame";

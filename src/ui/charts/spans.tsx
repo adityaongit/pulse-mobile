@@ -1,5 +1,6 @@
 import { View } from "react-native";
-import { Path, RoundedRect } from "@shopify/react-native-skia";
+import { RoundedRect } from "@shopify/react-native-skia";
+import { Path } from "@/ui/charts/path";
 import { Activity, Moon, PersonStanding } from "lucide-react-native";
 import { DATA_COLORS, ZONE_COLOR } from "@/lib/bands";
 import type { Band } from "@/lib/charts";

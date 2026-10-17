@@ -2,7 +2,8 @@
 // piece of text laid over it as React Native <Text>, as the kit's charts are built (src/ui/charts). The numbers (domain,
 // ticks, rows) come from trendViewLayout.ts, once per data set; the plot below only maps them to pixels.
 import { useMemo } from "react";
-import { Group, Path, RoundedRect, DashPathEffect } from "@shopify/react-native-skia";
+import { Group, RoundedRect, DashPathEffect } from "@shopify/react-native-skia";
+import { Path } from "@/ui/charts/path";
 import { DATA_COLORS, deltaTone, partColor, recoveryColor, type GoodDirection } from "@/lib/bands";
 import { formatDay, formatValue, hmm } from "@/lib/format";
 import { ChartFigure, ChartLabel, GridLines, HollowDot, Pill, PlotCanvas, wholeTick } from "@/ui/charts/ChartFrame";
