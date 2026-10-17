@@ -75,8 +75,10 @@ const FIELDS = {
   compact: { box: FIELD_BOX_COMPACT, input: "px-3.5 text-[15px]" },
 } as const;
 const BORDERED: readonly (keyof typeof FIELDS)[] = ["input", "number"];
-/** A multiline field (Coach's About you): the variant's box, grown from four lines to fit, the text from the top left. */
-const MULTILINE = { box: "h-auto min-h-28 items-stretch py-3", input: "h-auto" } as const;
+/** A multiline field (Coach's About you): the variant's box, grown from four lines to fit, the text from the top left. The
+ * input carries the padding, so its frame is the whole box: the keyboard brings the focused input into view
+ * (useRevealFocused), and a tap anywhere in the box focuses it. */
+const MULTILINE = { box: "h-auto min-h-28 items-stretch", input: "h-auto py-3" } as const;
 
 /** A text field; the ring shows on focus (web: focus-visible:ring-2 ring-foreground/70) and when `invalid`. */
 export function TextField({ invalid, left, right, variant = "field", ...props }: TextInputProps & { ref?: Ref<TextInput>; invalid?: boolean; left?: ReactNode; right?: ReactNode; variant?: keyof typeof FIELDS }) {
@@ -101,7 +103,7 @@ export function TextField({ invalid, left, right, variant = "field", ...props }:
         selectionColor={c.foreground}
         autoCorrect={false}
         className={cn("h-full min-w-0 flex-1 text-foreground", v.input, props.multiline && MULTILINE.input)}
-        style={[{ fontFamily: FACES.sans.regular, fontVariant: ["tabular-nums"], paddingVertical: 0, textAlignVertical: props.multiline ? "top" : "center" }, left ? { paddingLeft: 0 } : null, right ? { paddingRight: 0 } : null, props.style]}
+        style={[{ fontFamily: FACES.sans.regular, fontVariant: ["tabular-nums"], textAlignVertical: props.multiline ? "top" : "center" }, props.multiline ? null : { paddingVertical: 0 }, left ? { paddingLeft: 0 } : null, right ? { paddingRight: 0 } : null, props.style]}
       />
       {right}
     </View>

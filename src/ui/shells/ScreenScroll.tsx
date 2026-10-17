@@ -4,7 +4,7 @@ import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { useLocalSearchParams, usePathname } from "expo-router";
 import Animated, { useAnimatedReaction, useAnimatedRef, useAnimatedScrollHandler, useScrollViewOffset, useSharedValue, withTiming } from "react-native-reanimated";
 import { Ground, HealthspanGround } from "../Ground";
-import { useKeyboardInset } from "../keyboard";
+import { useKeyboardInset, useRevealFocused } from "../keyboard";
 import { useTheme } from "../theme";
 import { FloatingCheckIn, showsCheckIn } from "./CheckInAction";
 import { HEADER_FADE } from "./Header";
@@ -65,8 +65,8 @@ export type ScreenScrollProps = {
 /**
  * The scroll container every shell uses: the ground behind, the content padded below the header (`top` plus its fade) and clear of the
  * floating tab bar or check-in button (`bottom`), a header drawn over it (the header is absolute, so content scrolls under
- * it and its fade), the check-in button floating over the foot of a detail screen, the web's pull to sync, and the platform's
- * keyboard handling on the scroll view.
+ * it and its fade), the check-in button floating over the foot of a detail screen, the web's pull to sync, and the keyboard:
+ * the scroll view ends at its top and brings the focused field into view.
  */
 export function ScreenScroll({ header, top, onScroll, bottomPad, healthspan, onRefresh, children }: ScreenScrollProps) {
   const { c } = useTheme();
@@ -79,6 +79,7 @@ export function ScreenScroll({ header, top, onScroll, bottomPad, healthspan, onR
   const { ref: keyboardRef, onLayout: measureKeyboard, inset: keyboardInset } = useKeyboardInset();
   const landed = useRef<string>(null);
   const content = useRef<View>(null);
+  const reveal = useRevealFocused({ scroll, content, offset: () => offset.value, top: top + HEADER_FADE });
   // The anchor's place inside the content (which starts under the `top` padding, i.e. just below the header): scroll there.
   const register = useCallback(
     (id: string, node: View) => {
@@ -102,6 +103,7 @@ export function ScreenScroll({ header, top, onScroll, bottomPad, healthspan, onR
         <GestureDetector gesture={Gesture.Simultaneous(pull.gesture, Gesture.Native())}>
         <Animated.ScrollView
           ref={scroll}
+          {...reveal}
           onScroll={onScroll}
           scrollEventThrottle={16}
           contentContainerStyle={{ paddingTop: top + HEADER_FADE, paddingBottom: bottomPad ?? clearance }}

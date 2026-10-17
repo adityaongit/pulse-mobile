@@ -1,12 +1,12 @@
-import { useCallback, useEffect, useRef, type ReactNode } from "react";
-import { Keyboard, type LayoutChangeEvent, type NativeScrollEvent, type NativeSyntheticEvent, ScrollView, StyleSheet, TextInput, View } from "react-native";
+import { useRef, type ReactNode } from "react";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ground } from "../Ground";
 import { Text } from "../Text";
 import { useTheme } from "../theme";
 import { alpha } from "../color";
-import { useKeyboardInset } from "../keyboard";
+import { useKeyboardInset, useRevealFocused } from "../keyboard";
 import { DetailHeader, DetailHeaderRow, detailRowHeight } from "./DetailHeader";
 import { DoneScreen } from "./DoneScreen";
 import { HEADER_FADE, useHeaderHeight } from "./Header";
@@ -39,40 +39,6 @@ export function TaskSection({ children }: { children: string }) {
 }
 
 /**
- * The scrolling body's props that bring the focused field into view once the keyboard is up, 16 pt clear of the
- * actions, as a browser scrolls a focused input into view. It runs when the keyboard shows and again when the body
- * shrinks above it (the keyboard's padding lands after the keyboard's event).
- */
-function useRevealFocused() {
-  const ref = useRef<ScrollView>(null);
-  const view = useRef({ y: 0, height: 0 });
-  const reveal = useCallback(() => {
-    const input = TextInput.State.currentlyFocusedInput();
-    // `getInnerViewRef` (the content container) is in ScrollView.js but missing from its .d.ts.
-    const content = (ref.current as unknown as { getInnerViewRef(): View | null } | null)?.getInnerViewRef();
-    if (!input || !content) return;
-    input.measureLayout(content, (_x, y, _w, h) => {
-      const { y: top, height } = view.current;
-      if (y + h + 16 > top + height) ref.current?.scrollTo({ y: y + h + 16 - height });
-      else if (y < top) ref.current?.scrollTo({ y: Math.max(y - 16, 0) });
-    });
-  }, []);
-  useEffect(() => {
-    const sub = Keyboard.addListener("keyboardDidShow", reveal);
-    return () => sub.remove();
-  }, [reveal]);
-  return {
-    ref,
-    scrollEventThrottle: 16,
-    onLayout: (e: LayoutChangeEvent) => {
-      view.current.height = e.nativeEvent.layout.height;
-      if (Keyboard.isVisible()) reveal();
-    },
-    onScroll: (e: NativeSyntheticEvent<NativeScrollEvent>) => (view.current.y = e.nativeEvent.contentOffset.y),
-  };
-}
-
-/**
  * A task page (spec §4.8). What the web shows in a drawer (check-in, the logs, the info cards) is a full-screen page here,
  * pushed like any detail page (sheets.ts): the detail header (Back, the caps title, `action`) over the ground, the
  * scrolling body, and the pill actions pinned above the navigation bar. The keyboard lifts the body and the actions.
@@ -81,11 +47,15 @@ export function TaskPage({ title, description, children, footer, action, glow, d
   const { c } = useTheme();
   const insets = useSafeAreaInsets();
   const { ref: keyboardRef, onLayout: measureKeyboard, inset: keyboardInset } = useKeyboardInset();
-  const reveal = useRevealFocused();
   const rows = detailRowHeight({ subtitle: description });
   const framed = useHeaderHeight(rows);
   // A glow page keeps its header in the flow over the glow (the detail header's ground fill would cover the glow).
   const top = glow ? 0 : framed;
+  const padTop = glow ? 8 : top + HEADER_FADE;
+  const scroll = useRef<ScrollView>(null);
+  const content = useRef<View>(null);
+  const offset = useRef(0);
+  const reveal = useRevealFocused({ scroll, content, offset: () => offset.current, top: padTop });
   const header = { title, subtitle: description, action, onBack: onClose ?? goBack };
   // Under the pinned actions or, with none, under the body: the navigation bar's inset plus a gap, so a button never sits
   // on the screen's edge (the web's max(inset, 16px) left it touching the gesture bar). Above the keyboard: 16 pt.
@@ -106,8 +76,20 @@ export function TaskPage({ title, description, children, footer, action, glow, d
         </View>
       ) : (
         <>
-          <ScrollView {...reveal} style={styles.fill} contentContainerStyle={{ paddingTop: glow ? 8 : top + HEADER_FADE, paddingHorizontal: 16, paddingBottom: footer ? 16 : pad }} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" showsVerticalScrollIndicator={false}>
-            {children}
+          <ScrollView
+            ref={scroll}
+            {...reveal}
+            onScroll={(e) => (offset.current = e.nativeEvent.contentOffset.y)}
+            scrollEventThrottle={16}
+            style={styles.fill}
+            contentContainerStyle={{ paddingTop: padTop, paddingHorizontal: 16, paddingBottom: footer ? 16 : pad }}
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="on-drag"
+            showsVerticalScrollIndicator={false}
+          >
+            <View ref={content} collapsable={false}>
+              {children}
+            </View>
           </ScrollView>
           {!!footer && <View className="gap-3 px-4 pt-3" style={{ paddingBottom: pad }}>{footer}</View>}
         </>
