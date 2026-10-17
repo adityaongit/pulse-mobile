@@ -17,6 +17,7 @@ import { ring as ringLayer } from "@/ui/shadow";
 import { useTheme } from "@/ui/theme";
 import { Press } from "@/ui/Press";
 import { DURATION } from "@/ui/motion";
+import { BAR_CORNERS } from "@/ui/radius";
 
 /** Body copy under a heading (web: max-w-[65ch] text-[15px] leading-[22px] text-foreground-secondary). */
 export const BODY = "text-[15px] leading-[22px] text-foreground-secondary";
@@ -74,6 +75,8 @@ const FIELDS = {
   compact: { box: FIELD_BOX_COMPACT, input: "px-3.5 text-[15px]" },
 } as const;
 const BORDERED: readonly (keyof typeof FIELDS)[] = ["input", "number"];
+/** A multiline field (Coach's About you): the variant's box, grown from four lines to fit, the text from the top left. */
+const MULTILINE = { box: "h-auto min-h-28 items-stretch py-3", input: "h-auto" } as const;
 
 /** A text field; the ring shows on focus (web: focus-visible:ring-2 ring-foreground/70) and when `invalid`. */
 export function TextField({ invalid, left, right, variant = "field", ...props }: TextInputProps & { ref?: Ref<TextInput>; invalid?: boolean; left?: ReactNode; right?: ReactNode; variant?: keyof typeof FIELDS }) {
@@ -82,7 +85,7 @@ export function TextField({ invalid, left, right, variant = "field", ...props }:
   const v = FIELDS[variant];
   const ring = invalid ? c["recovery-red-text"] : focus ? c["focus-ring"] : null;
   return (
-    <View className={cn("w-full min-w-0 flex-row items-center", v.box)} style={BORDERED.includes(variant) ? (ring ? { borderColor: ring, boxShadow: ringLayer(alpha(ring, 0.35), { width: 2, inset: false }) } : undefined) : ringStyle(ring)}>
+    <View className={cn("w-full min-w-0 flex-row items-center", v.box, props.multiline && MULTILINE.box)} style={BORDERED.includes(variant) ? (ring ? { borderColor: ring, boxShadow: ringLayer(alpha(ring, 0.35), { width: 2, inset: false }) } : undefined) : ringStyle(ring)}>
       {left}
       <TextInput
         {...props}
@@ -97,8 +100,8 @@ export function TextField({ invalid, left, right, variant = "field", ...props }:
         placeholderTextColor={c["muted-foreground"]}
         selectionColor={c.foreground}
         autoCorrect={false}
-        className={cn("h-full min-w-0 flex-1 text-foreground", v.input)}
-        style={[{ fontFamily: FACES.sans.regular, fontVariant: ["tabular-nums"], paddingVertical: 0, textAlignVertical: "center" }, left ? { paddingLeft: 0 } : null, right ? { paddingRight: 0 } : null, props.style]}
+        className={cn("h-full min-w-0 flex-1 text-foreground", v.input, props.multiline && MULTILINE.input)}
+        style={[{ fontFamily: FACES.sans.regular, fontVariant: ["tabular-nums"], paddingVertical: 0, textAlignVertical: props.multiline ? "top" : "center" }, left ? { paddingLeft: 0 } : null, right ? { paddingRight: 0 } : null, props.style]}
       />
       {right}
     </View>
@@ -190,8 +193,8 @@ export function Switch({ value, onValueChange, disabled, label }: { value: boole
 /** The web's Progress (h-1.5 on bg-muted, the fill bg-primary). */
 export function ProgressBar({ value, label }: { value: number; label: string }) {
   return (
-    <View accessibilityRole="progressbar" accessibilityLabel={label} accessibilityValue={{ min: 0, max: 100, now: Math.round(value) }} className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-      <View className="h-full rounded-full bg-primary" style={{ width: `${Math.max(0, Math.min(100, value))}%` }} />
+    <View accessibilityRole="progressbar" accessibilityLabel={label} accessibilityValue={{ min: 0, max: 100, now: Math.round(value) }} className={cn("h-1.5 w-full overflow-hidden bg-muted", BAR_CORNERS)}>
+      <View className="h-full bg-primary" style={{ width: `${Math.max(0, Math.min(100, value))}%` }} />
     </View>
   );
 }

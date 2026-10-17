@@ -39,8 +39,6 @@ function Notes({ saved }: { saved: string | null }) {
         multiline
         maxLength={MAX_NOTES}
         placeholder="Short and direct. I lift four days a week and I'm training for a half marathon."
-        className="min-h-24 py-3"
-        textAlignVertical="top"
       />
     </Field>
   );
