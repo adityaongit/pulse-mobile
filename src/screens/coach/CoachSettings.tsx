@@ -4,15 +4,15 @@
 import { useState } from "react";
 import { View } from "react-native";
 import { MAX_NOTES } from "@/coach/instructions";
-import { providerLabel } from "@/coach/providers";
+import { providerLabel, providerOf } from "@/coach/providers";
 import { useCoachSetup } from "@/coach/session";
-import { deleteAllChats, removeProvider, setConsent, setInstructions } from "@/coach/storage";
+import { deleteAllChats, removeProvider, setAutoAnalysis, setConsent, setInstructions } from "@/coach/storage";
 import { Card } from "@/ui/Card";
 import { Text } from "@/ui/Text";
 import { toast } from "@/ui/Toast";
 import { DetailShell } from "@/ui/shells/DetailShell";
 import { GROUP_LABEL } from "@/ui/shells/LinkList";
-import { ConfirmDialog, Field, HINT, ROW, ROW_LABEL, ROW_RULE, ROW_VALUE, SmallButton, TextField } from "@/screens/settings/controls";
+import { ConfirmDialog, Field, HINT, ROW, ROW_LABEL, ROW_RULE, ROW_VALUE, SmallButton, SwitchRow, TextField } from "@/screens/settings/controls";
 import { cn } from "@/ui/cn";
 import { ConnectProvider, Consent } from "./CoachSetup";
 
@@ -52,6 +52,8 @@ export function CoachSettings() {
   const [confirm, setConfirm] = useState<Confirm>(null);
   const [pending, setPending] = useState(false);
 
+  // The person's own server: its address shows, and it may have no key to remove.
+  const custom = providerOf(setup?.provider)?.custom;
   const run = async (fn: () => Promise<unknown>, done: string) => {
     setPending(true);
     try {
@@ -64,7 +66,9 @@ export function CoachSettings() {
     setConfirm(null);
   };
   const DIALOG = {
-    key: { title: "Remove your key?", description: "The coach stops answering until you add a key again.", label: "Remove key", go: () => run(removeProvider, "Key removed.") },
+    key: custom
+      ? { title: "Disconnect your server?", description: "The coach stops answering until you connect a provider again.", label: "Disconnect", go: () => run(removeProvider, "Server disconnected.") }
+      : { title: "Remove your key?", description: "The coach stops answering until you add a key again.", label: "Remove key", go: () => run(removeProvider, "Key removed.") },
     chats: { title: "Delete every chat?", description: "Every chat on this phone is removed. This can’t be undone.", label: "Delete chats", go: () => run(deleteAllChats, "Chats deleted.") },
     off: { title: "Turn off the coach?", description: "Your key is removed and the coach asks for consent again. Your chats stay until you delete them.", label: "Turn off", go: () => run(async () => (await removeProvider(), await setConsent(false)), "Coach turned off.") },
   } as const;
@@ -84,14 +88,19 @@ export function CoachSettings() {
           <Card>
             <Row first label="Provider" value={providerLabel(setup.provider)} />
             <Row label="Model" value={setup.model ?? ""} />
-            <Row label="API key" value={setup.last4 ? `••••${setup.last4}` : "Not saved"} />
+            {!!custom && <Row label="Server" value={setup.baseUrl ?? ""} />}
+            <Row label="API key" value={setup.last4 ? `••••${setup.last4}` : custom ? "None" : "Not saved"} />
           </Card>
           <View className="flex-row flex-wrap gap-2">
             <SmallButton label="Change" onPress={() => setChanging(true)} />
-            <SmallButton label="Remove key" onPress={() => setConfirm("key")} />
+            <SmallButton label={custom ? "Disconnect" : "Remove key"} onPress={() => setConfirm("key")} />
           </View>
         </View>
         <Notes key={setup.instructions ?? ""} saved={setup.instructions} />
+        <View className="gap-2">
+          <Text className={GROUP_LABEL}>Workouts</Text>
+          <SwitchRow rule={false} label="Analyze each workout" hint="A one-line take from your provider as a workout opens. Off, the coach answers only when you tap." value={setup.autoAnalysis} onChange={(on) => void setAutoAnalysis(on).catch(failed)} />
+        </View>
         <View className="gap-2">
           <Text className={GROUP_LABEL}>Chats</Text>
           <Text className={HINT}>Saved on this phone, visible only to you.</Text>

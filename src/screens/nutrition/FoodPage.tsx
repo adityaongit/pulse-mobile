@@ -2,7 +2,7 @@
 // food three ways (a photo, taken or chosen; a few words; or typed in), check an AI estimate as an editable list before
 // saving, and edit a food logged in Pulse. Opened from Nutrition and from the Journal's Food tile.
 //
-// Estimates use the person's own coach provider and key (src/nutrition/model.ts); without one the sheet says so and
+// Estimates use the person's own coach provider and key (src/coach/session.ts deviceModel); without one the sheet says so and
 // offers the typed form. The photo is scaled and sent once (src/nutrition/photo.ts, estimate.ts), held in memory only
 // until its estimate is in (or for a retry after a failure) and never saved. Closing the sheet (a route) unmounts it,
 // which stops a running estimate.
@@ -16,7 +16,8 @@ import { FORMATS } from "@/lib/format";
 import { wall } from "@/lib/time";
 import { parseDay } from "@/lib/url";
 import { estimateFood, MAX_DESCRIPTION, type Confidence, type EstimateInput, type EstimateProblem } from "@/nutrition/estimate";
-import { deviceModel, providerLabel, useCoachSetup } from "@/nutrition/model";
+import { coachReady, providerLabel } from "@/coach/providers";
+import { deviceModel, useCoachSetup } from "@/coach/session";
 import { chooseMealPhoto, takeMealPhoto, type MealPhoto } from "@/nutrition/photo";
 import { todayOf } from "@/queries/common";
 import type { FoodVia } from "@/queries/food";
@@ -193,7 +194,7 @@ export function FoodPage() {
 
 function Sheet({ edit, at: at0, meal: meal0, timeZone, today }: { edit: FoodItem | null; at: string; meal: Meal; timeZone: string; today: { kcal: number | null; protein: number | null } | null }) {
   const setup = useCoachSetup();
-  const hasKey = !!setup?.consent && !!setup.provider && !!setup.last4;
+  const hasKey = coachReady(setup);
   const provider = providerLabel(setup?.provider ?? null);
 
   const [step, setStep] = useState<Step>(edit ? "manual" : "start");
@@ -234,7 +235,7 @@ function Sheet({ edit, at: at0, meal: meal0, timeZone, today }: { edit: FoodItem
     setNotice(null);
     setError(null);
     setStep("estimating");
-    const model = await deviceModel();
+    const model = (await deviceModel())?.model;
     if (ctl.signal.aborted) return;
     if (!model) {
       setNotice("no_key");

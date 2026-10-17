@@ -25,19 +25,7 @@ import { Segmented } from "@/ui/Segmented";
 import { SectionShell } from "@/ui/shells/SectionShell";
 import { Text } from "@/ui/Text";
 import { toast } from "@/ui/Toast";
-import { HINT, ROW, ROW_LABEL, ROW_RULE, ROW_VALUE, SmallButton, Switch } from "./controls";
-
-function SwitchRow({ label, hint, value, onChange, disabled, rule = true }: { label: string; hint?: string; value: boolean; onChange: (v: boolean) => void; disabled?: boolean; rule?: boolean }) {
-  return (
-    <View className={cn(ROW, rule && ROW_RULE, disabled && "opacity-disabled")}>
-      <View className="min-w-0 flex-1">
-        <Text className={ROW_LABEL}>{label}</Text>
-        {!!hint && <Text className={HINT}>{hint}</Text>}
-      </View>
-      <Switch label={label} value={value} onValueChange={onChange} disabled={disabled} />
-    </View>
-  );
-}
+import { HINT, ROW, ROW_LABEL, ROW_RULE, ROW_VALUE, SmallButton, SwitchRow } from "./controls";
 
 /** Settings and the notification permission, loaded once and re-read when the app returns from system settings. */
 function useNotificationSettings() {

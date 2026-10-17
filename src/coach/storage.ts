@@ -9,11 +9,21 @@ import { appStore } from "@/state/app";
 import { CHAT_PAGE, titleOf, type ChatCursor, type ChatRow } from "./chats";
 
 /** What the screens may know about the setup: never the key itself. */
-export type CoachSetup = { provider: string | null; model: string | null; last4: string | null; consent: boolean; instructions: string | null };
+export type CoachSetup = {
+  provider: string | null;
+  model: string | null;
+  last4: string | null;
+  consent: boolean;
+  instructions: string | null;
+  /** The workout pill asks the provider for a one-line take as a workout opens; off, it asks only when tapped. */
+  autoAnalysis: boolean;
+  /** The person's own server (provider "custom"): its OpenAI-compatible URL. */
+  baseUrl: string | null;
+};
 
 const SETUP_KEY = "pulse.coach.setup";
 const API_KEY = "pulse.coach.apiKey";
-const EMPTY: CoachSetup = { provider: null, model: null, last4: null, consent: false, instructions: null };
+const EMPTY: CoachSetup = { provider: null, model: null, last4: null, consent: false, instructions: null, autoAnalysis: true, baseUrl: null };
 
 const listeners = new Set<() => void>();
 const emit = () => listeners.forEach((f) => f());
@@ -48,15 +58,22 @@ export const setConsent = (on: boolean) => patchSetup({ consent: on });
 /** The person's notes for the coach (null clears them). */
 export const setInstructions = (notes: string | null) => patchSetup({ instructions: notes?.trim() || null });
 
-/** Stores the provider and model, and the key in secure storage (call only after the test request worked). */
-export async function saveProvider(provider: string, model: string, apiKey: string): Promise<void> {
-  await SecureStore.setItemAsync(API_KEY, apiKey, { keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY });
-  await patchSetup({ provider, model, last4: apiKey.slice(-4) });
+/** Whether a workout's coach pill analyses it as it opens (GitHub #5). */
+export const setAutoAnalysis = (on: boolean) => patchSetup({ autoAnalysis: on });
+
+/**
+ * Stores the provider, model and server URL, and the key in secure storage (call only after the test request worked).
+ * The person's own server may take no key; then none is kept.
+ */
+export async function saveProvider(c: { provider: string; model: string; apiKey: string | null; baseUrl: string | null }): Promise<void> {
+  if (c.apiKey) await SecureStore.setItemAsync(API_KEY, c.apiKey, { keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY });
+  else await SecureStore.deleteItemAsync(API_KEY).catch(() => {});
+  await patchSetup({ provider: c.provider, model: c.model, last4: c.apiKey ? c.apiKey.slice(-4) : null, baseUrl: c.baseUrl });
 }
 
 export async function removeProvider(): Promise<void> {
   await SecureStore.deleteItemAsync(API_KEY).catch(() => {});
-  await patchSetup({ provider: null, model: null, last4: null });
+  await patchSetup({ provider: null, model: null, last4: null, baseUrl: null });
 }
 
 /** The saved key, or null (none saved, or the keystore can no longer read it: the person adds it again). */

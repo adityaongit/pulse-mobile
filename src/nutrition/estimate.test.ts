@@ -41,7 +41,7 @@ const openrouter = (content: string) => ({
   status: 200,
   json: { id: "c1", object: "chat.completion", created: 1, model: "anthropic/claude-sonnet-5.5", choices: [{ index: 0, message: { role: "assistant", content }, finish_reason: "stop" }], usage: { prompt_tokens: 900, completion_tokens: 120, total_tokens: 1020 } },
 });
-const claude = (fetch: Fetch) => modelFor("anthropic", "claude-opus-5-5", KEY, fetch)!;
+const claude = (fetch: Fetch) => modelFor({ provider: "anthropic", model: "claude-opus-5-5", apiKey: KEY }, fetch)!;
 
 describe("the schema", () => {
   it("accepts the answer it asks for and refuses a malformed one", () => {
@@ -133,7 +133,7 @@ describe("a photo estimate", () => {
   it("over OpenRouter's JSON mode, reads an answer the schema check rejects (numbers as strings, fenced)", async () => {
     const loose = { ...ANSWER, foods: [{ ...ANSWER.foods[0], kcal: "182", confidence: "High" }] };
     const { fetch, calls } = fakeFetch([openrouter(`\`\`\`json\n${JSON.stringify(loose)}\n\`\`\``)]);
-    const r = await estimateFood(modelFor("openrouter", "anthropic/claude-sonnet-5.5", KEY, fetch)!, PHOTO, { maxRetries: 0 });
+    const r = await estimateFood(modelFor({ provider: "openrouter", model: "anthropic/claude-sonnet-5.5", apiKey: KEY }, fetch)!, PHOTO, { maxRetries: 0 });
     expect(r).toMatchObject({ ok: true, estimate: { foods: [{ name: "Scrambled eggs", kcal: 182, confidence: "high" }] } });
     expect(calls[0].body.response_format).toEqual({ type: "json_object" });
     expect(JSON.stringify(calls[0].body.messages)).toContain("data:image/jpeg;base64");

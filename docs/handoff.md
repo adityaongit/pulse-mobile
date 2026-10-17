@@ -82,7 +82,7 @@ The last measurement was back to back on the same phone:
 5. **Housekeeping**:
    - Delete the merged agent worktrees in `.claude/worktrees/` and their `worktree-agent-*` branches (`git worktree
      remove`, `git branch -D`).
-   - `src/nutrition/model.ts` still reads the coach setup by itself. It could re-export from `src/coach/session`.
+   - Done 2026-10-17: food estimates read the coach setup through `src/coach/session` (`src/nutrition/model.ts` is gone).
 
 ## How the owner wants work done
 

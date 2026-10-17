@@ -5,7 +5,7 @@ import * as React from "react";
 import type { QueryCtx } from "@/queries/ctx";
 import { queryCtx } from "@/state/app";
 import { deviceFetch } from "./net";
-import { modelFor } from "./providers";
+import { coachReady, modelFor } from "./providers";
 import { apiKey, chatCount, coachSetup, loadChat, saveChat, subscribe, type CoachSetup } from "./storage";
 import { CoachTransport, type CoachModel } from "./transport";
 import { testKey, type ProviderInput } from "./validate";
@@ -14,10 +14,8 @@ import { workoutGlance } from "./workout";
 /** The model for a turn: consent, a provider and model, and a key the keystore can read; else null. */
 export async function deviceModel(): Promise<CoachModel | null> {
   const s = await coachSetup();
-  if (!s.consent || !s.provider || !s.model) return null;
-  const key = await apiKey();
-  if (!key) return null;
-  const model = modelFor(s.provider, s.model, key, deviceFetch);
+  if (!coachReady(s) || !s.provider || !s.model) return null;
+  const model = modelFor({ provider: s.provider, model: s.model, apiKey: await apiKey(), baseUrl: s.baseUrl }, deviceFetch);
   return model ? { model, provider: s.provider, instructions: s.instructions } : null;
 }
 
@@ -66,7 +64,7 @@ export function useCoachSetup(): CoachSetup | undefined {
 /** Whether a provider key is saved: the phone's "has coach access" (the tab bar's round button opens the coach). */
 export function useHasCoachKey(): boolean {
   const s = useCoachSetup();
-  return !!s?.consent && !!s.provider && !!s.last4;
+  return coachReady(s);
 }
 
 /** How many chats are saved, refreshed on every change. */

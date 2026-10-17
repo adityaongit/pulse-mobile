@@ -203,6 +203,19 @@ export function SelectRow<T extends string>({ label, value, options, onChange, r
   );
 }
 
+/** A setting that is on or off: the label (and a hint under it) and a switch, as a settings row. */
+export function SwitchRow({ label, hint, value, onChange, disabled, rule = true }: { label: string; hint?: string; value: boolean; onChange: (v: boolean) => void; disabled?: boolean; rule?: boolean }) {
+  return (
+    <View className={cn(ROW, rule && ROW_RULE, disabled && "opacity-disabled")}>
+      <View className="min-w-0 flex-1">
+        <Text className={ROW_LABEL}>{label}</Text>
+        {!!hint && <Text className={HINT}>{hint}</Text>}
+      </View>
+      <Switch label={label} value={value} onValueChange={onChange} disabled={disabled} />
+    </View>
+  );
+}
+
 /** A small text button on the ground ("Edit", "Change", "Done"): the web's ghost / sm sizes, which the kit's Button lacks. */
 export function SmallButton({ label, accessibilityLabel, onPress, icon, solid, className }: { label: string; accessibilityLabel?: string; onPress: () => void; icon?: LucideIcon; solid?: boolean; className?: string }) {
   return (

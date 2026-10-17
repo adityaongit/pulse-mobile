@@ -820,3 +820,13 @@ flowchart LR
   VM --> UI[rows and charts, unit-blind]
   T[typed: lb, ft in, fl oz] --> B["quantity(unit).stored"] --> S
 ```
+
+## The coach on the person's own server
+
+"Your own server" is the coach's sixth provider: any OpenAI-compatible endpoint (Ollama's `/v1`, LM Studio, vLLM) at a
+URL the person types, reached through `@ai-sdk/openai-compatible` as OpenRouter is. A key is optional; without one no
+Authorization header goes out, which a local Ollama expects. `coachReady` (`src/coach/providers.ts`) is the one rule
+for whether the coach can answer (a key, or for a server its URL), used by the coach, the tab bar and food estimates.
+A server on a home network or over Tailscale is usually plain `http://`, which Android blocks from API 28 unless the
+app allows cleartext: `expo-build-properties` sets `usesCleartextTraffic`. Every built-in provider is HTTPS, so the
+only plain-HTTP traffic is to an address the person typed. Tested end to end with a mock server over `adb reverse`.

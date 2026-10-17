@@ -75,7 +75,8 @@
             "enableMinifyInReleaseBuilds": true,
             "enableShrinkResourcesInReleaseBuilds": true,
             "gifEnabled": false,
-            "webpEnabled": false
+            "webpEnabled": false,
+            "usesCleartextTraffic": true
           }
         }
       ],

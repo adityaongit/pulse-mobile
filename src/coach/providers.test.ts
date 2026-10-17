@@ -7,7 +7,7 @@ import { describe, expect, it } from "vitest";
 import { MemoryStore } from "@/data/memory";
 import type { Profile } from "@/data/types";
 import type { QueryCtx } from "@/queries/ctx";
-import { modelFor, PROVIDERS, providerOf, type Fetch } from "./providers";
+import { coachReady, modelFor, PROVIDERS, providerOf, type Fetch } from "./providers";
 import { coachTools } from "./tools";
 import { checkProvider, testKey, TEST_FAILED } from "./validate";
 
@@ -80,8 +80,8 @@ const OPENAI_COMPAT_TEXT = sse([
   [null, "[DONE]"],
 ]);
 
-async function run(provider: string, model: string, fetch: Fetch) {
-  const m = modelFor(provider, model, KEY, fetch)!;
+async function run(provider: string, model: string, fetch: Fetch, choice: { apiKey?: string | null; baseUrl?: string } = {}) {
+  const m = modelFor({ provider, model, apiKey: KEY, ...choice }, fetch)!;
   const tools = coachTools(ctx) as ToolSet;
   const result = streamText({ model: m, instructions: "Coach.", prompt: "How old am I?", tools, stopWhen: isStepCount(6), maxRetries: 0 });
   let text = "";
@@ -95,11 +95,11 @@ async function run(provider: string, model: string, fetch: Fetch) {
 }
 
 describe("providers", () => {
-  it("lists the web's five providers, Anthropic defaulting to the current Claude model", () => {
-    expect(PROVIDERS.map((p) => p.id)).toEqual(["anthropic", "openai", "google", "gateway", "openrouter"]);
+  it("lists the web's five providers and the person's own server, Anthropic defaulting to the current Claude model", () => {
+    expect(PROVIDERS.map((p) => p.id)).toEqual(["anthropic", "openai", "google", "gateway", "openrouter", "custom"]);
     expect(providerOf("anthropic")?.model).toBe("claude-opus-5-5");
-    expect(modelFor("anthropic", "claude-opus-5-5", null)).toBeNull();
-    expect(modelFor("nope", "x", KEY)).toBeNull();
+    expect(modelFor({ provider: "anthropic", model: "claude-opus-5-5", apiKey: null })).toBeNull();
+    expect(modelFor({ provider: "nope", model: "x", apiKey: KEY })).toBeNull();
   });
 
   it("Anthropic: Messages API with the key header, a tool round trip, then streamed text", async () => {
@@ -127,6 +127,19 @@ describe("providers", () => {
     expect(JSON.stringify(calls[1].body.messages)).toContain("call_1");
   });
 
+  it("your own server: OpenAI-compatible at the URL the person gave, with no Authorization header without a key", async () => {
+    const { fetch, calls } = fakeFetch([OPENAI_COMPAT_TOOL, OPENAI_COMPAT_TEXT]);
+    const r = await run("custom", "llama3.1:8b", fetch, { apiKey: null, baseUrl: "http://192.168.1.20:11434/v1" });
+    expect(r.text).toBe("You’re 36, so **easy** today.");
+    expect(calls[0].url).toBe("http://192.168.1.20:11434/v1/chat/completions");
+    expect(calls[0].headers.authorization).toBeUndefined();
+    expect(calls[0].body).toMatchObject({ model: "llama3.1:8b", stream: true });
+    expect(modelFor({ provider: "custom", model: "llama3.1:8b", apiKey: null })).toBeNull();
+    expect(coachReady({ consent: true, provider: "custom", last4: null, baseUrl: "http://x:1/v1" })).toBe(true);
+    expect(coachReady({ consent: true, provider: "custom", last4: null, baseUrl: null })).toBe(false);
+    expect(coachReady({ consent: true, provider: "openai", last4: null })).toBe(false);
+  });
+
   it("OpenAI, Gemini and the Gateway send the key to their own endpoints only", async () => {
     for (const [id, host] of [
       ["openai", "https://api.openai.com/v1/"],
@@ -149,13 +162,16 @@ describe("key test", () => {
     expect(checkProvider({ provider: "openai", model: "gpt 5", apiKey: KEY })).toEqual({ ok: false, error: "That model id has characters no provider uses." });
     expect(checkProvider({ provider: "openai", model: "gpt-5.4-mini", apiKey: "" })).toEqual({ ok: false, error: "Paste your API key." });
     expect(checkProvider({ provider: "openai", model: "gpt-5.4-mini", apiKey: "short" })).toEqual({ ok: false, error: "That key looks too short." });
-    expect(checkProvider({ provider: "openrouter", model: "anthropic/claude-sonnet-5.5", apiKey: `  ${KEY} ` })).toEqual({ ok: true, provider: "openrouter", model: "anthropic/claude-sonnet-5.5", apiKey: KEY });
+    expect(checkProvider({ provider: "openrouter", model: "anthropic/claude-sonnet-5.5", apiKey: `  ${KEY} ` })).toEqual({ ok: true, provider: "openrouter", model: "anthropic/claude-sonnet-5.5", apiKey: KEY, baseUrl: null });
+    // The person's own server: its http(s) address, and a key only if given.
+    expect(checkProvider({ provider: "custom", model: "llama3.1:8b", apiKey: "", baseUrl: "ollama.local" })).toEqual({ ok: false, error: "Enter your server’s address, starting with http:// or https://." });
+    expect(checkProvider({ provider: "custom", model: "llama3.1:8b", apiKey: "", baseUrl: " http://192.168.1.20:11434/v1/ " })).toEqual({ ok: true, provider: "custom", model: "llama3.1:8b", apiKey: null, baseUrl: "http://192.168.1.20:11434/v1" });
   });
 
   it("saves only after one tiny request works; a refused key gives the web's message", async () => {
     // generateText asks for a non-streamed answer: answer it as JSON.
     const okJson = fakeFetch([{ status: 200, json: { id: "msg_3", type: "message", role: "assistant", model: "claude-opus-5-5", content: [{ type: "text", text: "OK" }], stop_reason: "end_turn", stop_sequence: null, usage: { input_tokens: 5, output_tokens: 1 } } }]);
-    expect(await testKey({ provider: "anthropic", model: "claude-opus-5-5", apiKey: KEY }, okJson.fetch)).toEqual({ ok: true });
+    expect(await testKey({ provider: "anthropic", model: "claude-opus-5-5", apiKey: KEY }, okJson.fetch)).toMatchObject({ ok: true, provider: "anthropic", apiKey: KEY });
     expect(okJson.calls[0].body).toMatchObject({ model: "claude-opus-5-5", max_tokens: 16 });
     expect(okJson.calls[0].body.stream).toBeFalsy();
     const refused = fakeFetch([{ status: 401, json: { type: "error", error: { type: "authentication_error", message: "invalid x-api-key" } } }]);
