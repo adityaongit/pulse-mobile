@@ -17,6 +17,7 @@ import { ring as ringLayer } from "@/ui/shadow";
 import { useTheme } from "@/ui/theme";
 import { Press } from "@/ui/Press";
 import { MenuPanel, useMenu } from "@/ui/Menu";
+import type { Box } from "@/ui/menuPlace";
 import { DURATION } from "@/ui/motion";
 import { BAR_CORNERS } from "@/ui/radius";
 
@@ -145,6 +146,36 @@ export function RadioSegments<T extends string>({ value, options, onChange, labe
 
 export type SelectOption<T extends string> = { value: T; label: string; /** A second line in the dropdown ("lb, mi, ft, °F"). */ detail?: string; icon?: LucideIcon };
 
+/** The choices of a dropdown, the chosen one ticked: open it under its trigger with `useMenu` (SelectRow, the goals). */
+export function ChoiceMenu<T extends string>({ anchor, close, value, options, onChange }: { anchor: Box | null; close: () => void; value: T; options: readonly SelectOption<T>[]; onChange: (v: T) => void }) {
+  return (
+    <MenuPanel anchor={anchor} onClose={close} align="end" className="min-w-56">
+      {options.map((o) => (
+        <Press
+          key={o.value}
+          activeBg="bg-fill-pressed"
+          accessibilityRole="menuitem"
+          accessibilityState={{ selected: o.value === value }}
+          onPress={() => {
+            close();
+            if (o.value === value) return;
+            haptic.select();
+            onChange(o.value);
+          }}
+          className="min-h-12 flex-row items-center gap-3 rounded-xl px-3 py-2"
+        >
+          {o.icon && <Icon icon={o.icon} size={18} tone="foreground-secondary" strokeWidth={1.75} />}
+          <View className="min-w-0 flex-1">
+            <Text className="text-[15px] font-medium leading-5">{o.label}</Text>
+            {!!o.detail && <Text className={HINT}>{o.detail}</Text>}
+          </View>
+          {o.value === value && <Icon icon={Check} size={16} tone="foreground" strokeWidth={2.25} />}
+        </Press>
+      ))}
+    </MenuPanel>
+  );
+}
+
 /**
  * A setting with a few choices, as a settings row: the label, the chosen value and a chevron. A tap opens the choices in
  * a dropdown under it (the kit's MenuPanel, as the Trend View's metric switch), the chosen one ticked.
@@ -161,30 +192,7 @@ export function SelectRow<T extends string>({ label, value, options, onChange, r
           <Icon icon={ChevronDown} size={18} tone="muted-foreground" strokeWidth={2} />
         </View>
       </Press>
-      <MenuPanel anchor={anchor} onClose={close} align="end" className="min-w-56">
-        {options.map((o) => (
-          <Press
-            key={o.value}
-            activeBg="bg-fill-pressed"
-            accessibilityRole="menuitem"
-            accessibilityState={{ selected: o.value === on.value }}
-            onPress={() => {
-              close();
-              if (o.value === on.value) return;
-              haptic.select();
-              onChange(o.value);
-            }}
-            className="min-h-12 flex-row items-center gap-3 rounded-xl px-3 py-2"
-          >
-            {o.icon && <Icon icon={o.icon} size={18} tone="foreground-secondary" strokeWidth={1.75} />}
-            <View className="min-w-0 flex-1">
-              <Text className="text-[15px] font-medium leading-5">{o.label}</Text>
-              {!!o.detail && <Text className={HINT}>{o.detail}</Text>}
-            </View>
-            {o.value === on.value && <Icon icon={Check} size={16} tone="foreground" strokeWidth={2.25} />}
-          </Press>
-        ))}
-      </MenuPanel>
+      <ChoiceMenu anchor={anchor} close={close} value={on.value} options={options} onChange={onChange} />
     </View>
   );
 }

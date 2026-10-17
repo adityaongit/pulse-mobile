@@ -24,14 +24,15 @@ export const PLAN_DEFAULTS: PlanSettings = {
 export type PlanAgg = "sum" | "count" | "average" | "latest";
 export const PLAN_AGG: Record<PlanKey, PlanAgg> = { zone13: "sum", zone45: "sum", strength: "count", steps: "average", consistency: "latest", sleepNeed: "count" };
 
-export type PlanLimit = { min: number; max: number; /** After the field. */ unit: string };
+/** `unit` sits inside the target's box; the card says weekly, and each target's hint says how it adds up. */
+export type PlanLimit = { min: number; max: number; unit: string };
 export const PLAN_LIMITS: Record<PlanKey, PlanLimit> = {
-  zone13: { min: 10, max: 1500, unit: "min a week" },
-  zone45: { min: 5, max: 600, unit: "min a week" },
-  strength: { min: 1, max: 7, unit: "sessions a week" },
-  steps: { min: 1000, max: 30_000, unit: "steps a day, on average" },
-  consistency: { min: 50, max: 100, unit: "% sleep consistency" },
-  sleepNeed: { min: 1, max: 7, unit: "nights a week" },
+  zone13: { min: 10, max: 1500, unit: "min" },
+  zone45: { min: 5, max: 600, unit: "min" },
+  strength: { min: 1, max: 7, unit: "sessions" },
+  steps: { min: 1000, max: 30_000, unit: "steps" },
+  consistency: { min: 50, max: 100, unit: "%" },
+  sleepNeed: { min: 1, max: 7, unit: "nights" },
 };
 
 const grouped = (v: number) => new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(v);
