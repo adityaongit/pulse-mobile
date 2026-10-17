@@ -1,6 +1,6 @@
 // Coach `/coach` (spec §7.21), ported from pulse src/app/(app)/coach/page.tsx via halo: consent, then a provider and
 // key (BYOK), then the chat. `?c=` opens a saved chat, `?q=` fills the composer without sending, `?brief=1` asks for
-// today's brief at once, `?n=` starts a fresh chat.
+// today's brief at once, `?send=1` asks `?q=` at once, `?n=` starts a fresh chat.
 import { useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
@@ -56,9 +56,10 @@ function BarActions({ chatCount, chatOpen, onNew }: { chatCount: number; chatOpe
 export function CoachScreen() {
   const setup = useCoachSetup();
   const chatCount = useChatCount();
-  const params = useLocalSearchParams<{ c?: string; q?: string; brief?: string; n?: string }>();
+  const params = useLocalSearchParams<{ c?: string; q?: string; brief?: string; send?: string; n?: string }>();
   const c = param(params.c) && CHAT_ID.test(param(params.c)!) ? param(params.c)! : null;
   const brief = param(params.brief) === "1";
+  const sendNow = param(params.send) === "1";
   const n = param(params.n);
   const fresh = useMemo(() => generateId(), [n]); // eslint-disable-line react-hooks/exhaustive-deps
   const { data } = useScreen(async (ctx) => ({ suggestions: await coachSuggestions(ctx), today: todayOf(ctx) }), ["coach"]);
@@ -84,7 +85,7 @@ export function CoachScreen() {
   if (setup === undefined) return <DetailShell title="Coach" loading primary={<ChatSkeleton />} />;
   if (!setup.consent || !setup.provider) return <DetailShell title="Coach" primary={!setup.consent ? <Consent /> : <ConnectProvider current={setup} />} />;
 
-  const newChat = () => router.setParams({ c: undefined, q: undefined, brief: undefined, n: generateId() });
+  const newChat = () => router.setParams({ c: undefined, q: undefined, brief: undefined, send: undefined, n: generateId() });
   return (
     <View className="flex-1 bg-background">
       <DetailHeader title="Coach" action={<BarActions chatCount={chatCount ?? 0} chatOpen={!!c} onNew={newChat} />} onHeight={setHeaderH} />
@@ -95,11 +96,11 @@ export function CoachScreen() {
             id={chat.id}
             initial={chat.messages}
             prefill={brief && !c ? "Today's brief" : (param(params.q) ?? "").slice(0, 500)}
-            auto={brief && !c}
+            auto={(brief || sendNow) && !c}
             providerLabel={providerLabel(setup.provider)}
             suggestions={data.suggestions}
             today={data.today}
-            onSaved={(id) => router.setParams({ c: id, q: undefined, brief: undefined })}
+            onSaved={(id) => router.setParams({ c: id, q: undefined, brief: undefined, send: undefined })}
           />
         ) : (
           <ChatSkeleton />

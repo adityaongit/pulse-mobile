@@ -197,7 +197,7 @@ export type CoachProps = {
   initial: UIMessage[];
   /** Fills the composer without sending (`?q=`). */
   prefill: string;
-  /** Sends `prefill` at once (`?brief=1`). */
+  /** Sends `prefill` at once (`?brief=1`, `?send=1`). */
   auto: boolean;
   providerLabel: string;
   suggestions: CoachSuggestion[];
@@ -238,7 +238,7 @@ export function Coach({ id, initial, prefill, auto, providerLabel, suggestions, 
     setInput("");
     void sendMessage({ text: t });
   };
-  // The brief (`?brief=1`) is asked once.
+  // An at-once question (`?brief=1`, `?send=1`) is asked once.
   const asked = useRef(false);
   useEffect(() => {
     if (!auto || asked.current) return;
@@ -275,7 +275,7 @@ export function Coach({ id, initial, prefill, auto, providerLabel, suggestions, 
             )}
           </View>
         )}
-        {error && (
+        {!!error && (
           <View accessibilityRole="alert" className="mt-6 flex-row items-center gap-3 rounded-xl border border-recovery-red/25 bg-recovery-red/12 py-2 pl-4 pr-2">
             <Text className="flex-1 py-1 text-[14px] leading-5 text-foreground">{error}</Text>
             <Pill label="Retry" disabled={busy} onPress={() => again()} icon={<Icon icon={RotateCcw} size={16} />} />
