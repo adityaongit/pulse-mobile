@@ -1,9 +1,10 @@
 import { createContext, useCallback, useContext, useRef, type ReactNode } from "react";
-import { Platform, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { useLocalSearchParams, usePathname } from "expo-router";
 import Animated, { useAnimatedReaction, useAnimatedRef, useAnimatedScrollHandler, useScrollViewOffset, useSharedValue, withTiming } from "react-native-reanimated";
 import { Ground, HealthspanGround } from "../Ground";
+import { useKeyboardInset } from "../keyboard";
 import { useTheme } from "../theme";
 import { FloatingCheckIn, showsCheckIn } from "./CheckInAction";
 import { HEADER_FADE } from "./Header";
@@ -75,6 +76,7 @@ export function ScreenScroll({ header, top, onScroll, bottomPad, healthspan, onR
   const scroll = useAnimatedRef<Animated.ScrollView>();
   const offset = useScrollViewOffset(scroll);
   const pull = usePullToSync(offset, onRefresh);
+  const { ref: keyboardRef, onLayout: measureKeyboard, inset: keyboardInset } = useKeyboardInset();
   const landed = useRef<string>(null);
   const content = useRef<View>(null);
   // The anchor's place inside the content (which starts under the `top` padding, i.e. just below the header): scroll there.
@@ -93,8 +95,9 @@ export function ScreenScroll({ header, top, onScroll, bottomPad, healthspan, onR
     [section, scroll],
   );
   return (
-    <View className="flex-1 bg-background" style={{ backgroundColor: c.background }}>
-      <View style={StyleSheet.absoluteFill}>
+    <View ref={keyboardRef} onLayout={measureKeyboard} className="flex-1 bg-background" style={{ backgroundColor: c.background }}>
+      {/* The scroll view ends at the keyboard's top, so a form's fields scroll clear of it (src/ui/keyboard.ts). */}
+      <View style={[StyleSheet.absoluteFill, { bottom: keyboardInset }]}>
         <Ground healthspan={!!healthspan} />
         <GestureDetector gesture={Gesture.Simultaneous(pull.gesture, Gesture.Native())}>
         <Animated.ScrollView
@@ -104,10 +107,9 @@ export function ScreenScroll({ header, top, onScroll, bottomPad, healthspan, onR
           contentContainerStyle={{ paddingTop: top + HEADER_FADE, paddingBottom: bottomPad ?? clearance }}
           showsVerticalScrollIndicator={false}
           contentInsetAdjustmentBehavior="never"
-          // Forms: a tap on a button while the keyboard is up goes through; iOS scrolls the focused input clear of the keyboard.
+          // Forms: a tap on a button while the keyboard is up goes through.
           keyboardShouldPersistTaps="handled"
-          keyboardDismissMode={Platform.OS === "ios" ? "interactive" : "on-drag"}
-          automaticallyAdjustKeyboardInsets
+          keyboardDismissMode="on-drag"
           // Pulling at the top syncs (usePullToSync), as on the web, where the page does not stretch (`overscroll-behavior: none`).
           overScrollMode="never"
           // Off-screen sections are detached from the native tree, so a push records only what shows. Measured on the

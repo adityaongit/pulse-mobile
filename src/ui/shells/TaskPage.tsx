@@ -1,11 +1,12 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Dimensions, Keyboard, LayoutAnimation, Platform, type LayoutChangeEvent, type NativeScrollEvent, type NativeSyntheticEvent, ScrollView, StyleSheet, TextInput, View } from "react-native";
+import { useCallback, useEffect, useRef, type ReactNode } from "react";
+import { Keyboard, type LayoutChangeEvent, type NativeScrollEvent, type NativeSyntheticEvent, ScrollView, StyleSheet, TextInput, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ground } from "../Ground";
 import { Text } from "../Text";
 import { useTheme } from "../theme";
 import { alpha } from "../color";
+import { useKeyboardInset } from "../keyboard";
 import { DetailHeader, DetailHeaderRow, detailRowHeight } from "./DetailHeader";
 import { DoneScreen } from "./DoneScreen";
 import { HEADER_FADE, useHeaderHeight } from "./Header";
@@ -37,45 +38,36 @@ export function TaskSection({ children }: { children: string }) {
   );
 }
 
-/** iOS: how much of the screen the keyboard covers, which lifts the page's body and actions clear of it. Android resizes the window itself. */
-function useKeyboardHeight() {
-  const [height, setHeight] = useState(0);
-  useEffect(() => {
-    if (Platform.OS !== "ios") return;
-    const sub = Keyboard.addListener("keyboardWillChangeFrame", (e) => {
-      LayoutAnimation.configureNext({ duration: Math.max(e.duration, 10), update: { duration: Math.max(e.duration, 10), type: LayoutAnimation.Types.keyboard } });
-      setHeight(Math.max(Dimensions.get("screen").height - e.endCoordinates.screenY, 0));
-    });
-    return () => sub.remove();
-  }, []);
-  return height;
-}
-
 /**
- * The scrolling body's props that bring the focused field into view once the keyboard is up (the body has just shrunk
- * above it), 16 pt clear of the actions, as a browser scrolls a focused input into view.
+ * The scrolling body's props that bring the focused field into view once the keyboard is up, 16 pt clear of the
+ * actions, as a browser scrolls a focused input into view. It runs when the keyboard shows and again when the body
+ * shrinks above it (the keyboard's padding lands after the keyboard's event).
  */
 function useRevealFocused() {
   const ref = useRef<ScrollView>(null);
   const view = useRef({ y: 0, height: 0 });
-  useEffect(() => {
-    const sub = Keyboard.addListener("keyboardDidShow", () => {
-      const input = TextInput.State.currentlyFocusedInput();
-      // `getInnerViewRef` (the content container) is in ScrollView.js but missing from its .d.ts.
-      const content = (ref.current as unknown as { getInnerViewRef(): View | null } | null)?.getInnerViewRef();
-      if (!input || !content) return;
-      input.measureLayout(content, (_x, y, _w, h) => {
-        const { y: top, height } = view.current;
-        if (y + h + 16 > top + height) ref.current?.scrollTo({ y: y + h + 16 - height });
-        else if (y < top) ref.current?.scrollTo({ y: Math.max(y - 16, 0) });
-      });
+  const reveal = useCallback(() => {
+    const input = TextInput.State.currentlyFocusedInput();
+    // `getInnerViewRef` (the content container) is in ScrollView.js but missing from its .d.ts.
+    const content = (ref.current as unknown as { getInnerViewRef(): View | null } | null)?.getInnerViewRef();
+    if (!input || !content) return;
+    input.measureLayout(content, (_x, y, _w, h) => {
+      const { y: top, height } = view.current;
+      if (y + h + 16 > top + height) ref.current?.scrollTo({ y: y + h + 16 - height });
+      else if (y < top) ref.current?.scrollTo({ y: Math.max(y - 16, 0) });
     });
-    return () => sub.remove();
   }, []);
+  useEffect(() => {
+    const sub = Keyboard.addListener("keyboardDidShow", reveal);
+    return () => sub.remove();
+  }, [reveal]);
   return {
     ref,
     scrollEventThrottle: 16,
-    onLayout: (e: LayoutChangeEvent) => (view.current.height = e.nativeEvent.layout.height),
+    onLayout: (e: LayoutChangeEvent) => {
+      view.current.height = e.nativeEvent.layout.height;
+      if (Keyboard.isVisible()) reveal();
+    },
     onScroll: (e: NativeSyntheticEvent<NativeScrollEvent>) => (view.current.y = e.nativeEvent.contentOffset.y),
   };
 }
@@ -88,7 +80,7 @@ function useRevealFocused() {
 export function TaskPage({ title, description, children, footer, action, glow, done, onClose }: TaskPageProps) {
   const { c } = useTheme();
   const insets = useSafeAreaInsets();
-  const keyboard = useKeyboardHeight();
+  const { ref: keyboardRef, onLayout: measureKeyboard, inset: keyboardInset } = useKeyboardInset();
   const reveal = useRevealFocused();
   const rows = detailRowHeight({ subtitle: description });
   const framed = useHeaderHeight(rows);
@@ -97,10 +89,10 @@ export function TaskPage({ title, description, children, footer, action, glow, d
   const header = { title, subtitle: description, action, onBack: onClose ?? goBack };
   // Under the pinned actions or, with none, under the body: the navigation bar's inset plus a gap, so a button never sits
   // on the screen's edge (the web's max(inset, 16px) left it touching the gesture bar). Above the keyboard: 16 pt.
-  const pad = keyboard ? 16 : insets.bottom + 24;
+  const pad = keyboardInset ? 16 : insets.bottom + 24;
 
   return (
-    <View style={[styles.fill, { backgroundColor: c.background, paddingBottom: keyboard }]}>
+    <View ref={keyboardRef} onLayout={measureKeyboard} style={[styles.fill, { backgroundColor: c.background, paddingBottom: keyboardInset }]}>
       <Ground />
       {glow && <LinearGradient pointerEvents="none" colors={[c["glow-sand"], alpha(c["glow-sand"], 0)]} style={[StyleSheet.absoluteFill, { bottom: "55%" }]} />}
       {glow && (
