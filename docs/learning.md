@@ -775,3 +775,22 @@ flowchart LR
   C -->|any compacted| R["reclaimSpace: incremental_vacuum (one VACUUM the first time), WAL truncate"]
   W[re-import writes a day] -->|minute flag back to 0| C
 ```
+
+## Render errors must not close the app
+
+A render error in a React Native release build has nowhere to go: without an error boundary the app closes. Expo Router
+gives every route one through the root layout's `unstable_settings.screenErrorBoundary` (`src/screens/ScreenError.tsx`),
+which keeps the tabs and the stack mounted and shows Back and Try again in the failed screen's place. Two render errors
+are common enough to test for statically (`scripts/renderSafety.ts`): a Skia element outside a `<Canvas>` (React Native
+then looks it up as a native view and throws), and `{a && <X />}` with an `a` that can be `0` or `""` (React Native
+throws "Text strings must be rendered within a <Text> component"); write `!!a`.
+
+```mermaid
+flowchart LR
+  A[JSX element] --> B{Skia?}
+  B -->|yes| C{inside a Canvas or Skia parent?}
+  C -->|no| D[throws: View config getter for skGroup]
+  A --> E{"a && X with a = 0 or empty"}
+  E -->|yes| F[throws: Text strings must be rendered within Text]
+  D & F --> G[ScreenError shows; the app stays open]
+```

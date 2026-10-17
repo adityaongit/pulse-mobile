@@ -6,6 +6,8 @@ The thread advertised v0.3.0. Reddit displayed 262 comments; its thread JSON ret
 
 Cross-checked against [Old Reddit with all comments loaded](https://old.reddit.com/r/fitbit/comments/1x6m2pc/nobody_sent_me_a_legal_notice_so_i_put_the_whole/?limit=500). It rendered the same 259 comment IDs, all with comment text and no remaining load-more placeholders. No additional comments were found; the displayed total of 262 remains different from the returned count.
 
+Updated 2026-10-17: Old Reddit with every comment loaded (290 of the 294 Reddit counts; the rest are deleted) added 31 comments posted after the first review, and the repository's GitHub issues (#4 to #9) were added. New reports are folded into the entries below or added as B18 to B20, D7, F25 and F26.
+
 Biggest recurring problems: six-month chart crashes, missing imported data, missing strength workouts, and incorrect step averages used by Pulse Age. Feature requests are listed separately. Replies and three relevant screenshots were checked for context.
 
 ## Reported issues
@@ -16,6 +18,7 @@ Biggest recurring problems: six-month chart crashes, missing imported data, miss
 - **Trigger:** Open a metric and select the six-month / 6M range. Reports name HRV, resting heart rate, and multiple other charts.
 - **Evidence:** [TopUniversity3469](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/pgwixj2/) reports crashes for any metric; [FixVegetable9071](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/pgyc2oe/) confirms. [yxtsama](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/pgx85gp/) reports some charts; [KrizeeK](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph1v0e8/) names HRV; [BlackLionFilm](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph2xfzn/) names RHR.
 - **Version context:** OP initially asked whether this was a PWA issue. The original reporter explicitly confirmed [the same failure on v0.2.0 and v0.3.0](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/pgwkbui/). Do not close this as PWA-only.
+- **Later reports:** [dave-r6](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph64uz6/) crashes on 6 months and 1 year. B18's Healthspan crash is the same fault.
 - **Status:** No confirmed fix in the thread.
 - **Root cause (found 2026-10-17 on the phone):** Trends' chart wrapped each 6M month's labels in a Skia `<Group>` outside the canvas; React Native cannot render a Skia element there and closed the app. Fixed on `fix/reddit-bugs`.
 
@@ -46,6 +49,7 @@ Biggest recurring problems: six-month chart crashes, missing imported data, miss
 - [dennis77](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph1rs4m/) records workouts through Google Watch / Google Health. They do not appear in Pulse, while Pulse Age says insufficient strength activity is adding years. They also cannot manually log the missing activity.
 - [greeknuke](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph29og1/) records strength workouts in **Hevy**, which sends them to Health Connect and then Fitbit. Pulse shows none.
 - **Impact:** Missing activity is presented as a lifestyle deficit, damaging trust in Pulse Age.
+- **GitHub:** [#6](https://github.com/adityaongit/pulse-mobile/issues/6) (Fitbit Air, Android 16) shows the same "startTime must be before endTime" on the import screen, after re-connecting from sample data.
 - **Status:** No workaround or fix confirmed. Manual logging is a separate request, F22.
 
 ### B5. Body-fat records are missing
@@ -111,6 +115,7 @@ Biggest recurring problems: six-month chart crashes, missing imported data, miss
 - **Reporter:** a user replying after the launch, with a screenshot of the Coach's first screen: the keyboard is up and the message field is under it, out of sight.
 - **Trigger:** Open Coach and tap into the message field. The suggestion cards stay where they were and the composer stays behind the keyboard.
 - **Cause found in code:** the Coach screen turned keyboard avoidance off on Android, on the assumption that Android resizes the window for the keyboard. An edge-to-edge window (the rule from Android 15, and Expo SDK 57's default) is not resized on many phones. Task pages, scrolling screens and onboarding had the same assumption.
+- **Also:** [GitHub #8](https://github.com/adityaongit/pulse-mobile/issues/8) (Android 17, real data), and OP's [reply](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph5cpxf/) to [firstworldrefugee](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph5cbtp/).
 - **Status:** Fixed on `fix/reddit-bugs`, see [reddit-fixes-plan.md](reddit-fixes-plan.md).
 
 ### B15. Storage grows without limit
@@ -134,21 +139,40 @@ Biggest recurring problems: six-month chart crashes, missing imported data, miss
 - **Cause found in code:** two definitions under one name. Recovery and Health Monitor scored the engine's own aggregates (the mean heart rate over the night's sleep minutes, and the mean of the night's HRV samples in sleep stages), while Home, Trends and the detail pages showed Fitbit's values from Health Connect. HRV had the same split; respiratory rate, skin temperature and SpO2 already read Fitbit's values everywhere.
 - **Status:** Fixed on `fix/reddit-bugs`, on the owner's call that Fitbit's values are the source of truth: one resting HR (`dayRestingHr`: Fitbit's daily value, else Pulse's sleep-session estimate) and Fitbit's nightly HRV feed Recovery, its baselines, Health Monitor, HRV Status, Pulse Age, the reports and every screen. `SCORING_VERSION` 29 rescores the history.
 
+### B18. Healthspan's secondary screens close the app
+
+- **Reporter:** [Necessary-Nothing-82](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph7u5q8/), in Portuguese: Healthspan's secondary screens error and close the app. OP asked for a DM.
+- **Cause:** each Healthspan contributor's "View trend" opens its Trend View, and its 6M range drew B1's off-canvas Skia Group.
+- **Status:** Fixed with B1 on `fix/reddit-bugs`. Checked on the phone: Healthspan, a contributor's View trend, then W, M and 6M, with no crash.
+
+### B19. Naps are not imported
+
+- **Reporters:** [NeedElicitor](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph9lhfh/) says Pulse pulls one sleep a day while Google Health shows the nap; [GitHub #9](https://github.com/adityaongit/pulse-mobile/issues/9) (Samsung S25+, Android 16) reports the same, with "Demo data" in its data field.
+- **OP's reply:** [naps do sync](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph9nny9/) when Google Health has them, with screenshots.
+- **What the code does:** every sleep session of 20 minutes or more is imported; the longest one ending on a day is that day's night and the rest are naps (`mapSleep` in `src/health/import.ts`). Each sync re-reads the days since the last sync.
+- **Status:** Not reproduced. Needs the reporter's Data check (Settings › Data source › Data check), which lists every sleep session Health Connect holds and which app wrote it, and whether #9 ran on sample data, which has its own scripted naps.
+
+### B20. Coach's workout analysis "Expand" starts a new chat
+
+- **Reporter:** [GitHub #5](https://github.com/adityaongit/pulse-mobile/issues/5) (Android 17, real data, with screen recordings): a workout's automatic Coach analysis has an expand control that opens the Coach chat without the analysis, so it has to be asked again.
+- **Also asked there:** a setting to turn the automatic analysis off (each one spends the owner's tokens), and the same analysis on Sleep and Recovery (F27).
+- **Status:** Open.
+
 ## Feature requests
 
 These are requests from the thread, not accepted scope. OP's replies are historical responses, not evidence that a feature has shipped. iOS and server integrations would require a separate scope decision under the current Android-only, on-device project rules.
 
 | ID | Request | Context and sources | Reply / status in thread |
 | --- | --- | --- | --- |
-| F1 | iOS app | Repeated across many independent users: [leobarca](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/pgwkdtn/), [No-Abbreviations4194](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/pgwsurq/), [ezzeldin132](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/pgwsw1d/), [Strategy_Safe](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/pgxcm3c/), [Mythsteryx](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/pgxmbj2/), and others. | OP repeatedly said soon. [ITGuytech offered publishing-fee / account help](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/pgwuus0/); [fkd_beyondhelloworld offered development help](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph2qz4o/). No release verified. |
+| F1 | iOS app | Repeated across many independent users: [leobarca](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/pgwkdtn/), [No-Abbreviations4194](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/pgwsurq/), [ezzeldin132](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/pgwsw1d/), [Strategy_Safe](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/pgxcm3c/), [Mythsteryx](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/pgxmbj2/), and others. Later: [WalkKeeper](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph6jddl/) (offers [TestFlight testing](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph6jowb/)), [Anxious_Ad2407](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph6o03l/), [LevelLongjumping6799](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph72l0f/). | OP repeatedly said soon. [ITGuytech offered publishing-fee / account help](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/pgwuus0/); [fkd_beyondhelloworld offered development help](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph2qz4o/). No release verified. |
 | F2 | Google Play distribution | [gonomon](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/pgwqvev/), [xxpx](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/pgwydos/), [ashishzxc](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph1md8d/) and [Sidd1dec](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/pgx367v/) ask. Sidd1dec cannot sideload because of phone restrictions; [xiaoyueyoqwq](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph1b1yg/) mentions Android Advanced Protection. | OP discussed testing before publication. This is an installation blocker for some users, beyond convenience. |
 | F3 | More languages | [Brazilian Portuguese](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph4uah7/), [German](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph3n8j2/), [Russian](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph2i05k/), [Polish](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/pgyjfxo/). Four independent requests. | No implementation confirmed. |
-| F4 | Imperial units | [OSUBoglehead](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/pgx2c2u/) wants imperial units throughout. [jd_delwado](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph555c4/) specifically wants feet and inches instead of cm. | OP said next update. |
-| F5 | 12-hour clock preference | [jd_delwado](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph555c4/) wants a 12-hour display instead of 24-hour time. | No reply captured. |
-| F6 | Interactive sleep chart | [jd_delwado](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph555c4/) likes sleep presentation but wants interaction, citing Google Health and Zepp as references. | Exact gestures / details not specified. |
+| F4 | Imperial units | [OSUBoglehead](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/pgx2c2u/) wants imperial units throughout. [jd_delwado](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph555c4/) specifically wants feet and inches instead of cm. Also [GitHub #7](https://github.com/adityaongit/pulse-mobile/issues/7) (inches and pounds), and [jd_delwado again](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph6450g/). | OP said next update. |
+| F5 | 12-hour clock preference | [jd_delwado](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph555c4/) wants a 12-hour display instead of 24-hour time. [Repeated](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph6450g/). | No reply captured. |
+| F6 | Interactive sleep chart | [jd_delwado](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph555c4/) likes sleep presentation but wants interaction, citing Google Health and Zepp as references. [Repeated](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph6450g/): a vertical slider through the night, as Zepp draws it. | Exact gestures / details not specified. |
 | F7 | Change graph colours | [praknew01](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph4jiaj/) asks how to change a graph's colour. | No reply captured. |
 | F8 | Customise home panels | [Gongas91](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/pgwk4ue/) wants daily steps immediately below heart rate. | OP said it was already on the list. |
-| F9 | Home-screen and lock-screen widgets | [DaveRnD](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/pgwoh53/) requests both. | OP agreed. |
+| F9 | Home-screen and lock-screen widgets | [DaveRnD](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/pgwoh53/) requests both. [Biggitch73](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph9hiwg/), asked by OP, [describes](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph9hya2/) the Sleep, Recovery and Strain row from the top of the app, with a choice of metrics (Strain swapped for steps or calories eaten), like Google Health's widget. | OP agreed. |
 | F10 | Live workout tracking | [Interesting-Ad-4258](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph3my98/) wants BPM, cadence and distance in km during a run after switching to Fitbit Air. | Distinct from showing already-imported workout summaries. |
 | F11 | Walk / run route maps | [Proper-Cheesecake270](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph1y7p9/) wants maps inside activities and says route data is in Health Connect. | Record availability and permission requirements not verified. |
 | F12 | Local or self-hosted LLM integration for the AI coach | [Proper-Cheesecake270](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph1y7p9/) uses Ollama via HTTP. [fitzingout](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph203v5/) also wants local LLM / Tailscale access. Owner clarification: users provide a base URL, API key when required, and model name to connect their own LLM endpoint. | OP agreed and invited contributions. Base URL, API key and model configuration were clarified by the owner after reviewing the thread. |
@@ -164,6 +188,9 @@ These are requests from the thread, not accepted scope. OP's replies are histori
 | F22 | Manually log missing workouts | [dennis77](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph1rs4m/) cannot add strength workouts when import fails. | Separate request from fixing B4. |
 | F23 | Home-lab / NAS deployment and chat-based logging | [LegPlenty6091](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph32wy8/) suggests NAS hosting and Hermes integration to add logs through chat. | Exploratory request; clarify whether this belongs in the existing web project rather than Mobile. |
 | F24 | Low-battery visibility | [yas0i](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph2vc0l/) asks how to know when the battery is low. | Ambiguous: phone versus wearable, and indicator versus notification, are not specified. Clarify before implementation. |
+| F25 | A donation link | [Ok_Sound_6778](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph9fjuf/) looked for a way to support the work and found none. | No reply captured. |
+| F26 | WHOOP data without Health Connect | [GitHub #4](https://github.com/adityaongit/pulse-mobile/issues/4): Noop writes WHOOP data to Health Connect without skin temperature or continuous HRV, so Pulse sees part of it. Asks for a direct WHOOP source. | Conflicts with the Health Connect only rule; record, do not schedule. |
+| F27 | Coach analysis controls | [GitHub #5](https://github.com/adityaongit/pulse-mobile/issues/5): turn the automatic workout analysis off, and offer it on Sleep and Recovery. | Comes with B20. |
 
 ## Documentation, onboarding and trust gaps
 
@@ -208,6 +235,11 @@ These are actionable feedback themes, not verified security vulnerabilities or e
 - [Canon-01](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph0plis/) suggests improving the landing-page domain, without a specific alternative.
 - Users ask how Pulse differs from [Halo](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/pgxcx2m/), [Bevel](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/pgx9awu/), [Cordaya](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph2ga0r/) and [Google Health](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph2qz4o/).
 - [EhvinC](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/pgzkaoi/) and others call out the close WHOOP UI resemblance; [x_spz](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph4lf5l/) asks about legal exposure. Record as presentation / originality concerns, not a legal finding.
+
+### D7. Explain the streak and answer the common questions in the app
+
+- [frankybeenz1](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph6kzrr/) cannot tell what the number with the flame in Home's top left counts (the streak).
+- [ruvanist](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph9fho7/) asks whether a Pixel Watch works; [Key_Life5859](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph9a4od/) asks for an AI coach, which Pulse has behind More › Coach. Both belong in D2's device notes and the first-run tour.
 
 ## Suggested triage order
 
