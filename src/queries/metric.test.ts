@@ -51,3 +51,15 @@ describe("metric links", () => {
     expect(keys.filter((k) => !isDetailKey(k))).toEqual([]);
   });
 });
+
+describe("Calories history", () => {
+  it("splits each day into the resting and active parts its chart stacks, adding up to the total", async () => {
+    const vm = await getMetricDetail("calories", TODAY, ctx);
+    const split = (vm.history.value ?? []).filter((p) => p.parts);
+    expect(split.length).toBeGreaterThan(100);
+    for (const p of split) {
+      expect(Object.keys(p.parts!).sort(), p.day).toEqual(["active", "resting"]);
+      expect(p.parts!.resting + p.parts!.active, p.day).toBeCloseTo(p.value!, 6);
+    }
+  });
+});

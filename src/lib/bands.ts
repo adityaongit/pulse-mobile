@@ -52,6 +52,11 @@ export function partColor(key: string): string {
     low: "stress-low",
     medium: "stress-medium",
     high: "stress-high",
+    // Calories and distance on Metric detail: the resting or everyday part under the active or workout part.
+    resting: "energy-resting",
+    everyday: "energy-resting",
+    active: "energy-active",
+    workouts: "energy-active",
   };
   return DATA_COLORS[named[key] ?? "strain"].css;
 }

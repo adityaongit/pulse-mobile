@@ -6,6 +6,7 @@ import { Group, RoundedRect, DashPathEffect } from "@shopify/react-native-skia";
 import { Path } from "@/ui/charts/path";
 import { DATA_COLORS, deltaTone, partColor, recoveryColor, type GoodDirection } from "@/lib/bands";
 import { formatDay, formatValue, hmm } from "@/lib/format";
+import { byMonth } from "@/lib/trend";
 import { ChartFigure, ChartLabel, GridLines, HollowDot, Pill, PlotCanvas, wholeTick } from "@/ui/charts/ChartFrame";
 import { areaPath, bandCenters, barWidth, linePath, linearScale } from "@/ui/charts/geometry";
 import { placeLabels, runs } from "@/ui/charts/labels";
@@ -72,7 +73,7 @@ function Plot({ p, m, width, height }: { p: TrendViewChartProps; m: Model; width
   const tick = (d: string) => {
     const on = d === p.selected;
     const [top, bottom] =
-      p.range === "6m" ? [formatDay(d, { month: "short" }), ""] : p.range === "w" && !weekly ? [formatDay(d, { weekday: "short" }), formatDay(d, { day: "numeric" })] : [formatDay(d, { month: "short" }), formatDay(d, { day: "numeric" })];
+      byMonth(p.range) ? [formatDay(d, { month: "short" }), ""] : p.range === "w" && !weekly ? [formatDay(d, { weekday: "short" }), formatDay(d, { day: "numeric" })] : [formatDay(d, { month: "short" }), formatDay(d, { day: "numeric" })];
     return { on, text: bottom ? `${top}\n${bottom}` : top };
   };
   const yText = (v: number) => (range ? clockOf(v) : p.format === "duration" ? hmm(v) : `${wholeTick(fmt)(v)}${p.unit === "%" ? "%" : ""}`);
@@ -247,7 +248,7 @@ function geometry(m: Model, chart: TrendViewChartProps["chart"], segments: Trend
     pair: pair?.map((s) => linePath(pointsOf((i) => rows[i].parts?.[s.key]), "linear")),
   };
   // A month spans the columns inside it; categories are the bars' `from` days.
-  const segs = (m.six ? (segments ?? []) : []).flatMap((s) => {
+  const segs = (m.months ? (segments ?? []) : []).flatMap((s) => {
     const idx = keys.flatMap((k, i) => (k >= s.from && k <= s.to ? [i] : []));
     if (s.value === null || !idx.length) return [];
     const [a, b] = [x0 + step * idx[0], x0 + step * (idx.at(-1)! + 1)];

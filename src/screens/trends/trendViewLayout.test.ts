@@ -31,6 +31,12 @@ describe("Trend View chart layout", () => {
     const m = days("2026-09-04", 30);
     expect(xTickKeys(m, "m", false)).toEqual(m.filter((_, i) => (29 - i) % 7 === 0));
     expect(xTickKeys(m.slice(-7), "w", false)).toHaveLength(7);
+    // 1Y: thirteen calendar months would crowd the axis, so every other one is labelled, the latest always.
+    const year = days("2025-10-18", 365);
+    const yearTicks = xTickKeys(year, "1y", false);
+    expect(yearTicks.length).toBeLessThanOrEqual(7);
+    expect(xTickKeys(days("2026-04-19", 182), "6m", false)).toHaveLength(7);
+    expect(yearTicks.at(-1)!.slice(0, 7)).toBe(year.at(-1)!.slice(0, 7));
     const six = days("2026-04-06", 182);
     const ticks = xTickKeys(six, "6m", false);
     // One tick per calendar month, each on the first day from the 14th (or the first key of an edge month).
@@ -55,7 +61,9 @@ describe("Trend View chart layout", () => {
     expect(buildModel(props({ compact: true }), fmt)).toMatchObject({ height: 150, yAxisWidth: 0 });
     expect(buildModel(props({ unit: "%" }), fmt).yAxisWidth).toBe(46);
     expect(buildModel(props({ chart: "line", range: "m" }), fmt).margin.right).toBe(24);
-    expect(buildModel(props({ range: "6m" }), fmt)).toMatchObject({ six: true, faint: true, xAxisHeight: 24 });
+    // 6M and 1Y read by month: a faint daily trace under the month segments, one month label each.
+    for (const range of ["6m", "1y"] as const) expect(buildModel(props({ range }), fmt), range).toMatchObject({ months: true, faint: true, xAxisHeight: 24 });
+    expect(buildModel(props({ range: "m" }), fmt).months).toBe(false);
   });
 
   it("time in bed runs on an inverted clock axis from before 21:00 to after 13:00", () => {

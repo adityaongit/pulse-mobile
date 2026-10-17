@@ -59,10 +59,8 @@ type Config = {
   total?: boolean;
   /** A spot reading (weight, glucose): the hero is the latest reading on or before the day. */
   reading?: boolean;
-  /** History draws a split (Strain's calorie stack), a reference line, a smoothed line or the normal range. */
+  /** History draws a split (Strain's calorie stack) or the normal range. */
   stack?: "calories" | "distance";
-  reference?: { y: number; label: string };
-  smooth?: number;
   baseline?: boolean;
 };
 
@@ -73,7 +71,7 @@ const PROTEIN_G_PER_KG = 0.8;
 
 const LEVELS = ["intensity"] as const;
 const CONFIG: Record<DetailKey, Config> = {
-  steps: { group: "activity", total: true, sections: ["hourly", "goal", "weekday"], reference: { y: STEP_TARGET, label: "7,000" }, about: "Steps counted through the day." },
+  steps: { group: "activity", total: true, sections: ["hourly", "goal", "weekday"], about: "Steps counted through the day." },
   calories: {
     group: "activity",
     total: true,
@@ -85,9 +83,9 @@ const CONFIG: Record<DetailKey, Config> = {
   rhr: { group: "vitals", baseline: true, sections: ["outliers"], about: "Your resting heart rate as Fitbit reports it to Health Connect, or Pulse's estimate from your night's sleep when Fitbit has none for the day. Recovery and Health Monitor score this same number." },
   resp: { group: "vitals", baseline: true, sections: ["outliers"], about: "Breaths per minute during sleep, measured by your band." },
   spo2: { group: "vitals", baseline: true, sections: ["outliers"], about: "Estimated blood oxygen saturation during sleep, measured by your band." },
-  skin: { group: "vitals", baseline: true, sections: ["outliers"], reference: { y: 0, label: "Baseline" }, about: "Nightly skin temperature above or below your personal baseline, in degrees Celsius. This is a temperature difference, not your body temperature." },
-  weight: { group: "body", reading: true, smooth: 7, sections: ["readings"], about: "Your weight, from a connected scale or a manual log in your health app." },
-  body_fat: { group: "body", reading: true, smooth: 7, sections: ["readings"], about: "Body fat percentage, from a smart scale or a manual log." },
+  skin: { group: "vitals", baseline: true, sections: ["outliers"], about: "Nightly skin temperature above or below your personal baseline, in degrees Celsius. This is a temperature difference, not your body temperature." },
+  weight: { group: "body", reading: true, sections: ["readings"], about: "Your weight, from a connected scale or a manual log in your health app." },
+  body_fat: { group: "body", reading: true, sections: ["readings"], about: "Body fat percentage, from a smart scale or a manual log." },
   distance: { group: "activity", total: true, stack: "distance", sections: ["weekday"], about: "Distance covered on foot and in workouts, from your steps and GPS." },
   floors: { group: "activity", total: true, sections: ["weekday"], about: "Floors climbed, counted from changes in altitude as you walk." },
   elevation: { group: "activity", total: true, sections: ["weekday"], about: "Height gained over the day." },
@@ -189,7 +187,7 @@ export type MetricDetailVM = {
   history: Metric<Point[]>;
   ranges: Record<TrendRange, RangeStats>;
   total: boolean;
-  chart: { stack?: "calories" | "distance"; reference?: { y: number; label: string }; smooth?: number; baseline?: { mean: number; sd: number } | null };
+  chart: { stack?: "calories" | "distance"; baseline?: { mean: number; sd: number } | null };
   sections: Section[];
 };
 /** Alias: the task's name for the metric screen's view model. */
@@ -254,7 +252,7 @@ export async function getMetricDetail(key: DetailKey, day: string, ctx: QueryCtx
     history: shown.some((p) => p.value !== null) ? ok(shown) : none("no_data"),
     ranges,
     total: !!m.total,
-    chart: { stack: m.stack, reference: m.reference, smooth: m.smooth, baseline: out && { mean: out.mean, sd: out.sd } },
+    chart: { stack: m.stack, baseline: out && { mean: out.mean, sd: out.sd } },
     sections: built.filter((sec): sec is Section => !!sec),
   };
 }
@@ -287,12 +285,10 @@ type SectionCtx = {
 function partsOf(stack: "calories" | "distance", r: DayRow | undefined, total: number | null, exs: SectionCtx["exs"]): Record<string, number> | null {
   if (total === null || !r) return null;
   if (stack === "calories") {
-    // Resting, everyday movement and workouts (strain.ts calorieSplit).
     const a = r.extra.active_calories;
     if (!finite(a)) return null;
     const active = Math.min(Math.max(0, a), total);
-    const workouts = Math.min(exs.filter((e) => e.day === r.day).reduce((x, e) => x + (finite(e.calories) ? Math.max(0, e.calories) : 0), 0), active);
-    return { resting: total - active, everyday: active - workouts, workouts };
+    return { resting: total - active, active };
   }
   const workouts = Math.min(exs.filter((e) => e.day === r.day).reduce((a, e) => a + (e.distanceM ?? 0), 0) / 1000, total);
   return { workouts, everyday: total - workouts };

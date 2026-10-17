@@ -3,7 +3,8 @@
 // not per frame, and so Node can test them. Nothing here reads the theme or the width.
 import type { GoodDirection } from "@/lib/bands";
 import type { FormatKey } from "@/lib/format";
-import type { MonthSegment, TrendViewBar, TrendViewRange } from "@/lib/trend";
+import { byMonth, type MonthSegment, type TrendViewBar } from "@/lib/trend";
+import type { TrendRange } from "@/lib/url";
 
 export type ChartKind = "bars" | "line" | "stack" | "range" | "pair";
 export type ColorBy = "band" | "strain" | "sleep" | "single" | "stress";
@@ -14,7 +15,8 @@ export type TrendViewChartProps = {
   /** `range`: bars from bed to wake on an inverted clock axis (`parts.bed`, `parts.wake` in minutes from midnight);
    * `pair`: two labelled lines, `series[0]` under `series[1]` (hours of sleep against sleep needed). */
   chart: ChartKind;
-  range: TrendViewRange;
+  /** The Trend View's W, M and 6M, and History's 1Y, which reads by month as 6M does (`byMonth`). */
+  range: TrendRange;
   colorBy: ColorBy;
   format: FormatKey;
   unit?: string;
@@ -50,9 +52,17 @@ export function niceTicks([lo, hi]: [number, number], duration = false) {
   return Array.from({ length: Math.ceil((hi - start) / step) + 1 }, (_, i) => start + i * step);
 }
 
-/** The keys that carry an x label: 6M one per month (the first day from the 14th on), M every 7th from the end, else all. */
-export function xTickKeys(keys: string[], range: TrendViewRange, weekly: boolean) {
-  if (range === "6m") return keys.filter((k, i) => i === 0 || k.slice(0, 7) !== keys[i - 1].slice(0, 7)).map((k) => keys.find((x) => x.slice(0, 7) === k.slice(0, 7) && x.slice(8) >= "14") ?? k);
+/** Month labels that fit across a phone's plot at 12 px: the seven calendar months 6M's 182 days touch. 1Y's thirteen
+ * would run into each other, so a longer window labels every other month. */
+const MONTH_LABELS = 7;
+
+/** The keys that carry an x label: 6M and 1Y one per month (the first day from the 14th on), M every 7th from the end, else all. */
+export function xTickKeys(keys: string[], range: TrendRange, weekly: boolean) {
+  if (byMonth(range)) {
+    const months = keys.filter((k, i) => i === 0 || k.slice(0, 7) !== keys[i - 1].slice(0, 7)).map((k) => keys.find((x) => x.slice(0, 7) === k.slice(0, 7) && x.slice(8) >= "14") ?? k);
+    const every = Math.ceil(months.length / MONTH_LABELS);
+    return months.filter((_, i) => (months.length - 1 - i) % every === 0);
+  }
   if (range === "m" && !weekly) return keys.filter((_, i) => (keys.length - 1 - i) % 7 === 0);
   return keys;
 }
@@ -66,7 +76,8 @@ export type Model = {
   rows: Row[];
   keys: string[];
   values: number[];
-  six: boolean;
+  /** 6M and 1Y: month segments over a faint daily trace. */
+  months: boolean;
   weekly: boolean;
   labelled: boolean;
   pair: readonly { key: string; label: string }[] | null;
@@ -86,7 +97,7 @@ export type Model = {
 };
 
 export function buildModel(p: TrendViewChartProps, fmt: (v: number) => string): Model {
-  const six = p.range === "6m";
+  const months = byMonth(p.range);
   const weekly = p.bars.length > 0 && p.bars[0].from !== p.bars[0].to;
   const labelled = p.range === "w" || weekly;
   const rows: Row[] = p.bars.map((b) => ({
@@ -98,7 +109,7 @@ export function buildModel(p: TrendViewChartProps, fmt: (v: number) => string): 
   }));
   const keys = rows.map((r) => r.key);
   const values = rows.flatMap((r) => (r.value === null ? [] : [r.value]));
-  const pair = p.chart === "pair" && !six && p.series?.length === 2 ? p.series : null;
+  const pair = p.chart === "pair" && !months && p.series?.length === 2 ? p.series : null;
   const partVals = pair ? rows.flatMap((r) => pair.flatMap((s) => (r.parts?.[s.key] != null ? [r.parts[s.key]] : []))) : [];
   const segVals = (p.segments ?? []).flatMap((s) => (s.value === null ? [] : [s.value]));
 
@@ -118,7 +129,7 @@ export function buildModel(p: TrendViewChartProps, fmt: (v: number) => string): 
     Math.max(780, ...spans.map((s) => Math.ceil((s[1] - 60) / 240) * 240 + 60)),
   ];
   const domain: [number, number] =
-    p.chart === "range" ? rangeDomain : (p.domain ?? (p.chart === "line" || p.chart === "pair" || (six && !weekly) ? lineDomain() : [0, Math.max(1, ...values, ...segVals) * 1.15]));
+    p.chart === "range" ? rangeDomain : (p.domain ?? (p.chart === "line" || p.chart === "pair" || (months && !weekly) ? lineDomain() : [0, Math.max(1, ...values, ...segVals) * 1.15]));
   const niced = p.domain && p.domain[1] === 100 ? [0, 25, 50, 75, 100] : niceTicks(domain, p.format === "duration");
   const yTicks = p.chart === "range" ? Array.from({ length: Math.round((domain[1] - domain[0]) / 240) + 1 }, (_, i) => domain[0] + i * 240) : niced;
 
@@ -130,7 +141,7 @@ export function buildModel(p: TrendViewChartProps, fmt: (v: number) => string): 
     rows,
     keys,
     values,
-    six,
+    months,
     weekly,
     labelled,
     pair,
@@ -138,11 +149,11 @@ export function buildModel(p: TrendViewChartProps, fmt: (v: number) => string): 
     yTicks,
     xTicks: xTickKeys(keys, p.range, weekly),
     showAvg: p.range === "m" && !weekly && p.chart === "bars" && p.average != null,
-    faint: six && p.chart !== "range",
+    faint: months && p.chart !== "range",
     last: rows.findLastIndex((r) => r.value !== null),
     summary,
     margin: { top: labelled || p.chart === "range" ? 22 : 10, right: p.chart === "line" && p.range === "m" ? 24 : 6, bottom: p.chart === "range" || p.chart === "pair" ? 12 : 0, left: 0 },
-    xAxisHeight: six ? 24 : 42,
+    xAxisHeight: months ? 24 : 42,
     yAxisWidth: p.compact ? 0 : p.format === "duration" || p.chart === "range" || p.unit === "%" ? 46 : 38,
     height: p.compact ? 150 : 240,
   };

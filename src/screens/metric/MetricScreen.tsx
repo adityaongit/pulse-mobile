@@ -3,14 +3,13 @@
 import { useMemo } from "react";
 import { View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
-import { DATA_COLORS, deltaTone } from "@/lib/bands";
+import { deltaTone } from "@/lib/bands";
 import { DAY, formatDay, formatValue } from "@/lib/format";
 import { parseRange, RANGES, type TrendRange } from "@/lib/url";
 import { getMetricDetail, isDetailKey, isLevelMetric, type DetailKey, type MetricDetailVM } from "@/queries/metric";
-import { Divided, LoadError, RangedTrendChart } from "@/screens/trends/parts";
+import { Divided, HistoryChart, HistoryChartSkeleton, LoadError } from "@/screens/trends/parts";
 import { useScreen } from "@/screens/useScreen";
 import { CAPTION, LABEL, mapMetric } from "@/screens/_lib/view";
-import { TrendChartSkeleton, type TrendSeries } from "@/ui/charts/TrendChart";
 import { cn } from "@/ui/cn";
 import { KeyStatRowSkeleton } from "@/ui/metrics/KeyStatRow";
 import { StatusChip, ValueUnit } from "@/ui/metrics/primitives";
@@ -28,14 +27,15 @@ import { chartHref, type ChartRange } from "@/screens/chart/href";
 import { RangeStatsCard } from "./RangeStats";
 import { MetricSection } from "./sections";
 
-const STACK: Record<"calories" | "distance", readonly TrendSeries[]> = {
+/** History's stacks, bottom first; their colours come from `partColor`. */
+const STACK: Record<"calories" | "distance", readonly { key: string; label: string }[]> = {
   calories: [
-    { key: "resting", label: "Resting", color: DATA_COLORS["energy-resting"].css },
-    { key: "active", label: "Active", color: DATA_COLORS["energy-active"].css },
+    { key: "resting", label: "Resting" },
+    { key: "active", label: "Active" },
   ],
   distance: [
-    { key: "everyday", label: "Everyday", color: DATA_COLORS["energy-resting"].css },
-    { key: "workouts", label: "Workouts", color: DATA_COLORS["energy-active"].css },
+    { key: "everyday", label: "Everyday" },
+    { key: "workouts", label: "Workouts" },
   ],
 };
 
@@ -46,7 +46,7 @@ function shape(vm: MetricDetailVM) {
   const deltas = Object.fromEntries(
     RANGES.map((r) => [r, vm.ranges[r].average === null || vm.ranges[r].prior === null ? null : Math.round((vm.ranges[r].average! - vm.ranges[r].prior!) * k) / k]),
   ) as Record<TrendRange, number | null>;
-  return { data: mapMetric(vm.history, (ps) => ps.map((p) => ({ date: p.day, value: p.value, parts: p.parts }))), deltas };
+  return { data: mapMetric(vm.history, (ps) => ps.map((p) => ({ date: p.day, value: p.value, provisional: p.provisional, parts: p.parts }))), deltas };
 }
 
 export default function MetricScreen() {
@@ -93,7 +93,7 @@ export default function MetricScreen() {
         ) : (
           <View className="gap-3">
             <SectionShell variant="card" title="History" action={chartDef(vm.key) ? { label: "Explore", href: chartHref({ metric: vm.key, r: range as ChartRange, d }) } : undefined}>
-              <RangedTrendChart
+              <HistoryChart
                 key={vm.key}
                 range={range}
                 label={vm.label}
@@ -104,10 +104,8 @@ export default function MetricScreen() {
                 direction={vm.direction}
                 data={shaped.data}
                 deltas={shaped.deltas}
-                stack={vm.chart.stack && STACK[vm.chart.stack]}
-                reference={vm.chart.reference}
+                series={vm.chart.stack && STACK[vm.chart.stack]}
                 baseline={vm.chart.baseline}
-                smooth={vm.chart.smooth}
               />
             </SectionShell>
             <RangeStatsCard {...stats} range={range} />
@@ -162,7 +160,7 @@ function Hero({ vm }: { vm: MetricDetailVM }) {
 const LOADING_PRIMARY = (
   <View accessibilityElementsHidden className="gap-3">
     <SectionShell variant="card" title="History">
-      <TrendChartSkeleton chip ranges={RANGES} />
+      <HistoryChartSkeleton />
     </SectionShell>
     <SectionShell variant="card" title="Last 30 days">
       <Divided>

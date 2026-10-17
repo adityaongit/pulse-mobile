@@ -1,5 +1,5 @@
 import { formatDay } from "./format";
-import { addDays } from "./url";
+import { addDays, type TrendRange } from "./url";
 
 // The Trend View's arithmetic (spec §11 R29): period windows, the relative change, 6M month segments, weekly
 // totals, the breakdown counts and the verdict sentence. Pure, so the query and the tests share it.
@@ -71,6 +71,18 @@ export function weeklyTotals(points: readonly DayValue[]) {
 }
 
 export type MonthSegment = { month: string; from: string; to: string; value: number | null; change: number | null };
+
+/**
+ * The ranges a period chart reads by month: 6M and 1Y draw one level segment per calendar month over the faint daily
+ * trace (W reads each day, M each day against weekly ticks), as WHOOP's Trend View and the web's do.
+ */
+export const byMonth = (range: TrendRange) => range === "6m" || range === "1y";
+
+/** The calendar months a window covers whole: a part month at its start is left out, and the first kept has no change. */
+export function wholeMonths(segs: MonthSegment[]) {
+  const out = segs[0] && !segs[0].from.endsWith("-01") ? segs.slice(1) : segs;
+  return out.map((s, i) => (i === 0 ? { ...s, change: null } : s));
+}
 
 /** 6M: one segment per calendar month, its average (or mean weekly total) and the change from the month before. */
 export function monthSegments(points: readonly DayValue[], agg: TrendAgg = "daily"): MonthSegment[] {

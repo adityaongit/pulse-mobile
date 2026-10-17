@@ -5,6 +5,7 @@ import {
   bandCounts,
   mean,
   monthSegments,
+  wholeMonths,
   periodLabel,
   periodWindow,
   relativeChange,
@@ -336,11 +337,6 @@ export type TrendViewVM = {
   footnote: string | null;
   actions: NonNullable<Def["actions"]>;
   about: Def["about"];
-};
-
-const wholeMonths = (segs: MonthSegment[]) => {
-  const out = segs[0] && !segs[0].from.endsWith("-01") ? segs.slice(1) : segs;
-  return out.map((s, i) => (i === 0 ? { ...s, change: null } : s));
 };
 
 const PRIOR_WORD: Record<TrendViewRange, string> = { w: "week", m: "month", "6m": "6 months" };

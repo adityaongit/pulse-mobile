@@ -126,7 +126,7 @@ Biggest recurring problems: six-month chart crashes, missing imported data, miss
 
 - **Reporter:** a user after the launch: the bar chart in a metric's detail page is "too zoomed out, so daily variations are not clear", and asked for a dot per day on Explore's line charts.
 - **Cause found in code:** the History chart (`TrendChart`) drew every single-colour metric as bars from zero at W and M. For a level such as resting heart rate (52 to 60 bpm), a day's change was a few pixels at the top of tall bars. Explore drew daily lines with no mark for each day.
-- **Status:** Fixed on `fix/reddit-bugs`: vitals and body measurements (and VO2 max, Pulse Age) draw a line on their own range at every length, with labelled dots at W and a dot per day after; amounts (steps, minutes, calories, food) keep bars from zero at W and M. Explore's daily lines get a dot per day once each day has room for one.
+- **Status:** Fixed on `fix/reddit-bugs`: History draws on the Trend View's chart, each range at its own grain as WHOOP's and the web's Trend View do: W each day with its value, M each day against weekly ticks, 6M and 1Y a segment per month with its change. Levels are lines on their own range, amounts bars on zero. Explore's daily lines get a dot per day once each day has room for one.
 
 ### B17. RHR on Health Monitor differs from the RHR page
 

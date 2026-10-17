@@ -8,14 +8,13 @@ import { isLevelMetric } from "@/queries/metric";
 import { getTrends, parseTrendMetric, type TrendMetric, type TrendsVM } from "@/queries/trends";
 import { useScreen } from "@/screens/useScreen";
 import { mapMetric } from "@/screens/_lib/view";
-import { TrendChartSkeleton } from "@/ui/charts/TrendChart";
 import { KeyStatRow, KeyStatRowSkeleton } from "@/ui/metrics/KeyStatRow";
 import { DetailShell } from "@/ui/shells/DetailShell";
 import { ActionLink, SectionShell } from "@/ui/shells/SectionShell";
 import { chartHref, type ChartRange } from "@/screens/chart/href";
 import { SkeletonText } from "@/ui/Skeleton";
 import { MetricPicker } from "./MetricPage";
-import { Divided, LoadError, PERIOD, RangedTrendChart } from "./parts";
+import { Divided, HistoryChart, HistoryChartSkeleton, LoadError, PERIOD } from "./parts";
 
 /** The chart's points and each range's change against the one before, once per loaded view model. */
 function shape(vm: TrendsVM, m: TrendMetric) {
@@ -46,7 +45,7 @@ export default function TrendsScreen() {
           <MetricPicker current={m.key} r={r} />
           <View className="gap-3">
             <SectionShell variant="card" title={m.label} aside={<ActionLink label="Explore" href={chartHref({ metric: m.key, r: range as ChartRange })} />} action={{ label: "Details", href: m.href }}>
-              <RangedTrendChart key={m.key} range={range} label={m.label} unit={m.unit} format={m.format} colorBy={m.colorBy} level={isLevelMetric(m.key)} direction={m.direction} data={shaped.data} deltas={shaped.deltas} />
+              <HistoryChart key={m.key} range={range} label={m.label} unit={m.unit} format={m.format} colorBy={m.colorBy} level={isLevelMetric(m.key)} direction={m.direction} data={shaped.data} deltas={shaped.deltas} />
             </SectionShell>
             <SectionShell variant="card" title="Averages">
               <Divided>
@@ -81,7 +80,7 @@ function LoadingBody({ current, r }: { current: TrendMetric["key"]; r?: string }
       <MetricPicker current={current} r={r} />
       <View className="gap-3">
         <SectionShell variant="card" title={" "} aside={<SkeletonText className="w-20" />}>
-          <TrendChartSkeleton chip ranges={RANGES} />
+          <HistoryChartSkeleton />
         </SectionShell>
         <SectionShell variant="card" title="Averages">
           <Divided>
