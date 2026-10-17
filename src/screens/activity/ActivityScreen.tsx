@@ -4,7 +4,7 @@
 import { ScrollView, useWindowDimensions, View } from "react-native"
 import { useLocalSearchParams } from "expo-router"
 import { deltaTone } from "@/lib/bands"
-import { clock, dayLabel, formatValue } from "@/lib/format"
+import { clock, dayLabel, dayPhrase, formatValue } from "@/lib/format"
 import { dayHref } from "@/lib/url"
 import { getActivity } from "@/queries/activity"
 import { getActivityExtras } from "@/queries/mobileExtras"
@@ -65,7 +65,7 @@ export function ActivityScreen() {
   const noHr = vm.hr.value === null && vm.zones.value === null
   const tiles = vm.stats.filter((k) => !(noHr && k.metric.value === null))
   const strainHref = dayHref("/strain", vm.day, today)
-  const question = `Tell me about my ${vm.name.toLowerCase()} on ${dayLabel(vm.day, today).toLowerCase()}.`
+  const question = `Tell me about my ${vm.name.toLowerCase()} ${dayPhrase(vm.day, today)}.`
 
   return (
     <View className="flex-1">

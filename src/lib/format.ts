@@ -92,13 +92,23 @@ export const DAY = {
   monthYear: { month: "long", year: "numeric" },
 } satisfies Record<string, Intl.DateTimeFormatOptions>;
 
-/** "Today", "Yesterday", else "Mon, Sep 28". Dates are YYYY-MM-DD in the user's zone. */
-export function dayLabel(date: string, today: string) {
-  if (date === today) return "Today";
+/** "today" or "yesterday", the days named rather than printed; else null. Dates are YYYY-MM-DD in the user's zone. */
+function nearDay(date: string, today: string) {
+  if (date === today) return "today";
   const y = new Date(`${today}T00:00:00Z`);
   y.setUTCDate(y.getUTCDate() - 1);
-  if (date === y.toISOString().slice(0, 10)) return "Yesterday";
-  return formatDay(date, DAY.short);
+  return date === y.toISOString().slice(0, 10) ? "yesterday" : null;
+}
+
+/** "Today", "Yesterday", else "Mon, Sep 28". Dates are YYYY-MM-DD in the user's zone. */
+export function dayLabel(date: string, today: string) {
+  const near = nearDay(date, today);
+  return near ? near[0].toUpperCase() + near.slice(1) : formatDay(date, DAY.short);
+}
+
+/** A day inside a sentence: "today", "yesterday", else "on Mon, Sep 28". */
+export function dayPhrase(date: string, today: string) {
+  return nearDay(date, today) ?? `on ${formatDay(date, DAY.short)}`;
 }
 
 /** The date pill's label: "Today", "Yesterday", else "Mon., Sep. 28", abbreviations marked with a period as the
