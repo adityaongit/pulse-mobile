@@ -542,6 +542,18 @@ describe("incremental runs", () => {
     expect(await dump(other)).toBe(reference);
   });
 
+  it("compacting old heart rate to minutes reruns no day and changes no row, and only a stage-1 rerun reads the minutes", async () => {
+    const other = await seeded();
+    await run(other);
+    const reference = await dump(other);
+    const raw = (await other.readHr(0, Infinity)).length;
+    const cut = Date.parse(`${dayAt(150)}T00:00:00Z`) / 1000;
+    expect(await other.compactHr(cut)).toBeGreaterThan(0);
+    expect((await other.readHr(0, Infinity)).length).toBeLessThan(raw);
+    expect(await run(other)).toEqual({ days: 180, stage1Reran: 0 });
+    expect(await dump(other)).toBe(reference);
+  });
+
   it("a dirty day reruns stage 1 for it and the next day, whose night starts before midnight", async () => {
     const other = await seeded();
     await run(other);

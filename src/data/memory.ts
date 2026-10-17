@@ -4,18 +4,26 @@
 import type { DayRange, JournalTagChange, JournalTagRow, LoggedEntryRow, ReportRow, ScoreRow, SeriesKind, Store } from "./store";
 import type { DailyValue, Exercise, HealthRecord, HrSample, HrvSample, JournalEntry, Metrics, Profile, Segment, Session, StepsMinute, SyncState } from "./types";
 import type { ActivityCostResult } from "@/core/algorithms/activityCost";
+import { minuteHr } from "@/core/engine/context";
 
 const copy = <T>(x: T): T => JSON.parse(JSON.stringify(x)) as T;
 const key2 = (a: string, b: string) => `${a}\u0000${b}`;
 const inRange = (day: string, r?: DayRange) => !r || (day >= r.from && day <= r.to);
 
-/** Keyed samples with a sorted view, rebuilt lazily after writes. */
+const DAY = 86_400;
+const bucketOf = (ts: number) => Math.floor(ts / DAY);
+
+/** Keyed samples with a sorted view, rebuilt lazily after writes, and the UTC days compacted to minutes (as SQLite's flag). */
 class Samples {
   private byTs = new Map<number, number>();
   private sorted: { ts: number; v: number }[] | null = null;
+  private compacted = new Set<number>();
 
   put(xs: { ts: number; v: number }[]) {
-    for (const x of xs) this.byTs.set(x.ts, x.v);
+    for (const x of xs) {
+      this.byTs.set(x.ts, x.v);
+      this.compacted.delete(bucketOf(x.ts));
+    }
     this.sorted = null;
   }
 
@@ -47,13 +55,31 @@ class Samples {
 
   clear() {
     this.byTs.clear();
+    this.compacted.clear();
     this.sorted = null;
   }
 
-  /** Drops lo <= ts < hi. */
+  /** Drops lo <= ts < hi; a day that loses samples is rewritten, so it is raw again. */
   drop(lo: number, hi: number) {
-    for (const ts of [...this.byTs.keys()]) if (ts >= lo && ts < hi) this.byTs.delete(ts);
+    for (const ts of [...this.byTs.keys()])
+      if (ts >= lo && ts < hi) {
+        this.byTs.delete(ts);
+        this.compacted.delete(bucketOf(ts));
+      }
     this.sorted = null;
+  }
+
+  /** Store.compactHr on this table. */
+  compact(beforeTs: number) {
+    const days = [...new Set(this.all().map((x) => bucketOf(x.ts)))].filter((b) => b < bucketOf(beforeTs) && !this.compacted.has(b));
+    for (const b of days) {
+      const raw = this.read(b * DAY, (b + 1) * DAY);
+      for (const x of raw) this.byTs.delete(x.ts);
+      for (const m of minuteHr(raw.map((x) => ({ ts: x.ts, bpm: x.v })))) this.byTs.set(m.ts, Math.round(m.bpm));
+      this.compacted.add(b);
+      this.sorted = null;
+    }
+    return days.length;
   }
 }
 
@@ -296,6 +322,14 @@ export class MemoryStore implements Store {
   async deleteCoachChats(id?: string) {
     if (id === undefined) this.chats.clear();
     else this.chats.delete(id);
+  }
+
+  async compactHr(beforeTs: number) {
+    return this.hr.compact(beforeTs);
+  }
+  async reclaimSpace() {}
+  async storageBytes() {
+    return null;
   }
 
   async clearAll() {

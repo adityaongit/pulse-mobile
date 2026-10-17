@@ -12,6 +12,7 @@ import { localDay } from "@/lib/time";
 import { setForeground } from "@/lib/yield";
 import { runPipeline } from "@/pipeline";
 import { notifyAfterRun } from "./alerts";
+import { maintainStorage } from "./maintenance";
 import { releaseLock, takeLock, waitForLock, type RunOwner } from "./lock";
 
 export type Source = "health_connect" | "demo";
@@ -85,6 +86,9 @@ async function run(store: Store, profile: Profile, source: Source, opts: RunSync
       warnings.push(...(r.warnings ?? []));
     }
     await timed(`pipeline (${opts.owner})`, () => runPipeline(store, profile, { today: localDay(Date.now() / 1000, opts.timeZone), onProgress: opts.onProgress }));
+    // After scoring, so the day that just aged out was scored from its raw samples. A failure here costs space, not
+    // data: the sync itself has succeeded, and the next run tries again.
+    await timed(`maintenance (${opts.owner})`, () => maintainStorage(store, Date.now() / 1000)).catch((e) => console.warn("[maintenance]", e instanceof Error ? e.message : String(e)));
     return { ran: true, warnings };
   } finally {
     await releaseLock(opts.owner);

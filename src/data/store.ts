@@ -113,6 +113,18 @@ export interface Store {
 
   /** Drops every row (settings › disconnect, or switching demo ↔ Health Connect). */
   clearAll(): Promise<void>;
+
+  // Upkeep (src/background/maintenance.ts)
+  /**
+   * Turns each raw heart-rate day (UTC bucket) that ends at or before `beforeTs` into one rounded mean per minute, a
+   * day per transaction, oldest first. Returns how many days it compacted. Writing a day's samples again (a
+   * re-import) makes it raw again, and the next call compacts it again.
+   */
+  compactHr(beforeTs: number): Promise<number>;
+  /** Gives the space freed by deletes and compaction back to the phone. */
+  reclaimSpace(): Promise<void>;
+  /** The database's size on the phone in bytes; null for a store that keeps nothing on disk. */
+  storageBytes(): Promise<number | null>;
 }
 
 /** A coach chat in the list: its title follows the first question. `updatedAt` is unix seconds. */

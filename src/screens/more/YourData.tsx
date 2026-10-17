@@ -5,7 +5,7 @@ import { useState } from "react";
 import { View } from "react-native";
 import { Download } from "lucide-react-native";
 import { type ExportFormat, type ExportKind, shareExport } from "@/actions/export";
-import { DAY, formatDay } from "@/lib/format";
+import { DAY, FORMATS, formatDay } from "@/lib/format";
 import { getYourData } from "@/queries/settings";
 import { queryCtx } from "@/state/app";
 import { Button } from "@/ui/Button";
@@ -79,6 +79,9 @@ function Loading() {
   );
 }
 
+/** Megabytes as Android's storage settings count them (powers of ten). */
+const BYTES_PER_MB = 1_000_000;
+
 export function YourDataScreen() {
   const { data } = useScreen(async (ctx) => ({ vm: await getYourData(ctx) }), ["yourData"]);
   const [busy, setBusy] = useState<string | null>(null);
@@ -112,7 +115,11 @@ export function YourDataScreen() {
               </View>
             </SectionShell>
 
-            <Text className={CAPTION}>Exports hold only what Pulse stored on this phone.</Text>
+            <Text className={CAPTION}>
+              {vm.storageBytes === null
+                ? "Exports hold only what Pulse stored on this phone."
+                : `Pulse keeps ${FORMATS.decimal1(vm.storageBytes / BYTES_PER_MB)} MB on this phone. Exports hold only what it stored.`}
+            </Text>
           </View>
         }
       />

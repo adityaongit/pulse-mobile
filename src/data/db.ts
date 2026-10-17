@@ -7,6 +7,7 @@ import { isDeadConnection } from "./deadConnection";
 import type { CoachChatRow, DayRange, EntrySource, JournalTagChange, JournalTagRow, LoggedEntryRow, ReportRow, ScoreRow, SeriesKind, Store } from "./store";
 import type { DailyValue, Exercise, HealthRecord, HrSample, HrvSample, JournalEntry, Metrics, Profile, Segment, Session, StepsMinute, SyncState } from "./types";
 import type { ActivityCostResult } from "@/core/algorithms/activityCost";
+import { minuteHr } from "@/core/engine/context";
 import { slice } from "@/lib/yield";
 
 const SCHEMA = `
@@ -34,7 +35,7 @@ create table if not exists exercises (
   calories real, distance_m real
 );
 create index if not exists exercises_day on exercises (day);
-create table if not exists hr_days (bucket integer primary key, offsets text not null, vals text not null);
+create table if not exists hr_days (bucket integer primary key, offsets text not null, vals text not null, minute integer not null default 0);
 create table if not exists steps_days (bucket integer primary key, offsets text not null, vals text not null);
 create table if not exists hrv_days (bucket integer primary key, offsets text not null, vals text not null);
 create table if not exists daily_values (day text not null, key text not null, value real not null, primary key (day, key));
@@ -79,10 +80,14 @@ const MIGRATIONS = [
   "alter table profile add column photo text",
   // The sleep goal, JSON { hours, method } (Settings › Goals).
   "alter table profile add column sleep_goal text",
+  // Heart-rate days compacted to one mean per minute (compactHr).
+  "alter table hr_days add column minute integer not null default 0",
 ];
 
 const DAY = 86_400;
 const bucketOf = (ts: number) => Math.floor(ts / DAY);
+/** SQLite's `pragma auto_vacuum` value for incremental mode. */
+const INCREMENTAL_VACUUM = 2;
 
 type Param = string | number | null;
 const json = (x: unknown): string | null => (x == null ? null : JSON.stringify(x));
@@ -229,7 +234,7 @@ class SqliteStore implements Store {
    * "NativeDatabase.prepareAsync has been rejected (NullPointerException)" under that churn.
    */
   private tx<T>(task: (db: SQLiteDatabase) => Promise<T>): Promise<T> {
-    const run = async () => {
+    return this.queued(async () => {
       await this.db.execAsync("begin immediate");
       try {
         const out = await task(this.db);
@@ -239,7 +244,11 @@ class SqliteStore implements Store {
         await this.db.execAsync("rollback").catch(() => {});
         throw e;
       }
-    };
+    });
+  }
+
+  /** Runs `run` after every write before it, outside a transaction (VACUUM cannot run inside one). */
+  private queued<T>(run: () => Promise<T>): Promise<T> {
     const p = this.queue.then(run, run);
     this.queue = p.catch(() => {});
     return p;
@@ -413,6 +422,45 @@ class SqliteStore implements Store {
           b, JSON.stringify(keep.map(([o]) => o)), JSON.stringify(keep.map(([, v]) => v)),
         ]);
     }
+  }
+
+  async compactHr(beforeTs: number) {
+    const days = await this.db.getAllAsync<{ bucket: number }>("select bucket from hr_days where minute = 0 and bucket < ? order by bucket", [bucketOf(beforeTs)]);
+    let done = 0;
+    for (const { bucket } of days) {
+      await this.tx(async (db) => {
+        // Read again inside the transaction: a sync may have rewritten the day since the list was read.
+        const r = await db.getFirstAsync<BucketRow>("select bucket, offsets, vals from hr_days where bucket = ? and minute = 0", [bucket]);
+        if (!r) return;
+        const offsets = JSON.parse(r.offsets) as number[];
+        const vals = JSON.parse(r.vals) as number[];
+        const minutes = minuteHr(offsets.map((o, i) => ({ ts: o, bpm: vals[i] })));
+        await db.runAsync("update hr_days set offsets = ?, vals = ?, minute = 1 where bucket = ?", [
+          JSON.stringify(minutes.map((m) => m.ts)), JSON.stringify(minutes.map((m) => Math.round(m.bpm))), bucket,
+        ]);
+        done++;
+      });
+      // A raw day is tens of thousands of samples to parse and print: let a frame in between days (src/lib/yield.ts).
+      await slice();
+    }
+    return done;
+  }
+  async reclaimSpace() {
+    await this.queued(async () => {
+      const mode = await this.db.getFirstAsync<{ auto_vacuum: number }>("pragma auto_vacuum");
+      // A database created before incremental vacuum was turned on switches with one full VACUUM; after that, the
+      // pages a delete freed go back without rewriting the file.
+      await this.db.execAsync(mode?.auto_vacuum === INCREMENTAL_VACUUM ? "pragma incremental_vacuum" : "pragma auto_vacuum = incremental; vacuum");
+      // The write-ahead log keeps its largest size until truncated (a first import grows it).
+      await this.db.execAsync("pragma wal_checkpoint(truncate)");
+    });
+  }
+  async storageBytes() {
+    const [pages, size] = await Promise.all([
+      this.db.getFirstAsync<{ page_count: number }>("pragma page_count"),
+      this.db.getFirstAsync<{ page_size: number }>("pragma page_size"),
+    ]);
+    return pages && size ? pages.page_count * size.page_size : null;
   }
 
   async deleteSessions(ids: string[]) {
@@ -712,6 +760,9 @@ async function openDb(name: string): Promise<SQLiteDatabase> {
   // A JS reload mid-write (dev reloads, a crash) can leave the shared native connection inside our transaction.
   if (db.isInTransactionSync()) await db.execAsync("rollback");
   // busy_timeout: with a connection per handle, a write that meets another connection's lock waits instead of failing.
+  // auto_vacuum first: it takes effect only before the file is first written (setting WAL writes it), so only on a new
+  // database; an older one switches in reclaimSpace.
+  await db.execAsync("pragma auto_vacuum = incremental");
   await db.execAsync("pragma journal_mode = wal; pragma synchronous = normal; pragma foreign_keys = on; pragma busy_timeout = 5000;");
   await db.execAsync(SCHEMA);
   for (const sql of MIGRATIONS) await db.execAsync(sql).catch(() => {});

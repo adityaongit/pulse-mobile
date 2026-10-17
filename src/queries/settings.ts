@@ -75,9 +75,9 @@ export async function getMore(ctx: QueryCtx, mode: Mode = "google"): Promise<Mor
 /** Your data `/more/data`: what each export holds. */
 export async function getYourData(ctx: QueryCtx, mode: Mode = "google"): Promise<YourDataVM> {
   const today = todayOf(ctx);
-  const [first, journal] = await Promise.all([firstDay(ctx), ctx.store.allJournal()]);
+  const [first, journal, storageBytes] = await Promise.all([firstDay(ctx), ctx.store.allJournal(), ctx.store.storageBytes()]);
   const days = first ? (await ctx.store.scoresIn({ from: first, to: today })).length : 0;
-  return { first, days, answers: journal.length, mode };
+  return { first, days, answers: journal.length, storageBytes, mode };
 }
 
 type Cell = string | number | null;

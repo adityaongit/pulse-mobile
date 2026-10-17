@@ -571,6 +571,8 @@ export type YourDataVM = {
   days: number;
   /** Rows in the journal export. */
   answers: number;
+  /** The database's size on the phone in bytes; null where nothing is kept on disk. */
+  storageBytes: number | null;
   mode: "demo" | "google";
 };
 
