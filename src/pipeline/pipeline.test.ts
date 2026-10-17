@@ -82,6 +82,17 @@ describe("runPipeline on the 180-day seed", () => {
     for (const r of rows.values()) for (const k of STAGE2_COLUMNS) expect(r[k], `${r.day}.${k}`).not.toBeNull();
   });
 
+  it("feeds Pulse Age the days' step counts, the totals the Steps screen shows", async () => {
+    const steps = new Map((await store.allMetrics()).map((m) => [m.day, m.steps]));
+    const sunday = allDays.filter((d) => new Date(`${d}T00:00:00Z`).getUTCDay() === 0).at(-1)!;
+    const window = allDays.filter((d) => d > dayAt(allDays.indexOf(sunday) - 28) && d <= sunday);
+    const counts = window.flatMap((d) => (steps.get(d) == null ? [] : [steps.get(d)!]));
+    const age = col(sunday, "healthspan");
+    if (age.reason !== null) throw new Error(`no Pulse Age on ${sunday}: ${age.reason}`);
+    const factor = age.contributions.find((c) => c.key === "steps")!;
+    expect(factor.value).toBeCloseTo(counts.reduce((a, b) => a + b, 0) / counts.length, 1);
+  });
+
   it("resolves the demo profile's max HR to Tanaka's 183", () => {
     expect(resolveMaxHr({ ...DEMO_PROFILE }, TODAY)).toBe(183);
     expect(col(dayAt(120), "strain").maxHr).toBe(183);
@@ -139,7 +150,8 @@ describe("parity with the web app", () => {
     // as the study. Version 24's value was "eca080343200e2aa".
     // 26: Pulse Age on Sundays and Health Monitor without SpO2. Version 25's value was "cd0c930a0a7e70db".
     // 27: workouts' engine zones and the reports' training balance on Training Load. Version 26's value was "56420b3a0a69eda6".
-    "daily_scores.scoring_version": "bfc30f8718e6d5cb",
+    // 28: Pulse Age's steps are the day's count. Version 27's value was "bfc30f8718e6d5cb".
+    "daily_scores.scoring_version": "32eeb5d9e23357a3",
     // Version 15: Activity Strain is the session's Banister TRIMP plus its muscular load through 5.05 · ln(1 + 0.09 · T)
     // (a seeded 45-minute strength session goes from 8.2 to 9.9 on 0–21), each activity stores its `cardioTrimp` and
     // `muscularTrimp`, and its zone seconds count Zone 1 from 40 % of the reserve. Version 14's value was "cb2d75373aaf4d20".
@@ -224,8 +236,9 @@ describe("parity with the web app", () => {
     // once 21 of the last 31 days have a Recovery (`paceDaily` keeps the day's own, `paceAsOf` names the Monday): today
     // shows Monday 2026-09-28's 1.70, its own daily value being 1.42 (version 17 showed a daily 1.61). Today's Halo Age
     // 33.41 → 33.78. Version
-    // 17's value was "2fdf2c34ba15be9c".
-    "daily_scores.healthspan": "a85973629b8558d7",
+    // 17's value was "2fdf2c34ba15be9c". Version 28: Pulse Age's steps are the day's count, not Strain's awake steps.
+    // Version 27's value was "a85973629b8558d7".
+    "daily_scores.healthspan": "441bbc0fac119709",
     // Version 19: the VO2 max categories use Garmin's percentile cut-offs, 40 / 60 / 80 / 95 (were 20 / 40 / 60 / 80), so
     // today's 45.3 at the 61st percentile reads Good, not Excellent; percentiles are unchanged. Version 18's value was
     // "cfad8d1954c878ed".

@@ -75,8 +75,9 @@ import type { LoadStatus } from "@/core/engine/strain";
  * without SpO2 (Health Connect has none).
  * 27: each workout keeps its zone seconds on the engine's zones (Stage1Activity.engine.zoneS), and the reports' training
  * balance is the engine's Training Load (Fatigue ÷ Fitness and its status).
+ * 28: Pulse Age's steps are the day's step count, not Strain's awake steps (which left out walks and runs).
  */
-export const SCORING_VERSION = 27;
+export const SCORING_VERSION = 28;
 
 export type PipelineOptions = {
   timeZone: string;

@@ -608,7 +608,9 @@ export function scoreEnginePulseAge(f: Fold, d: Day, s: EngineSleep, halo: Healt
 
 /** Adds day D's Pulse Age inputs to the 28-day window. */
 function foldPulseAgeDay(f: Fold, d: Day, s: EngineSleep, data: Data) {
-  // Steps, zone and strength minutes on every day with data (heart rate or steps), as the study's daily metrics.
+  // Steps, zone and strength minutes on every day with data (heart rate or steps), as the study's daily metrics. Steps
+  // are the day's count (reference study, `biological-age-muscular.md` § factors: HealthMetric `steps`), the total the
+  // Steps screen shows, not Strain's awake steps, which leave out workouts and sleep.
   const covered = d.s1.engine?.strain != null;
   const z = d.s1.engine?.strain?.zoneS;
   const bodyFat = d.dm?.bodyFatPct;
@@ -618,7 +620,7 @@ function foldPulseAgeDay(f: Fold, d: Day, s: EngineSleep, data: Data) {
       day: {
         sleepHours: d.mainSession ? s.asleepS / 3600 : null,
         sri: s.consistency,
-        steps: covered ? (d.s1.engine?.strain?.steps ?? null) : null,
+        steps: covered ? (d.dm?.steps ?? null) : null,
         zone13Min: covered && z ? (z[2] + z[3]) / 60 : null,
         zone45Min: covered && z ? (z[4] + z[5]) / 60 : null,
         strengthMin: covered ? strengthMinutes(data, d) : null,
