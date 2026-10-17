@@ -1,4 +1,5 @@
 import { View } from "react-native";
+import { RANGES_LABEL } from "@/screens/onboarding/ProfileForm";
 import { useLocalSearchParams } from "expo-router";
 import { loadPrefs } from "@/actions/preferences";
 import { getSettings } from "@/queries/settings";
@@ -26,7 +27,7 @@ const resolve = (raw: string | undefined): SectionId => {
   return SECTIONS.includes(id) ? id : SECTIONS[0];
 };
 
-const PROFILE_ROWS = ["Birth date", "Age", "Sex", "Height", "Max heart rate", "Time zone"];
+const PROFILE_ROWS = ["Birth date", "Age", RANGES_LABEL, "Height", "Max heart rate", "Time zone"];
 
 function SectionSkeleton({ section }: { section: SectionId }) {
   const buttons = (

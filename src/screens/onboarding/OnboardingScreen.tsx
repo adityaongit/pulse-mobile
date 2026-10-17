@@ -110,7 +110,7 @@ function Profile({ onSaved }: { onSaved: () => void }) {
       <Text accessibilityRole="header" className="text-[28px] font-bold leading-[34px] tracking-[-0.02em]">
         Two things Health Connect doesn’t share
       </Text>
-      <Text className="mb-7 mt-2 text-base leading-6 text-foreground-secondary">Pulse scores your heart rate against your age and sex. You can change these later in Settings.</Text>
+      <Text className="mb-7 mt-2 text-base leading-6 text-foreground-secondary">Pulse compares your heart rate with people of your age, using the reference ranges you choose. You can change these later in Settings.</Text>
       <ProfileForm
         onboarding
         defaults={{ birthDate: "", sex: null, maxHr: null, heightCm: null, timeZone: null }}

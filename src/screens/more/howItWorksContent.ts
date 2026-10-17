@@ -420,7 +420,7 @@ export const SCORE_DOCS: ScoreDoc[] = [
         title: "What goes in",
         rows: [
           { term: "VO2 max", detail: "Your latest run value from the last 90\u00a0days; otherwise Fitbit’s latest daily estimate, marked Provisional." },
-          { term: "Age and sex", detail: "From your profile." },
+          { term: "Age and reference ranges", detail: "From your profile." },
         ],
       },
       {

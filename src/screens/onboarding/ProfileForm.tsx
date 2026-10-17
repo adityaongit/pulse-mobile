@@ -15,6 +15,12 @@ import { BirthDatePicker } from "./BirthDatePicker";
 import { TimeZonePicker } from "./TimeZonePicker";
 import { deviceZone, describeZone } from "./timeZones";
 
+/**
+ * The profile's sex, framed as what it does: it picks the male or female reference tables (Strain's heart-rate weighting,
+ * sleep stage targets, VO2 max norms, Pulse Age). "Sex at birth" did not fit people on long-term hormone therapy.
+ */
+export const RANGES_LABEL = "Reference ranges";
+
 export type ProfileDefaults = { birthDate: string; sex: "male" | "female" | null; maxHr: number | null; heightCm: number | null; timeZone: string | null; name?: string | null };
 
 export function ProfileForm({
@@ -77,9 +83,9 @@ export function ProfileForm({
       </Field>
 
       <View accessibilityRole="radiogroup" className="gap-2">
-        <Text className={`${compact ? "" : "mb-2 "}text-xs font-bold uppercase leading-4 tracking-[0.1em] text-foreground-secondary`}>Sex</Text>
+        <Text className={`${compact ? "" : "mb-2 "}text-xs font-bold uppercase leading-4 tracking-[0.1em] text-foreground-secondary`}>{RANGES_LABEL}</Text>
         <RadioSegments
-          label="Sex"
+          label={RANGES_LABEL}
           value={sex}
           onChange={setSex}
           options={[
@@ -92,7 +98,9 @@ export function ProfileForm({
             Choose one
           </Text>
         ) : (
-          <Text className="text-[13px] leading-[18px] text-muted-foreground">Sex at birth. Reference ranges differ by sex.</Text>
+          <Text className="text-[13px] leading-[18px] text-muted-foreground">
+            Strain, sleep targets, VO2 max and Pulse Age use male and female reference tables. Choose the one closer to your body today; on long-term hormone therapy, that is usually the one that matches your hormones.
+          </Text>
         )}
       </View>
 

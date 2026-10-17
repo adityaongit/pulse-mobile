@@ -2,6 +2,7 @@
 // the rows, and "Edit", which opens the onboarding fields in a sheet (the route app/profile.tsx, U19). Above
 // them, the web's Account head: the photo and the name, and the Photo button (src/actions/photo.ts), whose menu offers
 // Take photo, Choose photo and, once there is one, Remove photo.
+import { RANGES_LABEL } from "@/screens/onboarding/ProfileForm";
 import { useState } from "react";
 import { View } from "react-native";
 import { Camera, ImageIcon, Pencil, Trash2, type LucideIcon } from "lucide-react-native";
@@ -27,7 +28,7 @@ export function ProfileCard({ profile }: { profile: SettingsVM["profile"] }) {
   const rows: [string, string][] = [
     ["Birth date", formatDay(profile.birthDate, DAY.full)],
     ["Age", String(profile.age)],
-    ["Sex", profile.sex === "male" ? "Male" : "Female"],
+    [RANGES_LABEL, profile.sex === "male" ? "Male" : "Female"],
     ["Height", profile.heightCm ? heightText(profile.heightCm) : "Not set"],
     ["Max heart rate", `${profile.maxHr} bpm, ${profile.maxHrSource}`],
     ["Time zone", profile.timeZone],
