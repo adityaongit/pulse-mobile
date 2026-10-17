@@ -17,7 +17,7 @@ has been tried on a phone yet, which is the last step before fast-forwarding `ma
 | B7 vitals count disagrees with the values | The Health tab showed some vitals from the day's own reading (respiratory rate, and HRV or RHR before a scored night) while Health Monitor judged Recovery's night values. A tile could show a number with no status, or a status its number contradicts. | Each vital shows the value Health Monitor judged; the day's own reading appears only where the monitor has none. | `health.test.ts`: every status matches its value against its range, and the count matches the statuses, with day readings that differ from the night's. | Fixed. RHR flagged below the usual range is the ±1 SD band working as designed; its wording is a docs item (D3) |
 | B9 system Back closes the app | Not found in code. React Native 0.86 routes Back through the activity's back dispatcher, the stack pops pushed screens, and the owner's Android 16 phone does not show it. | None yet. | | Needs a reproduction: which screen, which phone, gesture or button. `predictiveBackGestureEnabled` in `app.json` is the first suspect to try off |
 | B14 keyboard covers the Coach's field | Coach turned keyboard avoidance off on Android, assuming the window resizes. An edge-to-edge window is not resized on many phones. | `useKeyboardInset` (`src/ui/keyboard.ts`) measures how far the keyboard covers the screen and pads by that much, so it is right whether or not the window resizes. Coach, task pages, scrolling screens and onboarding use it. | Typecheck and lint; behaviour needs the phone | Fixed, needs a phone check |
-| B15 storage grows without limit | Raw samples are never pruned. | Retention for raw intraday samples, scores kept forever (proposal in the feedback doc). | | Planned; needs the owner's retention length |
+| B15 storage grows without limit | Raw heart rate (tens of thousands of samples a day) was never pruned. | After each sync and scoring run, heart rate older than 30 days becomes one mean per minute (`Store.compactHr`, as Pulse's web app did), freed pages go back to the phone (incremental vacuum, one full VACUUM the first time on an existing database), and Settings › Your data shows the size. Daily metrics and scores are kept whole. | `memory.compact.test.ts`, `maintenance.test.ts`, and `pipeline.test.ts`: compacting reruns no day and changes no row | Fixed, needs a phone check |
 
 Not code bugs, left for docs and onboarding: B8 (how VO2 max is estimated), B10 and B11 (live heart rate and Health
 Connect's delay), B12 (Fitbit does not write SpO2 to Health Connect), B13 (resolved by the reporter).
@@ -42,16 +42,16 @@ in half a year takes 34 halvings of two reads each.
 
 ## Testing
 
-1. `pnpm typecheck && pnpm lint && pnpm test` (done: 133 files, 1286 tests).
+1. `pnpm typecheck && pnpm lint && pnpm test` (done: 135 files, 1290 tests).
 2. On the phone, with the release build that is installed (never swap build types, it wipes the data):
    - the 6M and 1Y ranges on HRV, resting HR, steps and the Trends screen;
    - Coach, a check-in or log page, the Settings profile name and onboarding's profile step with the keyboard up;
    - a sync after the update: `IMPORT_VERSION` 5 re-imports 180 days and `SCORING_VERSION` 28 rescores, which takes a few minutes;
-   - the Health tab's vitals against Health Monitor's count, and Pulse Age's steps against the Steps screen.
+   - the Health tab's vitals against Health Monitor's count, and Pulse Age's steps against the Steps screen;
+   - Settings › Your data's size before and after the first sync on the new build (the first one compacts about 150 days and vacuums once).
 3. Fast-forward `main` once the phone check passes.
 
 ## Next
 
-- B15 retention, once the owner picks the window.
 - B9, once a reporter says where it happens.
 - Feature requests stay separate (F1 to F24); F20's actionable sync errors are partly covered by the skipped-records notice.

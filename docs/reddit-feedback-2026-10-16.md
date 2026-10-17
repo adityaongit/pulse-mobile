@@ -119,7 +119,7 @@ Biggest recurring problems: six-month chart crashes, missing imported data, miss
 - **Size:** the raw heart rate dominates. Its row holds two JSON arrays, about 10 bytes per sample, so a day costs from about 15 KB (a sample a minute) to about 170 KB (one every 5 seconds); scores and daily metrics are a few KB a day. That is roughly 5 to 60 MB a year, before SQLite's own overhead. Measure a real database on a phone before choosing the numbers below.
 - **Impact:** not a first-run problem, but a slow, silent one: a phone that has run Pulse for years carries every raw sample it ever imported.
 - **Proposed fix (needs the owner's choice of the retention length):** keep raw intraday samples for a rolling window that covers the longest look-back any score reads from raw data, and keep daily metrics and stored scores forever (they are small). Prune older raw buckets after each sync, then reclaim the space (`PRAGMA auto_vacuum = INCREMENTAL` and `incremental_vacuum`). A `SCORING_VERSION` bump then rescores only the window that still has raw data, and older days keep their stored scores; an older day's screen shows its summary without the intraday chart. Show the database's size in Settings › Data.
-- **Status:** Planned, not built. See [reddit-fixes-plan.md](reddit-fixes-plan.md).
+- **Status:** Built on `fix/reddit-bugs`: raw heart rate older than 30 days is compacted to one mean per minute after each sync, freed space is vacuumed back, and Settings › Your data shows the database's size. See [reddit-fixes-plan.md](reddit-fixes-plan.md) and the "Storage that stops growing" section of [learning.md](learning.md).
 
 ## Feature requests
 

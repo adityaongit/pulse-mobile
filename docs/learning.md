@@ -745,3 +745,33 @@ path when a scale's domain is NaN: `evenTicks` returned no ticks when a line cha
 The tick functions now compare ends at the precision their step arithmetic works in, and the charts draw through
 `src/ui/charts/path.tsx`, which parses the string once with `Skia.Path.MakeFromSVGString` and skips a mark it cannot
 parse instead of crashing.
+
+## Storage that stops growing
+
+Raw heart rate is most of the database: Fitbit writes tens of thousands of samples a day, and nothing used to leave,
+so every day added its full raw samples for good. Pulse's web app compacted heart rate older than 30 days to one mean
+per minute after each recompute (pulse `src/server/samples.ts` `compactHr`), and Baro, another on-phone Fitbit app,
+keeps raw pages for days and per-minute heart rate long term, with SQLite vacuumed on a budget. Pulse Mobile now does
+the same after each sync and scoring run (`src/background/maintenance.ts`):
+
+- `Store.compactHr(beforeTs)` rewrites each `hr_days` row whose UTC day ended before the cut as one rounded mean per
+  minute and sets its `minute` flag. A row written again (`insert or replace`, as a re-import does) gets the column's
+  default 0, so it is raw again and the next run compacts it again. Every reader keeps the same shape.
+- `RAW_HR_DAYS` is 30. Charts, the stored per-minute series and stage 1's minute means already read older days per
+  minute. Stage 1's memo key leaves heart-rate content out (new samples mark their day dirty instead), so compacting
+  reruns nothing (`pipeline.test.ts` checks every row stays identical). Only a `SCORING_VERSION` bump or a change in
+  max HR reruns stage 1 on a compacted day, from its minutes.
+- `Store.reclaimSpace()` gives freed pages back. A new database is created with `auto_vacuum = incremental` (the pragma
+  has to come before `journal_mode = wal`, which writes the file); an older one switches with one full `VACUUM` the
+  first time compaction frees anything, then uses `incremental_vacuum`. `wal_checkpoint(truncate)` shrinks the
+  write-ahead log a first import grew. Checked against SQLite in Node (`node:sqlite`): a 40 MB file with 30 MB freed
+  went back to 10 MB.
+- Settings › Your data shows the database's size (`Store.storageBytes()`, page count times page size).
+
+```mermaid
+flowchart LR
+  S[sync] --> P[pipeline: scores from raw samples]
+  P --> C["compactHr: days older than 30 → one mean per minute"]
+  C -->|any compacted| R["reclaimSpace: incremental_vacuum (one VACUUM the first time), WAL truncate"]
+  W[re-import writes a day] -->|minute flag back to 0| C
+```
