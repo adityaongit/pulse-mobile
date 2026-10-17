@@ -118,7 +118,7 @@ export function HeartRateScreen() {
       }
       primary={
         <SectionShell variant="card" title={vm.isToday ? "Today" : dayLabel(d, today)} info={{ title: "Daily heart rate", body: "Heartbeats per minute across the selected day. Gaps mean no heart rate reading was available." }}>
-          <IntradayHrChart data={series} />
+          <IntradayHrChart data={series} zoned />
         </SectionShell>
       }
       secondary={[

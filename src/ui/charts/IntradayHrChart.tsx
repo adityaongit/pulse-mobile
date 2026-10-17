@@ -31,11 +31,16 @@ export type IntradayHrChartProps = {
   data: Metric<HrSeries> | null | undefined;
   /** `day`: 200 px with 6-hourly ticks. `activity`: 180 px for one workout window. */
   variant?: "day" | "activity";
+  /**
+   * The day chart colours heart rate by zone only inside workouts (WHOOP's day view, on Strain); `zoned` colours the
+   * whole day, for the Heart Rate page, where the heart rate itself is the subject.
+   */
+  zoned?: boolean;
 };
 
 const AXIS_H = 30;
 
-function Chart({ hr, variant }: { hr: HrSeries; variant: "day" | "activity" }) {
+function Chart({ hr, variant, zoned }: { hr: HrSeries; variant: "day" | "activity"; zoned: boolean }) {
   const { c, css } = useTheme();
   const tz = useOptionalShellCalendar()?.timeZone;
   const [x, setX] = useState<number | null>(null);
@@ -45,9 +50,10 @@ function Chart({ hr, variant }: { hr: HrSeries; variant: "day" | "activity" }) {
   const bpms = hr.points.map((p) => p.bpm).filter((b): b is number => b !== null);
   const zoneOf = (bpm: number) => hr.zones?.find((z) => bpm >= z.min && bpm <= z.max)?.label;
   const summary = `Heart rate from ${clock(first, tz)} to ${clock(last, tz)}: low ${Math.min(...bpms)}, high ${Math.max(...bpms)} beats per minute.`;
-  // The day chart draws heart rate grey and colours it by zone only inside workouts (WHOOP's day view); an activity is all workout.
+  // The day chart draws heart rate grey and colours it by zone only inside workouts (WHOOP's day view), unless `zoned`;
+  // an activity is all workout.
   const workouts = (hr.spans ?? []).filter((s) => s.kind === "workout");
-  const inWorkout = (t: number) => variant === "activity" || workouts.some((s) => t >= s.start && t <= s.end);
+  const inWorkout = (t: number) => variant === "activity" || zoned || workouts.some((s) => t >= s.start && t <= s.end);
   const rows = hr.points.map((p, i) => {
     const on = inWorkout(p.t);
     // A minute at the edge of a workout belongs to both series, so the two strokes meet.
@@ -133,7 +139,7 @@ function ZoneName({ name }: { name: string }) {
 }
 
 /** Heart rate across the day or an activity, with zones and markers (spec §5.7). */
-export function IntradayHrChart({ data, variant = "day" }: IntradayHrChartProps) {
+export function IntradayHrChart({ data, variant = "day", zoned = false }: IntradayHrChartProps) {
   const empty = (
     <View className="items-center">
       <EmptyState body="No heart-rate data for this day." />
@@ -150,7 +156,7 @@ export function IntradayHrChart({ data, variant = "day" }: IntradayHrChartProps)
         </View>
       )}
     >
-      {(hr) => (hr.points.some((p) => p.bpm !== null) ? <Chart hr={hr} variant={variant} /> : empty)}
+      {(hr) => (hr.points.some((p) => p.bpm !== null) ? <Chart hr={hr} variant={variant} zoned={zoned} /> : empty)}
     </MetricState>
   );
 }

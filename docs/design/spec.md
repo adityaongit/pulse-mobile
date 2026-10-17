@@ -404,6 +404,9 @@ Rem values assume 16 px root. "Caps" means the source string is sentence case an
 - Units and times follow Settings › App: metric or imperial (lb, mi, ft, in, °F, fl oz), a 24-hour ("22:05") or
   12-hour ("10:05 PM") clock. A chart's whole-hour tick on the 12-hour clock is just "10 PM" (`clockTick`). Height in
   imperial reads "5′ 10″" and is typed as two fields, feet and inches.
+- Settings › App › Display holds Theme, Units and Clock as rows (`SelectRow`): the label, the choice and a chevron; a
+  tap opens the choices in the kit's dropdown (`MenuPanel`), the current one ticked. The dropdown shows and goes at
+  once, with no fade.
 - No data: `--` in the same role as the value would have been, `text-muted-foreground`.
 - Large text: never below `tracking-[-0.04em]`; `text-balance` on titles; `text-pretty` on body; `truncate` with `min-w-0` on every flex child holding a name.
 

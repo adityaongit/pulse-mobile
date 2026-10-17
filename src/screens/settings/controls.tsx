@@ -4,7 +4,7 @@
 import { useEffect, useState, type ReactNode, type Ref } from "react";
 import { Modal, Pressable, TextInput, View, type TextInputProps } from "react-native";
 import Animated, { interpolateColor, useAnimatedStyle, useDerivedValue, withTiming } from "react-native-reanimated";
-import type { LucideIcon } from "lucide-react-native";
+import { Check, ChevronDown, type LucideIcon } from "lucide-react-native";
 import { FACES } from "@/ui/fontClasses";
 import { alpha } from "@/ui/color";
 import { cn } from "@/ui/cn";
@@ -16,6 +16,7 @@ import { usePanelStyle } from "@/ui/Panel";
 import { ring as ringLayer } from "@/ui/shadow";
 import { useTheme } from "@/ui/theme";
 import { Press } from "@/ui/Press";
+import { MenuPanel, useMenu } from "@/ui/Menu";
 import { DURATION } from "@/ui/motion";
 import { BAR_CORNERS } from "@/ui/radius";
 
@@ -138,6 +139,52 @@ export function RadioSegments<T extends string>({ value, options, onChange, labe
           </Press>
         );
       })}
+    </View>
+  );
+}
+
+export type SelectOption<T extends string> = { value: T; label: string; /** A second line in the dropdown ("lb, mi, ft, °F"). */ detail?: string; icon?: LucideIcon };
+
+/**
+ * A setting with a few choices, as a settings row: the label, the chosen value and a chevron. A tap opens the choices in
+ * a dropdown under it (the kit's MenuPanel, as the Trend View's metric switch), the chosen one ticked.
+ */
+export function SelectRow<T extends string>({ label, value, options, onChange, rule }: { label: string; value: T; options: readonly SelectOption<T>[]; onChange: (v: T) => void; rule?: boolean }) {
+  const { ref, anchor, open, close } = useMenu();
+  const on = options.find((o) => o.value === value) ?? options[0];
+  return (
+    <View ref={ref} collapsable={false} className={cn(rule && ROW_RULE)}>
+      <Press activeBg="bg-fill-pressed" accessibilityRole="button" accessibilityLabel={`${label}, ${on.label}`} accessibilityState={{ expanded: !!anchor }} onPress={() => (haptic.tap(), open())} className={cn(ROW, "-mx-2 rounded-lg px-2")}>
+        <Text className={ROW_LABEL}>{label}</Text>
+        <View className="shrink flex-row items-center gap-1.5">
+          <Text className={ROW_VALUE}>{on.label}</Text>
+          <Icon icon={ChevronDown} size={18} tone="muted-foreground" strokeWidth={2} />
+        </View>
+      </Press>
+      <MenuPanel anchor={anchor} onClose={close} align="end" className="min-w-56">
+        {options.map((o) => (
+          <Press
+            key={o.value}
+            activeBg="bg-fill-pressed"
+            accessibilityRole="menuitem"
+            accessibilityState={{ selected: o.value === on.value }}
+            onPress={() => {
+              close();
+              if (o.value === on.value) return;
+              haptic.select();
+              onChange(o.value);
+            }}
+            className="min-h-12 flex-row items-center gap-3 rounded-xl px-3 py-2"
+          >
+            {o.icon && <Icon icon={o.icon} size={18} tone="foreground-secondary" strokeWidth={1.75} />}
+            <View className="min-w-0 flex-1">
+              <Text className="text-[15px] font-medium leading-5">{o.label}</Text>
+              {!!o.detail && <Text className={HINT}>{o.detail}</Text>}
+            </View>
+            {o.value === on.value && <Icon icon={Check} size={16} tone="foreground" strokeWidth={2.25} />}
+          </Press>
+        ))}
+      </MenuPanel>
     </View>
   );
 }

@@ -23,7 +23,8 @@ export function useMenu() {
  * The web's dropdown panel (shadcn DropdownMenuContent with MENU_PANEL): rounded-2xl bg-popover p-1.5, a 1 px
  * foreground/10 ring and the overlay shadow, 8 px below the trigger and aligned to it (`start`, `end`, or `stretch` for
  * the trigger's width). Like Radix, it flips above only when it does not fit below and fits better above, and it never
- * covers its trigger. A tap outside closes it; there is no dim.
+ * covers its trigger. A tap outside closes it; there is no dim. It shows and goes at once, no fade: the modal's fade read
+ * as lag, above all when a choice redraws every screen as it closes (Settings › App).
  *
  * The trigger and the modal's own root are both measured in page coordinates, and the panel is placed at the difference.
  */
@@ -36,7 +37,7 @@ export function MenuPanel({ anchor, onClose, align, className, children }: { anc
   const place = anchor && frame && panel ? placeMenu(anchor, frame, panel, insets, align) : null;
 
   return (
-    <Modal visible={anchor !== null} transparent animationType="fade" onRequestClose={onClose} statusBarTranslucent navigationBarTranslucent>
+    <Modal visible={anchor !== null} transparent animationType="none" onRequestClose={onClose} statusBarTranslucent navigationBarTranslucent>
       <Pressable
         ref={root}
         collapsable={false}

@@ -191,6 +191,7 @@ These are requests from the thread, not accepted scope. OP's replies are histori
 | F25 | A donation link | [Ok_Sound_6778](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph9fjuf/) looked for a way to support the work and found none. | No reply captured. |
 | F26 | WHOOP data without Health Connect | [GitHub #4](https://github.com/adityaongit/pulse-mobile/issues/4): Noop writes WHOOP data to Health Connect without skin temperature or continuous HRV, so Pulse sees part of it. Asks for a direct WHOOP source. | Conflicts with the Health Connect only rule; record, do not schedule. |
 | F27 | Coach analysis controls | [GitHub #5](https://github.com/adityaongit/pulse-mobile/issues/5): turn the automatic workout analysis off, and offer it on Sleep and Recovery. | Comes with B20. |
+| F28 | Heart rate coloured by zone on the Heart Rate page | A user asked why workouts colour heart rate by zone but the Heart Rate page does not. | **Built 2026-10-17:** the Heart Rate page colours the whole day by zone; Strain keeps WHOOP's day view (zones inside workouts only). |
 
 ## Documentation, onboarding and trust gaps
 
