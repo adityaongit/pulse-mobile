@@ -33,7 +33,7 @@ export function Field({ label, hint, children, className }: { label: string; hin
     <View className={cn("min-w-0 gap-2", className)}>
       <Text className="text-[15px] font-medium leading-[22px]">
         {label}
-        {hint && <Text className="font-normal text-muted-foreground"> {hint}</Text>}
+        {!!hint && <Text className="font-normal text-muted-foreground"> {hint}</Text>}
       </Text>
       {children}
     </View>

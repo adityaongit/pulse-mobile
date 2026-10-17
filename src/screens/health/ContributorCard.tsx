@@ -118,10 +118,10 @@ export function ContributorCard({ title, items }: { title: string; items: Health
                     </View>
                   )}
                   <Text className="text-[15px] leading-[22px] text-foreground-secondary">Target for your age: {show(c.target)}</Text>
-                  {c.caption && c.metric.value !== null && <Text className={CAPTION}>{c.caption}</Text>}
+                  {!!c.caption && c.metric.value !== null && <Text className={CAPTION}>{c.caption}</Text>}
                   <Text className="text-[15px] leading-[22px]">{c.explanation}</Text>
                   <Text className={CAPTION}>Source: {c.source}.</Text>
-                  {HS_TREND[c.key] && <TextLink href={trendHref(HS_TREND[c.key])}>View trend</TextLink>}
+                  {!!HS_TREND[c.key] && <TextLink href={trendHref(HS_TREND[c.key])}>View trend</TextLink>}
                 </Animated.View>
               )}
             </Animated.View>

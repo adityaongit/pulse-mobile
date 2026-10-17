@@ -30,7 +30,7 @@ export function Frame({ children, footer, wordmark = true }: { children: ReactNo
             </View>
           )}
           {children}
-          {footer && <View className="mt-10 gap-1">{footer}</View>}
+          {!!footer && <View className="mt-10 gap-1">{footer}</View>}
         </View>
       </ScrollView>
     </View>

@@ -62,7 +62,7 @@ export function Button({ variant = "default", size = "touch", onPress, disabled,
       className={cn("flex-row items-center justify-center border border-transparent", s.box, v.box, disabled && "opacity-disabled", className)}
       style={variant === "outline-pill" ? { boxShadow: ring(c["focus-ring"], { inset: false }) } : undefined}
     >
-      {v.fill && <View pointerEvents="none" className={cn("absolute inset-0", s.fill, v.fill)} />}
+      {!!v.fill && <View pointerEvents="none" className={cn("absolute inset-0", s.fill, v.fill)} />}
       {typeof children === "string" ? <Text className={cn(s.text, v.text, textClassName)}>{children}</Text> : children}
     </Press>
   );

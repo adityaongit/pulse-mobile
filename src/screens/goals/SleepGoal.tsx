@@ -56,7 +56,7 @@ function ManualGoal({ hours }: { hours: number }) {
         <Text className={cn(HINT, "flex-1")}>min</Text>
         <SmallButton solid label="Save" accessibilityLabel="Save sleep goal" onPress={() => "hours" in r && void save(r.hours, "manual")} />
       </View>
-      {error && <Text accessibilityRole="alert" className="pt-1 text-[13px] font-medium leading-[18px] text-recovery-red-text">{error}</Text>}
+      {!!error && <Text accessibilityRole="alert" className="pt-1 text-[13px] font-medium leading-[18px] text-recovery-red-text">{error}</Text>}
     </View>
   );
 }

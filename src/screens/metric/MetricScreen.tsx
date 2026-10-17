@@ -133,7 +133,7 @@ function Hero({ vm }: { vm: MetricDetailVM }) {
   const when = vm.valueDay && vm.valueDay !== vm.day ? `Latest reading, ${formatDay(vm.valueDay, DAY.short)}` : null;
   return (
     <View className="w-full max-w-[360px] items-center gap-2 py-4">
-      {when && <Text className={cn(LABEL, "text-center text-muted-foreground")}>{when}</Text>}
+      {!!when && <Text className={cn(LABEL, "text-center text-muted-foreground")}>{when}</Text>}
       <MetricState metric={vm.value} skeleton={null} renderReason={(r) => <ReasonPlaceholder reason={r} size="lg" className="py-3" />}>
         {(value) => {
           const avg = vm.average;

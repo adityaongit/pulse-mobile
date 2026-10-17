@@ -26,7 +26,7 @@ function CostValue({ e, value, className }: { e: ActivityCostEntry; value: strin
   return (
     <View className="shrink-0 flex-row items-center gap-2">
       <Text className={cn(className, "tabular-nums", !value && "text-muted-foreground")}>{value ?? MISSING}</Text>
-      {value && <DeltaMark dir={mark.dir} tone={mark.tone} />}
+      {!!value && <DeltaMark dir={mark.dir} tone={mark.tone} />}
     </View>
   );
 }

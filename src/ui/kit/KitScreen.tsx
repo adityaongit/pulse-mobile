@@ -80,7 +80,7 @@ export function KitScreen({ title, blurb, children }: { title: string; blurb?: s
             <Text accessibilityRole="header" className="text-[28px] font-semibold leading-9 tracking-[-0.01em]">
               {title}
             </Text>
-            {blurb && <Text className="text-[15px] leading-[22px] text-foreground-secondary">{blurb}</Text>}
+            {!!blurb && <Text className="text-[15px] leading-[22px] text-foreground-secondary">{blurb}</Text>}
           </View>
           <View className="gap-12 px-4">{children}</View>
         </ScrollView>
@@ -97,7 +97,7 @@ export function Group({ title, blurb, children }: { title: string; blurb?: strin
         <Text accessibilityRole="header" className="text-2xl font-semibold leading-8 tracking-[-0.01em]">
           {title}
         </Text>
-        {blurb && <Text className="text-[15px] leading-[22px] text-foreground-secondary">{blurb}</Text>}
+        {!!blurb && <Text className="text-[15px] leading-[22px] text-foreground-secondary">{blurb}</Text>}
       </View>
       {children}
     </View>

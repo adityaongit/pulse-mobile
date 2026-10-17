@@ -308,8 +308,8 @@ function Trend({ points, p }: { points: TrendPoint[]; p: TrendChartProps }) {
                         </Group>
                       );
                     })}
-                  {smoothDraw && <StrokePath path={smoothDraw} width={2} paint={{ color: c.foreground }} />}
-                  {aRow && line && aRow.value !== null && aRow.fill && <GlowDot x={xs[ai]} y={y(aRow.value)} fill={aRow.fill} />}
+                  {!!smoothDraw && <StrokePath path={smoothDraw} width={2} paint={{ color: c.foreground }} />}
+                  {aRow && line && aRow.value !== null && !!aRow.fill && <GlowDot x={xs[ai]} y={y(aRow.value)} fill={aRow.fill} />}
                 </PlotCanvas>
 
                 {/* Y ticks, right-aligned in the axis gutter; zero is the floor every bar stands on, so it gets no label there. */}
@@ -343,7 +343,7 @@ function Trend({ points, p }: { points: TrendPoint[]; p: TrendChartProps }) {
           }}
         </ChartFigure>
       )}
-      {(p.baseline || p.target || p.smooth) && values.length > 0 && (
+      {!!(p.baseline || p.target || p.smooth) && values.length > 0 && (
         <Text className="mt-2 text-xs font-medium leading-4 text-muted-foreground">{p.target ? "Shaded: your Strain Target" : p.baseline ? "Shaded: your normal range" : `Line: ${p.smooth}-day average`}</Text>
       )}
     </View>

@@ -19,6 +19,7 @@ import { Figtree_700Bold } from "@expo-google-fonts/figtree/700Bold";
 
 import { useNotificationDeepLinks, useTabLinks } from "@/background/links";
 import { Opening } from "@/screens/Opening";
+import { ScreenError } from "@/screens/ScreenError";
 import { ShellData } from "@/screens/ShellData";
 import { boot, useApp } from "@/state/app";
 import { AppProviders } from "@/ui/providers";
@@ -34,7 +35,9 @@ SplashScreen.setOptions({ duration: 0, fade: false });
 
 // A cold start through a deep link (the launcher shortcuts, plugins/withAppShortcuts.js) puts the tabs under the linked
 // screen, so back goes Home. Before onboarding the tabs are guarded off and the stack falls back to onboarding.
-export const unstable_settings = { anchor: "(tabs)" };
+// A screen that throws while it draws shows ScreenError in its place, here and in every nested layout, instead of
+// closing the app.
+export const unstable_settings = { anchor: "(tabs)", screenErrorBoundary: ScreenError };
 
 export default function RootLayout() {
   // Fonts: Figtree for text, Barlow for numerals, as the web (pulse src/app/layout.tsx). Each weight is its own file

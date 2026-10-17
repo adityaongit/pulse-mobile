@@ -53,7 +53,7 @@ export function Sparkline({ values, band, color, colorOf, caption, className }: 
           </Svg>
         )}
       </View>
-      {caption && <Text className="text-right text-[10px] font-semibold uppercase leading-3 tracking-[0.06em] text-muted-foreground">{caption}</Text>}
+      {!!caption && <Text className="text-right text-[10px] font-semibold uppercase leading-3 tracking-[0.06em] text-muted-foreground">{caption}</Text>}
     </View>
   );
 }

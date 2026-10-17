@@ -51,12 +51,12 @@ export function DetailHeaderRow({ title, subtitle, info, backHref, dateTitle, di
     return (
       <View className={cn("min-h-11 flex-row items-start gap-2 px-2", subtitle && "pb-1", className)}>
         <View className="h-11 justify-center">{back}</View>
-        {titleIcon && <View className="h-11 justify-center"><View className="size-7 items-center justify-center">{titleIcon}</View></View>}
+        {!!titleIcon && <View className="h-11 justify-center"><View className="size-7 items-center justify-center">{titleIcon}</View></View>}
         <View className="min-w-0 flex-1 pt-3">
           <Text accessibilityRole="header" className={cn(HEADER_TITLE)} numberOfLines={1}>{title}</Text>
-          {subtitle && <Text className="text-[13px] leading-[18px] tabular-nums text-foreground-secondary" numberOfLines={1}>{subtitle}</Text>}
+          {!!subtitle && <Text className="text-[13px] leading-[18px] tabular-nums text-foreground-secondary" numberOfLines={1}>{subtitle}</Text>}
         </View>
-        {right && <View className="h-11 justify-center">{right}</View>}
+        {!!right && <View className="h-11 justify-center">{right}</View>}
       </View>
     );
 
@@ -73,7 +73,7 @@ export function DetailHeaderRow({ title, subtitle, info, backHref, dateTitle, di
           ) : (
             <>
               <Text accessibilityRole="header" className={cn(HEADER_TITLE, "max-w-full")} numberOfLines={1}>{title}</Text>
-              {subtitle && <Text className="max-w-full text-[11px] font-semibold uppercase leading-4 tracking-[0.1em] text-muted-foreground" numberOfLines={1}>{subtitle}</Text>}
+              {!!subtitle && <Text className="max-w-full text-[11px] font-semibold uppercase leading-4 tracking-[0.1em] text-muted-foreground" numberOfLines={1}>{subtitle}</Text>}
             </>
           )}
         </Animated.View>

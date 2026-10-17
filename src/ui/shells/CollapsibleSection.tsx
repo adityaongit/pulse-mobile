@@ -49,7 +49,7 @@ export function CollapsibleSection({ id, title, defaultOpen = true, action, clas
             <Icon icon={ChevronDown} size={20} tone="muted-foreground" strokeWidth={2} />
           </Animated.View>
         </Pressable>
-        {action && <View className="shrink-0 flex-row items-center gap-3">{action}</View>}
+        {!!action && <View className="shrink-0 flex-row items-center gap-3">{action}</View>}
       </View>
       {open && children}
     </View>

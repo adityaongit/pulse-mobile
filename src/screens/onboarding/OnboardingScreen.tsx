@@ -74,7 +74,7 @@ function Welcome({ onConnect }: { onConnect: () => void }) {
           <ProgressFooter progress={progress} fallback="Building sample data" />
         ) : (
           <>
-            {error && (
+            {!!error && (
               <Text accessibilityRole="alert" className="mb-2 text-center text-[13px] font-medium leading-[18px] text-recovery-red-text">
                 {error}
               </Text>

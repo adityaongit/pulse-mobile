@@ -51,7 +51,7 @@ const MARKER: Record<Tone, string> = { good: "bg-optimal", bad: "bg-warning", ne
 function Header({ p, value, right }: { p: Common; value: number | null; right?: ReactNode }) {
   return (
     <View className="flex-row items-center gap-3">
-      {p.icon && <View className="size-5 shrink-0 items-center justify-center">{p.icon}</View>}
+      {!!p.icon && <View className="size-5 shrink-0 items-center justify-center">{p.icon}</View>}
       {/* Long labels must wrap because tracked capitals can exceed narrow phone widths. */}
       <Text className={cn(LABEL, "min-w-0 flex-1")}>{p.label}</Text>
       <View className="shrink-0 flex-row items-center gap-2">
@@ -144,7 +144,7 @@ function HealthspanRow({ p, value, meta }: { p: Extract<ContributorRowProps, { v
   const body = (
     <View accessible accessibilityLabel={sentence} className="gap-1">
       <View className="flex-row items-center gap-3">
-        {p.icon && <View className="size-5 shrink-0 items-center justify-center">{p.icon}</View>}
+        {!!p.icon && <View className="size-5 shrink-0 items-center justify-center">{p.icon}</View>}
         <Text className={cn(LABEL, "min-w-0 flex-1")}>{p.label}</Text>
       </View>
       <View className="flex-row items-center gap-4">

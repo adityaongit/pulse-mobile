@@ -83,9 +83,9 @@ export function DetailShell({ title, subtitle, info, backHref, dateSwitcher, dis
           </View>
         )}
         <View removeClippedSubviews className="gap-8">
-          {(hero || side) && (
+          {!!(hero || side) && (
             <View className="gap-6">
-              {hero && (
+              {!!hero && (
                 <View
                   ref={heroBox}
                   // The collapse point: the hero's bottom edge reaching the header's. Measured at rest, then fixed.
@@ -100,15 +100,15 @@ export function DetailShell({ title, subtitle, info, backHref, dateSwitcher, dis
                   {hero}
                 </View>
               )}
-              {side && (
+              {!!side && (
                 <View className="min-w-0">
-                  {notch && summary && <Notch />}
+                  {notch && !!summary && <Notch />}
                   {side}
                 </View>
               )}
             </View>
           )}
-          {(summary || !hero) && insight}
+          {!!(summary || !hero) && insight}
           {below ? (
             <Animated.View removeClippedSubviews entering={fade ? FadeIn.duration(DURATION.base) : undefined} className="gap-8">
               {primary}

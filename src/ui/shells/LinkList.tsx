@@ -56,7 +56,7 @@ export function LinkList({ title, rows, className }: { title: string; rows: Link
             {r.icon && <Icon icon={r.icon} size={22} tone="foreground-secondary" strokeWidth={1.5} />}
             <View className="min-w-0 flex-1">
               <Text className={ROW_LABEL}>{r.label}</Text>
-              {r.description && <Text className="mt-0.5 text-[13px] leading-[18px] text-muted-foreground">{r.description}</Text>}
+              {!!r.description && <Text className="mt-0.5 text-[13px] leading-[18px] text-muted-foreground">{r.description}</Text>}
             </View>
             {typeof r.aside === "string" ? <Text className="shrink-0 font-numeric text-xs font-medium leading-4 tabular-nums text-muted-foreground">{r.aside}</Text> : r.aside}
             <Icon icon={r.external ? ArrowUpRight : ChevronRight} size={20} tone="muted-foreground" />
@@ -80,7 +80,7 @@ export function LinkListSkeleton({ title, rows }: { title: string; rows: Omit<Li
             {r.icon && <Icon icon={r.icon} size={22} tone="foreground-secondary" strokeWidth={1.5} />}
             <View className="min-w-0 flex-1">
               {r.label ? <Text className={ROW_LABEL}>{r.label}</Text> : <SkeletonText className="w-28" />}
-              {r.description && <Text className="mt-0.5 text-[13px] leading-[18px] text-muted-foreground">{r.description}</Text>}
+              {!!r.description && <Text className="mt-0.5 text-[13px] leading-[18px] text-muted-foreground">{r.description}</Text>}
             </View>
             <Icon icon={ChevronRight} size={20} tone="muted-foreground" />
           </View>

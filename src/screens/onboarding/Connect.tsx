@@ -100,7 +100,7 @@ export function ConnectFlow({ sample, onCancel }: { sample?: boolean; onCancel: 
     <Frame
       footer={
         <>
-          {(error ?? unavailable) && (
+          {!!(error ?? unavailable) && (
             <Text accessibilityRole="alert" className="mb-2 text-center text-[13px] font-medium leading-[18px] text-recovery-red-text">
               {error ?? unavailable}
             </Text>

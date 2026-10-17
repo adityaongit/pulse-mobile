@@ -75,7 +75,7 @@ function TotalDay({ l, day }: { l: NonNullable<StressVM["levels"]["value"]>; day
           </View>
         ))}
       </View>
-      {line && <Text className="text-xs font-medium leading-4 text-muted-foreground">{line}</Text>}
+      {!!line && <Text className="text-xs font-medium leading-4 text-muted-foreground">{line}</Text>}
     </View>
   );
 }

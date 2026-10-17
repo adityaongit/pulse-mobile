@@ -240,7 +240,7 @@ export function ConfirmDialog({
               </Text>
               <Text className="text-sm leading-5 text-muted-foreground">{description}</Text>
             </View>
-            {error && (
+            {!!error && (
               <Text accessibilityRole="alert" className="text-xs font-medium leading-4 text-recovery-red-text">
                 {error}
               </Text>

@@ -62,7 +62,7 @@ export function ScoreExplainerScreen() {
       primary={
         <View className="w-full gap-4">
           <Text className="text-[17px] leading-6">{doc.summary}</Text>
-          {doc.href && (
+          {!!doc.href && (
             <Button variant="secondary" onPress={() => doc.href && push(doc.href)}>
               {`Open ${doc.name}`}
             </Button>

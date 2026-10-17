@@ -45,7 +45,7 @@ function LiveHero() {
       <LivePill name={live.device?.name ?? null} lost={lost} className="self-center" />
       {live.contact === false && <Text className="text-[13px] font-medium leading-[18px] text-recovery-red-text">No skin contact: wear the band snug.</Text>}
       <LiveTrace history={live.history} />
-      {hrv && <Text className={CAPTION}>{hrv}</Text>}
+      {!!hrv && <Text className={CAPTION}>{hrv}</Text>}
       <StopLiveButton onPress={() => void live.disconnect()} className="mt-1" />
     </View>
   );

@@ -37,7 +37,7 @@ export function Consent() {
           </View>
         ))}
       </View>
-      {error && <Text className={ERROR}>{error}</Text>}
+      {!!error && <Text className={ERROR}>{error}</Text>}
       <Button onPress={() => void setConsent(true).catch(() => setError("Couldn’t save that. Try again."))}>
         Allow
       </Button>
@@ -110,7 +110,7 @@ export function ConnectProvider({ current, onSaved }: { current: CoachSetup; onS
       <Field label="Model" hint="Any model your provider offers.">
         <TextField accessibilityLabel="Model" value={model} onChangeText={setModel} autoCapitalize="none" autoCorrect={false} spellCheck={false} maxLength={120} />
       </Field>
-      {error && (
+      {!!error && (
         <Text accessibilityRole="alert" className={ERROR}>
           {error}
         </Text>

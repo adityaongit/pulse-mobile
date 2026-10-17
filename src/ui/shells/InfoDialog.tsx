@@ -40,7 +40,7 @@ export function InfoDialog({ open, onClose, title, body, icon, chip, action }: I
           style={panel}
         >
           <ScrollView contentContainerClassName="p-6" showsVerticalScrollIndicator={false}>
-            {icon && <View className="mb-4">{icon}</View>}
+            {!!icon && <View className="mb-4">{icon}</View>}
             <View className="mb-3 flex-row items-start gap-2.5 pr-8">
               {chip && <StatusChip tone={chip.tone}>{chip.text}</StatusChip>}
               <Text accessibilityRole="header" className="shrink text-[15px] font-bold uppercase leading-5 tracking-[0.1em] text-popover-foreground">

@@ -72,7 +72,7 @@ export function PageShell({ title, dateSwitcher, actions, layout = "stack", slot
     <ScreenScroll header={header} top={top} onScroll={onScroll} onRefresh={onRefresh ?? shellSync?.syncNow}>
       {body && <View className="w-full px-4 pt-2" accessibilityState={{ busy: !!loading }}>
         {loading && <Text accessibilityLiveRegion="polite" className="absolute h-px w-px opacity-0">{title.trim() ? `Loading ${title}…` : "Loading…"}</Text>}
-        {actions && <View className="mb-4 flex-row justify-end gap-2">{actions}</View>}
+        {!!actions && <View className="mb-4 flex-row justify-end gap-2">{actions}</View>}
         <SampleCard />
         {home && slots ? (
           <View className="gap-8">
@@ -81,7 +81,7 @@ export function PageShell({ title, dateSwitcher, actions, layout = "stack", slot
             </SentinelContext.Provider>
             <View className="min-w-0">{slots.main}</View>
             <View className="min-w-0">{slots.aside}</View>
-            {slots.bottom && <View className="min-w-0">{slots.bottom}</View>}
+            {!!slots.bottom && <View className="min-w-0">{slots.bottom}</View>}
           </View>
         ) : (
           <View className={layout === "grid-2" ? "gap-3" : "gap-8"}>{children}</View>

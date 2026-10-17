@@ -255,7 +255,7 @@ export function DataSource({ now }: { now: number }) {
           </Text>
         </View>
       </View>
-      {state.body && <Text className={cn(BODY, "mt-3")}>{state.body}</Text>}
+      {!!state.body && <Text className={cn(BODY, "mt-3")}>{state.body}</Text>}
       {!!error && !syncing && (
         <Text accessibilityRole="alert" className={cn(CAPTION, "mt-3 text-recovery-red-text")}>
           {`Last sync failed: ${error}`}

@@ -16,7 +16,7 @@ function Rows({ rows }: { rows: [swatch: string | null, text: string][] }) {
     <View className="gap-2">
       {rows.map(([swatch, text]) => (
         <View key={text} className="flex-row items-start gap-2.5">
-          {swatch && <View accessibilityElementsHidden className={`mt-1.5 size-2.5 shrink-0 rounded-sm ${swatch}`} />}
+          {!!swatch && <View accessibilityElementsHidden className={`mt-1.5 size-2.5 shrink-0 rounded-sm ${swatch}`} />}
           <View className="flex-1"><P>{text}</P></View>
         </View>
       ))}

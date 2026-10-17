@@ -108,7 +108,7 @@ function Behaviours({ vm }: { vm: BehavioursVM }) {
                     {adding ? "Adding…" : "Add"}
                   </Button>
                 </View>
-                {addError && (
+                {!!addError && (
                   <Text accessibilityRole="alert" className="text-xs font-medium leading-4 text-recovery-red-text">
                     {addError}
                   </Text>

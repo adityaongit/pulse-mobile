@@ -865,7 +865,7 @@ export function ExplorerChart(p: ExplorerChartProps) {
                         </Path>
                       ) : null,
                     )}
-                    {p.partialColor && (
+                    {!!p.partialColor && (
                       <Group>
                         <Path path={bar3} color={alpha(p.partialColor, 0.28)} />
                         <Path path={bar3} style="stroke" strokeWidth={1.5} color={alpha(p.partialColor, 0.9)} />

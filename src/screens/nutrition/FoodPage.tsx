@@ -82,7 +82,7 @@ function MethodTile({ icon, label, onPress, disabled }: { icon: LucideIcon; labe
 function Notice({ title, children, alert }: { title?: string; children: ReactNode; alert?: boolean }) {
   return (
     <View accessibilityRole={alert ? "alert" : undefined} className="gap-1 rounded-xl bg-inset p-3">
-      {title && <Text className="text-[15px] font-semibold leading-5">{title}</Text>}
+      {!!title && <Text className="text-[15px] font-semibold leading-5">{title}</Text>}
       {typeof children === "string" ? <Text className={BODY}>{children}</Text> : children}
     </View>
   );
@@ -150,7 +150,7 @@ function DraftRow({ d, onToggle, onChange, onRemove }: { d: Draft; onToggle: () 
           <Icon icon={Trash2} size={18} tone="muted-foreground" />
         </Press>
       </View>
-      {d.error && <FormAlert>{d.error}</FormAlert>}
+      {!!d.error && <FormAlert>{d.error}</FormAlert>}
       {d.open && <FoodFields form={d.form} onChange={onChange} />}
     </View>
   );

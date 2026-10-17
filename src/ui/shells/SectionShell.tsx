@@ -69,7 +69,7 @@ function Shell({ variant, title, info, action, aside, icon, href, fill, classNam
           <Text accessibilityRole="header" className="shrink text-[22px] font-semibold leading-7 tracking-[-0.01em]">
             {title}
           </Text>
-          {(aside || actionNode) && (
+          {!!(aside || actionNode) && (
             <View className="shrink-0 flex-row items-center gap-3">
               {typeof aside === "string" || typeof aside === "number" ? <Text className="text-xs font-medium leading-4 text-muted-foreground">{aside}</Text> : aside}
               {actionNode}
@@ -85,7 +85,7 @@ function Shell({ variant, title, info, action, aside, icon, href, fill, classNam
   const header = (
     <View className="mb-3 min-h-6 flex-row items-center justify-between gap-2">
       <View className="shrink flex-row items-center gap-2">
-        {icon && <View className="size-5 items-center justify-center">{icon}</View>}
+        {!!icon && <View className="size-5 items-center justify-center">{icon}</View>}
         <Text accessibilityRole="header" className="shrink text-xs font-bold uppercase leading-4 tracking-[0.1em]">
           {title}
         </Text>

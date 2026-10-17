@@ -122,7 +122,7 @@ function TargetRow({ vm }: { vm: StrainVM }) {
       </View>
       <View className="min-w-0 flex-1">
         <Text className={LABEL}>Strain Target</Text>
-        {reason && (
+        {!!reason && (
           <Text className={cn(CAPTION, "mt-0.5")} numberOfLines={1}>
             {reason}
           </Text>

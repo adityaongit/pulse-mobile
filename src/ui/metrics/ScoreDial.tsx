@@ -224,11 +224,11 @@ export function ScoreDial(props: ScoreDialProps) {
             style={{ fontSize: valueSize, ...capTrim(valueSize, "numeric"), letterSpacing: s.tracking * valueSize }}
           >
             {r.text}
-            {r.unit && !empty && <Text style={{ fontSize: valueSize * 0.55 }}>{r.unit}</Text>}
+            {!!r.unit && !empty && <Text style={{ fontSize: valueSize * 0.55 }}>{r.unit}</Text>}
           </Text>
         )}
         {gauge && !compact && r.word && <Text className={cn(DIAL_LABEL, r.word.className)} style={{ ...LABEL_TRIM, marginTop: 8 * cqi + LABEL_TRIM.marginTop }}>{r.word.text}</Text>}
-        {gauge && !compact && props.caption && <Text className="text-xs font-medium text-foreground-secondary" style={{ ...LABEL_TRIM, marginTop: 5 * cqi + LABEL_TRIM.marginTop }}>{props.caption}</Text>}
+        {gauge && !compact && !!props.caption && <Text className="text-xs font-medium text-foreground-secondary" style={{ ...LABEL_TRIM, marginTop: 5 * cqi + LABEL_TRIM.marginTop }}>{props.caption}</Text>}
         {lg && !gauge && (
           <>
             <Text className={cn(DIAL_LABEL, "max-w-36 text-center")} style={{ ...LABEL_TRIM, marginTop: 9 * cqi + LABEL_TRIM.marginTop }}>{r.label}</Text>
@@ -260,7 +260,7 @@ export function ScoreDial(props: ScoreDialProps) {
       <View className="flex-row items-center gap-0.5">
         {/* shrink: a phone's text in a row overflows instead of wrapping. */}
         <Text className={cn(size === "sm" ? "text-xs font-medium leading-4 text-foreground-secondary" : DIAL_LABEL, "shrink text-center")}>{r.label}</Text>
-        {href && <Icon icon={ChevronRight} size={12} tone="foreground" strokeWidth={2.5} />}
+        {!!href && <Icon icon={ChevronRight} size={12} tone="foreground" strokeWidth={2.5} />}
       </View>
     </View>
   );

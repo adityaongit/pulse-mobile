@@ -72,7 +72,7 @@ export function ValueUnit({ value, unit, className, unitClassName, fit }: { valu
   return (
     <Text className={cn("whitespace-nowrap tabular-nums", className)} numberOfLines={fit ? 1 : undefined} adjustsFontSizeToFit={fit}>
       {value}
-      {unit && value !== "--" && (
+      {!!unit && value !== "--" && (
         <>
           {/* The web's ml-0.5 before a symbol, ml-1 before a word. A nested text has no margin, so the gap is a space of
               a known face and size (Figtree SemiBold 13 px: 0.241 em, 3.13 px) with letter spacing making up the rest. */}

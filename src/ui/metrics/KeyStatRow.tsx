@@ -94,11 +94,11 @@ function Row({ p, c }: { p: KeyStatRowProps; c: Computed }) {
   return (
     <Frame p={disabled} sentence={sentence} className={card ? cn(CARD_CLASS, "min-h-14 flex-row items-center gap-3 px-4 py-2", p.className) : cn("min-h-14 flex-row items-center gap-3 py-2", p.className)} style={card ? shadow : undefined}>
       {card && <CardFill />}
-      {p.icon && <View className="size-5 shrink-0 items-center justify-center">{p.icon}</View>}
+      {!!p.icon && <View className="size-5 shrink-0 items-center justify-center">{p.icon}</View>}
       <View className="min-w-0 flex-1">
         {/* Long metric labels must wrap to fit narrow phone widths. */}
         {p.label ? <Text className={LABEL}>{p.label}</Text> : <SkeletonText className="w-32" />}
-        {(c.reason || p.caption) && (
+        {!!(c.reason || p.caption) && (
           <Text className={cn(CAPTION, "mt-0.5")} numberOfLines={1}>
             {c.reason ?? p.caption}
           </Text>
@@ -122,7 +122,7 @@ function Row({ p, c }: { p: KeyStatRowProps; c: Computed }) {
             // A My Dashboard card prints the number alone ("43", "5,185"), percent kept, as the reference app does (dashboard-01); the spoken sentence keeps the unit.
             <ValueUnit value={c.valueText} unit={card && p.unit !== "%" ? undefined : p.unit} className={cn("font-numeric text-xl font-bold leading-6", c.reason && "text-muted-foreground")} />
           )}
-          {c.avgText && !c.reason && (
+          {!!c.avgText && !c.reason && (
             <Text className="font-numeric text-[13px] font-medium leading-4 tabular-nums text-muted-foreground">
               {c.avgText}
               {p.unit === "%" && "%"}
@@ -131,7 +131,7 @@ function Row({ p, c }: { p: KeyStatRowProps; c: Computed }) {
         </View>
         {p.direction !== "none" && <View className="h-6 w-2 items-center justify-center">{c.dir && <DeltaMark dir={c.dir} tone={c.tone!} />}</View>}
       </View>
-      {p.href && !card && <Icon icon={ChevronRight} size={16} tone="muted-foreground" />}
+      {!!p.href && !card && <Icon icon={ChevronRight} size={16} tone="muted-foreground" />}
     </Frame>
   );
 }
@@ -156,7 +156,7 @@ function Tile({ p, c }: { p: KeyStatRowProps; c: Computed }) {
       <CardFill ring={flagged ? colors["warning-ring"] : undefined} />
       <View className={cn(wide ? "min-w-0 flex-1 gap-2" : "flex-1 gap-3", p.spark && "flex-none")}>
         <View className="flex-row items-center gap-2.5">
-          {p.icon && <View className="size-5 shrink-0 items-center justify-center">{p.icon}</View>}
+          {!!p.icon && <View className="size-5 shrink-0 items-center justify-center">{p.icon}</View>}
           {p.label ? (
             <Text className={cn(TILE_LABEL, "min-w-0 shrink text-foreground-secondary")} numberOfLines={3}>
               {p.label}
@@ -190,7 +190,7 @@ function Tile({ p, c }: { p: KeyStatRowProps; c: Computed }) {
                   c.avgText && (
                     <StatusChip tone="neutral" delta={c.dir} className={TILE_CHIP} textClassName="text-[11px]">
                       {c.avgText}
-                      {p.unit && <Text className="font-semibold">{p.unit === "%" ? "%" : ` ${p.unit}`}</Text>}
+                      {!!p.unit && <Text className="font-semibold">{p.unit === "%" ? "%" : ` ${p.unit}`}</Text>}
                     </StatusChip>
                   )
                 ))}
@@ -201,7 +201,7 @@ function Tile({ p, c }: { p: KeyStatRowProps; c: Computed }) {
       {wide && p.spark && !c.loading && (
         <Sparkline values={p.spark.values} band={p.spark.band} color={p.chip?.tone === "warning" || p.chip?.tone === "alert" ? colors.warning : colors["foreground-secondary"]} caption={p.spark.caption} className="h-16 min-w-0 flex-1 self-center" />
       )}
-      {wide && !p.spark && !c.loading && !c.reason && (p.chip || c.avgText) && (
+      {wide && !p.spark && !c.loading && !c.reason && !!(p.chip || c.avgText) && (
         <View className="shrink-0 items-end gap-1">
           <Text className={CAPTION}>{p.chip ? "Your range" : (p.averageLabel ?? "30-day avg")}</Text>
           {p.chip ? (
@@ -211,7 +211,7 @@ function Tile({ p, c }: { p: KeyStatRowProps; c: Computed }) {
           ) : (
             <>
               <ValueUnit value={c.avgText!} unit={p.unit} className="font-numeric text-lg font-bold leading-6" unitClassName="text-xs font-medium leading-4 text-muted-foreground" />
-              {c.diffText && (
+              {!!c.diffText && (
                 <Text className={cn("font-numeric text-xs font-bold leading-4 tabular-nums", TONE_TEXT[c.tone ?? "neutral"])}>
                   {c.diffText}
                   {unitSuffix(p.unit)} vs avg

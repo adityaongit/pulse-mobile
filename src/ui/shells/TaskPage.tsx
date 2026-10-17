@@ -109,7 +109,7 @@ export function TaskPage({ title, description, children, footer, action, glow, d
           <ScrollView {...reveal} style={styles.fill} contentContainerStyle={{ paddingTop: glow ? 8 : top + HEADER_FADE, paddingHorizontal: 16, paddingBottom: footer ? 16 : pad }} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" showsVerticalScrollIndicator={false}>
             {children}
           </ScrollView>
-          {footer && <View className="gap-3 px-4 pt-3" style={{ paddingBottom: pad }}>{footer}</View>}
+          {!!footer && <View className="gap-3 px-4 pt-3" style={{ paddingBottom: pad }}>{footer}</View>}
         </>
       )}
       {!glow && <DetailHeader {...header} />}

@@ -74,7 +74,7 @@ function Chart({ s, variant }: { s: StressSeries; variant: "full" | "spark" }) {
             <PlotCanvas width={width} height={height}>
               {full && <GridLines ys={[1, 2, 3].map(y)} x0={x0} x1={x1} />}
               {full && <SpanFills spans={s.spans} x={tx} x0={x0} x1={x1} y0={y0} y1={y1} />}
-              {full && s.now && <DashedLine x1={tx(s.now)} x2={tx(s.now)} y1={y0} y2={y1} color={c["chart-cursor"]} dash={[4, 4]} />}
+              {full && !!s.now && <DashedLine x1={tx(s.now)} x2={tx(s.now)} y1={y0} y2={y1} color={c["chart-cursor"]} dash={[4, 4]} />}
               {a && <DashedLine x1={tx(a.t)} x2={tx(a.t)} y1={y0} y2={y1} color={c["chart-cursor"]} />}
               {full && top > 0 && <FadeFill path={areaPath(pts, y1, "monotone")} color={css(bandColor(top, BANDS))} y0={y(top)} y1={y1} from={0.22} to={0} />}
               <StrokePath path={linePath(pts, "monotone")} width={full ? 2 : 1.5} paint={paint} />

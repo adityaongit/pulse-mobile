@@ -118,7 +118,7 @@ function Chart({ hr, variant }: { hr: HrSeries; variant: "day" | "activity" }) {
             {a && a.bpm !== null && (
               <TooltipCard x={tx(a.t)} width={width} title={clock(a.t, tz)}>
                 <TooltipLine color={css(bandColor(a.bpm, bands))}>{`${a.bpm} bpm`}</TooltipLine>
-                {zoneOf(a.bpm) && <ZoneName name={zoneOf(a.bpm)!} />}
+                {!!zoneOf(a.bpm) && <ZoneName name={zoneOf(a.bpm)!} />}
               </TooltipCard>
             )}
           </>

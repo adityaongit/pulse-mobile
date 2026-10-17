@@ -22,7 +22,7 @@ export function BreakdownBar({ title, unit, items }: { title: string; unit: "day
   return (
     <View accessibilityLabel={title} className="min-w-0">
       <Text accessibilityRole="header" className={cn(LABEL, "text-foreground")}>
-        {name} {aside && <Text className="text-muted-foreground">{aside}</Text>}
+        {name} {!!aside && <Text className="text-muted-foreground">{aside}</Text>}
       </Text>
       <View accessibilityElementsHidden className="mt-3 h-2.5 flex-row gap-0.5 overflow-hidden rounded-full bg-muted">
         {/* `{ key, value }` destructured: Reanimated's Babel plugin warns on any `x.value` inside an inline style. */}
@@ -36,7 +36,7 @@ export function BreakdownBar({ title, unit, items }: { title: string; unit: "day
             <Text className="min-w-[30px] font-numeric text-[15px] font-bold leading-5 tabular-nums">{amount(i.value)}</Text>
             <Text className="min-w-0 shrink text-[15px] leading-5 text-foreground-secondary">
               {i.label}
-              {i.detail && <Text className="text-muted-foreground"> ({i.detail})</Text>}
+              {!!i.detail && <Text className="text-muted-foreground"> ({i.detail})</Text>}
             </Text>
           </View>
         ))}

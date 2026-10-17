@@ -114,7 +114,7 @@ export function ProfileForm({
         </View>
       )}
 
-      {state?.ok === false && state.error && (
+      {state?.ok === false && !!state.error && (
         <Text accessibilityRole="alert" className="text-[13px] font-medium leading-[18px] text-recovery-red-text">
           {state.error}
         </Text>

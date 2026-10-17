@@ -98,7 +98,7 @@ function FoodRow({ f, timeZone, onDelete, onSeparate }: { f: FoodItem; timeZone:
         </Text>
         <Text className={cn("text-sm leading-5 tabular-nums", f.duplicateOf && "text-muted-foreground line-through")}>{numbersOf(f)}</Text>
         <Text className={cn(CAPTION, "tabular-nums")}>{from ? `${time} · ${from}` : time}</Text>
-        {f.duplicateOf && <RowLink label="Not the same food? Count it too" onPress={() => onSeparate(true)} />}
+        {!!f.duplicateOf && <RowLink label="Not the same food? Count it too" onPress={() => onSeparate(true)} />}
         {f.separate && !f.duplicateOf && <RowLink label="Undo" onPress={() => onSeparate(false)} />}
       </View>
       {mine && (

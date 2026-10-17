@@ -87,7 +87,7 @@ export default function LogPage() {
       description="Kept on this phone"
       footer={
         <>
-          {error && <FormAlert>{error}</FormAlert>}
+          {!!error && <FormAlert>{error}</FormAlert>}
           <Button onPress={save} disabled={saving}>
             {saving ? "Saving…" : "Save"}
           </Button>

@@ -75,7 +75,7 @@ export function TimelineRow({
       <View className={cn(CHIP, chipClass)}>{chip}</View>
       <View className="min-w-0 flex-1">
         <Text className="text-[15px] font-bold uppercase leading-5 tracking-[0.1em]">{name}</Text>
-        {caption && (
+        {!!caption && (
           <Text className="text-xs font-medium leading-4 text-muted-foreground" numberOfLines={1}>
             {caption}
           </Text>

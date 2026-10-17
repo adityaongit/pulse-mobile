@@ -89,7 +89,7 @@ export default function TrendViewScreen() {
                 <ActionLink label="Explore" href={chartHref({ metric: key, r: vm.range, d })} />
               </View>
             )}
-            {vm.footnote && (
+            {!!vm.footnote && (
               <View className="mt-3 flex-row items-start gap-2">
                 <View className="mt-0.5"><Icon icon={Info} size={16} tone="muted-foreground" strokeWidth={2} /></View>
                 <Text className="flex-1 text-[13px] leading-5 text-muted-foreground">{vm.footnote}</Text>
@@ -98,7 +98,7 @@ export default function TrendViewScreen() {
           </View>
           {/* Pulse imports workouts, so Add activity explains where they come from (§11 R2). The goal button opens
               Settings › Goals, where the daily goals and the Weekly plan's targets are set. */}
-          {vm.actions.goal && (
+          {!!vm.actions.goal && (
             <Press accessibilityRole="link" activeScale={0.96} onPress={() => (haptic.tap(), push("/settings?s=goals"))} className={CARD_BUTTON}>
               <Icon icon={Target} size={20} tone="foreground" strokeWidth={2} />
               <Text className="text-[13px] font-bold uppercase leading-4 tracking-[0.1em]">{vm.actions.goal}</Text>

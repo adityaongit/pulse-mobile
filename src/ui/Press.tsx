@@ -68,7 +68,7 @@ function AnimatedPress({ className, style, activeScale = 1, activeBg, activeOpac
       style={[style, animated]}
       {...props}
     >
-      {activeBg && <PressFill p={p} className={className} activeBg={activeBg} />}
+      {!!activeBg && <PressFill p={p} className={className} activeBg={activeBg} />}
       {children}
     </AnimatedPressable>
   );

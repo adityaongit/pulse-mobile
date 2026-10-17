@@ -167,7 +167,7 @@ function Day({ day, context, value, selected, today, disabled, onSelect }: { day
       {/* Today off the selected day gets a dashed ring, so a past day's month still shows where today is (spec §11 UX1). */}
       <View className={cn("size-8 items-center justify-center rounded-full", selected ? "border-2 border-background-mid bg-dial-track" : today && "border border-dashed border-foreground/45")}>
         <Text className={cn("font-numeric text-[17px] font-bold leading-none tabular-nums", tone.text)}>{Number(day.slice(8))}</Text>
-        {tone.dot && <View className={cn("absolute -bottom-1 size-1 rounded-full", tone.dot)} />}
+        {!!tone.dot && <View className={cn("absolute -bottom-1 size-1 rounded-full", tone.dot)} />}
       </View>
     </Pressable>
   );

@@ -229,7 +229,7 @@ export function TooltipCard({ x, width, title, children }: { x: number; width: n
   const left = Math.min(Math.max(x - w / 2, 0), Math.max(0, width - w));
   return (
     <Panel pointerEvents="none" onLayout={(e) => setW(e.nativeEvent.layout.width)} className="absolute top-0 gap-1 rounded-xl px-2.5 py-2" style={{ left, opacity: w ? 1 : 0 }}>
-      {title && <Text className="text-xs font-medium leading-4 text-muted-foreground">{title}</Text>}
+      {!!title && <Text className="text-xs font-medium leading-4 text-muted-foreground">{title}</Text>}
       {children}
     </Panel>
   );
@@ -239,7 +239,7 @@ export function TooltipCard({ x, width, title, children }: { x: number; width: n
 export function TooltipLine({ color, children }: { color?: string; children: ReactNode }) {
   return (
     <View className="flex-row items-center gap-2">
-      {color && <View className="h-3 w-1 rounded-xs" style={{ backgroundColor: color }} />}
+      {!!color && <View className="h-3 w-1 rounded-xs" style={{ backgroundColor: color }} />}
       <Text className="font-numeric text-xs font-medium leading-4 tabular-nums text-foreground">{children}</Text>
     </View>
   );

@@ -30,7 +30,7 @@ export function InsightCard({ title, body, action, onAnchor }: InsightCardProps)
     <View className={FRAME}>
       <Gradient from={c["insight-from"]} to={c["insight-to"]} />
       <View className={INNER}>
-        {title && <Text className="text-base font-semibold leading-[22px]">{title}</Text>}
+        {!!title && <Text className="text-base font-semibold leading-[22px]">{title}</Text>}
         <Text className="text-[15px] leading-[22px]">{body}</Text>
         {action && (
           <Pressable

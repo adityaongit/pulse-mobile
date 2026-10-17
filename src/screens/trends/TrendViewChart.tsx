@@ -101,7 +101,7 @@ function Plot({ p, m, width, height }: { p: TrendViewChartProps; m: Model; width
       <PlotCanvas width={width} height={height}>
         <GridLines ys={m.yTicks.map(y)} x0={x0} x1={x1} />
         {/* The selected day's column: a soft rounded band the full height of the plot and its tick. */}
-        {p.selected && keys.includes(p.selected) && (() => {
+        {!!p.selected && keys.includes(p.selected) && (() => {
           const i = keys.indexOf(p.selected);
           const w = Math.min(step * 0.86, 44);
           return <RoundedRect x={xs[i] - w / 2} y={y0 - 4} width={w} height={y1 - y0 + 46} r={6} color={c["chart-highlight"]} />;
