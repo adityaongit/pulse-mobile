@@ -126,10 +126,28 @@ export { openHealthConnectSettings };
 export type Range = { start: Date; end: Date };
 
 /**
- * Every record of `type` in the range, following page tokens. Ascending by time. `origins` limits the read to those
- * apps' records (Health Connect's dataOriginFilter; see sourcePolicy.ts).
+ * Health Connect's client checks each record as it reads it, and an app that wrote a malformed one (a workout segment
+ * that ends before it starts) makes the whole read throw an IllegalArgumentException, which the library rejects with
+ * this code. Pulse's own read options are always valid, so the code means a bad record in the range.
  */
-export async function readAll<T extends ReadType>(type: T, range: Range, pageSize = 1000, origins?: string[]): Promise<RecordResult<T>[]> {
+const MALFORMED_RECORD = "ARGUMENT_VALIDATION_ERROR";
+
+const errorCode = (e: unknown) => (typeof e === "object" && e !== null && "code" in e ? (e as { code: unknown }).code : undefined);
+
+/** The sync warning for a type with records readAll left out: `skipped_records:<Type>`. */
+export const skippedWarning = (type: ReadType) => `skipped_records:${type}`;
+/** The types a sync's warnings say had records left out. */
+export const skippedTypes = (warnings: readonly string[]) => READ_TYPES.filter((t) => warnings.includes(skippedWarning(t)));
+
+export type ReadOptions = {
+  /** Only these apps' records (Health Connect's dataOriginFilter; see sourcePolicy.ts). */
+  origins?: string[];
+  /** Told of each range left out because a record starting in it could not be read. */
+  onSkipped?: (range: Range) => void;
+};
+
+/** Every record of `type` in the range, following page tokens (Health Connect's default page size). Ascending by time. */
+async function readPages<T extends ReadType>(type: T, range: Range, origins: string[] | undefined): Promise<RecordResult<T>[]> {
   await ensureInitialized();
   const out: RecordResult<T>[] = [];
   let pageToken: string | undefined;
@@ -138,7 +156,6 @@ export async function readAll<T extends ReadType>(type: T, range: Range, pageSiz
       timeRangeFilter: { operator: "between", startTime: range.start.toISOString(), endTime: range.end.toISOString() },
       ...(origins?.length && { dataOriginFilter: origins }),
       ascendingOrder: true,
-      pageSize,
       pageToken,
     };
     const page = await readRecords(type, options);
@@ -146,4 +163,27 @@ export async function readAll<T extends ReadType>(type: T, range: Range, pageSiz
     pageToken = page.pageToken;
   } while (pageToken);
   return out;
+}
+
+/**
+ * Every record of `type` in the range, ascending by time. A read refused for a malformed record is split in halves
+ * until the record is cornered in one millisecond of start times, which is left out (and reported through
+ * `onSkipped`) so one app's bad record doesn't stop the rest of the import. Records are matched by start time, so the
+ * halves never return a record twice.
+ */
+export async function readAll<T extends ReadType>(type: T, range: Range, opts: ReadOptions = {}): Promise<RecordResult<T>[]> {
+  try {
+    return await readPages(type, range, opts.origins);
+  } catch (e) {
+    if (errorCode(e) !== MALFORMED_RECORD) throw e;
+    const [start, end] = [range.start.getTime(), range.end.getTime()];
+    const mid = Math.floor((start + end) / 2);
+    if (mid === start) {
+      opts.onSkipped?.(range);
+      return [];
+    }
+    const before = await readAll(type, { start: range.start, end: new Date(mid) }, opts);
+    const after = await readAll(type, { start: new Date(mid), end: range.end }, opts);
+    return [...before, ...after];
+  }
 }

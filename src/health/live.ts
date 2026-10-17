@@ -101,7 +101,7 @@ async function pullFromHealthConnect(store: Store, from: number, to: number, tim
 
   // The same source policy as the sync, so the ticker never writes samples the sync would leave out.
   const policy = await getSourcePolicy();
-  const read = await readAll("HeartRate", { start: new Date(from * 1000), end: new Date(to * 1000) }, undefined, originFilter(policy));
+  const read = await readAll("HeartRate", { start: new Date(from * 1000), end: new Date(to * 1000) }, { origins: originFilter(policy, "HeartRate") });
   const records = applySourcePolicy("HeartRate", read, policy, timeZone);
   const incoming = mapHr(records, { startTs: from, endTs: to });
   if (!incoming.length) return 0;

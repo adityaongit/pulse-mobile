@@ -5,7 +5,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getChanges, type RecordResult } from "react-native-health-connect";
 import { readAhead } from "@/lib/ahead";
-import { READ_TYPES, ensureInitialized, permissionState, readAll, type ReadType } from "@/health/connect";
+import { READ_TYPES, ensureInitialized, permissionState, readAll, skippedWarning, type ReadOptions, type ReadType } from "@/health/connect";
 import { deriveDayExtras, restingHrOn, type Interval } from "@/health/derive";
 import {
   mapDailyValuesSteps,
@@ -44,9 +44,11 @@ export { forgetChanges };
  * every day became the first day of some incremental sync, which rewrote its row without that night (no skin
  * temperature, nightly vitals from the fallback windows, a nap promoted to the main sleep, the night's minutes counted
  * as sedentary); heart-rate and steps records running over midnight keep their samples after it. 4: every HRV sample is
- * kept (`hrv_days`), not only the nightly mean, for the Pulse engine.
+ * kept (`hrv_days`), not only the nightly mean, for the Pulse engine. 5: under the Fitbit policies, other apps' workouts
+ * that overlap none of the Fitbit's and smart scale readings are kept (sourcePolicy.ts OTHER_APPS), and a malformed
+ * record is left out instead of failing the sync.
  */
-export const IMPORT_VERSION = 4;
+export const IMPORT_VERSION = 5;
 
 /**
  * How far before the window's first local midnight the reads start. Health Connect returns a record only to a read whose
@@ -194,7 +196,9 @@ export async function syncHealthConnect(store: Store, opts: SyncOptions): Promis
 
     // Which records count (sourcePolicy.ts), and whether the stored rows were imported under this mapping and policy.
     const policy = await getSourcePolicy();
-    const origins = originFilter(policy);
+    // Types with a record Health Connect could not read (malformed by the app that wrote it), left out and reported.
+    const skipped = new Set<ReadType>();
+    const readOptions = (type: ReadType): ReadOptions => ({ origins: originFilter(policy, type), onSkipped: () => skipped.add(type) });
     const plan = windowPlan({
       requested: !!opts.full,
       lastSyncTs: state.lastSyncTs,
@@ -250,7 +254,7 @@ export async function syncHealthConnect(store: Store, opts: SyncOptions): Promis
     const input: HealthInput = {};
     let recordsKept = 0;
     const windowTypes = WINDOW_TYPES.filter((t) => granted.has(t));
-    const takeWindow = readAhead(windowTypes.length, READ_CONCURRENCY, (k) => readAll(windowTypes[k], range(windowTypes[k]), undefined, origins));
+    const takeWindow = readAhead(windowTypes.length, READ_CONCURRENCY, (k) => readAll(windowTypes[k], range(windowTypes[k]), readOptions(windowTypes[k])));
     let windowRead = 0;
     for (const type of WINDOW_TYPES) {
       progress(`read:${type}`, done, total);
@@ -308,7 +312,7 @@ export async function syncHealthConnect(store: Store, opts: SyncOptions): Promis
     }
     const takeDay = readAhead(dayReads.length, READ_CONCURRENCY, (k) => {
       const { type, range, lead } = dayReads[k];
-      return Promise.all([readAll(type, range, undefined, origins), lead ? readAll(type, lead, undefined, origins) : null]);
+      return Promise.all([readAll(type, range, readOptions(type)), lead ? readAll(type, lead, readOptions(type)) : null]);
     });
     let dayRead = 0;
     /** The day's records of `type`: those begun on it, and those begun before it that run past its midnight. */
@@ -417,6 +421,7 @@ export async function syncHealthConnect(store: Store, opts: SyncOptions): Promis
     // Under "Fitbit only", nothing at all from the Fitbit app means the policy is hiding everything (another band's app,
     // or Google Health not sharing yet): say so rather than show an empty Pulse.
     if (policy === "fitbit_only" && recordsKept === 0 && plan.full) warnings.push("no_fitbit_records");
+    for (const type of skipped) warnings.push(skippedWarning(type));
 
     const firstDay = state.firstDay && state.firstDay < fromDay ? state.firstDay : fromDay;
     await store.setSyncState({ lastSyncTs: nowTs, firstDay, lastError: null });

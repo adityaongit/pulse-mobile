@@ -27,7 +27,7 @@ const { MemoryStore } = await import("@/data/memory");
 const { emptyMetrics } = await import("@/data/types");
 const { permissionState, readAll } = await import("@/health/connect");
 const { IMPORT_VERSION, syncHealthConnect, windowPlan } = await import("./sync");
-const { setSourcePolicy } = await import("./sourcePolicy");
+const { originFilter, setSourcePolicy } = await import("./sourcePolicy");
 const { IMPORT_STATE_KEY } = await import("./importState");
 
 const TZ = "UTC";
@@ -132,8 +132,9 @@ describe("syncHealthConnect re-import", () => {
     // The phone's spread steps are not stored either: only the band's five minutes that day.
     expect((await store.readSteps(sec("2026-10-06T00:00:00Z"), sec("2026-10-07T00:00:00Z"))).map((s) => s.v)).toEqual([120, 120, 120, 120, 120]);
     expect(JSON.parse(storage.get(IMPORT_STATE_KEY)!)).toEqual({ version: IMPORT_VERSION, policy: "fitbit_only" });
-    // Health Connect was asked for the Fitbit app's records only.
-    expect(hc.readAll.mock.calls.every((c) => JSON.stringify(c[3]) === JSON.stringify([FITBIT]))).toBe(true);
+    // Health Connect was asked for the Fitbit app's records only, workouts and scale readings aside.
+    expect(hc.readAll.mock.calls.every((c) => JSON.stringify(c[2]?.origins) === JSON.stringify(originFilter("fitbit_only", c[0])))).toBe(true);
+    expect(hc.readAll.mock.calls.some((c) => JSON.stringify(c[2]?.origins) === JSON.stringify([FITBIT]))).toBe(true);
   });
 
   it("re-imports once: the next sync is incremental again", async () => {

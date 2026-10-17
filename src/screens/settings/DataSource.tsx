@@ -7,7 +7,7 @@ import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { AppState, Pressable, Share, View } from "react-native";
 import Animated, { cancelAnimation, Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from "react-native-reanimated";
 import { Check, ChevronDown, Minus, RefreshCw, TriangleAlert } from "lucide-react-native";
-import { askPermissions, openHealthConnectSettings, permissionState, READ_TYPES, type PermissionState, type ReadType } from "@/health/connect";
+import { askPermissions, openHealthConnectSettings, permissionState, READ_TYPES, skippedTypes, type PermissionState, type ReadType } from "@/health/connect";
 import { runDataCheck } from "@/health/dataCheck";
 import { getSourcePolicy, setSourcePolicy, SOURCE_POLICIES, SOURCE_POLICY_LABELS, type SourcePolicy } from "@/health/sourcePolicy";
 import { ago } from "@/lib/format";
@@ -201,6 +201,7 @@ export function DataSource({ now }: { now: number }) {
   const error = useApp((s) => s.error ?? s.sync.lastError);
   const availability = useApp((s) => s.availability);
   const warnings = useApp((s) => s.warnings);
+  const skipped = skippedTypes(warnings);
   const hc = source === "health_connect";
   const sample = source === "demo";
   const syncing = status === "syncing";
@@ -264,6 +265,12 @@ export function DataSource({ now }: { now: number }) {
         <Callout
           title="Nothing from your Fitbit yet"
           body="With “Fitbit only”, Pulse found no records from the Google Health app that weren’t measured by the phone. Either Google Health isn’t sharing with Health Connect yet, or it labels its records as the phone’s. “Fitbit first” uses the phone’s data on days the Fitbit has none."
+        />
+      )}
+      {hc && !syncing && skipped.length > 0 && (
+        <Callout
+          title="Some records couldn’t be read"
+          body={`Health Connect refused a few ${skipped.map((t) => TYPE_LABEL[t].toLowerCase()).join(", ")} records because the app that wrote them saved times that don’t add up, such as an end before the start. Pulse left those out and imported the rest. Fixing or deleting them in that app brings them in on the next sync.`}
         />
       )}
       {needsPermissions && (

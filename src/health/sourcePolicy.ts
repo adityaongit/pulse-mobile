@@ -11,6 +11,9 @@
 //   • Entries typed in (recordingMethod MANUAL_ENTRY), and the log-like types (weight, body fat, water, food, glucose,
 //     temperature, cycle) are never dropped for their device: logging a weigh-in or a glass of water on the phone is
 //     still the Fitbit app's record.
+//   • Some types are not a quantity several sources measure at once, so other apps' records join the Fitbit's under
+//     "Fitbit only" and "Fitbit first" too (OTHER_APPS): another app's workout (a Hevy lifting session) unless it
+//     overlaps one the Fitbit recorded, and a smart scale's weight and body fat readings.
 // Pulse's own logs (the Journal) never come from Health Connect and are unaffected.
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import type { DeviceType as LibDeviceType, RecordingMethod as LibRecordingMethod } from "react-native-health-connect";
@@ -65,8 +68,8 @@ export const DEFAULT_SOURCE_POLICY: SourcePolicy = "fitbit_only";
 
 /** What a settings screen shows for each choice. */
 export const SOURCE_POLICY_LABELS: Record<SourcePolicy, { label: string; detail: string }> = {
-  fitbit_only: { label: "Fitbit only", detail: "Only what your Fitbit device measured, through the Google Health app. Phone step counts and other apps are left out." },
-  fitbit_first: { label: "Fitbit first", detail: "Your Fitbit device's data; on a day it has none of a kind, what your phone or other apps recorded." },
+  fitbit_only: { label: "Fitbit only", detail: "What your Fitbit device measured, through the Google Health app, plus other apps' workouts at other times and smart scale readings. Phone step counts and other apps' measurements are left out." },
+  fitbit_first: { label: "Fitbit first", detail: "Your Fitbit device's data; on a day it has none of a kind, what your phone or other apps recorded. Other apps' workouts at other times and smart scale readings are kept too." },
   all: { label: "All apps", detail: "Everything in Health Connect. Where apps overlap, Pulse takes the largest source rather than adding them up." },
 };
 
@@ -90,8 +93,21 @@ export async function setSourcePolicy(policy: SourcePolicy): Promise<void> {
   if (policy !== before) await forgetChanges();
 }
 
-/** Origins to pass to Health Connect's dataOriginFilter (cheaper than filtering after the read), or none. */
-export const originFilter = (policy: SourcePolicy): string[] | undefined => (policy === "fitbit_only" ? [...FITBIT_PACKAGES] : undefined);
+/**
+ * How other apps' records of a type join the Fitbit's under the Fitbit policies. Types not listed are measurements
+ * several sources take at once (steps, heart rate), which those policies keep from the Fitbit.
+ */
+const OTHER_APPS: Partial<Record<ReadType, "unless_overlapping" | "always">> = {
+  // A workout is an event: another app's is one the Fitbit missed, unless it overlaps one the Fitbit recorded.
+  ExerciseSession: "unless_overlapping",
+  // Scale readings: the import takes the day's latest, so a smart scale's app adds readings without counting twice.
+  Weight: "always",
+  BodyFat: "always",
+};
+
+/** Origins to pass to Health Connect's dataOriginFilter for `type` (cheaper than filtering after the read), or none. */
+export const originFilter = (policy: SourcePolicy, type: ReadType): string[] | undefined =>
+  policy === "fitbit_only" && !OTHER_APPS[type] ? [...FITBIT_PACKAGES] : undefined;
 
 type Classified = {
   metadata?: { dataOrigin?: string; device?: { type?: number } | null; recordingMethod?: number };
@@ -136,7 +152,8 @@ function dayOf(type: ReadType, r: Classified, tz: string): string | null {
 /**
  * The records of one type the policy keeps. "fitbit_only": Fitbit records alone. "fitbit_first": per local day, the
  * Fitbit records when that day has any of this type, else all of that day's. "all": everything (the importer then
- * takes the largest source for measured totals).
+ * takes the largest source for measured totals). Under either Fitbit policy, the types in OTHER_APPS keep other apps'
+ * records too: all of them, or (workouts) those that overlap none of the Fitbit's.
  */
 export function applySourcePolicy<T extends Classified>(type: ReadType, records: T[], policy: SourcePolicy, tz: string): T[] {
   return finish(applySourcePolicySteps(type, records, policy, tz));
@@ -145,6 +162,8 @@ export function applySourcePolicy<T extends Classified>(type: ReadType, records:
 /** applySourcePolicy, pausing as it goes (src/lib/yield.ts): "fitbit_first" reads a local day per record, an Intl call each. */
 export function* applySourcePolicySteps<T extends Classified>(type: ReadType, records: T[], policy: SourcePolicy, tz: string): Steps<T[]> {
   if (policy === "all") return records;
+  if (OTHER_APPS[type] === "always") return records;
+  if (OTHER_APPS[type] === "unless_overlapping") return yield* fitbitEventsFirst(type, records);
   if (policy === "fitbit_only") return records.filter((r) => isFitbit(type, r));
   const fitbitDays = new Set<string | null>();
   let n = 0;
@@ -156,6 +175,22 @@ export function* applySourcePolicySteps<T extends Classified>(type: ReadType, re
   for (const r of records) {
     if (++n % PAUSE_EVERY === 0) yield;
     if (isFitbit(type, r) || !fitbitDays.has(dayOf(type, r, tz))) out.push(r);
+  }
+  return out;
+}
+
+/** The record's [start, end) in milliseconds; a record without times spans nothing. */
+const spanOf = (r: Classified): [number, number] => [Date.parse(r.startTime ?? ""), Date.parse(r.endTime ?? "")];
+
+/** The Fitbit's events, and each other one that overlaps none of them. */
+function* fitbitEventsFirst<T extends Classified>(type: ReadType, records: T[]): Steps<T[]> {
+  const fitbit = records.filter((r) => isFitbit(type, r)).map(spanOf);
+  const out: T[] = [];
+  let n = 0;
+  for (const r of records) {
+    if (++n % PAUSE_EVERY === 0) yield;
+    const [start, end] = spanOf(r);
+    if (isFitbit(type, r) || !fitbit.some(([a, b]) => a < end && start < b)) out.push(r);
   }
   return out;
 }

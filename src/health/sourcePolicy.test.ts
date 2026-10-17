@@ -66,6 +66,13 @@ describe("applySourcePolicy", () => {
     expect(ids(applySourcePolicy("Weight", [rec("scale", "com.other.scale", 3, "2026-10-06T07:00:00Z")], "fitbit_first", "UTC"))).toEqual(["scale"]);
   });
 
+  it("keeps a smart scale's readings under both Fitbit policies, beside the Fitbit app's", () => {
+    const readings = [rec("logged", FITBIT, PHONE, "2026-10-06T07:00:00Z"), rec("renpho", "com.renpho.health", 3, "2026-10-06T08:00:00Z")];
+    for (const policy of ["fitbit_only", "fitbit_first"] as const) for (const type of ["Weight", "BodyFat"] as const) {
+      expect(ids(applySourcePolicy(type, readings, policy, "UTC"))).toEqual(["logged", "renpho"]);
+    }
+  });
+
   it("fitbit_first puts a sleep session on its wake day", () => {
     const night = { ...rec("band-night", FITBIT, BAND, "2026-10-05T23:00:00Z"), endTime: "2026-10-06T07:00:00Z" };
     const phoneNight = { ...rec("phone-night", "com.sleep.app", PHONE, "2026-10-05T22:30:00Z"), endTime: "2026-10-06T06:30:00Z" };
@@ -77,10 +84,21 @@ describe("applySourcePolicy", () => {
     expect(applySourcePolicy("Steps", records, "all", "UTC")).toBe(records);
   });
 
-  it("asks Health Connect for the Fitbit app's records only under fitbit_only", () => {
-    expect(originFilter("fitbit_only")).toEqual([FITBIT]);
-    expect(originFilter("fitbit_first")).toBeUndefined();
-    expect(originFilter("all")).toBeUndefined();
+  it("keeps another app's workout under the Fitbit policies unless it overlaps one the Fitbit recorded", () => {
+    const run = rec("band-run", FITBIT, BAND, "2026-10-06T07:00:00Z");
+    const stravaRun = { ...rec("strava-run", "com.strava", null, "2026-10-06T07:00:00Z"), endTime: "2026-10-06T07:30:00Z" };
+    const lifting = rec("hevy-lift", "com.hevy", null, "2026-10-06T18:00:00Z");
+    for (const policy of ["fitbit_only", "fitbit_first"] as const) {
+      expect(ids(applySourcePolicy("ExerciseSession", [run, stravaRun, lifting], policy, "UTC"))).toEqual(["band-run", "hevy-lift"]);
+    }
+  });
+
+  it("asks Health Connect for the Fitbit app's records only under fitbit_only, and every app's workouts", () => {
+    expect(originFilter("fitbit_only", "Steps")).toEqual([FITBIT]);
+    expect(originFilter("fitbit_only", "ExerciseSession")).toBeUndefined();
+    expect(originFilter("fitbit_only", "BodyFat")).toBeUndefined();
+    expect(originFilter("fitbit_first", "Steps")).toBeUndefined();
+    expect(originFilter("all", "Steps")).toBeUndefined();
   });
 });
 
