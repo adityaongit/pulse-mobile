@@ -337,7 +337,9 @@ export async function getMonitor(day: string, ctx: QueryCtx, preloaded?: Map<str
   const hm = row?.healthMonitor;
   const vitals: Vital[] = VITALS.map((v) => {
     const reading = hm && hm.reason === null ? hm.vitals.find((x) => x.key === v.key) : undefined;
-    const value = row ? v.pick(row) : null;
+    // The value Health Monitor judged, so the number, its chip and the count agree; the day's own reading only where
+    // the monitor had none (no status then).
+    const value = reading?.value ?? (row ? v.pick(row) : null);
     const range = reading?.range ?? null;
     const status = reading?.status ?? "no_data";
     let chip: Vital["chip"] = null;
