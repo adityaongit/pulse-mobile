@@ -17,6 +17,7 @@ Biggest recurring problems: six-month chart crashes, missing imported data, miss
 - **Evidence:** [TopUniversity3469](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/pgwixj2/) reports crashes for any metric; [FixVegetable9071](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/pgyc2oe/) confirms. [yxtsama](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/pgx85gp/) reports some charts; [KrizeeK](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph1v0e8/) names HRV; [BlackLionFilm](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/ph2xfzn/) names RHR.
 - **Version context:** OP initially asked whether this was a PWA issue. The original reporter explicitly confirmed [the same failure on v0.2.0 and v0.3.0](https://www.reddit.com/r/fitbit/comments/1x6m2pc/comment/pgwkbui/). Do not close this as PWA-only.
 - **Status:** No confirmed fix in the thread.
+- **Root cause (found 2026-10-17 on the phone):** Trends' chart wrapped each 6M month's labels in a Skia `<Group>` outside the canvas; React Native cannot render a Skia element there and closed the app. Fixed on `fix/reddit-bugs`.
 
 ### B2. Sync completes poorly or leaves most metrics empty
 

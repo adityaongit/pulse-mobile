@@ -1,7 +1,7 @@
 // The Trend View's chart (web: components/charts/TrendViewChart.tsx, Recharts). One Skia <Canvas> of marks with every
 // piece of text laid over it as React Native <Text>, as the kit's charts are built (src/ui/charts). The numbers (domain,
 // ticks, rows) come from trendViewLayout.ts, once per data set; the plot below only maps them to pixels.
-import { useMemo } from "react";
+import { Fragment, useMemo } from "react";
 import { Group, RoundedRect, DashPathEffect } from "@shopify/react-native-skia";
 import { Path } from "@/ui/charts/path";
 import { DATA_COLORS, deltaTone, partColor, recoveryColor, type GoodDirection } from "@/lib/bands";
@@ -208,14 +208,14 @@ function Plot({ p, m, width, height }: { p: TrendViewChartProps; m: Model; width
       {/* 6M segments: the month's value above its level, the change under it, when the segment is wide enough. */}
       {segs.map((s) =>
         s.x2 - s.x1 < 34 ? null : (
-          <Group key={s.month}>
+          <Fragment key={s.month}>
             <ChartLabel x={s.mid} y={s.cy - 14} w={s.x2 - s.x1} className="text-[13px] font-bold text-foreground">{fmt(s.value)}</ChartLabel>
             {s.change !== null && s.change !== 0 && (
               <ChartLabel x={s.mid} y={s.cy + 14} w={s.x2 - s.x1} className="font-bold" color={SEG_COLOR[s.tone](c)} halo={halo}>
                 {`${s.change > 0 ? "+" : ""}${s.change}%`}
               </ChartLabel>
             )}
-          </Group>
+          </Fragment>
         ),
       )}
     </>

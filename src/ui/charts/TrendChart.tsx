@@ -249,6 +249,9 @@ function Trend({ points, p }: { points: TrendPoint[]; p: TrendChartProps }) {
                     rows.map((r, i) => {
                       if (r.value === null || !r.fill) return null;
                       const last = i === rows.length - 1;
+                      // A dot a day reads up to a month; over 6M and 1Y the dots merge into a band, so the line stands
+                      // alone and only the last day is ringed.
+                      if (!last && range !== "w" && range !== "m") return null;
                       return level && range === "w" ? (
                         <Group key={r.date} opacity={r.fillOpacity}>
                           <Path path={circle(xs[i], y(r.value), 5.5)} color={r.fill} />
