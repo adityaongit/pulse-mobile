@@ -92,7 +92,7 @@ export function FitnessScreen() {
       }
       primary={
         <SectionShell variant="card" title="VO2 max trend">
-          <TrendChart label="VO2 max" data={{ value: vm.trend.points.map((p) => ({ date: p.day, value: p.value })), reason: null, provisional: false }} unit="ml/kg/min" format="decimal1" colorBy="single" direction="up" defaultRange="6m" />
+          <TrendChart label="VO2 max" data={{ value: vm.trend.points.map((p) => ({ date: p.day, value: p.value })), reason: null, provisional: false }} unit="ml/kg/min" format="decimal1" colorBy="single" level direction="up" defaultRange="6m" />
         </SectionShell>
       }
       secondary={[

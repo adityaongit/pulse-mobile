@@ -39,6 +39,8 @@ import { lengthText, STAGE_NAME, type Domain, type Series } from "./model";
 // Our chart language (src/ui/charts): the dashed grid, muted axis text, the chart cursor, card-coloured rings, a popover
 // readout; workouts in Strain's blue and the night in Sleep's, as SpanFills draws them.
 const LINE = { width: 2.5, thin: 2 } as const;
+/** A day's dot on a daily line: the line's colour in a card-coloured ring, as TrendChart rings its last day. */
+const DOT = { ring: 5, fill: 3.5 } as const;
 const inkOf = (c: Palette) => ({
   grid: c["chart-grid"],
   axis: c["muted-foreground"],
@@ -354,6 +356,32 @@ export function ExplorerChart(p: ExplorerChartProps) {
     }
     return b.map((x) => x.detach());
   });
+  // A day's own dot on a daily line, from the zoom where a bar metric's days get their own bars: the line alone hides
+  // which way one day moved from the next. Drawn per frame in screen space, so a dot stays round at any zoom.
+  const dotted = p.mode === "daily" && !isBar;
+  const dotW8 = useDerivedValue(() => (dotted ? barsWeight(span.value) : 0));
+  const dots = useDerivedValue(() => {
+    if (dotW8.value <= 0) return empties.slice(0, 2);
+    const s = start.value;
+    const sp = span.value;
+    const l = lo.value;
+    const h = hi.value;
+    const ring = Skia.PathBuilder.Make();
+    const fill = Skia.PathBuilder.Make();
+    const i0 = Math.max(0, Math.floor(s));
+    const i1 = Math.min(xs.length - 1, Math.ceil(s + sp));
+    for (let i = i0; i <= i1; i++) {
+      const v = ys[i];
+      if (v === null || v === undefined) continue;
+      const x = LEFT + ((xs[i] - s) / sp) * plotW;
+      const y = bottom - ((v - l) / (h - l)) * plotH;
+      ring.addCircle(x, y, DOT.ring);
+      fill.addCircle(x, y, DOT.fill);
+    }
+    return [ring.detach(), fill.detach()];
+  });
+  const dotRing = useDerivedValue(() => dots.value[0]);
+  const dotFill = useDerivedValue(() => dots.value[1]);
   const bar0 = useDerivedValue(() => bars.value[0]);
   const bar1 = useDerivedValue(() => bars.value[1]);
   const bar2 = useDerivedValue(() => bars.value[2]);
@@ -818,6 +846,14 @@ export function ExplorerChart(p: ExplorerChartProps) {
                     </Group>
                   )}
                 </Group>
+                {dotted && (
+                  <Group opacity={dotW8}>
+                    <Path path={dotRing} color={k.ring} />
+                    <Path path={dotFill} color={p.lineColor}>
+                      {stops && <LinearGradient start={gStart} end={gEnd} colors={stops.map((s) => s.color)} positions={stops.map((s) => s.offset)} />}
+                    </Path>
+                  </Group>
+                )}
                 {isBar && (
                   <Group opacity={barW8}>
                     <Path path={selBar} color={alpha(fg, 0.05)} />

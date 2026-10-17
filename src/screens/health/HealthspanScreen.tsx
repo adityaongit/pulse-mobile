@@ -109,6 +109,7 @@ export function HealthspanScreen() {
               data={{ value: vm.history.map((p) => ({ date: p.day, value: p.value })), reason: null, provisional: false }}
               format="decimal1"
               colorBy="single"
+              level
               fixedRange="6m"
               reference={{ y: vm.age, label: "Your age" }}
             />

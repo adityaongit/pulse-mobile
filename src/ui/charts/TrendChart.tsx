@@ -58,8 +58,12 @@ export type TrendChartProps = {
   headline?: "average" | "day";
   /** Draws a line of the trailing `smooth`-day average over the bars or dots (weight's 7-day average). */
   smooth?: number;
-  /** Lines at every range; otherwise W/M use bars. */
-  line?: boolean;
+  /**
+   * The value is a level (resting heart rate, HRV, weight), not an amount counted up from zero (steps, minutes, grams):
+   * a line on the data's own range at every length, a dot per day. Bars from zero would leave its daily changes a few
+   * pixels at the top of tall bars. Amounts and fixed-scale scores keep bars at W and M.
+   */
+  level?: boolean;
 };
 
 const RANGE_ARIA: Record<TrendRange, string> = { w: "1 week", m: "1 month", "6m": "6 months", "1y": "1 year" };
@@ -115,7 +119,8 @@ function Trend({ points, p }: { points: TrendPoint[]; p: TrendChartProps }) {
   const delta = p.deltas?.[range] ?? null;
   const tone = delta === null || !p.direction || delta === 0 ? null : deltaTone(p.direction, delta, 0).tone;
   const byDay = p.headline === "day";
-  const line = !!p.line || range === "6m" || range === "1y";
+  const level = !!p.level;
+  const line = level || range === "6m" || range === "1y";
   const bands = bandsFor(p.colorBy);
   const lo = values.length ? Math.min(...values) : 0;
   const hi = values.length ? Math.max(...values) : 0;
@@ -139,7 +144,7 @@ function Trend({ points, p }: { points: TrendPoint[]; p: TrendChartProps }) {
     : `No ${p.label} data in the last ${RANGE_WORD[range]}.`;
 
   const geometry = (width: number, height: number) => {
-            const margin = { top: range === "w" ? 18 : 8, right: p.line && range === "w" ? Math.max(gutter, 14) : gutter, left: 4 };
+            const margin = { top: range === "w" ? 18 : 8, right: level && range === "w" ? Math.max(gutter, 14) : gutter, left: 4 };
             const x0 = margin.left + axisWidth;
             const x1 = width - margin.right;
             const y0 = margin.top;
@@ -148,7 +153,7 @@ function Trend({ points, p }: { points: TrendPoint[]; p: TrendChartProps }) {
             // Y domain, as Recharts picks it: fixed for bands and stress, the data's own for a free-floating line, else zero to a round top.
             const extra = [p.baseline && p.baseline.mean + p.baseline.sd, p.baseline && p.baseline.mean - p.baseline.sd, p.reference?.y, p.target?.[0], p.target?.[1]].filter((v): v is number => v != null);
             const all = [...values, ...extra];
-            const auto = line && (p.colorBy === "single" || p.line);
+            const auto = line && p.colorBy === "single";
             const ticksAuto = auto ? evenTicks(Math.min(...all), Math.max(...all), 3) : evenTicks(0, Math.max(...all, 1), 3);
             const domain: [number, number] = p.colorBy === "band" ? [0, 100] : p.colorBy === "stress" ? [0, 100] : [ticksAuto[0], ticksAuto.at(-1)!];
             const yTicks = line ? (p.colorBy === "band" ? [0, 50, 100] : p.colorBy === "stress" ? [0, 50, 100] : ticksAuto) : (bandTicks ?? ticksAuto);
@@ -172,8 +177,8 @@ function Trend({ points, p }: { points: TrendPoint[]; p: TrendChartProps }) {
                 : preserveStartEnd(candidates.map((i) => ({ x: xs[i], size: tickTextWidth(rows[i].date) })), 0, width, 8).map((k) => ({ index: candidates[k.index], x: k.x }));
             const tickFormat = (d: string) => formatDay(d, range === "w" ? { weekday: "narrow" } : range === "m" ? DAY.monthDay : { month: "short" });
 
-            const lineDraw = line ? linePath(rows.map((r, i) => ({ x: xs[i], y: r.value === null ? null : y(r.value) })), p.line ? "linear" : "monotone") : "";
-            const areaDraw = line ? areaPath(rows.map((r, i) => ({ x: xs[i], y: r.value === null ? null : y(r.value) })), y1, p.line ? "linear" : "monotone") : "";
+            const lineDraw = line ? linePath(rows.map((r, i) => ({ x: xs[i], y: r.value === null ? null : y(r.value) })), level ? "linear" : "monotone") : "";
+            const areaDraw = line ? areaPath(rows.map((r, i) => ({ x: xs[i], y: r.value === null ? null : y(r.value) })), y1, level ? "linear" : "monotone") : "";
             const lineColor = bands ? bandPaint(hi, lo, bands, y, css) : { color: c["foreground-secondary"] };
             const smoothDraw = p.smooth ? linePath(rows.flatMap((r, i) => (r.smooth === null ? [] : [{ x: xs[i], y: y(r.smooth) }])), "monotone") : "";
             const avgColor = css(colorFor(p.colorBy, avg ?? 0));
@@ -244,7 +249,7 @@ function Trend({ points, p }: { points: TrendPoint[]; p: TrendChartProps }) {
                     rows.map((r, i) => {
                       if (r.value === null || !r.fill) return null;
                       const last = i === rows.length - 1;
-                      return p.line && range === "w" ? (
+                      return level && range === "w" ? (
                         <Group key={r.date} opacity={r.fillOpacity}>
                           <Path path={circle(xs[i], y(r.value), 5.5)} color={r.fill} />
                           <Path path={circle(xs[i], y(r.value), 3.5)} color={c.card} />
@@ -326,7 +331,7 @@ function Trend({ points, p }: { points: TrendPoint[]; p: TrendChartProps }) {
                 {showAvg && <Pill x={x1 + 4} y={y(avg!)} text="Avg" />}
                 {/* Value labels over the bars (W) and over a labelled line's dots. */}
                 {range === "w" && !p.stack && !line && rows.map((r, i) => (r.value === null ? null : <ChartLabel key={r.date} x={xs[i]} y={y(r.value) - 11} className="text-[11px] text-foreground">{r.text}</ChartLabel>))}
-                {range === "w" && p.line && rows.map((r, i) => (r.value === null ? null : <ChartLabel key={r.date} x={xs[i]} y={y(r.value) - 18} className="font-semibold text-foreground-secondary">{`${r.text}${p.unit === "%" ? "%" : ""}`}</ChartLabel>))}
+                {range === "w" && level && rows.map((r, i) => (r.value === null ? null : <ChartLabel key={r.date} x={xs[i]} y={y(r.value) - 18} className="font-semibold text-foreground-secondary">{`${r.text}${p.unit === "%" ? "%" : ""}`}</ChartLabel>))}
                 {range === "w" && p.stack && rows.map((r, i) => (r.value === null ? null : <ChartLabel key={r.date} x={xs[i]} y={y(r.value) - 11} className="text-[11px] text-foreground">{formatValue(p.format, r.value)}</ChartLabel>))}
                 <ScrubLayer width={width} height={height} onScrub={setX} />
                 <ScrubTick index={ai} />

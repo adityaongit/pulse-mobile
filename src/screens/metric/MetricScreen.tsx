@@ -6,7 +6,7 @@ import { useLocalSearchParams } from "expo-router";
 import { DATA_COLORS, deltaTone } from "@/lib/bands";
 import { DAY, formatDay, formatValue } from "@/lib/format";
 import { parseRange, RANGES, type TrendRange } from "@/lib/url";
-import { getMetricDetail, isDetailKey, type DetailKey, type MetricDetailVM } from "@/queries/metric";
+import { getMetricDetail, isDetailKey, isLevelMetric, type DetailKey, type MetricDetailVM } from "@/queries/metric";
 import { Divided, LoadError, RangedTrendChart } from "@/screens/trends/parts";
 import { useScreen } from "@/screens/useScreen";
 import { CAPTION, LABEL, mapMetric } from "@/screens/_lib/view";
@@ -100,6 +100,7 @@ export default function MetricScreen() {
                 unit={vm.unit}
                 format={vm.format}
                 colorBy="single"
+                level={isLevelMetric(vm.key)}
                 direction={vm.direction}
                 data={shaped.data}
                 deltas={shaped.deltas}

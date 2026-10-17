@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { parseRange, RANGES, type TrendRange } from "@/lib/url";
+import { isLevelMetric } from "@/queries/metric";
 import { getTrends, parseTrendMetric, type TrendMetric, type TrendsVM } from "@/queries/trends";
 import { useScreen } from "@/screens/useScreen";
 import { mapMetric } from "@/screens/_lib/view";
@@ -45,7 +46,7 @@ export default function TrendsScreen() {
           <MetricPicker current={m.key} r={r} />
           <View className="gap-3">
             <SectionShell variant="card" title={m.label} aside={<ActionLink label="Explore" href={chartHref({ metric: m.key, r: range as ChartRange })} />} action={{ label: "Details", href: m.href }}>
-              <RangedTrendChart key={m.key} range={range} label={m.label} unit={m.unit} format={m.format} colorBy={m.colorBy} direction={m.direction} data={shaped.data} deltas={shaped.deltas} />
+              <RangedTrendChart key={m.key} range={range} label={m.label} unit={m.unit} format={m.format} colorBy={m.colorBy} level={isLevelMetric(m.key)} direction={m.direction} data={shaped.data} deltas={shaped.deltas} />
             </SectionShell>
             <SectionShell variant="card" title="Averages">
               <Divided>

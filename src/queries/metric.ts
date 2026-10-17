@@ -82,7 +82,7 @@ const CONFIG: Record<DetailKey, Config> = {
     about: "Everything you burned: your resting burn plus movement. Resting is the total minus active calories, since the source sends no separate resting roll-up.",
   },
   hrv: { group: "vitals", baseline: true, sections: ["outliers"], about: "Variation in time between heartbeats during sleep, measured in milliseconds. Compare it with your own usual range." },
-  rhr: { group: "vitals", baseline: true, sections: ["outliers"], about: "Your resting heart rate from Health Connect, or the sleeping heart rate from your main sleep session when the daily value is missing." },
+  rhr: { group: "vitals", baseline: true, sections: ["outliers"], about: "Your resting heart rate as Fitbit reports it to Health Connect, or Pulse's estimate from your night's sleep when Fitbit has none for the day. Recovery and Health Monitor score this same number." },
   resp: { group: "vitals", baseline: true, sections: ["outliers"], about: "Breaths per minute during sleep, measured by your band." },
   spo2: { group: "vitals", baseline: true, sections: ["outliers"], about: "Estimated blood oxygen saturation during sleep, measured by your band." },
   skin: { group: "vitals", baseline: true, sections: ["outliers"], reference: { y: 0, label: "Baseline" }, about: "Nightly skin temperature above or below your personal baseline, in degrees Celsius. This is a temperature difference, not your body temperature." },
@@ -115,6 +115,9 @@ const CONFIG: Record<DetailKey, Config> = {
   core_temp: { group: "vitals", reading: true, baseline: true, sections: ["outliers"], about: "Core body temperature readings from a connected sensor." },
   swim_strokes: { group: "activity", total: true, sections: [], about: "Strokes counted during pool swims." },
 };
+
+/** Vitals and body measurements are levels with no meaningful zero; activity and nutrition are amounts counted from zero. */
+export const isLevelMetric = (k: string) => isDetailKey(k) && (CONFIG[k].group === "vitals" || CONFIG[k].group === "body");
 
 /** Where the number comes from, by group. */
 const SOURCE: Record<Group, string> = {
