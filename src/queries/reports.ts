@@ -190,9 +190,9 @@ function assessmentDays(rows: Map<string, DayRow>, exs: Parameters<typeof planDa
       recovery: finite(row.recovery?.value) ? row.recovery.value : null,
       strain: dayStrainOf(row.s1),
       sleepPerf: finite(row.sleep?.performance) ? row.sleep.performance : null,
-      hrv: finite(row.recovery?.inputs.hrv) ? row.recovery.inputs.hrv : null,
+      hrv: row.metrics?.hrvMs ?? null,
       // As the stored report's days take it (src/pipeline/scores.ts recordOutcomes).
-      rhr: finite(row.recovery?.inputs.rhr) ? row.recovery.inputs.rhr : finite(row.metrics?.rhrBpm) ? row.metrics.rhrBpm : null,
+      rhr: row.rhr,
     };
     (row.day >= start ? cur : prev).push(day);
   }

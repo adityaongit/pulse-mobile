@@ -212,7 +212,7 @@ export async function getHrvStatus(day: string, ctx: QueryCtx): Promise<Metric<H
   const h = rows.get(day)?.hrvStatus ?? null;
   if (!h) return fromReason(null, isToday);
   if (h.status === null) return none("calibrating", h.reason === "building" ? Math.max(1, hrvStatusConfig.minBaselineNights - h.baselineNights) : undefined);
-  const nights = [...rows.values()].map((r) => ({ t: ms(Date.parse(`${r.day}T12:00:00Z`) / 1000), v: r.recovery?.inputs.hrv ?? r.metrics?.hrvMs ?? null }));
+  const nights = [...rows.values()].map((r) => ({ t: ms(Date.parse(`${r.day}T12:00:00Z`) / 1000), v: r.metrics?.hrvMs ?? null }));
   const line =
     h.status === "balanced"
       ? "Your 7-day average sits in your usual range."

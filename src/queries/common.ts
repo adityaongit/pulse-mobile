@@ -28,6 +28,7 @@ import type { QueryCtx } from "./ctx";
 import type { ActivityKind, DayPoint, SleepPlanVM, Span, TimelineItem, TimePoint } from "./types";
 import { metricsWithLoggedBody } from "@/data/body";
 import { pulseFoodByDay, withFood } from "./food";
+import { dayRestingHr } from "@/pipeline/restingHr";
 
 export type { QueryCtx } from "./ctx";
 
@@ -62,6 +63,8 @@ export type DayRow = {
   /** Mobile: workouts stage 1 detected from elevated HR with none recorded (autoWorkout.ts); shown, never scored. */
   detected: DetectedActivity[];
   sessionRhr: number | null;
+  /** The day's resting HR (dayRestingHr), the one Recovery and Health Monitor score and every screen shows. */
+  rhr: number | null;
   recovery: RecoveryRow | null;
   sleep: SleepRow | null;
   trainingLoad: TrainingLoadRow | null;
@@ -115,6 +118,7 @@ export async function loadDays(ctx: QueryCtx, from: string, to: string): Promise
       activities: (r?.activities ?? []).map((a) => engineZonedActivity(a, r?.strain ?? null)),
       detected: r?.detected ?? [],
       sessionRhr: r?.sessionRhrBpm ?? null,
+      rhr: dayRestingHr(metrics.get(d)?.rhrBpm, r?.sessionRhrBpm),
       recovery: r?.recovery ?? null,
       sleep: r?.sleep ?? null,
       trainingLoad: r?.training_load ?? null,

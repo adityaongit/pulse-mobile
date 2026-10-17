@@ -48,7 +48,7 @@ const weekly = (rows: Map<string, DayRow>, pick: (r: DayRow) => number | null | 
 
 function statSpecs(row: DayRow | undefined, isToday: boolean, rows: Map<string, DayRow>, strength: Map<string, number>): Record<DashboardKey, StatSpec> {
   const m = row?.metrics;
-  const rhr = (r: DayRow) => r.metrics?.rhrBpm ?? r.sessionRhr ?? null;
+  const rhr = (r: DayRow) => r.rhr;
   const skin = (r: DayRow) => r.recovery?.inputs.skinTempDev ?? null;
   const skinReason = m?.nightlyTempC != null ? "calibrating" : vitalReason(row, isToday);
   const dailyReason = !row?.s1 || row.s1.hrCount === 0 ? hrReason(row?.s1 ?? null) : "no_data";

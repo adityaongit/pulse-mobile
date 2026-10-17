@@ -76,8 +76,11 @@ import type { LoadStatus } from "@/core/engine/strain";
  * 27: each workout keeps its zone seconds on the engine's zones (Stage1Activity.engine.zoneS), and the reports' training
  * balance is the engine's Training Load (Fatigue ÷ Fitness and its status).
  * 28: Pulse Age's steps are the day's step count, not Strain's awake steps (which left out walks and runs).
+ * 29: Fitbit's values are the source of truth for every vital: Recovery, its baselines, Health Monitor, HRV Status,
+ * Pulse Age and the reports read Fitbit's nightly HRV and the day's resting HR (dayRestingHr: Fitbit's daily value, else
+ * the sleep-session estimate) instead of the engine's own aggregates of the night's samples.
  */
-export const SCORING_VERSION = 28;
+export const SCORING_VERSION = 29;
 
 export type PipelineOptions = {
   timeZone: string;

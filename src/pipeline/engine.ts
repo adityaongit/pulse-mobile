@@ -35,7 +35,10 @@ import { type Data, touching } from "./data";
 import type { Day, Fold, Inputs, scorePlanner } from "./scores";
 import type { BaselineSummary, CardioLoadRow, EnergyBankRow, HealthMonitorRow, HealthspanRow, PipelineOptions, RecoveryRow, SleepPlannerRow, SleepRow, StrainTargetRow, StressRow } from "./types";
 
-/** Aggregates kept per day for the baselines (oldest first, at most BASELINE_DAYS). */
+/**
+ * Aggregates kept per day for the baselines (oldest first, at most BASELINE_DAYS). `restingHRV` and `restingHR` are the
+ * night's Fitbit HRV and the day's resting HR (dayRestingHr) as single values, as `resp` and `temp` are.
+ */
 type DayAggRow = { restingHRV: Agg | null; averageHRV: Agg | null; restingHR: Agg | null; inactiveHR: Agg | null; resp: Agg | null; temp: Agg | null };
 
 /** The engine's part of the stage-2 fold: plain arrays (the checkpoint clones it), bounded in length. */
@@ -177,11 +180,13 @@ const summary = (b: Agg | null, ok: boolean): BaselineSummary =>
 /** Recovery for day D, on the shape halo's RecoveryRow has. */
 export function scoreEngineRecovery(f: Fold, d: Day, sleep: EngineSleep): RecoveryRow {
   const e = f.engine;
-  const a = d.s1.engine;
   const pool = (k: keyof DayAggRow) => baseline(e.aggs.map((x) => x[k]), POOLING[k]);
   const base = { hrv: pool("restingHRV"), rhr: pool("restingHR"), resp: pool("resp"), temp: pool("temp") };
-  const hrv = a?.restingHRV?.avg ?? null;
-  const rhr = a?.restingHR?.avg ?? null;
+  // Fitbit's values are the source of truth: HRV is the night's Fitbit reading (the import's mean of its records in the
+  // main sleep) and resting HR the day's (dayRestingHr: Fitbit's daily value), not the study's own aggregates of the
+  // night's samples, so Recovery, Health Monitor and every screen judge and show the numbers the Fitbit app shows.
+  const hrv = d.dm?.hrvMs ?? null;
+  const rhr = d.rhr;
   const resp = d.dm?.respBpm ?? null;
   const temp = tempDelta(d);
   const r = recovery({ hrv, hrvBase: base.hrv, rhr, rhrBase: base.rhr, sleepScore: sleep.score, resp, respBase: base.resp, temp, tempBase: base.temp });
@@ -288,9 +293,9 @@ export function foldEngineDay(f: Fold, d: Day, s: EngineSleep, strain: number | 
   const a = d.s1.engine;
   const temp = tempDelta(d);
   push(e.aggs, {
-    restingHRV: a?.restingHRV ?? null,
+    restingHRV: d.dm?.hrvMs == null ? null : { avg: d.dm.hrvMs, sd: 0, count: 1 },
     averageHRV: a?.averageHRV ?? null,
-    restingHR: a?.restingHR ?? null,
+    restingHR: d.rhr == null ? null : { avg: d.rhr, sd: 0, count: 1 },
     inactiveHR: a?.inactiveHR ?? null,
     resp: d.dm?.respBpm == null ? null : { avg: d.dm.respBpm, sd: 0, count: 1 },
     temp: temp == null ? null : { avg: temp, sd: 0, count: 1 },
@@ -624,7 +629,7 @@ function foldPulseAgeDay(f: Fold, d: Day, s: EngineSleep, data: Data) {
         zone13Min: covered && z ? (z[2] + z[3]) / 60 : null,
         zone45Min: covered && z ? (z[4] + z[5]) / 60 : null,
         strengthMin: covered ? strengthMinutes(data, d) : null,
-        restingHr: d.s1.engine?.restingHR?.avg ?? null,
+        restingHr: d.rhr,
       },
       vo2: d.dm?.vo2maxRun ?? d.dm?.vo2maxDaily ?? null,
       vo2Run: d.dm?.vo2maxRun != null,

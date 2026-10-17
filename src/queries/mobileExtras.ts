@@ -24,9 +24,9 @@ const EFFECT: Record<ImpactLabel, BehaviorChip["effect"]> = { positive: "up", ne
 
 /** Each row's value on a day, for its prior 30-day mean (the same inputs the score uses, else the raw nightly value). */
 const PICK: Record<"hrv" | "rhr" | "resp" | "sleep", (r: DayRow) => number | null | undefined> = {
-  hrv: (r) => r.recovery?.inputs.hrv ?? r.metrics?.hrvMs,
-  rhr: (r) => r.recovery?.inputs.rhr ?? r.sessionRhr,
-  resp: (r) => r.recovery?.inputs.resp ?? r.metrics?.respBpm,
+  hrv: (r) => r.metrics?.hrvMs,
+  rhr: (r) => r.rhr,
+  resp: (r) => r.metrics?.respBpm,
   sleep: (r) => (r.recovery?.inputs.sleepPerf != null ? r.recovery.inputs.sleepPerf * 100 : r.sleep?.performance),
 };
 

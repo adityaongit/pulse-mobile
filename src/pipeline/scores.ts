@@ -32,6 +32,7 @@ import { trainingReadiness, type TrainingReadinessInput } from "@/core/algorithm
 import { trainingStatus, trainingStatusConfig } from "@/core/algorithms/trainingStatus";
 import { type Data, round, type Segment, type Session } from "./data";
 import { newEngineFold } from "./engine";
+import { dayRestingHr } from "./restingHr";
 import type {
   FitnessRow,
   HealthMonitorRow,
@@ -119,6 +120,7 @@ export function dayOf(data: Data, inputs: Inputs, day: string, opts: PipelineOpt
     start: data.dayStart(day),
     end: data.dayStart(addDays(day, 1)),
     dm: data.metrics.get(day),
+    rhr: dayRestingHr(data.metrics.get(day)?.rhrBpm, cache.sessionRhr),
     cache,
     s1: cache.s1,
     worn: cache.s1.hrCount > 0,
@@ -568,7 +570,7 @@ export function scoreHealthspan(data: Data, f: Fold, d: Day, sleep: SleepRow, op
     steps: covered ? (dm?.steps ?? null) : null,
     vo2maxRun: dm?.vo2maxRun ?? null,
     vo2maxDaily: dm?.vo2maxDaily ?? null,
-    restingHr: dm?.rhrBpm ?? null,
+    restingHr: d.rhr,
     weightKg: dm?.weightKg ?? null,
     bodyFatPct: dm?.bodyFatPct ?? null,
   };
@@ -621,7 +623,7 @@ export function scoreFitness(f: Fold, d: Day, opts: PipelineOptions): FitnessRow
 // ── Journal outcomes and the reports' day rows ───────────────────────────────
 
 export function recordOutcomes(f: Fold, d: Day, rec: RecoveryRow, sleep: SleepRow, tl: TrainingLoadRow) {
-  const { day, main, s1, dm } = d;
+  const { day, main, s1 } = d;
   f.outcomes.push({ day, recovery: rec.value, hrvZ: rec.hrvZ, sleepPerf: sleep.performance });
   f.reportRows.push({
     day,
@@ -631,7 +633,7 @@ export function recordOutcomes(f: Fold, d: Day, rec: RecoveryRow, sleep: SleepRo
     sleepPerf: sleep.performance,
     sleepHours: main ? (main.asleepMin + d.naps.reduce((a, n) => a + n.asleepMin, 0)) / 60 : null,
     hrv: rec.inputs.hrv,
-    rhr: rec.inputs.rhr ?? dm?.rhrBpm ?? null,
+    rhr: d.rhr,
     acwr: tl.cardio?.ratio ?? null,
     loadStatus: tl.cardio?.status ?? null,
     sleepConsistency: sleep.consistency,

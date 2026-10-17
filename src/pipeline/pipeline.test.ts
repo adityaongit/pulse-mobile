@@ -21,6 +21,7 @@ import {
   type StrainTargetRow,
   type TrainingLoadRow,
 } from "@/pipeline";
+import { dayRestingHr } from "./restingHr";
 import snapshot from "./__parity__/sqlite-scores.json";
 
 const TZ = "Asia/Kolkata";
@@ -151,7 +152,8 @@ describe("parity with the web app", () => {
     // 26: Pulse Age on Sundays and Health Monitor without SpO2. Version 25's value was "cd0c930a0a7e70db".
     // 27: workouts' engine zones and the reports' training balance on Training Load. Version 26's value was "56420b3a0a69eda6".
     // 28: Pulse Age's steps are the day's count. Version 27's value was "bfc30f8718e6d5cb".
-    "daily_scores.scoring_version": "32eeb5d9e23357a3",
+    // Version 29: Fitbit's HRV and resting HR are every vital's source of truth. Version 28's value was "32eeb5d9e23357a3".
+    "daily_scores.scoring_version": "22839852f7ee4661",
     // Version 15: Activity Strain is the session's Banister TRIMP plus its muscular load through 5.05 · ln(1 + 0.09 · T)
     // (a seeded 45-minute strength session goes from 8.2 to 9.9 on 0–21), each activity stores its `cardioTrimp` and
     // `muscularTrimp`, and its zone seconds count Zone 1 from 40 % of the reserve. Version 14's value was "cb2d75373aaf4d20".
@@ -168,7 +170,8 @@ describe("parity with the web app", () => {
     // temperature is out of the score, terms and drivers (still in `inputs`, `baselines` and `stale` for Health Monitor).
     // Scores move 2.1 points on average, 7.4 at most (today's 78.3 → 79.0); over the seed the mean is 59.3 with 15 % red
     // and 41 % green (was 58.6, 14 %, 37 %). Version 16's value was "238d071f788df5f8".
-    "daily_scores.recovery": "b3aa02f4aeed76aa",
+    // Version 29: HRV and resting HR are Fitbit's nightly HRV and the day's resting HR (dayRestingHr), baselines pooled from them. Version 28's value was "b3aa02f4aeed76aa".
+    "daily_scores.recovery": "d3b2d626013150ba",
     // Version 16: Sleep Performance is WHOOP's 2025 four parts (hours against the night's full need, WHOOP-style 4-day
     // consistency, efficiency against 95 %, 100 − Sleep Stress) with restorative sleep left out; rows gain `parts`,
     // `needMin`, `stressPct` and the night's `latencyMin`, `consistency` is the 4-day measure (SRI stays in `sri`), and debt
@@ -184,7 +187,8 @@ describe("parity with the web app", () => {
     // load that is the 28-day mean of it, rows gain `acute` and `chronic`, monotony and CTL/ATL/TSB read the TRIMP too. The
     // ratio is livelier (0.47–1.92 over the seed, was 0.64–1.29; today's 1.02 → 0.99), and on Garmin's 0.8 / 1.5 / 2.0
     // bands 17 days read building fast where none did. Version 17's value was "2f0b3f43cfc8014c".
-    "daily_scores.training_load": "2ef71bc826258214",
+    // Version 29: follows the Recovery and HRV it reads. Version 28's value was "2ef71bc826258214".
+    "daily_scores.training_load": "cb6a9f40c045d6ab",
     // Follows the ACWR above (the target reads the day before's): 2026-09-11 to 09-14 are no longer "lifted" for a
     // ramping-down load. The web's value was "bfcfd859e9c7dd75". Version 15: the target's base is the 28-day mean of the
     // recalibrated Strain (today's range 6.8–8.8 → 9.2–11.4). Version 14's value was "75e4cf7d163079e5".
@@ -194,7 +198,8 @@ describe("parity with the web app", () => {
     // 66.2 → 70.8 green, …), and their ranges follow. Version 16's value was "98e74b2f34c069cd".
     // Version 18: the cap reads Garmin's ratio, from 1.5 (was 1.3), and the lift under 0.8 fires on the livelier ratio:
     // 42 days' ranges move (today's 9.2–11.4 is unchanged). Version 17's value was "58d9671c01a08352".
-    "daily_scores.strain_target": "a2f03bec24de4bfb",
+    // Version 29: follows Recovery. Version 28's value was "a2f03bec24de4bfb".
+    "daily_scores.strain_target": "1c4d8fff1ac51dd9",
     // Version 15: the planner's strain term reads the recalibrated Effort against its 28-day mean (2026-10-01's need 506 →
     // 502 minutes). Version 14's value was "bf57a92ddfecd8e0".
     // Version 16: need = baseline + WHOOP's patented strain sigmoid + half the debt (at most an hour) − naps, in 6.5–11 h,
@@ -214,7 +219,8 @@ describe("parity with the web app", () => {
     // The illness signal's SD is floored at half the baselines' σ floor (src/core/scoring/illness.ts illnessSdFloor),
     // which tempers a few days' scores (the seeded illness's 2026-08-03 scores 51 where it scored 69). The web's
     // value was "3a2163c7f92d4dab".
-    "daily_scores.health_monitor": "47289fc792ec11ef",
+    // Version 29: HRV and resting HR are Fitbit's, the values every screen shows. Version 28's value was "47289fc792ec11ef".
+    "daily_scores.health_monitor": "4d132dadfd15bf77",
     // Mobile rebuilds Pulse Age on WHOOP's Healthspan method (src/core/algorithms/healthspan.ts): 6.0 years per ln HR
     // (WHOOP's 10 × an overlap factor of 0.6) with no 9/n rescaling (a missing term counts 0), WHOOP's references and
     // curves (sleep from 7 h, Arem and Ahmadi zone curves, strength flat after 40 min, lean mass as body fat %), zone time
@@ -238,18 +244,21 @@ describe("parity with the web app", () => {
     // 33.41 → 33.78. Version
     // 17's value was "2fdf2c34ba15be9c". Version 28: Pulse Age's steps are the day's count, not Strain's awake steps.
     // Version 27's value was "a85973629b8558d7".
-    "daily_scores.healthspan": "441bbc0fac119709",
+    // Version 29: its resting HR is the day's (dayRestingHr). Version 28's value was "441bbc0fac119709".
+    "daily_scores.healthspan": "7ed55edf8a4ceebb",
     // Version 19: the VO2 max categories use Garmin's percentile cut-offs, 40 / 60 / 80 / 95 (were 20 / 40 / 60 / 80), so
     // today's 45.3 at the 61st percentile reads Good, not Excellent; percentiles are unchanged. Version 18's value was
     // "cfad8d1954c878ed".
     "daily_scores.fitness": "acc03af566eaa295",
     // New at version 19 (hrvStatus.ts): HRV Status from the 7-night average of ln HRV against the 60 nights before; the
     // seed reads building for its first 27 days, then Balanced on 148 days and Unbalanced on 5.
-    "daily_scores.hrv_status": "9ac04f611f5dad6d",
+    // Version 29: reads Fitbit's nightly HRV. Version 28's value was "9ac04f611f5dad6d".
+    "daily_scores.hrv_status": "027b836ad9f6714d",
     // New at version 19 (scores.ts scoreTraining): each workout's Aerobic Training Effect (walks about 1.5, strength 2.3,
     // easy runs 3.3, tempo runs 4.3, intervals 5.0 on the seed), Recovery Time, Training Readiness at wake and now, and
     // Training Status (productive 58 days, maintaining 77, recovery 26, no status 19).
-    "daily_scores.training": "bd09a22c06111df2",
+    // Version 29: Training Readiness follows Recovery and HRV. Version 28's value was "bd09a22c06111df2".
+    "daily_scores.training": "b366c75557cc378a",
     // Version 16: the curve follows its start level (above). Version 15's value was "237320b091a7a358".
     // Version 17: likewise. Version 16's value was "081d84cb00f2d1a6". Version 18: the curve runs from midnight (the night's
     // recharge included) on the new rates. Version 17's value was "ea5921ebc2c6e657".
@@ -263,7 +272,8 @@ describe("parity with the web app", () => {
     // was "dac817e185f4f75f". Version 17: Recovery averages follow the new Recovery. Version 16's was "1043e130fde0738d".
     // Version 18: the training balance is the period's last Garmin ratio, banded at 0.8 / 1.5 / 2.0. Version 17's was
     // "60efbad5a80cb17c".
-    reports: "1d3f0b8d953960c6",
+    // Version 29: HRV, resting HR and Recovery averages follow Fitbit's vitals. Version 28's value was "1d3f0b8d953960c6".
+    reports: "f8047bb194a9f3e4",
   };
   const canon = (v: unknown): unknown =>
     typeof v === "number"
@@ -422,8 +432,8 @@ describe("numbers checked by hand", () => {
     }
     const d = dayAt(120);
     const m = metrics.get(d)!;
-    // Version 20: Recovery's resting HR is last night's mean heart rate in sleep (the engine's aggregate), not the daily one.
-    expect(col(d, "recovery").inputs.rhr).toBe(Math.round(col(d, "strain").engine!.restingHR!.avg * 10) / 10);
+    // Version 29: Recovery's resting HR is the day's (dayRestingHr), Fitbit's daily value, the one every screen shows.
+    expect(col(d, "recovery").inputs.rhr).toBe(m.rhrBpm);
     expect(col(d, "strain")).toMatchObject({ restingHr: m.rhrBpm, restingHrSource: "daily" });
     // Skin temperature: nightly − Health Connect's baseline (fix 10). Health Monitor (version 24): each vital's normal band
     // is ±1 SD of the last 30 nights, this one included, and the status follows it.
@@ -436,6 +446,20 @@ describe("numbers checked by hand", () => {
       const inside = v.value >= v.range.low - 0.01 && v.value <= v.range.high + 0.01;
       if (v.status === "in_range") expect(inside, v.key).toBe(true);
       else expect(v.status === "low" ? v.value < v.range.low + 0.01 : v.value > v.range.high - 0.01, v.key).toBe(true);
+    }
+  });
+
+  it("Recovery and Health Monitor judge Fitbit's HRV and resting HR on every day, the values the screens show", async () => {
+    const metrics = new Map((await store.allMetrics()).map((m) => [m.day, m]));
+    for (const d of allDays) {
+      const m = metrics.get(d);
+      const rhr = dayRestingHr(m?.rhrBpm, rows.get(d)?.sessionRhrBpm);
+      const rec = rows.get(d)?.recovery;
+      if (rec) expect(rec.inputs, d).toMatchObject({ hrv: m?.hrvMs ?? null, rhr });
+      const hm = rows.get(d)?.health_monitor;
+      if (!hm || hm.reason !== null) continue;
+      expect(hm.vitals.find((v) => v.key === "hrv")?.value ?? null, d).toBe(m?.hrvMs ?? null);
+      expect(hm.vitals.find((v) => v.key === "restingHr")?.value ?? null, d).toBe(rhr);
     }
   });
 

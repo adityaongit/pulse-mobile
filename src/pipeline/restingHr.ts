@@ -76,6 +76,14 @@ export function estimateRestingHr(
   return bpm >= restingHRCfg.minVal && bpm <= restingHRCfg.maxVal ? bpm : null;
 }
 
+/**
+ * The day's own resting heart rate, the one every score and screen uses: Fitbit's daily value from Health Connect (Fitbit
+ * reads it from still periods, sleep included), else Pulse's estimate from the night's sleep session (the lowest steady
+ * 5 minutes). The carried and estimated steps of the chain below only place a day's zones; they are never shown as the
+ * day's value.
+ */
+export const dayRestingHr = (daily: number | null | undefined, session: number | null | undefined): number | null => daily ?? session ?? null;
+
 /** The day's resting HR and where it came from (see the file comment for the chain). */
 export function resolveRestingHr(
   daily: number | null,

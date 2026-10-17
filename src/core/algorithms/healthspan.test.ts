@@ -392,6 +392,7 @@ describe("scoreHealthspan's coverage gate", () => {
     return {
       day,
       dm: { steps: full ? 5000 : 500, rhrBpm: 70, vo2maxRun: null, vo2maxDaily: null, weightKg: null, bodyFatPct: null },
+      rhr: 70,
       main: null,
       worn: true,
       s1: { hrMinutesAm: full ? 600 : 300, hrMinutesPm: full ? 600 : 60, boutZoneSeconds: [1800, 0] as [number, number] },

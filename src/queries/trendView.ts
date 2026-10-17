@@ -117,7 +117,7 @@ export const TREND_VIEW = {
   },
   rhr: {
     group: "recovery", label: "Resting Heart Rate", short: "RHR", unit: "bpm", format: "int", direction: "down", colorBy: "single", chart: "line", agg: "daily",
-    pick: (r) => r.metrics?.rhrBpm ?? r.sessionRhr, typical: true,
+    pick: (r) => r.rhr, typical: true,
     about: { title: "What is Resting Heart Rate?", body: [
       "Resting heart rate (RHR) is how many times your heart beats per minute while you are fully at rest, measured during sleep.",
       "A lower RHR generally reflects better fitness and recovery. A rise of a few beats above your typical range can point to fatigue, stress, heat, alcohol or the start of an illness.",
