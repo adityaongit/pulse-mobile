@@ -830,3 +830,13 @@ for whether the coach can answer (a key, or for a server its URL), used by the c
 A server on a home network or over Tailscale is usually plain `http://`, which Android blocks from API 28 unless the
 app allows cleartext: `expo-build-properties` sets `usesCleartextTraffic`. Every built-in provider is HTTPS, so the
 only plain-HTTP traffic is to an address the person typed. Tested end to end with a mock server over `adb reverse`.
+
+## Updates without a store
+
+Sideloaded APKs get no store updates, so Pulse checks GitHub Releases itself (docs/releases.md). The download is
+`expo-file-system`'s `File.createDownloadTask` into the cache, and the hand-off is `expo-intent-launcher` opening
+`android.intent.action.VIEW` on the file's `contentUri` (expo-file-system's FileProvider) with the APK MIME type and
+`FLAG_GRANT_READ_URI_PERMISSION`, which needs `REQUEST_INSTALL_PACKAGES` in the manifest. Android always asks the
+person to confirm; an app cannot replace itself silently. `expo-device`'s `supportedCpuArchitectures` (Build.SUPPORTED_ABIS,
+preferred first) picks the APK. Over-the-air JS updates (`expo-updates`) were set aside: they send an install ID to
+Expo's servers on every launch, and code would arrive outside the signed APK.
