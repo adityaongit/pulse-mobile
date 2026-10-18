@@ -51,7 +51,7 @@ Settings › App › Updates turns it off and has Check now. When the release is
 an APK for the phone's CPU (`src/lib/release.ts` reads the assets this page's script uploads), every tab root shows an
 Update available card. Update downloads that APK into the app's cache and opens Android's installer on it; the person
 confirms there, and the first time Android asks them to let Pulse install apps (`REQUEST_INSTALL_PACKAGES`). Later
-hides the card until a newer version is out.
+hides the card until the app is next started; there is no skipping a version.
 
 So a release needs nothing more than the steps above: the tag `v<version>` and the assets `pulse-mobile-<version>-<abi>.apk`.
 An update installs over the old app only when it is signed with the same key, so every release is built with the same
