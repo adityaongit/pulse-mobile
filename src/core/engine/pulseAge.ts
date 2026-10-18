@@ -27,7 +27,8 @@ export type PulseAgeDay = {
 type Row = [number, number, number, number];
 /** [lower, upper) age rows: male, female. */
 const RHR_REF: Row[] = [
-  [0, 26, 61, 65],
+  [0, 20, 64, 66],
+  [20, 26, 61, 65],
   [26, 36, 61, 64],
   [36, 46, 62, 64],
   [46, 56, 63, 65],

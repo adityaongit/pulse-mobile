@@ -569,6 +569,7 @@ export function scoreHealthspan(data: Data, f: Fold, d: Day, sleep: SleepRow, op
     vo2maxRun: dm?.vo2maxRun ?? null,
     vo2maxDaily: dm?.vo2maxDaily ?? null,
     restingHr: dm?.rhrBpm ?? null,
+    hrv: dm?.hrvMs ?? rec?.inputs?.hrv ?? null,
     weightKg: dm?.weightKg ?? null,
     bodyFatPct: dm?.bodyFatPct ?? null,
   };

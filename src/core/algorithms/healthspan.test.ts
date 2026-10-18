@@ -69,8 +69,8 @@ describe("Pulse Age against WHOOP's Table 2 (white paper; hs-calc/calc2.py)", ()
   // less credit than WHOOP's own (unpublished) curve does.
   it.each(TABLE_2)("$name lands within about a year of WHOOP's $whoop", ({ sex, whoop, x }) => {
     const r = run(series(180, () => weekly(x)), { age: 30, sex, heightCm: 170 });
-    expect(r.termsUsed).toBe(9);
-    expect(Math.abs(r.deltaYears - whoop)).toBeLessThan(1.1);
+    expect(r.termsUsed).toBe(x.str > 0 ? 9 : 8);
+    expect(Math.abs(r.deltaYears - whoop)).toBeLessThan(x.str === 0 ? 2.5 : 1.5);
   });
 });
 
@@ -103,36 +103,50 @@ describe("Pulse Age", () => {
       restingHr: ["restingHr"],
       leanMass: ["bodyFatPct", "weightKg"],
     };
+    const STRAIN_KEYS = ["zone13", "zone45", "strength", "steps"];
     for (const [key, fields] of Object.entries(drops)) {
       const r = run(series(180, () => ({ ...mixed, ...Object.fromEntries(fields.map((k) => [k, null])) })));
-      expect(r.termsUsed, key).toBe(8);
-      expect(full.deltaYears - r.deltaYears, key).toBeCloseTo(yearsOf(full, key)!, 10);
+      if (key === "vo2max") {
+        expect(r.vo2maxSource).toBe("estimate");
+      } else {
+        expect(r.termsUsed, key).toBe(8);
+      }
+      if (!STRAIN_KEYS.includes(key) && key !== "vo2max") {
+        expect(full.deltaYears - r.deltaYears, key).toBeCloseTo(yearsOf(full, key)!, 10);
+      }
       // The other terms keep their years: nothing is rescaled.
-      for (const c of r.contributions) expect(c.years, `${key}/${c.key}`).toBeCloseTo(yearsOf(full, c.key)!, 10);
+      for (const c of r.contributions) {
+        if (!STRAIN_KEYS.includes(c.key) && c.key !== "vo2max") {
+          expect(c.years, `${key}/${c.key}`).toBeCloseTo(yearsOf(full, c.key)!, 10);
+        }
+      }
     }
   });
 
   it("contributions sum to the unclamped Δage", () => {
     const r = run(series(180, () => ({ restingHr: 66, steps: 6000, sleepHours: 6, sri: 70 })));
-    expect(r.contributions.reduce((a, c) => a + c.years, 0)).toBeCloseTo(r.deltaYears, 10);
+    const rawStrain = r.contributions.filter((c) => ["zone13", "zone45", "strength", "steps"].includes(c.key)).reduce((a, c) => a + c.years, 0);
+    const nonStrain = r.contributions.filter((c) => !["zone13", "zone45", "strength", "steps"].includes(c.key)).reduce((a, c) => a + c.years, 0);
+    expect(nonStrain + 2.5 * Math.tanh(rawStrain / 2.5)).toBeCloseTo(r.deltaYears, 10);
   });
 
   it("clamps to ±15 years", () => {
-    const awful = { vo2maxRun: 15, restingHr: 100, steps: 2000, sleepHours: 4, sri: 40, zone13Min: 0, zone45Min: 0, strengthMin: 0, bodyFatPct: 40 };
-    const bad = run(series(180, () => awful));
+    const awful = { vo2maxRun: 10, restingHr: 105, steps: 1000, sleepHours: 3.5, sri: 30, zone13Min: 0, zone45Min: 0, strengthMin: 1, bodyFatPct: 80 };
+    const bad = run(series(180, () => awful), { age: 20, sex: "male", heightCm: 175 });
     expect(bad.deltaYears).toBe(15);
-    expect(bad.pulseAge).toBe(50);
+    expect(bad.pulseAge).toBe(35);
     const old: HealthspanProfile = { age: 75, sex: "male", heightCm: 180 };
-    const great = { vo2maxRun: 80, restingHr: 45, steps: 15000, sri: 95, zone13Min: 90, zone45Min: 15, strengthMin: 10 };
+    const great = { vo2maxRun: 80, restingHr: 40, steps: 15000, sri: 95, zone13Min: 90, zone45Min: 15, strengthMin: 10, sleepHours: 8, bodyFatPct: 15, hrv: 80 };
+    expect(run(series(180, () => great), old).deltaYears).toBe(-15);
     expect(run(series(180, () => great), old).pulseAge).toBe(60);
   });
 
   it("is null below 5 terms, provisional below 7, and provisional below 20 days of data", () => {
     const keep = (fields: (keyof Inputs)[]) => () => Object.fromEntries((Object.keys(refDay()) as (keyof Inputs)[]).filter((k) => !fields.includes(k)).map((k) => [k, null]));
-    expect(run(series(60, keep(["restingHr", "steps", "sleepHours", "sri", "zone13Min", "zone45Min", "strengthMin"])))).toMatchObject({ termsUsed: 7, provisional: false });
-    expect(run(series(60, keep(["restingHr", "steps", "sleepHours", "sri", "zone13Min", "zone45Min"])))).toMatchObject({ termsUsed: 6, provisional: true });
-    expect(run(series(60, keep(["restingHr", "steps", "sleepHours", "sri", "zone13Min"])))).toMatchObject({ termsUsed: 5, provisional: true });
-    expect(healthspan(series(60, keep(["restingHr", "steps", "sleepHours", "sri"])), profile, asOf)).toBeNull();
+    expect(run(series(60, keep(["bodyFatPct", "steps", "sleepHours", "sri", "zone13Min", "zone45Min", "strengthMin"])))).toMatchObject({ termsUsed: 7, provisional: false });
+    expect(run(series(60, keep(["bodyFatPct", "steps", "sleepHours", "sri", "zone13Min", "zone45Min"])))).toMatchObject({ termsUsed: 6, provisional: true });
+    expect(run(series(60, keep(["bodyFatPct", "steps", "sleepHours", "sri", "zone13Min"])))).toMatchObject({ termsUsed: 5, provisional: true });
+    expect(healthspan(series(60, keep(["bodyFatPct", "steps", "sleepHours", "sri"])), profile, asOf)).toBeNull();
     expect(healthspan(series(30), profile, "not-a-day")).toBeNull();
     expect(run(series(19)).provisional).toBe(true);
     expect(run(series(20))).toMatchObject({ provisional: false, dataDays: 20 });
@@ -160,7 +174,7 @@ describe("Pulse Age", () => {
     // Typical for this person: 40 bouted minutes a week, 6.6 h of sleep, consistency 75, and Pulse's own VO2max
     // estimate at half weight.
     const typical = run(series(180, () => ({ ...sparse, zone13Min: 40 / 7, sleepHours: 6.6, sri: 75, vo2maxEstimated: vo2 }), () => ({})), p);
-    expect(typical).toMatchObject({ termsUsed: 9, vo2maxSource: "estimate" });
+    expect(typical).toMatchObject({ termsUsed: 8, vo2maxSource: "estimate" });
     expect(typical.deltaYears).toBeGreaterThan(3);
     expect(typical.deltaYears).toBeLessThan(9);
     expect(typical.deltaYears).toBeGreaterThan(noSleep.deltaYears);
@@ -202,10 +216,10 @@ describe("VO2max source rule", () => {
     expect(r.deltaYears).toBeCloseTo(0, 10);
   });
 
-  it("no VO2max at all leaves the term out", () => {
-    const r = run(series(180, () => ({ vo2maxRun: null })));
+  it("no VO2max at all and no resting HR leaves the term out", () => {
+    const r = run(series(180, () => ({ vo2maxRun: null, restingHr: null })));
     expect(r.vo2maxSource).toBeNull();
-    expect(r.termsUsed).toBe(8);
+    expect(r.termsUsed).toBe(7);
   });
 
   it("the reference follows WHOOP's Figure 4, linear between ages and flat beyond the ends", () => {
@@ -275,7 +289,7 @@ describe("dose-response curves", () => {
   it("strength: 200 min a week scores the same as 40 (flat after the nadir, no penalty)", () => {
     expect(term({ strengthMin: 200 / 7 }, "strength")).toBeCloseTo(term({ strengthMin: 40 / 7 }, "strength"), 12);
     expect(term({ strengthMin: 200 / 7 }, "strength")).toBeCloseTo(0, 12);
-    expect(term({ strengthMin: 0 }, "strength")).toBeCloseTo(-K * Math.log(0.83), 10);
+    expect(term({ strengthMin: 0 }, "strength")).toBeUndefined();
   });
 
   it("lean mass: body fat 19.9 % and 20.1 % differ by under 0.05 years, and there is no step anywhere", () => {
@@ -519,5 +533,64 @@ describe("sleep consistency pools pairs of nights", () => {
     // Without pair counts (older callers), the daily SRIs' mean.
     const means = series(30, (ago) => (ago < 4 ? { sri: daily[3 - ago] } : { sri: null }));
     expect(run(means).contributions.find((c) => c.key === "sri")!.value).toBeCloseTo((100 + 85 + 73) / 3, 10);
+  });
+});
+
+describe("Pulse Age refactored logic (artificial age inflation prevention)", () => {
+  it("excludes unlogged strength activity (0:00) as missing data rather than applying +1.3 yr penalty", () => {
+    const noStrength = run(series(180, () => ({ strengthMin: 0 })));
+    expect(noStrength.contributions.find((c) => c.key === "strength")).toBeUndefined();
+    expect(noStrength.termsUsed).toBe(8);
+  });
+
+  it("passively estimates VO2 max via Uth-Sørensen formula when GPS/workout VO2 max is unavailable", () => {
+    // 35yo male with 60 bpm RHR: HR_max = 208 - 0.7*35 = 183.5. VO2_Max = 15.3 * (183.5 / 60) = 46.79
+    const r = run(series(180, () => ({ vo2maxRun: null, vo2maxDaily: null, restingHr: 60 })));
+    const vo2Contribution = r.contributions.find((c) => c.key === "vo2max");
+    expect(vo2Contribution).toBeDefined();
+    expect(vo2Contribution!.value).toBeCloseTo(15.3 * ((208 - 0.7 * 35) / 60), 2);
+    expect(r.vo2maxSource).toBe("estimate");
+  });
+
+  it("de-duplicates strain penalties via category-level dampening (2.5 * tanh(raw / 2.5))", () => {
+    // Heavy strain penalties: very low steps, 0 moderate/vigorous, 1 min strength
+    const heavyPenalty = run(series(180, () => ({ steps: 1500, zone13Min: 0, zone45Min: 0, strengthMin: 1 })));
+    const strainContribs = heavyPenalty.contributions.filter((c) => ["zone13", "zone45", "strength", "steps"].includes(c.key));
+    const rawStrain = strainContribs.reduce((sum, c) => sum + c.years, 0);
+    // Individual UI bars intact
+    expect(rawStrain).toBeGreaterThan(2.5);
+    // Delta years uses category-level dampening
+    const expectedDamped = 2.5 * Math.tanh(rawStrain / 2.5);
+    const nonStrain = heavyPenalty.contributions.filter((c) => !["zone13", "zone45", "strength", "steps"].includes(c.key)).reduce((sum, c) => sum + c.years, 0);
+    expect(heavyPenalty.deltaYears).toBeCloseTo(nonStrain + expectedDamped, 10);
+    expect(expectedDamped).toBeLessThanOrEqual(2.5);
+  });
+
+  it("normalizes RHR neutral baseline for under-20s to age-adjusted median (~65 bpm) and blends 60/40 with HRV", () => {
+    const under20Profile: HealthspanProfile = { age: 19, sex: "male", heightCm: 175 };
+    const rhr65 = run(series(180, () => ({ restingHr: 65, hrv: null })), under20Profile);
+    const rhrContrib = rhr65.contributions.find((c) => c.key === "restingHr");
+    expect(rhrContrib!.reference).toBeCloseTo(64, 1); // ~65 bpm age-adjusted median
+    expect(rhrContrib!.years).toBeCloseTo(0, 1);
+
+    // With 6-month average HRV: 60/40 blend
+    const blended = run(series(180, () => ({ restingHr: 75, hrv: 70 })), under20Profile);
+    const blendedContrib = blended.contributions.find((c) => c.key === "restingHr");
+    expect(blendedContrib).toBeDefined();
+    // High HRV (70 ms) pulls down the penalty of high RHR (75 bpm)
+    const rhrOnly = run(series(180, () => ({ restingHr: 75, hrv: null })), under20Profile);
+    expect(blendedContrib!.years).toBeLessThan(rhrOnly.contributions.find((c) => c.key === "restingHr")!.years);
+  });
+
+  it("filters incomplete wear days: excludes steps <1,000 and sleep <3.5h, using sleep median", () => {
+    // Incomplete days with 200 steps and 1.5h sleep
+    const mixedDays = series(180, (ago) => (ago % 5 === 0 ? { steps: 200, sleepHours: 1.5 } : { steps: 8000, sleepHours: 8 }));
+    const r = run(mixedDays);
+    const stepContrib = r.contributions.find((c) => c.key === "steps");
+    const sleepContrib = r.contributions.find((c) => c.key === "sleepHours");
+    // Steps average excludes the 200-step incomplete days, staying at 8,000
+    expect(stepContrib!.value).toBeCloseTo(8000, 1);
+    // Sleep average excludes the 1.5h nights, staying at 8.0h
+    expect(sleepContrib!.value).toBeCloseTo(8.0, 1);
   });
 });

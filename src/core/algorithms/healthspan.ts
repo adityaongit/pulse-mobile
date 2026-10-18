@@ -56,6 +56,8 @@ export interface HealthspanDay {
   vo2maxEstimated?: number | null;
   /** Fitbit's daily resting HR, bpm. */
   restingHr?: number | null;
+  /** Nightly HRV (RMSSD, ms). */
+  hrv?: number | null;
   weightKg?: number | null;
   /** Body fat, 0–100 %. */
   bodyFatPct?: number | null;
@@ -178,9 +180,11 @@ const byAge = (age: number, r: { at: number[]; minutes: number[] }) =>
 /** The profile that scores Pulse Age = chronological age. `leanMass` is lean mass %, 100 − the body-fat reference. */
 export function referenceProfile(age: number, sex: Sex): Record<HealthspanInput, number> {
   const r = healthspanConfig.reference;
+  // Shift RHR neutral baseline to age-adjusted median (~65 bpm for under-20s instead of 50-55 bpm)
+  const rhr = age < 20 ? (sex === "female" ? 66 : 64) : r.restingHr[sex];
   return {
     vo2max: piecewiseLinear(WHOOP_VO2MAX_REFERENCE[sex].map((v, i) => [20 + 5 * i, v] as const), age),
-    restingHr: r.restingHr[sex],
+    restingHr: rhr,
     steps: age < 60 ? r.steps.under60 : r.steps.from60,
     sleepHours: r.sleepHours,
     sri: r.sri,
@@ -248,13 +252,21 @@ export interface HealthspanResult {
 }
 
 type Term = { value: number; weight: number; estimated: boolean };
-type Summary = Partial<Record<HealthspanInput, Term>>;
+type Summary = Partial<Record<HealthspanInput, Term>> & { avgHrv?: number };
 /** How the 6-month window got its VO2max and body fat; the 30-day window reads the same sources. */
 type Sources = { vo2: Vo2maxSource | null; bodyFat: "measured" | "bmi" | null };
 
 const mean = (xs: (number | null | undefined)[]): number | undefined => {
   const v = xs.filter((x): x is number => x != null && Number.isFinite(x));
   return v.length ? v.reduce((a, b) => a + b, 0) / v.length : undefined;
+};
+
+const median = (xs: (number | null | undefined)[]): number | undefined => {
+  const v = xs.filter((x): x is number => x != null && Number.isFinite(x));
+  if (!v.length) return undefined;
+  const sorted = [...v].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
 };
 
 const VO2_FIELD = { run: "vo2maxRun", daily: "vo2maxDaily", estimate: "vo2maxEstimated" } as const;
@@ -273,16 +285,49 @@ function summarize(days: HealthspanDay[], p: HealthspanProfile, src: Sources): S
     const m = mean(xs);
     return measured(m == null ? undefined : m * 7);
   };
-  const vo2 = src.vo2 && mean(days.map((d) => d[VO2_FIELD[src.vo2!]]));
+
+  // 5. Filter Incomplete Wear Days:
+  // Exclude days with <1,000 steps from the 6-month Daily Steps average
+  const validSteps = days.map((d) => d.steps).filter((v): v is number => v != null && Number.isFinite(v) && v >= 1000);
+  // Use the median (and filter out nights <3.5 hours) for the 6-month Sleep Duration average
+  const validSleep = days.map((d) => d.sleepHours).filter((v): v is number => v != null && Number.isFinite(v) && v >= 3.5);
+  const sleepDuration = median(validSleep) ?? mean(validSleep);
+
+  // 2. Passive VO2 Max Fallback:
+  // When GPS/workout VO2 Max is unavailable, estimate using Uth-Sørensen formula:
+  // VO2_Max = 15.3 * (HR_max / RHR_6m_avg) where HR_max = 208 - (0.7 * chronological_age)
+  const rhr6mAvg = mean(days.map((d) => d.restingHr));
+  let vo2 = src.vo2 && mean(days.map((d) => d[VO2_FIELD[src.vo2!]]));
+  let vo2Source = src.vo2;
+  if (src.vo2 !== "run" || vo2 == null) {
+    if (rhr6mAvg != null && rhr6mAvg > 0) {
+      const hrMax = 208 - 0.7 * p.age;
+      const uthVo2 = 15.3 * (hrMax / rhr6mAvg);
+      if (vo2 == null) {
+        vo2 = uthVo2;
+        vo2Source = "estimate";
+      }
+    }
+  }
+
+  // 1. Exclude Unlogged Strength Activity:
+  // If 6-month Strength Activity Time is 0:00 (no logged strength sessions), treat it as missing data (null)
+  const hasLoggedStrength = days.some((d) => d.strengthMin != null && d.strengthMin > 0);
+  const strengthTerm = hasLoggedStrength ? week(days.map((d) => d.strengthMin)) : undefined;
+
+  // 4. 6-month average HRV for cardiovascular offset
+  const avgHrv = mean(days.map((d) => d.hrv));
+
   const s: Summary = {
-    vo2max: vo2 == null ? undefined : { value: vo2, weight: src.vo2 === "run" ? 1 : cfg.estimateWeight, estimated: src.vo2 !== "run" },
-    restingHr: measured(mean(days.map((d) => d.restingHr))),
-    steps: measured(mean(days.map((d) => d.steps))),
-    sleepHours: measured(mean(days.map((d) => d.sleepHours))),
+    vo2max: vo2 == null ? undefined : { value: vo2, weight: vo2Source === "run" ? 1 : cfg.estimateWeight, estimated: vo2Source !== "run" },
+    restingHr: measured(rhr6mAvg),
+    steps: measured(validSteps.length ? mean(validSteps) : undefined),
+    sleepHours: measured(sleepDuration),
     sri: measured(pooledSri(days) ?? mean(days.map((d) => d.sri))),
     zone13: week(days.map((d) => d.zone13Min)),
     zone45: week(days.map((d) => d.zone45Min)),
-    strength: week(days.map((d) => d.strengthMin)),
+    strength: strengthTerm,
+    avgHrv,
   };
   const fat = bodyFatOf(days, p, src.bodyFat);
   if (fat) s.leanMass = { value: 100 - fat.pct, weight: fat.estimated ? cfg.estimateWeight : 1, estimated: fat.estimated };
@@ -300,6 +345,8 @@ function bodyFatOf(days: HealthspanDay[], p: HealthspanProfile, mode: Sources["b
   return { pct: deurenbergBodyFat(kg / (p.heightCm / 100) ** 2, p.age, p.sex), estimated: true };
 }
 
+const STRAIN_KEYS: readonly HealthspanInput[] = ["zone13", "zone45", "strength", "steps"];
+
 /** Unclamped Δage and its per-input years, or null below minTerms. A missing term adds nothing. */
 function deltaAge(s: Summary, p: HealthspanProfile, ref: Record<HealthspanInput, number>) {
   const cfg = healthspanConfig;
@@ -307,13 +354,40 @@ function deltaAge(s: Summary, p: HealthspanProfile, ref: Record<HealthspanInput,
   if (present.length < cfg.minTerms) return null;
   const contributions = present.map((key): HealthspanContribution => {
     const t = s[key]!;
+
+    // 4. Age-Normalize RHR & Blend HRV:
+    // Shift the RHR neutral baseline to the age-adjusted median and weight the cardiovascular
+    // offset 60/40 between RHR and 6-month average HRV.
+    if (key === "restingHr") {
+      const rhrLnHazard = piecewiseLinear(curveOf("restingHr", p.age), t.value) - piecewiseLinear(curveOf("restingHr", p.age), ref.restingHr);
+      const rhrYears = cfg.yearsPerLnHr * t.weight * rhrLnHazard;
+      if (s.avgHrv != null && s.avgHrv > 0) {
+        const refHrv = piecewiseLinear([[18, 65], [25, 55], [35, 45], [45, 38], [55, 32], [70, 25]], p.age);
+        const hrvLnHazard = Math.log(refHrv / s.avgHrv);
+        const hrvYears = cfg.yearsPerLnHr * hrvLnHazard;
+        const cardioYears = 0.6 * rhrYears + 0.4 * hrvYears;
+        return { key, value: t.value, reference: ref[key], years: cardioYears, ...(t.estimated && { estimated: true }) };
+      }
+      return { key, value: t.value, reference: ref[key], years: rhrYears, ...(t.estimated && { estimated: true }) };
+    }
+
     const lnHazard =
       key === "leanMass"
         ? leanMassLnHr(t.value, p.age, p.sex)
         : piecewiseLinear(curveOf(key, p.age), t.value) - piecewiseLinear(curveOf(key, p.age), ref[key]);
     return { key, value: t.value, reference: ref[key], years: cfg.yearsPerLnHr * t.weight * lnHazard, ...(t.estimated && { estimated: true }) };
   });
-  return { years: contributions.reduce((a, c) => a + c.years, 0), contributions, terms: present.length };
+
+  // 3. De-duplicate Strain Penalties:
+  // Prevent collinearity across Moderate Activity, HR Zones 4-5, Strength, and Daily Steps
+  // by applying a category-level dampening curve (2.5 * tanh(raw_strain_offset / 2.5))
+  // while keeping individual metric UI bars intact.
+  const rawStrainOffset = contributions.filter((c) => STRAIN_KEYS.includes(c.key)).reduce((a, c) => a + c.years, 0);
+  const dampedStrainOffset = 2.5 * Math.tanh(rawStrainOffset / 2.5);
+  const nonStrainOffset = contributions.filter((c) => !STRAIN_KEYS.includes(c.key)).reduce((a, c) => a + c.years, 0);
+  const totalYears = nonStrainOffset + dampedStrainOffset;
+
+  return { years: totalYears, contributions, terms: present.length };
 }
 
 const clamp = (x: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, x));
@@ -357,8 +431,9 @@ export function healthspan(days: HealthspanDay[], profile: HealthspanProfile, as
   const lastMonth = within(cfg.paceWindowDays);
   const has = (k: keyof HealthspanDay) => sixMonths.some((d) => d[k] != null);
   // A measured VO2max from the last 90 days at full weight, else Fitbit's estimate, else Pulse's, both at half weight.
+  const hasRhr = sixMonths.some((d) => d.restingHr != null && d.restingHr > 0);
   const sources: Sources = {
-    vo2: within(cfg.runVo2maxLookbackDays).some((d) => d.vo2maxRun != null) ? "run" : has("vo2maxDaily") ? "daily" : has("vo2maxEstimated") ? "estimate" : null,
+    vo2: within(cfg.runVo2maxLookbackDays).some((d) => d.vo2maxRun != null) ? "run" : has("vo2maxDaily") ? "daily" : has("vo2maxEstimated") || hasRhr ? "estimate" : null,
     bodyFat: has("bodyFatPct") ? "measured" : "bmi",
   };
   const ref = referenceProfile(profile.age, profile.sex);
