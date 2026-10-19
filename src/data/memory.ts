@@ -2,7 +2,7 @@
 // restart. Rows are copied on the way in and out (JSON round-trip), so callers never share objects with the
 // store, as they would not with SQLite.
 import type { DayRange, JournalTagChange, JournalTagRow, LoggedEntryRow, ReportRow, ScoreRow, SeriesKind, Store } from "./store";
-import type { DailyValue, Exercise, HealthRecord, HrSample, HrvSample, JournalEntry, Metrics, Profile, Segment, Session, StepsMinute, SyncState } from "./types";
+import type { BloodPressureReading, DailyValue, Exercise, HealthRecord, HrSample, HrvSample, JournalEntry, Metrics, Profile, Segment, Session, StepsMinute, SyncState } from "./types";
 import type { ActivityCostResult } from "@/core/algorithms/activityCost";
 
 const copy = <T>(x: T): T => JSON.parse(JSON.stringify(x)) as T;
@@ -79,6 +79,7 @@ export class MemoryStore implements Store {
   private tagSeq = 0;
   private logged = new Map<string, LoggedEntryRow>();
   private records = new Map<string, HealthRecord>();
+  private bloodPressure = new Map<string, BloodPressureReading>();
 
   async getProfile() {
     return this.profile && copy(this.profile);
@@ -138,6 +139,7 @@ export class MemoryStore implements Store {
     for (const [id, e] of this.exercises) if (inRange(e.day, range)) this.exercises.delete(id);
     for (const [k, v] of this.values) if (inRange(v.day, range)) this.values.delete(k);
     for (const [id, r] of this.records) if (inRange(r.day, range)) this.records.delete(id);
+    for (const [id, bp] of this.bloodPressure) if (inRange(bp.day, range)) this.bloodPressure.delete(id);
     for (const [id, r] of this.logged) if (r.source === "health_connect" && inRange(r.day, range)) this.logged.delete(id);
     for (const [d] of this.scores) if (inRange(d, range)) this.scores.delete(d);
     for (const k of [...this.series.keys()]) if (inRange(k.split("\u0000")[0], range)) this.series.delete(k);
@@ -156,6 +158,12 @@ export class MemoryStore implements Store {
   }
   async upsertHealthRecords(rows: HealthRecord[]) {
     for (const r of rows) this.records.set(r.id, copy(r));
+  }
+  async upsertBloodPressure(rows: BloodPressureReading[]) {
+    for (const r of rows) this.bloodPressure.set(r.id, copy(r));
+  }
+  async insertBloodPressure(records: BloodPressureReading[]) {
+    return this.upsertBloodPressure(records);
   }
   async markIntradayDirty(days: string[]) {
     for (const d of days) this.dirty.add(d);
@@ -187,6 +195,33 @@ export class MemoryStore implements Store {
   async healthRecords(toDay?: string) {
     const rows = [...this.records.values()].filter((r) => toDay === undefined || r.day <= toDay);
     return copy(rows.sort((a, b) => b.ts - a.ts || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0)));
+  }
+  async allBloodPressure(): Promise<BloodPressureReading[]> {
+    return copy([...this.bloodPressure.values()].sort((a, b) => b.ts - a.ts || (a.id < b.id ? 1 : a.id > b.id ? -1 : 0)));
+  }
+  async bloodPressureIn(range: DayRange): Promise<BloodPressureReading[]> {
+    return copy(
+      [...this.bloodPressure.values()]
+        .filter((r) => inRange(r.day, range))
+        .sort((a, b) => b.ts - a.ts || (a.id < b.id ? 1 : a.id > b.id ? -1 : 0)),
+    );
+  }
+  async readBloodPressure(fromTs: number, toTs: number): Promise<BloodPressureReading[]> {
+    return copy(
+      [...this.bloodPressure.values()]
+        .filter((r) => r.ts >= fromTs && r.ts < toTs)
+        .sort((a, b) => a.ts - b.ts),
+    );
+  }
+  async getBloodPressure(day?: string): Promise<BloodPressureReading[]> {
+    if (day !== undefined) {
+      return copy(
+        [...this.bloodPressure.values()]
+          .filter((r) => r.day === day)
+          .sort((a, b) => b.ts - a.ts || (a.id < b.id ? 1 : a.id > b.id ? -1 : 0)),
+      );
+    }
+    return this.allBloodPressure();
   }
   async readHr(lo: number, hi: number) {
     return this.hr.read(lo, hi).map((s) => ({ ts: s.ts, bpm: s.v }));
@@ -306,6 +341,7 @@ export class MemoryStore implements Store {
     this.tags.clear();
     this.logged.clear();
     this.records.clear();
+    this.bloodPressure.clear();
     this.hr.clear();
     this.steps.clear();
     this.hrv.clear();
