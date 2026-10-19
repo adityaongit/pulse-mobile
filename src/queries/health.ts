@@ -33,6 +33,7 @@ import {
 } from "./common";
 import { illnessRaised, VITAL_LABEL } from "./home";
 import { zoneBounds, zoneNote, zoneRows } from "./strain";
+import { getBloodPressureSummary } from "./bloodPressure";
 import type {
   ChipTone,
   EcgReading,
@@ -369,6 +370,7 @@ function healthspanInsight(pace: number | null, deltaYears: number, cs: Healthsp
 
 const VITALS: { key: VitalKey; short: string; unit: string; signed?: boolean; pick: (r: DayRow) => number | null | undefined }[] = [
   { key: "resp", short: "Resp", unit: "rpm", pick: (r) => r.metrics?.respBpm },
+  { key: "spo2", short: "SpO2", unit: "%", pick: (r) => r.metrics?.spo2Pct },
   // The engine's night values, the ones Health Monitor's band and Recovery use (the daily ones before a scored night).
   { key: "restingHr", short: "RHR", unit: "bpm", pick: (r) => r.rhr },
   { key: "hrv", short: "HRV", unit: "ms", pick: (r) => r.metrics?.hrvMs },
@@ -384,10 +386,11 @@ const num = (v: number, dp: number, signed = false) => {
 export async function getMonitor(day: string, ctx: QueryCtx, preloaded?: Map<string, DayRow>): Promise<MonitorVM> {
   const today = todayOf(ctx);
   const isToday = day === today;
-  const [rows, rhythm, measured] = await Promise.all([
+  const [rows, rhythm, measured, bpSummary] = await Promise.all([
     preloaded?.has(addDays(day, -29)) ? preloaded : loadDays(ctx, addDays(day, -29), day),
     heartRhythm(ctx, day),
     measurements(ctx, day, today),
+    getBloodPressureSummary(day, ctx),
   ]);
   const row = rows.get(day);
   const hm = row?.healthMonitor;
@@ -429,6 +432,82 @@ export async function getMonitor(day: string, ctx: QueryCtx, preloaded?: Map<str
     };
   });
 
+  const bpVal = bpSummary.latest.value;
+  let bpVital: Vital;
+  if (bpVal) {
+    let chipTone: ChipTone = "optimal";
+    let chipText = "Normal";
+    let status: Vital["status"] = "in_range";
+    switch (bpVal.category) {
+      case "normal":
+        chipTone = "optimal";
+        chipText = "Normal";
+        status = "in_range";
+        break;
+      case "elevated":
+        chipTone = "warning";
+        chipText = "Elevated";
+        status = "high";
+        break;
+      case "stage1":
+        chipTone = "warning";
+        chipText = "Stage 1";
+        status = "high";
+        break;
+      case "stage2":
+        chipTone = "alert";
+        chipText = "Stage 2";
+        status = "high";
+        break;
+      case "crisis":
+        chipTone = "alert";
+        chipText = "Crisis";
+        status = "high";
+        break;
+    }
+    bpVital = {
+      key: "bp",
+      label: "Blood pressure",
+      short: "BP",
+      unit: "mmHg",
+      customValue: `${bpVal.systolic}/${bpVal.diastolic}`,
+      metric: ok(bpVal.systolic),
+      range: { low: 90, high: 120 },
+      status,
+      chip: { tone: chipTone, text: chipText },
+      trend: {
+        points: bpSummary.history.map((h) => ({ day: h.day, value: h.systolic })),
+        baseline: bpSummary.baseline ? { mean: bpSummary.baseline.avgSystolic, sd: 0 } : null,
+      },
+      bp: {
+        systolic: bpVal.systolic,
+        diastolic: bpVal.diastolic,
+        category: bpVal.category,
+      },
+    };
+  } else {
+    const priorChip = bpSummary.latestPrior
+      ? { tone: "neutral" as const, text: `Prior: ${bpSummary.latestPrior.systolic}/${bpSummary.latestPrior.diastolic}` }
+      : null;
+    bpVital = {
+      key: "bp",
+      label: "Blood pressure",
+      short: "BP",
+      unit: "mmHg",
+      metric: none("no_data"),
+      range: { low: 90, high: 120 },
+      status: "no_data",
+      chip: priorChip,
+      trend: {
+        points: bpSummary.history.map((h) => ({ day: h.day, value: h.systolic })),
+        baseline: null,
+      },
+      bp: null,
+    };
+  }
+
+  const allVitals = [...vitals, bpVital];
+
   let count: MonitorVM["count"];
   if (!hm) count = none(isToday ? "awaiting_sleep_sync" : "band_not_worn");
   else if (hm.reason !== null) count = none(nightReason(hm.reason, isToday));
@@ -441,7 +520,8 @@ export async function getMonitor(day: string, ctx: QueryCtx, preloaded?: Map<str
     isToday,
     count,
     illness: hm && hm.reason === null && illnessRaised(hm) ? { level: hm.illness.level, score: hm.illness.score } : null,
-    vitals,
+    vitals: allVitals,
+    bloodPressure: bpSummary,
     heartRhythm: rhythm,
     measurements: measured,
   };
