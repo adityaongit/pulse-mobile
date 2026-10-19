@@ -5,13 +5,13 @@ export type BloodPressureCategory =
   | "stage2"
   | "crisis";
 
-export const BP_CATEGORY_LABELS: Record<BloodPressureCategory, string> = {
+export const BP_CATEGORY_LABELS = {
   normal: "Normal",
   elevated: "Elevated",
   stage1: "Stage 1",
   stage2: "Stage 2",
   crisis: "Crisis",
-};
+} as const satisfies Record<BloodPressureCategory, string>;
 
 /**
  * Categorizes resting blood pressure readings according to AHA/ACC guidelines.
