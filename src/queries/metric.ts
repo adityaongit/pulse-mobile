@@ -42,9 +42,9 @@ import { recentEntries } from "./log";
 import { TREND_METRICS } from "./trends";
 import type { KeyStat, Metric } from "./types";
 
-export type VitalDetailKey = "hrv" | "rhr" | "resp" | "spo2" | "skin";
+export type VitalDetailKey = "hrv" | "rhr" | "resp" | "spo2" | "skin" | "bp";
 export type DetailKey = "steps" | "calories" | VitalDetailKey | BodyKey | ExtraKey;
-export const DETAIL_KEYS: readonly DetailKey[] = ["steps", "calories", "hrv", "rhr", "resp", "spo2", "skin", "weight", "body_fat", ...EXTRA_KEYS];
+export const DETAIL_KEYS: readonly DetailKey[] = ["steps", "calories", "hrv", "rhr", "resp", "spo2", "skin", "bp", "weight", "body_fat", ...EXTRA_KEYS];
 export const isDetailKey = (k: string): k is DetailKey => (DETAIL_KEYS as readonly string[]).includes(k);
 
 type Group = "activity" | "body" | "nutrition" | "vitals";
@@ -86,6 +86,7 @@ const CONFIG: Record<DetailKey, Config> = {
   resp: { group: "vitals", baseline: true, sections: ["outliers"], about: "Breaths per minute during sleep, measured by your band." },
   spo2: { group: "vitals", baseline: true, sections: ["outliers"], about: "Estimated blood oxygen saturation during sleep, measured by your band." },
   skin: { group: "vitals", baseline: true, sections: ["outliers"], reference: { y: 0, label: "Baseline" }, about: "Nightly skin temperature above or below your personal baseline, in degrees Celsius. This is a temperature difference, not your body temperature." },
+  bp: { group: "vitals", reading: true, baseline: true, sections: ["outliers"], reference: { y: 120, label: "Normal (120)" }, about: "Blood pressure readings from Health Connect or a connected monitor. Normal blood pressure is systolic below 120 mmHg and diastolic below 80 mmHg." },
   weight: { group: "body", reading: true, smooth: 7, sections: ["readings"], about: "Your weight, from a connected scale or a manual log in your health app." },
   body_fat: { group: "body", reading: true, smooth: 7, sections: ["readings"], about: "Body fat percentage, from a smart scale or a manual log." },
   distance: { group: "activity", total: true, stack: "distance", sections: ["weekday"], about: "Distance covered on foot and in workouts, from your steps and GPS." },

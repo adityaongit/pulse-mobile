@@ -56,6 +56,7 @@ export const VITAL_LABEL: Record<VitalKey, string> = {
   restingHr: "Resting heart rate",
   hrv: "Heart rate variability",
   skinTempDev: "Skin temperature",
+  bp: "Blood pressure",
 };
 
 /** The stats Home's own cards read, whatever My Dashboard shows (HomeVM.cardStats). */

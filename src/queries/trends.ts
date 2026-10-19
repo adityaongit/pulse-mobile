@@ -20,6 +20,7 @@ export type TrendMetricKey =
   | "steps"
   | "weight"
   | "body_fat"
+  | "bp"
   | ExtraKey;
 
 /** The Trends picker's sections, in order. */
@@ -84,6 +85,7 @@ const CORE: readonly TrendMetric[] = [
   { key: "steps", group: "Activity", label: "Steps", format: "grouped", colorBy: "single", direction: "up", href: metricHref("steps"), column: "steps", pick: (r) => r.metrics?.steps, partialToday: true },
   { key: "weight", group: "Body", label: "Weight", unit: "kg", format: "decimal1", colorBy: "single", direction: "neutral", href: metricHref("weight"), column: "weight_kg", pick: (r) => r.metrics?.weightKg },
   { key: "body_fat", group: "Body", label: "Body fat", unit: "%", format: "decimal1", colorBy: "single", direction: "down", href: metricHref("body_fat"), column: "body_fat_pct", pick: (r) => r.metrics?.bodyFatPct },
+  { key: "bp", group: "Vitals", label: "Blood pressure", unit: "mmHg", format: "int", colorBy: "single", direction: "down", href: metricHref("bp"), column: "blood_pressure_systolic_mmhg", pick: (r) => r.healthMonitor?.bloodPressure?.systolic },
 ];
 
 /** Every metric: Pulse's own first, then the source's extras from their catalogue, each in a picker section. */
