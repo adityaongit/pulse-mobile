@@ -367,7 +367,7 @@ describe("BloodPressure Source Policy Exemption", () => {
       accepted: true,
       reason: "primary_source",
     });
-    expect(decideSource("BloodPressure", omronRecord, "fitbit_only", false)).toEqual({
+    expect(decideSource("BloodPressure", omronRecord, "fitbit_only", { isValidRecord: false })).toEqual({
       accepted: false,
       reason: "invalid_record",
     });

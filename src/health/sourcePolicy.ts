@@ -120,8 +120,8 @@ export type SourceDecision = {
   reason: "primary_source" | "blood_pressure_exemption" | "disabled_source" | "invalid_record";
 };
 
-export function decideSource(type: ReadType, r: Classified, policy: SourcePolicy, isValidRecord = true): SourceDecision {
-  if (!isValidRecord) return { accepted: false, reason: "invalid_record" };
+export function decideSource(type: ReadType, r: Classified, policy: SourcePolicy, options?: { isValidRecord?: boolean }): SourceDecision {
+  if (options?.isValidRecord === false) return { accepted: false, reason: "invalid_record" };
   if (type === "BloodPressure") {
     return isFitbit(type, r)
       ? { accepted: true, reason: "primary_source" }

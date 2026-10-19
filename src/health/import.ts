@@ -1048,7 +1048,7 @@ export function mapBloodPressure(
       continue;
     }
     const ms = Date.parse(timeStr);
-    if (!Number.isFinite(ms) || isNaN(ms)) {
+    if (!Number.isFinite(ms)) {
       diag.rejected++;
       diag.rejectedReasons.invalid_timestamp++;
       continue;
@@ -1064,7 +1064,7 @@ export function mapBloodPressure(
     const systolic = extractPressure(r.systolic);
     const diastolic = extractPressure(r.diastolic);
 
-    if (!Number.isFinite(systolic) || isNaN(systolic) || !Number.isFinite(diastolic) || isNaN(diastolic)) {
+    if (!Number.isFinite(systolic) || !Number.isFinite(diastolic)) {
       diag.rejected++;
       diag.rejectedReasons.non_finite++;
       continue;
