@@ -242,7 +242,7 @@ export type BloodGlucoseRecord = RecordResult<"BloodGlucose">;
 export type BloodPressureRecord = RecordResult<"BloodPressure">;
 export type BodyTemperatureRecord = RecordResult<"BodyTemperature">;
 
-export type BloodPressureInputRecord = Partial<BloodPressureRecord> & {
+export type BloodPressureInputRecord = Omit<Partial<BloodPressureRecord>, "systolic" | "diastolic" | "bodyPosition" | "measurementLocation" | "metadata"> & {
   id?: string;
   time?: string;
   startTime?: string;
@@ -263,7 +263,7 @@ export type BloodPressureInputRecord = Partial<BloodPressureRecord> & {
     device?: {
       manufacturer?: string | null;
       model?: string | null;
-      type?: number;
+      type?: number | string | null;
     };
   };
 };
