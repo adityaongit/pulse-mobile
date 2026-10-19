@@ -3,7 +3,7 @@
 // Health hub `/health` (spec §7.6): today's values; each card links to its detail screen. Ported from pulse
 // src/app/(app)/health/page.tsx and loading.tsx (the skeleton shows while the query runs).
 import { View } from "react-native";
-import { Activity, Check, Droplet, Heart, Thermometer, TriangleAlert, Wind, type LucideIcon } from "lucide-react-native";
+import { Activity, Check, Droplet, Heart, Stethoscope, Thermometer, TriangleAlert, Wind, type LucideIcon } from "lucide-react-native";
 import type { ChipTone } from "@/lib/bands";
 import { formatValue, hmm } from "@/lib/format";
 import type { QueryCtx } from "@/queries/common";
@@ -32,7 +32,7 @@ import { INSET_ROW } from "@/ui/Card";
 const TILE = "font-numeric text-4xl leading-10 font-bold tracking-[-0.01em]";
 const EMPTY = "text-[15px] leading-[22px] text-foreground-secondary";
 
-const VITAL_ICON: Record<VitalKey, LucideIcon> = { resp: Wind, spo2: Droplet, restingHr: Heart, hrv: Activity, skinTempDev: Thermometer };
+const VITAL_ICON: Record<VitalKey, LucideIcon> = { resp: Wind, spo2: Droplet, restingHr: Heart, hrv: Activity, skinTempDev: Thermometer, bp: Stethoscope };
 const VITAL_ORDER: { key: VitalKey; short: string }[] = [
   { key: "resp", short: "Resp" },
   { key: "restingHr", short: "RHR" },

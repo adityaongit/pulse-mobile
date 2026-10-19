@@ -1,7 +1,7 @@
 // Health Monitor's five vital tiles with their note. Ported from pulse src/app/(app)/health/monitor/VitalTiles.tsx.
 import type { ReactNode } from "react";
 import { View } from "react-native";
-import { Activity, Droplet, Heart, Thermometer, Wind, type LucideIcon } from "lucide-react-native";
+import { Activity, Droplet, Heart, Stethoscope, Thermometer, Wind, type LucideIcon } from "lucide-react-native";
 import type { FormatKey } from "@/lib/format";
 import type { Vital, VitalKey } from "@/queries/types";
 import { Icon } from "@/ui/Icon";
@@ -9,11 +9,11 @@ import { KeyStatRow, KeyStatRowSkeleton } from "@/ui/metrics/KeyStatRow";
 import { Text } from "@/ui/Text";
 import { vitalHref } from "./vitals";
 
-const GLYPH: Record<VitalKey, LucideIcon> = { resp: Wind, spo2: Droplet, restingHr: Heart, hrv: Activity, skinTempDev: Thermometer };
+const GLYPH: Record<VitalKey, LucideIcon> = { resp: Wind, spo2: Droplet, restingHr: Heart, hrv: Activity, skinTempDev: Thermometer, bp: Stethoscope };
 // A tile's icon: 20 px, stroke 1.5, muted (the web's `[&_svg]:stroke-[1.5]`).
 const ICON = (k: VitalKey): ReactNode => <Icon icon={GLYPH[k]} size={20} tone="muted-foreground" strokeWidth={1.5} />;
-const FORMAT: Record<VitalKey, FormatKey> = { resp: "decimal1", spo2: "int", restingHr: "int", hrv: "int", skinTempDev: "signed1" };
-const NOTE = "Your range is your average ± 1 SD over the last 30 nights; skin temp is the change from your baseline.";
+const FORMAT: Record<VitalKey, FormatKey> = { resp: "decimal1", spo2: "int", restingHr: "int", hrv: "int", skinTempDev: "signed1", bp: "int" };
+const NOTE = "Your range is your average ± 1 SD over the last 30 nights; skin temp is the change from your baseline; blood pressure follows clinical guidelines.";
 
 /** Rows of two tiles (four vitals since SpO2 left: no wide last tile). */
 function Grid({ tiles }: { tiles: ReactNode[] }) {
@@ -43,7 +43,8 @@ export function VitalTiles({ vitals, day, today }: { vitals: Vital[]; day: strin
             key={x.key}
             variant="tile"
             icon={ICON(x.key)}
-            label={x.key === "restingHr" || x.key === "hrv" ? x.short : x.label}
+            label={x.key === "restingHr" || x.key === "hrv" || x.key === "bp" ? x.short : x.label}
+            customValue={x.customValue}
             metric={x.metric}
             unit={x.unit}
             format={FORMAT[x.key]}
@@ -60,9 +61,11 @@ export function VitalTiles({ vitals, day, today }: { vitals: Vital[]; day: strin
 
 const SKELETON_LABEL: [VitalKey, string][] = [
   ["resp", "Respiratory rate"],
+  ["spo2", "Blood oxygen"],
   ["restingHr", "RHR"],
   ["hrv", "HRV"],
   ["skinTempDev", "Skin temperature"],
+  ["bp", "Blood pressure"],
 ];
 
 export function VitalTilesSkeleton() {
