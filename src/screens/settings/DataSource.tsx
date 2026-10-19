@@ -50,6 +50,7 @@ const TYPE_KEY = {
   Hydration: "recordType.hydration",
   Nutrition: "recordType.nutrition",
   BloodGlucose: "recordType.bloodGlucose",
+  BloodPressure: "recordType.bloodPressure",
   BodyTemperature: "recordType.bodyTemperature",
   MenstruationPeriod: "recordType.menstruationPeriod",
   MenstruationFlow: "recordType.menstruationFlow",
