@@ -1,8 +1,8 @@
 import type { BloodPressureReading } from "@/data/types";
 import { classifyBloodPressure, type BloodPressureCategory } from "@/core/scoring/bloodPressure";
 import { addDays, wall } from "@/lib/time";
-import { none, ok, type QueryCtx, todayOf } from "./common";
-import type { Metric } from "./types";
+import { none, ok, type QueryCtx, todayOf } from "@/queries/common";
+import type { Metric } from "@/queries/types";
 
 export type BloodPressureItem = {
   id: string;
@@ -81,11 +81,12 @@ export async function getBloodPressureSummary(
   const baselineStart = addDays(day, -30);
 
   // Causally load readings up to `day` (never future readings)
-  const all = (await ctx.store.allBloodPressure())
+  const stored = await ctx.store.allBloodPressure();
+  const all = stored
     .filter((r) => r.day <= day)
     .sort((a, b) => b.ts - a.ts || (a.id < b.id ? 1 : -1));
 
-  const dayReadings = all.filter((r) => r.day === day).map((r) => toItem(r, ctx.timeZone));
+  const dayReadings = all.flatMap((r) => (r.day === day ? [toItem(r, ctx.timeZone)] : []));
   const latestPriorRaw = all.find((r) => r.day < day);
   const latestPrior = latestPriorRaw ? toItem(latestPriorRaw, ctx.timeZone) : null;
 
@@ -147,13 +148,13 @@ export async function getBloodPressureSummary(
     }
   }
 
-  const distribution: Record<BloodPressureCategory, number> = {
+  const distribution = {
     normal: 0,
     elevated: 0,
     stage1: 0,
     stage2: 0,
     crisis: 0,
-  };
+  } satisfies Record<BloodPressureCategory, number>;
   for (const r of windowReadings) {
     const cat = classifyBloodPressure(r.systolicMmhg, r.diastolicMmhg);
     distribution[cat]++;
