@@ -7,6 +7,7 @@ import type { BaselineState } from "@/core/scoring/types";
 import type { Drain, EnergyBand } from "@/core/engine/energyBank";
 import type { FitnessCategory, FitnessEstimate } from "@/core/algorithms/fitnessLevel";
 import type { HealthMonitorResult } from "@/core/algorithms/healthMonitor";
+import type { BloodPressureCategory } from "@/core/scoring/bloodPressure";
 import type { HealthspanResult } from "@/core/algorithms/healthspan";
 import type { TagImpact } from "@/core/algorithms/journalImpact";
 import type { SleepPlan } from "@/core/algorithms/sleepPlanner";
@@ -75,8 +76,9 @@ import type { LoadStatus } from "@/core/engine/strain";
  * without SpO2 (Health Connect has none).
  * 27: each workout keeps its zone seconds on the engine's zones (Stage1Activity.engine.zoneS), and the reports' training
  * balance is the engine's Training Load (Fatigue ÷ Fitness and its status).
+ * 28: Blood pressure in Health Monitor (causal spot readings persisted in health_monitor, AHA/ACC classifications).
  */
-export const SCORING_VERSION = 27;
+export const SCORING_VERSION = 28;
 
 export type PipelineOptions = {
   timeZone: string;
@@ -347,7 +349,17 @@ export type SleepPlannerRow =
   | ({ reason: null; wakeDay: string; nights: number } & SleepPlan)
   | { reason: ReasonCode; nightsLeft?: number; needMin: number };
 
-export type HealthMonitorRow = (HealthMonitorResult & { reason: null; stale: string[] }) | { reason: ReasonCode };
+export type HealthMonitorBP = {
+  systolic: number;
+  diastolic: number;
+  category: BloodPressureCategory;
+  readingId?: string;
+  ts?: number;
+};
+
+export type HealthMonitorRow =
+  | (HealthMonitorResult & { reason: null; stale: string[]; bloodPressure?: HealthMonitorBP | null })
+  | { reason: ReasonCode; bloodPressure?: HealthMonitorBP | null };
 
 /**
  * `fitnessEstimate` (mobile): Fitness Age and Pulse's own VO2max estimate for the day, shown on Fitness. Since version 18

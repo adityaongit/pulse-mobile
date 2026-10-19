@@ -30,7 +30,8 @@ import {
 } from "@/core/algorithms/trainingEffect";
 import { trainingReadiness, type TrainingReadinessInput } from "@/core/algorithms/trainingReadiness";
 import { trainingStatus, trainingStatusConfig } from "@/core/algorithms/trainingStatus";
-import { type Data, round, type Segment, type Session } from "./data";
+import { classifyBloodPressure } from "@/core/scoring/bloodPressure";
+import { byteOrder, type Data, round, type Segment, type Session } from "./data";
 import { newEngineFold } from "./engine";
 import type {
   FitnessRow,
@@ -114,6 +115,13 @@ export function dayOf(data: Data, inputs: Inputs, day: string, opts: PipelineOpt
   const cache = inputs.cached.get(day)!;
   const mainSession = data.mainOf.get(day);
   const main = mainSession ? nightOf(mainSession, inputs.segments.get(mainSession.id)) : null;
+  const bpReadings = data.bloodPressureByDay.get(day) ?? [];
+  // Representative daily blood pressure: latest reading on day D (sorted by ts descending, then id descending).
+  // Standard clinical practice for spot measurements. If no reading on day D, bloodPressure is null
+  // (no fabricated data; never carry forward into daily vitals).
+  const bpLatest = bpReadings.length > 0
+    ? bpReadings.slice().sort((a, b) => b.ts - a.ts || byteOrder(b.id, a.id))[0]
+    : null;
   return {
     day,
     start: data.dayStart(day),
@@ -129,6 +137,8 @@ export function dayOf(data: Data, inputs: Inputs, day: string, opts: PipelineOpt
       .map((s) => ({ id: s.id, start: s.startTs, end: s.endTs, asleepMin: s.asleepMin ?? 0 })),
     // noop truncates to whole years for sleep need; healthspan and fitness take the fraction.
     age: { whole: wholeYears(opts.profile.birthDate, day), years: fractionalYears(opts.profile.birthDate, day) },
+    bpReadings,
+    bpLatest,
   };
 }
 
@@ -502,11 +512,21 @@ export function scoreHealthMonitor(f: Fold, d: Day, inputs: Inputs, rec: Recover
   f.monitorRows.push({ day: d.day, rhr, hrv, resp, spo2, skinTempDev });
   const hasVitals = rhr != null || hrv != null || resp != null || d.dm?.spo2Pct != null || skinTempDev != null;
   const yesterday = addDays(d.day, -1);
+  const bp = d.bpLatest
+    ? {
+        systolic: d.bpLatest.systolicMmhg,
+        diastolic: d.bpLatest.diastolicMmhg,
+        category: classifyBloodPressure(d.bpLatest.systolicMmhg, d.bpLatest.diastolicMmhg),
+        readingId: d.bpLatest.id,
+        ts: d.bpLatest.ts,
+      }
+    : null;
   return !hasVitals
-    ? { reason: d.mainSession ? "no_data" : "band_not_worn" }
+    ? { reason: d.mainSession ? "no_data" : "band_not_worn", bloodPressure: bp }
     : {
         reason: null,
         stale: rec.stale,
+        bloodPressure: bp,
         ...healthMonitor(f.monitorRows, {
           alcohol: inputs.tagOn(yesterday, "alcohol"),
           sauna: inputs.tagOn(yesterday, "sauna"),
