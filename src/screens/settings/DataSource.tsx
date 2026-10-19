@@ -49,6 +49,7 @@ const TYPE_LABEL: Record<ReadType, string> = {
   Hydration: "Water",
   Nutrition: "Food",
   BloodGlucose: "Blood glucose",
+  BloodPressure: "Blood pressure",
   BodyTemperature: "Body temperature",
   MenstruationPeriod: "Periods",
   MenstruationFlow: "Period flow",
