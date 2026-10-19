@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { MemoryStore } from "@/data/memory";
 import type { BloodPressureReading } from "@/data/types";
 import { BloodPressureBodyPosition, BloodPressureMeasurementLocation, createBloodPressureDiagnostics, mapBloodPressure, mapRecords } from "./import";
-import { applySourcePolicy, decideSource, DEVICE_TYPE, RECORDING_METHOD } from "./sourcePolicy";
+import { DEVICE_TYPE, RECORDING_METHOD } from "./origins";
 
 const TZ = "America/New_York";
 const at = (day: string, time: string) => `${day}T${time}-04:00`;
@@ -325,62 +325,6 @@ describe("BloodPressure Ingestion & Validation", () => {
     const r2 = stored.find((r) => r.id === "reading-2");
     expect(r1?.systolicMmhg).toBe(125);
     expect(r2?.systolicMmhg).toBe(120);
-  });
-});
-
-describe("BloodPressure Source Policy Exemption", () => {
-  it("exempts BloodPressure from provider allowlist while enforcing restrictions on other metrics", () => {
-    const omronBp = {
-      metadata: { id: "bp-omron", dataOrigin: "com.omronhealthcare.omronconnect" },
-      time: at("2026-04-10", "08:00:00"),
-    };
-    const omronSteps = {
-      metadata: { id: "steps-omron", dataOrigin: "com.omronhealthcare.omronconnect" },
-      startTime: at("2026-04-10", "08:00:00"),
-      endTime: at("2026-04-10", "08:15:00"),
-    };
-
-    // Under fitbit_only policy:
-    const bpResult = applySourcePolicy("BloodPressure", [omronBp], "fitbit_only", TZ);
-    expect(bpResult).toHaveLength(1);
-
-    const stepsResult = applySourcePolicy("Steps", [omronSteps], "fitbit_only", TZ);
-    expect(stepsResult).toHaveLength(0);
-  });
-
-  it("decideSource returns correct decision and reason codes", () => {
-    const omronRecord = {
-      metadata: { id: "bp-omron", dataOrigin: "com.omronhealthcare.omronconnect" },
-      time: at("2026-04-10", "08:00:00"),
-    };
-    const fitbitRecord = {
-      metadata: { id: "bp-fitbit", dataOrigin: "com.fitbit.FitbitMobile" },
-      time: at("2026-04-10", "08:00:00"),
-    };
-
-    // BloodPressure decisions:
-    expect(decideSource("BloodPressure", omronRecord, "fitbit_only")).toEqual({
-      accepted: true,
-      reason: "blood_pressure_exemption",
-    });
-    expect(decideSource("BloodPressure", fitbitRecord, "fitbit_only")).toEqual({
-      accepted: true,
-      reason: "primary_source",
-    });
-    expect(decideSource("BloodPressure", omronRecord, "fitbit_only", false)).toEqual({
-      accepted: false,
-      reason: "invalid_record",
-    });
-
-    // Other metrics under fitbit_only:
-    expect(decideSource("Steps", omronRecord, "fitbit_only")).toEqual({
-      accepted: false,
-      reason: "disabled_source",
-    });
-    expect(decideSource("Steps", fitbitRecord, "fitbit_only")).toEqual({
-      accepted: true,
-      reason: "primary_source",
-    });
   });
 });
 
