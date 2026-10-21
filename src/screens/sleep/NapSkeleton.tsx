@@ -16,8 +16,8 @@ import { cn } from "@/ui/cn";
 import { statIcon } from "../_lib/view";
 
 const TILES = [
-  ["avgHr", "Average heart rate"],
-  ["maxHr", "Max heart rate"],
+  ["avgHr", "Avg HR"],
+  ["maxHr", "Max HR"],
   ["calories", "Calories"],
 ] as const;
 

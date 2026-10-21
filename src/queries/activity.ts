@@ -65,8 +65,8 @@ export async function getActivity(id: string, ctx: QueryCtx): Promise<ActivityVM
   const stats = [
     tile("duration", "Duration", durationMin(e), "min", same.map(durationMin), "no_data"),
     ...distance,
-    tile("avgHr", "Average heart rate", a?.avgHr, "bpm", same.map((x) => statOf(x)?.avgHr)),
-    tile("maxHr", "Max heart rate", a?.maxHr, "bpm", same.map((x) => statOf(x)?.maxHr)),
+    tile("avgHr", "Avg HR", a?.avgHr, "bpm", same.map((x) => statOf(x)?.avgHr)),
+    tile("maxHr", "Max HR", a?.maxHr, "bpm", same.map((x) => statOf(x)?.maxHr)),
     tile("calories", "Calories", e.calories, "kcal", same.map((x) => x.calories), "no_data"),
   ];
 
