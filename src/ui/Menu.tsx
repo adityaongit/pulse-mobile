@@ -1,6 +1,6 @@
 import { i18n } from "@/i18n/config";
 import { useRef, useState, type ReactNode } from "react";
-import { Modal, Pressable, View } from "react-native";
+import { Modal, Pressable, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { cn } from "./cn";
 import { placeMenu, type Box } from "./menuPlace";
@@ -59,7 +59,7 @@ export function MenuPanel({ anchor, onClose, align, className, children }: { anc
             className={cn("absolute rounded-2xl p-1.5", className)}
             style={place ?? { left: 0, top: 0, width: align === "stretch" ? anchor.w : undefined, opacity: 0 }}
           >
-            {children}
+            <ScrollView bounces={false} showsVerticalScrollIndicator={false}>{children}</ScrollView>
           </Panel>
         )}
       </Pressable>
