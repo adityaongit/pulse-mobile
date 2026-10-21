@@ -3,6 +3,7 @@
 // read from Health Connect (logged in Fitbit). Every number is counted as the metric screens count it: the source's
 // daily roll-up plus Pulse's own entries, a meal logged in both apps once (food.ts).
 import { metricsWithLoggedBody } from "@/data/body";
+import { i18n } from "@/i18n/config";
 import { addDays, localMidnight } from "@/lib/time";
 import { BURN_DAYS, NO_CUSTOM, resolveTargets, type CustomTargets, type Targets } from "@/nutrition/targets";
 import { type DayRow, finite, loadDays, type QueryCtx, todayOf } from "./common";
@@ -73,7 +74,8 @@ export type NutritionVM = {
   pulseToday: number;
 };
 
-const MEAL_LABEL: Record<Meal | "UNKNOWN", string> = { ...(Object.fromEntries(MEALS) as Record<Meal, string>), UNKNOWN: "Other" };
+/** A meal's name, read when called so it follows the language in use (the meal names are Journal's). */
+const mealLabel = (meal: Meal | "UNKNOWN"): string => (meal === "UNKNOWN" ? i18n.t("nutrition:meal.other") : (MEALS.find((m) => m[0] === meal)?.[1] ?? meal));
 const MEAL_ORDER: (Meal | "UNKNOWN")[] = ["BREAKFAST", "LUNCH", "DINNER", "SNACK", "UNKNOWN"];
 const FOOD_PICK: Record<Macro, (r: DayRow) => number | undefined> = {
   kcal: (r) => r.extra.calories_in,
@@ -108,7 +110,7 @@ async function latestWeight(ctx: QueryCtx, day: string): Promise<number | null> 
 
 const itemOf = (e: FoodEntry, dup: Map<string, string>): FoodItem => ({
   id: e.id,
-  title: e.data.name ?? MEAL_LABEL[e.data.meal],
+  title: e.data.name ?? mealLabel(e.data.meal),
   name: e.data.name,
   portion: e.data.portion ?? null,
   meal: e.data.meal,
@@ -132,7 +134,7 @@ export function mealGroups(entries: FoodEntry[]): MealGroup[] {
     const es = entries.filter((e) => e.data.meal === meal).sort((a, b) => a.ts - b.ts || a.id.localeCompare(b.id));
     if (!es.length) return [];
     const kcal = es.reduce((a, e) => a + (dup.has(e.id) ? 0 : e.data.kcal), 0);
-    return [{ meal, label: MEAL_LABEL[meal], kcal: Math.round(kcal), items: es.map((e) => itemOf(e, dup)), overlap: overlaps.has(meal) }];
+    return [{ meal, label: mealLabel(meal), kcal: Math.round(kcal), items: es.map((e) => itemOf(e, dup)), overlap: overlaps.has(meal) }];
   });
 }
 

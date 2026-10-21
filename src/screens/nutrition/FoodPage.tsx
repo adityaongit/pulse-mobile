@@ -9,8 +9,10 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ActivityIndicator, Image, Keyboard, Linking, View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { Camera, ImagePlus, PencilLine, ShieldCheck, Sparkles, Trash2, type LucideIcon } from "lucide-react-native";
 import type { ActionResult } from "@/actions/journal";
+import { i18n } from "@/i18n/config";
 import { logFoods, updateFoodEntry, type FoodItemInput } from "@/actions/log";
 import { FORMATS } from "@/lib/format";
 import { wall } from "@/lib/time";
@@ -91,6 +93,7 @@ function Notice({ title, children, alert }: { title?: string; children: ReactNod
 
 /** One food's fields: name and portion, then calories and the grams two to a row. */
 function FoodFields({ form, onChange }: { form: FoodForm; onChange: (k: keyof FoodForm, v: string) => void }) {
+  const { t } = useTranslation("nutrition");
   const field = (k: keyof FoodForm, label: string, hint: string, mode: "text" | "numeric" | "decimal", placeholder?: string, maxLength?: number) => (
     <Field key={k} label={label} hint={hint} className={mode === "text" ? undefined : "flex-1"}>
       <Input accessibilityLabel={label} inputMode={mode} placeholder={placeholder} maxLength={maxLength} value={form[k]} onChangeText={(t) => onChange(k, t)} className={mode === "text" ? "text-base" : "text-base tabular-nums"} returnKeyType="done" />
@@ -98,25 +101,24 @@ function FoodFields({ form, onChange }: { form: FoodForm; onChange: (k: keyof Fo
   );
   return (
     <View className="gap-3">
-      {field("name", "Name", "(optional)", "text", "e.g. Dal and rice", 80)}
-      {field("portion", "Portion", "(optional)", "text", "e.g. 1 bowl (250 g)", 60)}
+      {field("name", t("food.name"), t("food.optional"), "text", t("food.namePlaceholder"), 80)}
+      {field("portion", t("food.portion"), t("food.optional"), "text", t("food.portionPlaceholder"), 60)}
       <View className="flex-row gap-2">
-        {field("kcal", "Calories", "(kcal)", "numeric")}
-        {field("protein", "Protein", "(g)", "decimal")}
+        {field("kcal", t("target.kcal"), t("food.unitKcal"), "numeric")}
+        {field("protein", t("target.protein"), t("food.unitG"), "decimal")}
       </View>
       <View className="flex-row gap-2">
-        {field("carbs", "Carbs", "(g)", "decimal")}
-        {field("fat", "Fat", "(g)", "decimal")}
+        {field("carbs", t("target.carbs"), t("food.unitG"), "decimal")}
+        {field("fat", t("target.fat"), t("food.unitG"), "decimal")}
       </View>
       <View className="flex-row gap-2">
-        {field("fiber", "Fiber", "(g, optional)", "decimal")}
+        {field("fiber", t("food.fiber"), t("food.fiberHint"), "decimal")}
         <View className="flex-1" />
       </View>
     </View>
   );
 }
 
-const CONFIDENCE: Record<Confidence, string> = { high: "High confidence", medium: "Medium confidence", low: "Low confidence" };
 
 /** A typed number, or 0 while it is blank or not a number yet (for the running total only). */
 const n0 = (s: string) => {
@@ -126,28 +128,29 @@ const n0 = (s: string) => {
 
 /** "182 kcal · 12.6 g protein · 1.6 g carbs · 13.9 g fat": the numbers as typed so far. */
 function summaryOf(f: FoodForm) {
-  const g = (s: string, word: string) => (num(s) !== null && !Number.isNaN(num(s)) ? `${s.trim().replace(",", ".")} g ${word}` : null);
-  return [`${f.kcal.trim() || "?"} kcal`, g(f.protein, "protein"), g(f.carbs, "carbs"), g(f.fat, "fat"), g(f.fiber, "fiber")].filter(Boolean).join(" · ");
+  const g = (s: string, key: "protein" | "carbs" | "fat" | "fiber") => (num(s) !== null && !Number.isNaN(num(s)) ? i18n.t(`nutrition:numbers.${key}`, { value: s.trim().replace(",", ".") }) : null);
+  return [i18n.t("nutrition:numbers.kcal", { value: f.kcal.trim() || "?" }), g(f.protein, "protein"), g(f.carbs, "carbs"), g(f.fat, "fat"), g(f.fiber, "fiber")].filter(Boolean).join(" · ");
 }
 
 /** One estimated food under review: name, portion and numbers; the pencil opens its fields, the bin drops it. */
 function DraftRow({ d, onToggle, onChange, onRemove }: { d: Draft; onToggle: () => void; onChange: (k: keyof FoodForm, v: string) => void; onRemove: () => void }) {
-  const name = d.form.name.trim() || "Food";
+  const { t } = useTranslation("nutrition");
+  const name = d.form.name.trim() || t("food.fallbackName");
   return (
     <View className="gap-3 py-3">
       <View className="flex-row items-start gap-1">
-        <Press accessibilityRole="button" accessibilityLabel={`${d.open ? "Close" : "Edit"} ${name}`} accessibilityState={{ expanded: d.open }} onPress={onToggle} className="min-w-0 flex-1 gap-1">
+        <Press accessibilityRole="button" accessibilityLabel={d.open ? t("food.draftClose", { name }) : t("food.draftEdit", { name })} accessibilityState={{ expanded: d.open }} onPress={onToggle} className="min-w-0 flex-1 gap-1">
           <Text className="text-base font-semibold leading-[21px]">
             {name}
             {d.form.portion.trim() ? <Text className="text-[15px] font-normal text-muted-foreground">{`  ${d.form.portion.trim()}`}</Text> : null}
           </Text>
           <Text className={cn(BODY, "tabular-nums")}>{summaryOf(d.form)}</Text>
-          {d.confidence && <Text className={CAPTION}>{CONFIDENCE[d.confidence]}</Text>}
+          {d.confidence && <Text className={CAPTION}>{t(`food.confidence${d.confidence === "high" ? "High" : d.confidence === "medium" ? "Medium" : "Low"}`)}</Text>}
         </Press>
-        <Press activeBg="bg-fill-hover" accessibilityRole="button" accessibilityLabel={`Edit ${name}`} onPress={onToggle} className="size-11 items-center justify-center rounded-full">
+        <Press activeBg="bg-fill-hover" accessibilityRole="button" accessibilityLabel={t("food.draftEdit", { name })} onPress={onToggle} className="size-11 items-center justify-center rounded-full">
           <Icon icon={PencilLine} size={18} tone={d.open ? "foreground" : "muted-foreground"} />
         </Press>
-        <Press activeBg="bg-fill-hover" accessibilityRole="button" accessibilityLabel={`Remove ${name}`} onPress={onRemove} className="size-11 items-center justify-center rounded-full">
+        <Press activeBg="bg-fill-hover" accessibilityRole="button" accessibilityLabel={t("food.draftRemove", { name })} onPress={onRemove} className="size-11 items-center justify-center rounded-full">
           <Icon icon={Trash2} size={18} tone="muted-foreground" />
         </Press>
       </View>
@@ -159,33 +162,34 @@ function DraftRow({ d, onToggle, onChange, onRemove }: { d: Draft; onToggle: () 
 
 /** Each failure's heading and sentence; `provider` is the person's provider's name. */
 function problemCopy(p: Problem, provider: string, photo: boolean): { title: string; body: string } {
-  const instead = "or enter the food yourself.";
+  const o = { provider };
   switch (p) {
     case "timeout":
-      return { title: "That took too long", body: `${provider} didn’t answer in time. Try again, ${instead}` };
+      return { title: i18n.t("nutrition:problem.timeoutTitle"), body: i18n.t("nutrition:problem.timeoutBody", o) };
     case "refused":
-      return { title: `${provider} didn’t estimate this`, body: `Your AI provider declined this ${photo ? "photo" : "description"}. Try ${photo ? "another photo" : "other words"}, ${instead}` };
+      return { title: i18n.t("nutrition:problem.refusedTitle", o), body: i18n.t(photo ? "nutrition:problem.refusedBodyPhoto" : "nutrition:problem.refusedBodyText") };
     case "unreadable":
-      return { title: "The answer wasn’t usable", body: `${provider}’s answer couldn’t be read as nutrition numbers. Try again, ${instead}` };
+      return { title: i18n.t("nutrition:problem.unreadableTitle"), body: i18n.t("nutrition:problem.unreadableBody", o) };
     case "key":
-      return { title: "Your AI key didn’t work", body: `${provider} didn’t accept your key. Check it in the coach’s settings, ${instead}` };
+      return { title: i18n.t("nutrition:problem.keyTitle"), body: i18n.t("nutrition:problem.keyBody", o) };
     case "busy":
-      return { title: `${provider} is busy`, body: `Your provider is limiting requests right now. Try again in a minute, ${instead}` };
+      return { title: i18n.t("nutrition:problem.busyTitle", o), body: i18n.t("nutrition:problem.busyBody") };
     case "network":
-      return { title: "No connection", body: `Pulse couldn’t reach ${provider}. Check your connection and try again, ${instead}` };
+      return { title: i18n.t("nutrition:problem.networkTitle"), body: i18n.t("nutrition:problem.networkBody", o) };
     case "no_food":
-      return { title: "No food found", body: `${provider} didn’t find food or drink ${photo ? "in this photo" : "in that description"}. Try again, ${instead}` };
+      return { title: i18n.t("nutrition:problem.noFoodTitle"), body: i18n.t(photo ? "nutrition:problem.noFoodBodyPhoto" : "nutrition:problem.noFoodBodyText", o) };
     case "provider":
     case "cancelled":
-      return { title: "The estimate failed", body: `${provider} couldn’t make the estimate. Try again, ${instead}${photo ? " If it keeps failing, check that your model reads photos." : ""}` };
+      return { title: i18n.t("nutrition:problem.providerTitle"), body: i18n.t(photo ? "nutrition:problem.providerBodyPhoto" : "nutrition:problem.providerBodyText", o) };
   }
 }
 
 export function FoodPage() {
+  const { t } = useTranslation("nutrition");
   const { d, edit: editId } = useLocalSearchParams<{ d?: string; edit?: string }>();
   const { custom, ready } = useNutritionTargets();
   const { data: vm } = useScreen((ctx) => (ready ? getNutrition(ctx, custom).then((v) => ({ v, day: parseDay(d, todayOf(ctx)).d })) : Promise.resolve(null)), ["nutrition", custom, ready, d]);
-  if (!vm) return <TaskPage title={editId ? "Edit food" : "Log food"}><View className="h-40" /></TaskPage>;
+  if (!vm) return <TaskPage title={editId ? t("food.titleEdit") : t("food.titleLog")}><View className="h-40" /></TaskPage>;
   const edit = editId ? (vm.v.meals.flatMap((g) => g.items).find((f) => f.id === editId && f.source === "pulse") ?? null) : null;
   const at = edit ? wallOf(edit.ts, vm.v.timeZone) : defaultAt({ day: vm.day, today: vm.v.today, timeZone: vm.v.timeZone });
   const meal = edit && edit.meal !== "UNKNOWN" ? edit.meal : mealAt(at.slice(11, 16));
@@ -193,6 +197,7 @@ export function FoodPage() {
 }
 
 function Sheet({ edit, at: at0, meal: meal0, timeZone, today }: { edit: FoodItem | null; at: string; meal: Meal; timeZone: string; today: { kcal: number | null; protein: number | null } | null }) {
+  const { t } = useTranslation("nutrition");
   const setup = useCoachSetup();
   const hasKey = coachReady(setup);
   const provider = providerLabel(setup?.provider ?? null);
@@ -325,7 +330,7 @@ function Sheet({ edit, at: at0, meal: meal0, timeZone, today }: { edit: FoodItem
   const send = async (run: () => Promise<ActionResult<unknown>>, message: string) => {
     setSaving(true);
     setError(null);
-    const r = await run().catch(() => ({ ok: false as const, error: "Couldn’t save. Try again." }));
+    const r = await run().catch(() => ({ ok: false as const, error: t("food.saveFailed") }));
     setSaving(false);
     if (!r.ok) {
       haptic.error();
@@ -340,8 +345,8 @@ function Sheet({ edit, at: at0, meal: meal0, timeZone, today }: { edit: FoodItem
   const saveTyped = () => {
     const item = foodItemOf(form);
     if (typeof item === "string") return setError(item);
-    if (edit) void send(() => updateFoodEntry(actionCtx(), { id: edit.id, ts: edit.ts, meal, at, item }), "Food updated");
-    else void send(() => logFoods(actionCtx(), { meal, via: "manual", at, items: [item] }), "Food saved");
+    if (edit) void send(() => updateFoodEntry(actionCtx(), { id: edit.id, ts: edit.ts, meal, at, item }), t("food.updated"));
+    else void send(() => logFoods(actionCtx(), { meal, via: "manual", at, items: [item] }), t("food.saved", { count: 1 }));
   };
 
   const saveReview = () => {
@@ -350,12 +355,12 @@ function Sheet({ edit, at: at0, meal: meal0, timeZone, today }: { edit: FoodItem
       const item = foodItemOf(d.form);
       if (typeof item === "string") {
         setDrafts((ds) => ds.map((x) => (x.key === d.key ? { ...x, open: true, error: item } : x)));
-        return setError(`Fix ${d.form.name.trim() || "a food"} before saving.`);
+        return setError(t("food.fixBefore", { name: d.form.name.trim() || t("food.aFood") }));
       }
       items.push(item);
     }
-    if (!items.length) return setError("Every food was removed. Take another photo, or enter the food yourself.");
-    void send(() => logFoods(actionCtx(), { meal, via, at, items }), items.length === 1 ? "Food saved" : `${items.length} foods saved`);
+    if (!items.length) return setError(t("food.allRemoved"));
+    void send(() => logFoods(actionCtx(), { meal, via, at, items }), t("food.saved", { count: items.length }));
   };
 
   const setField = (k: keyof FoodForm, v: string) => {
@@ -371,39 +376,37 @@ function Sheet({ edit, at: at0, meal: meal0, timeZone, today }: { edit: FoodItem
 
   const showTyped = step === "manual" || (step === "start" && setup !== undefined && !hasKey);
   const mealSection = (
-    <Section title="Meal">
-      <Chips label="Meal" options={MEALS} value={meal} onChange={(v) => typeof v === "string" && v && setMeal(v as Meal)} />
+    <Section title={t("food.meal")}>
+      <Chips label={t("food.meal")} options={MEALS} value={meal} onChange={(v) => typeof v === "string" && v && setMeal(v as Meal)} />
     </Section>
   );
   const timeSection = (
-    <Section title="When">
-      <Field label="Time">
-        <DateTimeField label="Time" mode="datetime" value={at} max={wallNow(timeZone)} onChange={setAt} />
+    <Section title={t("food.when")}>
+      <Field label={t("food.time")}>
+        <DateTimeField label={t("food.time")} mode="datetime" value={at} max={wallNow(timeZone)} onChange={setAt} />
       </Field>
     </Section>
   );
   const todayLine = today && (
     <Text className={cn(CAPTION, "tabular-nums")}>
-      {today.kcal === null ? "Today: nothing logged yet" : `Today: ${grouped(today.kcal)} kcal${today.protein !== null ? ` · ${gramsText(Math.round(today.protein))} g protein` : ""}`}
+      {today.kcal === null ? t("food.todayNothing") : today.protein !== null ? t("food.todayKcalProtein", { kcal: grouped(today.kcal), protein: gramsText(Math.round(today.protein)) }) : t("food.todayKcal", { kcal: grouped(today.kcal) })}
     </Text>
   );
   const noKey = (
-    <Notice title="Photo estimates use your own AI key">
-      Add a key from Anthropic, OpenAI, Google or another provider in the coach’s settings, and Pulse can estimate a meal from a photo or a few words. Until then, enter the food yourself.
-    </Notice>
+    <Notice title={t("food.noKeyTitle")}>{t("food.noKeyBody")}</Notice>
   );
   const startNotice =
     notice === "camera_denied" ? (
-      <Notice>Pulse needs the camera to take the photo. Allow it when Android asks, or choose a photo instead.</Notice>
+      <Notice>{t("food.cameraDenied")}</Notice>
     ) : notice === "camera_blocked" ? (
-      <Notice title="The camera is off for Pulse">
-        <Text className={BODY}>Allow it in Android’s settings for Pulse, or choose a photo instead.</Text>
+      <Notice title={t("food.cameraBlockedTitle")}>
+        <Text className={BODY}>{t("food.cameraBlockedBody")}</Text>
         <Press accessibilityRole="link" onPress={() => void Linking.openSettings()} className="mt-1 self-start">
-          <Text className="text-sm font-semibold leading-5 underline">Open Android settings</Text>
+          <Text className="text-sm font-semibold leading-5 underline">{t("food.openSettings")}</Text>
         </Press>
       </Notice>
     ) : notice === "photo_failed" ? (
-      <Notice alert>That photo couldn’t be read. Try another, or enter the food yourself.</Notice>
+      <Notice alert>{t("food.photoFailed")}</Notice>
     ) : null;
 
   let body: ReactNode;
@@ -414,7 +417,7 @@ function Sheet({ edit, at: at0, meal: meal0, timeZone, today }: { edit: FoodItem
     body = (
       <View className="gap-4 pt-2" accessibilityLiveRegion="polite">
         {photo ? (
-          <Image source={{ uri: `data:${photo.mediaType};base64,${photo.base64}` }} resizeMode="cover" accessibilityLabel="Your meal photo" className="h-48 w-full rounded-2xl bg-inset" />
+          <Image source={{ uri: `data:${photo.mediaType};base64,${photo.base64}` }} resizeMode="cover" accessibilityLabel={t("food.photoAlt")} className="h-48 w-full rounded-2xl bg-inset" />
         ) : (
           <View className="rounded-xl bg-inset p-3">
             <Text className="text-base leading-[22px]">{`“${text.trim()}”`}</Text>
@@ -423,15 +426,15 @@ function Sheet({ edit, at: at0, meal: meal0, timeZone, today }: { edit: FoodItem
         <View className="flex-row items-center gap-3">
           <ActivityIndicator />
           <View className="flex-1 gap-0.5">
-            <Text className="text-base font-semibold leading-[21px]">{`Estimating with ${provider}…`}</Text>
-            <Text className={CAPTION}>Usually a few seconds; up to a minute for a busy plate.</Text>
+            <Text className="text-base font-semibold leading-[21px]">{t("food.estimating", { provider })}</Text>
+            <Text className={CAPTION}>{t("food.estimatingNote")}</Text>
           </View>
         </View>
       </View>
     );
     footer = (
       <Button variant="outline-pill" onPress={cancel}>
-        Cancel
+        {t("actions.cancel", { ns: "common" })}
       </Button>
     );
   } else if (step === "failed" && problem) {
@@ -452,11 +455,11 @@ function Sheet({ edit, at: at0, meal: meal0, timeZone, today }: { edit: FoodItem
       <>
         {canRetry && (
           <Button onPress={other ? again : retry}>
-            {other ? (photo ? "Try another photo" : "Change the description") : "Try again"}
+            {other ? (photo ? t("food.tryAnotherPhoto") : t("food.changeDescription")) : t("actions.tryAgain", { ns: "common" })}
           </Button>
         )}
         <Button variant={canRetry ? "outline-pill" : "default"} onPress={typeIt}>
-          Enter it yourself
+          {t("food.enterYourself")}
         </Button>
       </>
     );
@@ -465,25 +468,25 @@ function Sheet({ edit, at: at0, meal: meal0, timeZone, today }: { edit: FoodItem
     body = (
       <View className="gap-6 pt-2">
         {note ? <Notice>{note}</Notice> : null}
-        <Section title="Total">
-          <View accessible accessibilityLabel={`Total ${Math.round(total.kcal)} kcal, ${gramsText(total.protein)} g protein, ${gramsText(total.carbs)} g carbs, ${gramsText(total.fat)} g fat`} className="flex-row flex-wrap items-baseline gap-x-3.5 gap-y-1">
+        <Section title={t("food.total")}>
+          <View accessible accessibilityLabel={t("food.totalA11y", { kcal: Math.round(total.kcal), protein: gramsText(total.protein), carbs: gramsText(total.carbs), fat: gramsText(total.fat) })} className="flex-row flex-wrap items-baseline gap-x-3.5 gap-y-1">
             {(
               [
                 [grouped(total.kcal), "kcal"],
-                [gramsText(total.protein), "g protein"],
-                [gramsText(total.carbs), "g carbs"],
-                [gramsText(total.fat), "g fat"],
+                [gramsText(total.protein), "protein"],
+                [gramsText(total.carbs), "carbs"],
+                [gramsText(total.fat), "fat"],
               ] as const
             ).map(([v, unit]) => (
               <Text key={unit} className="text-[13px] font-medium leading-[22px] text-muted-foreground">
                 <Text className="font-numeric text-xl font-bold leading-[22px] tabular-nums text-foreground">{v}</Text>
-                {` ${unit}`}
+                {` ${t(`unit.${unit}`)}`}
               </Text>
             ))}
           </View>
         </Section>
-        <Section title={drafts.length === 1 ? "Food" : `Foods (${drafts.length})`}>
-          <Text className={CAPTION}>Estimates are approximate. Fix any number, or remove what isn’t there, before saving.</Text>
+        <Section title={t("food.foods", { count: drafts.length })}>
+          <Text className={CAPTION}>{t("food.estimatesNote")}</Text>
           {drafts.length ? (
             <View className="rounded-xl bg-inset px-3">
               {drafts.map((d, i) => (
@@ -498,22 +501,22 @@ function Sheet({ edit, at: at0, meal: meal0, timeZone, today }: { edit: FoodItem
               ))}
             </View>
           ) : (
-            <Text className={CAPTION}>No foods left to save.</Text>
+            <Text className={CAPTION}>{t("food.noFoodsLeft")}</Text>
           )}
         </Section>
         {mealSection}
         {timeSection}
-        <Text className={CAPTION}>{via === "photo" ? "The photo was used for this estimate only and isn’t kept." : "Your description was used for this estimate only."}</Text>
+        <Text className={CAPTION}>{via === "photo" ? t("food.viaPhoto") : t("food.viaText")}</Text>
       </View>
     );
     footer = (
       <>
         {errorLine}
         <Button onPress={saveReview} disabled={saving || !drafts.length}>
-          {saving ? "Saving…" : drafts.length > 1 ? `Save ${drafts.length} foods` : "Save"}
+          {saving ? t("food.saving") : drafts.length > 1 ? t("food.saveMany", { count: drafts.length }) : t("actions.save", { ns: "common" })}
         </Button>
         <Button variant="outline-pill" onPress={typeIt} disabled={saving}>
-          Enter it yourself
+          {t("food.enterYourself")}
         </Button>
       </>
     );
@@ -523,22 +526,22 @@ function Sheet({ edit, at: at0, meal: meal0, timeZone, today }: { edit: FoodItem
         {!edit && step === "start" && todayLine}
         {!edit && !hasKey && setup !== undefined && noKey}
         {mealSection}
-        <Section title="What you ate">
+        <Section title={t("food.whatYouAte")}>
           <FoodFields form={form} onChange={setField} />
         </Section>
         {timeSection}
-        {edit?.via === "photo" && <Text className={CAPTION}>Estimated from a photo. The photo wasn’t kept.</Text>}
+        {edit?.via === "photo" && <Text className={CAPTION}>{t("food.fromPhotoNote")}</Text>}
       </View>
     );
     footer = (
       <>
         {errorLine}
         <Button onPress={saveTyped} disabled={saving}>
-          {saving ? "Saving…" : edit ? "Save changes" : "Save"}
+          {saving ? t("food.saving") : edit ? t("food.saveChanges") : t("actions.save", { ns: "common" })}
         </Button>
         {!edit && hasKey && (
           <Button variant="outline-pill" onPress={again} disabled={saving}>
-            Estimate with AI instead
+            {t("food.estimateInstead")}
           </Button>
         )}
       </>
@@ -549,24 +552,24 @@ function Sheet({ edit, at: at0, meal: meal0, timeZone, today }: { edit: FoodItem
       <View className="gap-6 pt-2">
         {todayLine}
         {notice === "no_key" ? noKey : null}
-        <Section title="Estimate with AI">
+        <Section title={t("food.estimateTitle")}>
           <View className="flex-row gap-2">
-            <MethodTile icon={Camera} label="Take photo" onPress={() => void fromPhoto("camera")} disabled={busy || !hasKey} />
-            <MethodTile icon={ImagePlus} label="Choose photo" onPress={() => void fromPhoto("library")} disabled={busy || !hasKey} />
+            <MethodTile icon={Camera} label={t("food.takePhoto")} onPress={() => void fromPhoto("camera")} disabled={busy || !hasKey} />
+            <MethodTile icon={ImagePlus} label={t("food.choosePhoto")} onPress={() => void fromPhoto("library")} disabled={busy || !hasKey} />
           </View>
           {busy && (
             <View accessibilityLiveRegion="polite" className="flex-row items-center gap-2.5">
               <ActivityIndicator />
-              <Text className={BODY}>Getting the photo ready…</Text>
+              <Text className={BODY}>{t("food.gettingPhoto")}</Text>
             </View>
           )}
           {startNotice}
-          <Field label="Or describe it" hint="(what and how much)">
+          <Field label={t("food.describeLabel")} hint={t("food.describeHint")}>
             <Input
-              accessibilityLabel="Describe what you ate"
+              accessibilityLabel={t("food.describeA11y")}
               value={text}
               onChangeText={setText}
-              placeholder="e.g. 2 eggs and a slice of toast"
+              placeholder={t("food.describePlaceholder")}
               maxLength={MAX_DESCRIPTION}
               multiline
               submitBehavior="blurAndSubmit"
@@ -577,28 +580,28 @@ function Sheet({ edit, at: at0, meal: meal0, timeZone, today }: { edit: FoodItem
           </Field>
           <Button variant="secondary" onPress={fromText} disabled={text.trim().length < 2 || !hasKey}>
             <Icon icon={Sparkles} size={16} tone="secondary-foreground" />
-            <Text className="text-[13px] font-bold uppercase tracking-[0.1em] text-secondary-foreground">Estimate from description</Text>
+            <Text className="text-[13px] font-bold uppercase tracking-[0.1em] text-secondary-foreground">{t("food.estimateFromDescription")}</Text>
           </Button>
           {hasKey && (
             <View className="flex-row items-start gap-2">
               <Icon icon={ShieldCheck} size={16} tone="muted-foreground" />
-              <Text className={cn(CAPTION, "flex-1")}>{`Your photo or description goes only to ${provider}, with your own key, for this estimate. Pulse doesn’t save the photo.`}</Text>
+              <Text className={cn(CAPTION, "flex-1")}>{t("food.privacy", { provider })}</Text>
             </View>
           )}
         </Section>
-        <Section title="Or enter it yourself">
+        <Section title={t("food.enterTitle")}>
           <Button variant="secondary" onPress={typeIt}>
             <Icon icon={PencilLine} size={16} tone="secondary-foreground" />
-            <Text className="text-[13px] font-bold uppercase tracking-[0.1em] text-secondary-foreground">Type the food and its numbers</Text>
+            <Text className="text-[13px] font-bold uppercase tracking-[0.1em] text-secondary-foreground">{t("food.typeFood")}</Text>
           </Button>
         </Section>
       </View>
     );
   }
 
-  const title = edit ? "Edit food" : step === "review" ? "Check the estimate" : step === "estimating" ? "Estimating…" : "Log food";
+  const title = edit ? t("food.titleEdit") : step === "review" ? t("food.titleReview") : step === "estimating" ? t("food.titleEstimating") : t("food.titleLog");
   return (
-    <TaskPage title={title} description="Kept on this phone" footer={footer ?? undefined}>
+    <TaskPage title={title} description={t("food.description")} footer={footer ?? undefined}>
       {body}
     </TaskPage>
   );
