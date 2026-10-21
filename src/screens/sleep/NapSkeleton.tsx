@@ -2,6 +2,8 @@
 // activity page's shape (the hero's two numbers, the heart-rate chart over the zone rows, key statistics, heart rate
 // recovery and the insight card), so it is ported as it is.
 import { View } from "react-native";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 import { IntradayHrChartSkeleton } from "@/ui/charts/IntradayHrChart";
 import { ZoneBarsSkeleton } from "@/ui/charts/ZoneBars";
 import { Card } from "@/ui/Card";
@@ -15,11 +17,7 @@ import { Text } from "@/ui/Text";
 import { cn } from "@/ui/cn";
 import { statIcon } from "../_lib/view";
 
-const TILES = [
-  ["avgHr", "Avg HR"],
-  ["maxHr", "Max HR"],
-  ["calories", "Calories"],
-] as const;
+const TILES = ["avgHr", "maxHr", "calories"] as const;
 
 const LOADING_PRIMARY = (
   <View accessibilityElementsHidden className="gap-6">
@@ -31,21 +29,21 @@ const LOADING_PRIMARY = (
   </View>
 );
 
-const LOADING_SECONDARY = [
-  <SectionShell key="stats" variant="section" title="Key statistics" aside="vs. 30-day average">
+const napSecondary = (t: TFunction<"sleep">) => [
+  <SectionShell key="stats" variant="section" title={t("nap.keyStats")} aside={t("nap.vs30")}>
     <View accessibilityElementsHidden className="gap-3">
       <View className="flex-row gap-3">
-        {TILES.slice(0, 2).map(([k, l]) => (
-          <View key={k} className="min-w-0 flex-1"><KeyStatRowSkeleton variant="tile" label={l} icon={statIcon(k)} /></View>
+        {TILES.slice(0, 2).map((k) => (
+          <View key={k} className="min-w-0 flex-1"><KeyStatRowSkeleton variant="tile" label={t(`nap.${k}`)} icon={statIcon(k)} /></View>
         ))}
       </View>
       <View className="flex-row gap-3">
-        <View className="min-w-0 flex-1"><KeyStatRowSkeleton variant="tile" label={TILES[2][1]} icon={statIcon(TILES[2][0])} /></View>
+        <View className="min-w-0 flex-1"><KeyStatRowSkeleton variant="tile" label={t("nap.calories")} icon={statIcon("calories")} /></View>
         <View className="min-w-0 flex-1" />
       </View>
     </View>
   </SectionShell>,
-  <SectionShell key="hrr" variant="section" title="Heart rate recovery">
+  <SectionShell key="hrr" variant="section" title={t("nap.hrr")}>
     <Card className="justify-center gap-0 p-4">
       <Skeleton className="h-24 rounded-lg bg-skeleton" />
     </Card>
@@ -53,26 +51,31 @@ const LOADING_SECONDARY = [
 ];
 
 /** Below the fold while a cold push slides in: the loading state's first sections. */
-export const NAP_BODY_SKELETON = (
-  <>
-    {LOADING_PRIMARY}
-    <View className="gap-3">{LOADING_SECONDARY.slice(0, 2)}</View>
-  </>
-);
+function NapBody() {
+  const { t } = useTranslation("sleep");
+  return (
+    <>
+      {LOADING_PRIMARY}
+      <View className="gap-3">{napSecondary(t)}</View>
+    </>
+  );
+}
+export const NAP_BODY_SKELETON = <NapBody />;
 
 export function NapSkeleton() {
+  const { t } = useTranslation("sleep");
   return (
     <DetailShell
       loading
-      title="Activity"
+      title={t("nap.activity")}
       align="start"
       hero={
         <View accessibilityElementsHidden className="w-full gap-2">
           <View className="flex-row flex-wrap items-end gap-x-10 gap-y-3">
-            {["Activity strain", "Duration"].map((l) => (
+            {(["activityStrain", "duration"] as const).map((l) => (
               <View key={l}>
                 <SkeletonText lh={34} fs={34} className="w-14" />
-                <Text className={cn(LABEL, "mt-2 text-foreground-secondary")}>{l}</Text>
+                <Text className={cn(LABEL, "mt-2 text-foreground-secondary")}>{t(`nap.${l}`)}</Text>
               </View>
             ))}
           </View>
@@ -81,7 +84,7 @@ export function NapSkeleton() {
       }
       primary={LOADING_PRIMARY}
       bodySkeleton={NAP_BODY_SKELETON}
-      secondary={LOADING_SECONDARY}
+      secondary={napSecondary(t)}
       footer={<InsightCardSkeleton />}
     />
   );

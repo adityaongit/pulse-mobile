@@ -2,6 +2,7 @@
 // (`FEATURES.sleepStress`, off).
 import { Fragment } from "react";
 import { View } from "react-native";
+import { Trans, useTranslation } from "react-i18next";
 import { clock, hmm } from "@/lib/format";
 import { trendHref } from "@/lib/url";
 import type { QueryCtx } from "@/queries/common";
@@ -25,6 +26,7 @@ import { Text } from "@/ui/Text";
 import { SLEEP_INFO, TONIGHT_INFO } from "../_lib/info";
 import { statProps } from "../_lib/view";
 import { useScreen } from "../useScreen";
+import { cardInfoFor } from "./cardInfoFor";
 import { HoursVsNeed, SleepConsistency, SleepEfficiency } from "./SleepCards";
 import { WeeklyTrends } from "../trends/WeeklyTrends";
 import { SLEEP_BODY_SKELETON, SleepSkeleton } from "./SleepSkeleton";
@@ -33,9 +35,9 @@ import { SLEEP_BODY_SKELETON, SleepSkeleton } from "./SleepSkeleton";
 const WEEKLY: readonly TrendViewKey[] = ["sleep", "hours", "hours_need", "restorative", "consistency", "time_in_bed", "efficiency"];
 
 const STATUS_LEGEND = [
-  ["bg-warning", "Poor"],
-  ["bg-foreground-secondary", "Sufficient"],
-  ["bg-optimal", "Optimal"],
+  ["bg-warning", "poor"],
+  ["bg-foreground-secondary", "sufficient"],
+  ["bg-optimal", "optimal"],
 ] as const;
 
 /** The page's query and key; Home prefetches them, so Sleep opens with content. */
@@ -66,12 +68,13 @@ export function SleepScreen() {
 }
 
 function Sleep({ vm, weekly, timeZone }: { vm: SleepPageVM; weekly: TrendViewVM[]; timeZone: string }) {
+  const { t } = useTranslation("sleep");
   const { today } = useShellCalendar();
   const d = vm.day;
   const p = vm.performance;
   return (
     <DetailShell
-      title="Sleep"
+      title={t("title")}
       bodySkeleton={SLEEP_BODY_SKELETON}
       info={SLEEP_INFO}
       dateSwitcher={{ mode: "day", placement: "header", steppers: false }}
@@ -100,29 +103,29 @@ function Sleep({ vm, weekly, timeZone }: { vm: SleepPageVM; weekly: TrendViewVM[
             {STATUS_LEGEND.map(([swatch, word]) => (
               <View key={word} className="flex-row items-center gap-1.5">
                 <View accessibilityElementsHidden className={cn("h-1 w-4 rounded-sm", swatch)} />
-                <Text className="text-xs font-medium leading-4 text-foreground-secondary">{word}</Text>
+                <Text className="text-xs font-medium leading-4 text-foreground-secondary">{t(`status.${word}`)}</Text>
               </View>
             ))}
           </View>
         </Card>
       }
-      insight={vm.insight ? <InsightCard body={vm.insight} action={{ label: "Explore your sleep insights", href: trendHref("sleep", { d, today }) }} /> : undefined}
+      insight={vm.insight ? <InsightCard body={vm.insight} action={{ label: t("insight.explore"), href: trendHref("sleep", { d, today }) }} /> : undefined}
       primary={
-        <SectionShell variant="card" title="Last night’s sleep" aside="vs. prior 30 days">
+        <SectionShell variant="card" title={t("cards.lastNight")} aside={t("cards.vsPrior30")} info={cardInfoFor("Last night’s sleep", t("cards.lastNight"))}>
           <SleepStages hours={vm.hours} hr={vm.nightHr} data={vm.stages} restorative={vm.restorative} />
         </SectionShell>
       }
       secondary={[
-        <SectionShell key="need" variant="card" title="Hours vs. needed">
+        <SectionShell key="need" variant="card" title={t("cards.hoursVsNeeded")} info={cardInfoFor("Hours vs. needed", t("cards.hoursVsNeeded"))}>
           <HoursVsNeed vm={vm} />
         </SectionShell>,
-        <SectionShell key="consistency" variant="card" title="Sleep consistency">
+        <SectionShell key="consistency" variant="card" title={t("cards.consistency")} info={cardInfoFor("Sleep consistency", t("cards.consistency"))}>
           <SleepConsistency vm={vm} />
         </SectionShell>,
-        <SectionShell key="efficiency" variant="card" title="Sleep efficiency">
+        <SectionShell key="efficiency" variant="card" title={t("cards.efficiency")} info={cardInfoFor("Sleep efficiency", t("cards.efficiency"))}>
           <SleepEfficiency vm={vm} />
         </SectionShell>,
-        <SectionShell key="planner" id="planner" variant="card" title="Tonight’s sleep" info={TONIGHT_INFO}>
+        <SectionShell key="planner" id="planner" variant="card" title={t("cards.tonight")} info={TONIGHT_INFO}>
           <Planner vm={vm} timeZone={timeZone} />
         </SectionShell>,
       ]}
@@ -132,9 +135,10 @@ function Sleep({ vm, weekly, timeZone }: { vm: SleepPageVM; weekly: TrendViewVM[
 }
 
 function Planner({ vm, timeZone }: { vm: Pick<SleepVM, "planner">; timeZone: string }) {
+  const { t } = useTranslation("sleep");
   const m = vm.planner;
   if (m.value === null)
-    return <ReasonPlaceholder reason={m.reason} nightsLeft={m.nightsLeft} size="md" copy={m.reason === "calibrating" ? "Sleep Planner needs 7 nights to learn your wake time." : undefined} />;
+    return <ReasonPlaceholder reason={m.reason} nightsLeft={m.nightsLeft} size="md" copy={m.reason === "calibrating" ? t("planner.calibrating") : undefined} />;
   const plan = m.value;
   const row = (label: string, caption: string, time: string) => (
     <View key={label} className="min-h-[52px] flex-row items-center gap-3 py-2">
@@ -145,7 +149,7 @@ function Planner({ vm, timeZone }: { vm: Pick<SleepVM, "planner">; timeZone: str
       <Text className="font-numeric text-xl font-bold leading-6 tabular-nums">{time}</Text>
     </View>
   );
-  const rows = [...plan.plans.map((q) => row(q.label, `${Math.round(q.share * 100)}% of need`, clock(q.bedtimeAt, timeZone))), row("Typical wake", plan.weekdayWake ? "Weekday wake time" : "Weekend wake time", clock(plan.wakeAt, timeZone))];
+  const rows = [...plan.plans.map((q) => row(t(`planner.plan.${q.key === "get_by" ? "getBy" : q.key}`), t("planner.shareOfNeed", { pct: Math.round(q.share * 100) }), clock(q.bedtimeAt, timeZone))), row(t("planner.typicalWake"), t(plan.weekdayWake ? "planner.weekdayWake" : "planner.weekendWake"), clock(plan.wakeAt, timeZone))];
   return (
     <View className="gap-2">
       <View>
@@ -157,7 +161,7 @@ function Planner({ vm, timeZone }: { vm: Pick<SleepVM, "planner">; timeZone: str
         ))}
       </View>
       <Text className={CAPTION}>
-        Need tonight: <Text className="font-numeric tabular-nums">{hmm(plan.needMin)}</Text>
+        <Trans t={t} i18nKey="planner.needTonight" values={{ value: hmm(plan.needMin) }} components={{ n: <Text className="font-numeric tabular-nums" /> }} />
       </Text>
     </View>
   );

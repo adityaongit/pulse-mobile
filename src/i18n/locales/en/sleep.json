@@ -1,1 +1,110 @@
-{}
+{
+  "title": "Sleep",
+  "band": {
+    "optimal": "optimal",
+    "sufficient": "sufficient",
+    "poor": "poor"
+  },
+  "status": {
+    "poor": "Poor",
+    "sufficient": "Sufficient",
+    "optimal": "Optimal"
+  },
+  "stat": {
+    "hours": "Hours vs. needed",
+    "consistency": "Sleep consistency",
+    "efficiency": "Sleep efficiency",
+    "restorative": "Restorative sleep",
+    "sleepStress": "Sleep stress",
+    "timeInBed": "Time in bed",
+    "wakeEvents": "Wake events",
+    "resp": "Respiratory rate",
+    "debt": "Sleep debt"
+  },
+  "stage": {
+    "awake": "Awake",
+    "rem": "REM",
+    "light": "Light",
+    "deep": "Deep"
+  },
+  "insight": {
+    "laterBedtime_one": "Your sleep was {{band}}. Consistency is the easiest win: you went to bed {{count}} minute later than usual.",
+    "laterBedtime_other": "Your sleep was {{band}}. Consistency is the easiest win: you went to bed {{count}} minutes later than usual.",
+    "earlierBedtime_one": "Your sleep was {{band}}. Consistency is the easiest win: you went to bed {{count}} minute earlier than usual.",
+    "earlierBedtime_other": "Your sleep was {{band}}. Consistency is the easiest win: you went to bed {{count}} minutes earlier than usual.",
+    "steadier": "Your sleep was {{band}}. Keeping a steadier bedtime and wake time would lift your consistency.",
+    "lessSleep_one": "Your sleep was {{band}}. You slept {{count}} minute less than you needed; an earlier night helps.",
+    "lessSleep_other": "Your sleep was {{band}}. You slept {{count}} minutes less than you needed; an earlier night helps.",
+    "onTrack": "Your sleep was {{band}}. You kept to your usual schedule and slept close to your need.",
+    "explore": "Explore your sleep insights"
+  },
+  "cards": {
+    "lastNight": "Last night’s sleep",
+    "vsPrior30": "vs. prior 30 days",
+    "hoursVsNeeded": "Hours vs. needed",
+    "consistency": "Sleep consistency",
+    "efficiency": "Sleep efficiency",
+    "tonight": "Tonight’s sleep"
+  },
+  "need": {
+    "hoursOfSleep": "Hours of sleep",
+    "sleepNeeded": "Sleep needed",
+    "calibrating": "Your need settles after 7 nights. Using {{need}} until then.",
+    "healthyMinimum": "Healthy Minimum",
+    "recentStrain": "Recent Strain",
+    "sleepDebt": "Sleep Debt",
+    "naps": "Naps",
+    "priorAverage": "Prior 30-night average {{value}}%"
+  },
+  "consistency": {
+    "optimal": "Optimal bed/wake time",
+    "aria": "Bed and wake times for the last five nights",
+    "ariaLast": "Bed and wake times for the last five nights, last night {{bed}} to {{wake}}"
+  },
+  "efficiency": {
+    "asleep": "Asleep",
+    "awake": "Awake",
+    "wakeEvents": "Wake events"
+  },
+  "planner": {
+    "calibrating": "Sleep Planner needs 7 nights to learn your wake time.",
+    "shareOfNeed": "{{pct}}% of need",
+    "typicalWake": "Typical wake",
+    "weekdayWake": "Weekday wake time",
+    "weekendWake": "Weekend wake time",
+    "needTonight": "Need tonight: <n>{{value}}</n>",
+    "plan": {
+      "peak": "Peak",
+      "perform": "Perform",
+      "getBy": "Get by"
+    }
+  },
+  "weekly": {
+    "sleep": "Sleep Performance",
+    "hours": "Hours vs. Needed (hours)",
+    "hoursNeed": "Hours vs. Needed (%)",
+    "restorative": "Restorative Sleep",
+    "consistency": "Sleep Consistency",
+    "timeInBed": "Time in Bed",
+    "efficiency": "Sleep Efficiency"
+  },
+  "skeleton": {
+    "healthyMinimum": "Healthy minimum",
+    "recentStrain": "Recent strain",
+    "sleepDebt": "Sleep debt"
+  },
+  "nap": {
+    "title": "Nap",
+    "notFound": "This page could not be found.",
+    "when": "{{day}} {{start}} to {{end}}",
+    "activity": "Activity",
+    "activityStrain": "Activity strain",
+    "duration": "Duration",
+    "keyStats": "Key statistics",
+    "vs30": "vs. 30-day average",
+    "avgHr": "Avg HR",
+    "maxHr": "Max HR",
+    "calories": "Calories",
+    "hrr": "Heart rate recovery"
+  }
+}
