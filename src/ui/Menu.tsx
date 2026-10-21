@@ -1,3 +1,4 @@
+import { i18n } from "@/i18n/config";
 import { useRef, useState, type ReactNode } from "react";
 import { Modal, Pressable, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -41,7 +42,7 @@ export function MenuPanel({ anchor, onClose, align, className, children }: { anc
       <Pressable
         ref={root}
         collapsable={false}
-        accessibilityLabel="Close menu"
+        accessibilityLabel={i18n.t("ui:menu.close")}
         onPress={onClose}
         onLayout={(e) => {
           const { width, height } = e.nativeEvent.layout;

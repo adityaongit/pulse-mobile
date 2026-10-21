@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import { i18n } from "@/i18n/config";
 import { View } from "react-native";
 
 import Svg, { Defs, LinearGradient, Path, Polygon, RadialGradient, Stop } from "react-native-svg";
@@ -82,7 +84,7 @@ function resolve(p: ScoreDialProps): Resolved {
       const band = p.value === null ? null : recoveryBand(p.value);
       const col = p.value === null ? DATA_COLORS.muted : DATA_COLORS[dialColor("recovery", p.value)];
       return {
-        label: p.label ?? "Recovery",
+        label: p.label ?? i18n.t("ui:dial.recovery"),
         max: 100,
         color: col.css,
         unit: "%",
@@ -93,13 +95,13 @@ function resolve(p: ScoreDialProps): Resolved {
     }
     case "strain":
       // Strain is a percent: the ring is full at 100 and stays full above it; the label keeps the real value.
-      return { label: p.label ?? "Strain", max: 100, color: DATA_COLORS[dialColor("strain", p.value ?? 0)].css, unit: "%", text: formatValue("int", p.value) };
+      return { label: p.label ?? i18n.t("ui:dial.strain"), max: 100, color: DATA_COLORS[dialColor("strain", p.value ?? 0)].css, unit: "%", text: formatValue("int", p.value) };
     case "sleep":
-      return { label: p.label ?? (lg ? "Sleep performance" : "Sleep"), max: 100, color: DATA_COLORS[dialColor("sleep", p.value ?? 0)].css, unit: "%", text: formatValue("int", p.value) };
+      return { label: p.label ?? i18n.t(lg ? "ui:dial.sleepPerformance" : "ui:dial.sleep"), max: 100, color: DATA_COLORS[dialColor("sleep", p.value ?? 0)].css, unit: "%", text: formatValue("int", p.value) };
     case "gauge": {
       const level = p.value === null ? null : stressLevel(p.value);
       return {
-        label: p.label ?? "Stress",
+        label: p.label ?? i18n.t("ui:dial.stress"),
         max: 100,
         color: "transparent",
         text: formatValue("int", p.value),
@@ -112,7 +114,10 @@ function resolve(p: ScoreDialProps): Resolved {
 }
 
 /** The reference app's ring (spec §5.1): a track, a fill arc, the Strain Target band and tick, or the stress gauge; the centre text over it. */
+const STATUS_WORD = { poor: "ui:dial.statusPoor", sufficient: "ui:dial.statusSufficient", optimal: "ui:dial.statusOptimal" } as const;
+
 export function ScoreDial(props: ScoreDialProps) {
+  const { t } = useTranslation("ui");
   const { variant, size, value, href, loading, compact } = props;
   const { c, css } = useTheme();
   const r = resolve(props);
@@ -150,7 +155,7 @@ export function ScoreDial(props: ScoreDialProps) {
     unit: r.unit,
     provisional: props.provisional,
     reasonText: reason?.long,
-    bandWord: r.word?.text ?? (props.status && value !== null ? props.status[0].toUpperCase() + props.status.slice(1) : undefined),
+    bandWord: r.word?.text ?? (props.status && value !== null ? i18n.t(STATUS_WORD[props.status]) : undefined),
     target,
     soFar: props.extraTags?.includes("so_far"),
   });
@@ -279,7 +284,7 @@ export function ScoreDial(props: ScoreDialProps) {
       <Press
         activeScale={0.96}
         accessibilityRole="link"
-        accessibilityLabel={`${aria}. Open ${r.label} details`}
+        accessibilityLabel={t("dial.openDetails", { aria, label: r.label })}
         onPress={() => push(href)}
         className="min-w-24 items-center gap-1 rounded-xl p-1"
       >

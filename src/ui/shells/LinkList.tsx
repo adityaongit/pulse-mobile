@@ -1,3 +1,4 @@
+import { i18n } from "@/i18n/config";
 import type { ReactNode } from "react";
 import { View } from "react-native";
 import { ArrowUpRight, ChevronRight, type LucideIcon } from "lucide-react-native";
@@ -47,7 +48,7 @@ export function LinkList({ title, rows, className }: { title: string; rows: Link
             activeScale={0.96}
             key={r.href}
             accessibilityRole="link"
-            accessibilityHint={r.external ? "Opens outside the app" : undefined}
+            accessibilityHint={r.external ? i18n.t("ui:linkList.external") : undefined}
             onPress={() => (r.external ? Linking.openURL(r.href) : push(r.href))}
             className={cn(CARD_CLASS, ROW)}
             style={shadow}

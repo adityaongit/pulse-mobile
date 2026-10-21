@@ -1,3 +1,4 @@
+import { i18n } from "@/i18n/config";
 import { useState } from "react";
 import { View } from "react-native";
 import { Circle, Group } from "@shopify/react-native-skia";
@@ -49,7 +50,7 @@ function Chart({ hr, variant, zoned }: { hr: HrSeries; variant: "day" | "activit
   const domain = paddedDomain(hr.points.map((p) => p.bpm));
   const bpms = hr.points.map((p) => p.bpm).filter((b): b is number => b !== null);
   const zoneOf = (bpm: number) => hr.zones?.find((z) => bpm >= z.min && bpm <= z.max)?.label;
-  const summary = `Heart rate from ${clock(first, tz)} to ${clock(last, tz)}: low ${Math.min(...bpms)}, high ${Math.max(...bpms)} beats per minute.`;
+  const summary = i18n.t("ui:hrChart.daySummary", { start: clock(first, tz), end: clock(last, tz), low: Math.min(...bpms), high: Math.max(...bpms) });
   // The day chart draws heart rate grey and colours it by zone only inside workouts (WHOOP's day view), unless `zoned`;
   // an activity is all workout.
   const workouts = (hr.spans ?? []).filter((s) => s.kind === "workout");
@@ -142,7 +143,7 @@ function ZoneName({ name }: { name: string }) {
 export function IntradayHrChart({ data, variant = "day", zoned = false }: IntradayHrChartProps) {
   const empty = (
     <View className="items-center">
-      <EmptyState body="No heart-rate data for this day." />
+      <EmptyState body={i18n.t("ui:hrChart.emptyDay")} />
     </View>
   );
   return (

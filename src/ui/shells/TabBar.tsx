@@ -1,3 +1,5 @@
+import { i18n } from "@/i18n/config";
+import { useTranslation } from "react-i18next";
 import { useEffect, useState, type ComponentProps } from "react";
 import { View } from "react-native";
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
@@ -24,11 +26,11 @@ type TabBarProps = Parameters<NonNullable<ComponentProps<typeof Tabs>["tabBar"]>
 
 // The web app's tabs, in its order (src/lib/url.ts TAB_ROOT): Home, Health, Journal, More. The route file of each is
 // app/(tabs)/<route>.tsx.
-export const TABS: { route: string; label: string; icon: LucideIcon }[] = [
-  { route: "index", label: "Home", icon: HomeChart },
-  { route: "health", label: "Health", icon: HeartPulse },
-  { route: "journal", label: "Journal", icon: NotebookPen },
-  { route: "more", label: "More", icon: Menu },
+export const TABS: { route: string; labelKey: "tabs.home" | "tabs.health" | "tabs.journal" | "tabs.more"; icon: LucideIcon }[] = [
+  { route: "index", labelKey: "tabs.home", icon: HomeChart },
+  { route: "health", labelKey: "tabs.health", icon: HeartPulse },
+  { route: "journal", labelKey: "tabs.journal", icon: NotebookPen },
+  { route: "more", labelKey: "tabs.more", icon: Menu },
 ];
 
 /**
@@ -51,6 +53,7 @@ function Lens({ index, itemWidth }: { index: number; itemWidth: number }) {
 
 /** Phone tab bar: a 62 px glass squircle with four destinations (spec §4.2, G1), for expo-router's <Tabs tabBar>. */
 function Bar({ state, navigation, current: shown }: TabBarProps & { current: number }) {
+  const { t } = useTranslation("ui");
   const [width, setWidth] = useState(0);
   // The tapped tab lights up (lens, icon, label) in its own small render; the tab's screen renders a frame later. One
   // render for both would hold the feedback until the whole screen had rendered.
@@ -59,10 +62,11 @@ function Bar({ state, navigation, current: shown }: TabBarProps & { current: num
   const current = tapped ?? shown;
   const itemWidth = Math.max(0, (width - 8) / TABS.length);
   return (
-    <Glass radius={GLASS_RADIUS} accessibilityRole="tablist" accessibilityLabel="Primary" onLayout={(e) => setWidth(e.nativeEvent.layout.width)} style={{ height: TAB_BAR_HEIGHT, flex: 1, minWidth: 0, padding: 4 }}>
+    <Glass radius={GLASS_RADIUS} accessibilityRole="tablist" accessibilityLabel={t("tabs.primary")} onLayout={(e) => setWidth(e.nativeEvent.layout.width)} style={{ height: TAB_BAR_HEIGHT, flex: 1, minWidth: 0, padding: 4 }}>
       {width > 0 && <Lens index={current} itemWidth={itemWidth} />}
       <View className="h-full flex-row">
-        {TABS.map(({ route, label, icon }, i) => {
+        {TABS.map(({ route, labelKey, icon }, i) => {
+          const label = t(labelKey);
           const route_ = state.routes.find((r) => r.name === route);
           const on = i === current;
           return (

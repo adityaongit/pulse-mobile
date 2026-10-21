@@ -1,3 +1,4 @@
+import { i18n } from "@/i18n/config";
 import type { ReactNode } from "react";
 import { View } from "react-native";
 import { partColor } from "@/lib/bands";
@@ -13,7 +14,7 @@ import { LABEL } from "./primitives";
 export function TrendLegend({ chart, series, typical, className }: { chart: string; series?: readonly { key: string; label: string }[]; typical?: boolean; className?: string }) {
   const { css } = useTheme();
   const items: { key: string; label: string; swatch: ReactNode }[] = typical
-    ? [{ key: "typical", label: "Typical range", swatch: <View className="size-2.5 rounded-xs border border-foreground/15 bg-chart-band" /> }]
+    ? [{ key: "typical", label: i18n.t("ui:sleepStages.typicalRange"), swatch: <View className="size-2.5 rounded-xs border border-foreground/15 bg-chart-band" /> }]
     : series && chart === "stack"
       ? [...series].reverse().map((s) => ({ key: s.key, label: s.label, swatch: <View className="size-2.5 rounded-xs" style={{ backgroundColor: css(partColor(s.key)) }} /> }))
       : series && chart === "pair"

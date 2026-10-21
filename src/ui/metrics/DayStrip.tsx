@@ -1,3 +1,5 @@
+import { i18n } from "@/i18n/config";
+import { useTranslation } from "react-i18next";
 import { haptic } from "../haptics";
 import { useEffect, useRef, useState } from "react";
 import { ScrollView, View, type LayoutRectangle } from "react-native";
@@ -36,6 +38,7 @@ export type DayStripProps = {
 
 function Strip({ indicator, days, variant = "tile", value: controlled, onSelect }: DayStripProps) {
   const { c } = useTheme();
+  const { t } = useTranslation("ui");
   const [urlDay, setUrlDay] = useSelectedDay();
   const selected = controlled ?? urlDay;
   const scroller = useRef<ScrollView>(null);
@@ -52,13 +55,13 @@ function Strip({ indicator, days, variant = "tile", value: controlled, onSelect 
   }, [selected, viewport, days.length]);
 
   return (
-    <ScrollView ref={scroller} horizontal showsHorizontalScrollIndicator={false} onLayout={(e) => setViewport(e.nativeEvent.layout.width)} accessibilityLabel="Choose a day" contentContainerClassName={cn("px-4 py-1", variant === "pill" ? "gap-2" : "gap-1")} className="-my-1">
+    <ScrollView ref={scroller} horizontal showsHorizontalScrollIndicator={false} onLayout={(e) => setViewport(e.nativeEvent.layout.width)} accessibilityLabel={t("dayStrip.chooseDay")} contentContainerClassName={cn("px-4 py-1", variant === "pill" ? "gap-2" : "gap-1")} className="-my-1">
       {days.map((day) => {
         const r = day.recovery ?? null;
         const label =
           indicator === "recovery"
-            ? `${formatDay(day.date, DAY.long)}, ${r === null ? "no Recovery" : `Recovery ${Math.round(r)} percent, ${BAND_WORD[recoveryBand(r)].toLowerCase()}`}`
-            : `${formatDay(day.date, DAY.long)}, ${day.done ? "checked in" : "not checked in"}`;
+            ? t(r === null ? "dayStrip.noRecovery" : "dayStrip.recovery", { date: formatDay(day.date, DAY.long), pct: Math.round(r ?? 0), band: BAND_WORD[recoveryBand(r ?? 0)].toLowerCase() })
+            : t(day.done ? "dayStrip.checkedIn" : "dayStrip.notCheckedIn", { date: formatDay(day.date, DAY.long) });
         const on = day.date === selected;
         const pill = variant === "pill";
         return (

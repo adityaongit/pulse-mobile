@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useState, type ReactNode } from "react";
 import { View } from "react-native";
 import { DATA_COLORS, recoveryColor } from "@/lib/bands";
@@ -43,6 +44,7 @@ export function TickScale(p: TickScaleProps) {
 }
 
 function Scale({ p, value, provisional }: { p: TickScaleProps; value: number | null; provisional?: boolean }) {
+  const { t } = useTranslation("ui");
   const [rowW, setRowW] = useState(0);
   const span = p.max - p.min;
   const at = (i: number) => p.min + (i / (COUNT - 1)) * span;
@@ -50,7 +52,7 @@ function Scale({ p, value, provisional }: { p: TickScaleProps; value: number | n
   const near = frac === null ? -9 : Math.round(frac * (COUNT - 1));
   const text = formatValue(p.format, value);
   const fill = value === null ? null : DATA_COLORS[recoveryColor(value)].bg;
-  const valueText = value === null ? `${p.label}: no data` : `${p.label} ${spoken(text, p.unit)}${p.describe ? `: ${p.describe}` : ""}`;
+  const valueText = value === null ? t("tickScale.noData", { label: p.label }) : t(p.describe ? "tickScale.valueDescribed" : "tickScale.value", { label: p.label, value: spoken(text, p.unit), describe: p.describe });
 
   const tickClass = (i: number) => {
     if (p.variant === "meter") return cn("h-5 w-0.5 rounded-full", fill && i <= near ? fill : "bg-dial-track");

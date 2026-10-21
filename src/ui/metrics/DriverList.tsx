@@ -1,5 +1,7 @@
 import { View } from "react-native";
 import { ChevronDown, ChevronRight, ChevronUp } from "lucide-react-native";
+import { useTranslation } from "react-i18next";
+import { i18n } from "@/i18n/config";
 import { formatValue } from "@/lib/format";
 import type { Metric } from "@/lib/reasons";
 import { CARD_CLASS, CardFill, SECONDARY_ROW, useCardStyle, useInCard } from "../Card";
@@ -41,21 +43,22 @@ export type DriverListProps = {
 
 const fmt = (v: number, unit: DriverListProps["unit"]) => (unit === "SD" ? `${formatValue("signed1", v)} SD` : `${formatValue("signedInt", v)}${unit === "%" ? "%" : ""}`);
 const effectOf = (i: DriverItem) => i.effect ?? (i.delta > 0 ? "positive" : i.delta < 0 ? "negative" : "none");
-const unitWord = { pts: "points", "%": "percent", SD: "standard deviations" };
+const SIZE_KEY = { pts: "sizePts", "%": "sizePercent", SD: "sizeSd" } as const;
 
 function sentence(i: DriverItem, variant: DriverListProps["variant"], unit: DriverListProps["unit"], outcome = "Recovery") {
   const e = effectOf(i);
-  const size = `${formatValue(unit === "SD" ? "decimal1" : "int", Math.abs(i.delta))} ${unitWord[unit]}`;
-  if (variant === "recovery") return e === "none" ? `${i.label}: no clear effect` : `${i.label} ${e === "positive" ? "raised" : "lowered"} Recovery by ${size}`;
+  const name = i.label;
+  const size = i18n.t(`ui:driver.${SIZE_KEY[unit]}`, { value: formatValue(unit === "SD" ? "decimal1" : "int", Math.abs(i.delta)) });
+  if (variant === "recovery") return e === "none" ? i18n.t("ui:driver.noClearEffect", { name }) : i18n.t(e === "positive" ? "ui:driver.raisedRecovery" : "ui:driver.loweredRecovery", { name, size });
   const k = unit === "SD" ? "decimal1" : "int";
-  const ci = i.ci ? `, 90 percent confidence ${formatValue(k, Math.min(Math.abs(i.ci[0]), Math.abs(i.ci[1])))} to ${formatValue(k, Math.max(Math.abs(i.ci[0]), Math.abs(i.ci[1])))}` : "";
-  const n = i.yes !== undefined && i.no !== undefined ? `, from ${i.yes} days with and ${i.no} without` : "";
-  const verb = e === "none" ? `had no clear effect on next-day ${outcome}` : `${e === "positive" ? "raised" : "lowered"} next-day ${outcome} by ${size}`;
-  return `${i.label} ${verb}${ci}${n}`;
+  const ci = i.ci ? i18n.t("ui:driver.ci", { low: formatValue(k, Math.min(Math.abs(i.ci[0]), Math.abs(i.ci[1]))), high: formatValue(k, Math.max(Math.abs(i.ci[0]), Math.abs(i.ci[1]))) }) : "";
+  const from = i.yes !== undefined && i.no !== undefined ? i18n.t("ui:driver.fromDays", { yes: i.yes, no: i.no }) : "";
+  return i18n.t(e === "none" ? "ui:driver.noEffectNext" : e === "positive" ? "ui:driver.raisedNext" : "ui:driver.loweredNext", { name, outcome, size, ci, from });
 }
 
 function Header({ variant, unit, provisional }: { variant: DriverListProps["variant"]; unit: DriverListProps["unit"]; provisional: boolean }) {
-  const [left, mid, right] = variant === "recovery" ? ["Lowered", "Points", "Raised"] : ["Hurts", unit === "SD" ? "Impact (SD)" : "% Impact", "Helps"];
+  const { t } = useTranslation("ui");
+  const [left, mid, right] = variant === "recovery" ? [t("driver.lowered"), t("driver.points"), t("driver.raised")] : [t("driver.hurts"), unit === "SD" ? t("driver.impactSd") : t("driver.impactPct"), t("driver.helps")];
   const cap = "text-xs font-bold uppercase leading-4 tracking-[0.1em]";
   return (
     <View accessibilityElementsHidden className="mb-2 flex-row items-center justify-between gap-2">
@@ -79,6 +82,7 @@ function Header({ variant, unit, provisional }: { variant: DriverListProps["vari
 }
 
 function Item({ i, max, p }: { i: DriverItem; max: number; p: DriverListProps }) {
+  const { t } = useTranslation("ui");
   const e = effectOf(i);
   const inCard = useInCard();
   const shadow = useCardStyle();
@@ -115,8 +119,9 @@ function Item({ i, max, p }: { i: DriverItem; max: number; p: DriverListProps })
       )}
       {impact && i.yes !== undefined && i.no !== undefined && (
         <Text className="text-xs font-medium leading-4 tabular-nums text-muted-foreground">
-          {i.yes} days with, {i.no} without.
-          {i.ci && ` 90% CI ${fmt(i.ci[0], p.unit).replace(/^\+/, "")} to ${fmt(i.ci[1], p.unit).replace(/^\+/, "")}`}
+          {i.ci
+            ? t("driver.evidenceCi", { yes: i.yes, no: i.no, low: fmt(i.ci[0], p.unit).replace(/^\+/, ""), high: fmt(i.ci[1], p.unit).replace(/^\+/, "") })
+            : t("driver.evidence", { yes: i.yes, no: i.no })}
         </Text>
       )}
     </View>
@@ -143,11 +148,12 @@ function Item({ i, max, p }: { i: DriverItem; max: number; p: DriverListProps })
 
 /** Ranked effects as diverging bars on the reference app's hatched track (spec §5.4). */
 export function DriverList(p: DriverListProps) {
+  const { t } = useTranslation("ui");
   const empty =
     p.variant === "recovery" ? (
-      <EmptyState body="No drivers yet: Recovery needs a second night first." />
+      <EmptyState body={t("driver.emptyRecovery")} />
     ) : (
-      <EmptyState body="Not enough check-ins yet. Insights need 5 days with and 5 without a behaviour in the last 90 days." action={{ label: "Check in", sheet: "checkin" }} />
+      <EmptyState body={t("driver.emptyImpact")} action={{ label: i18n.t("common:actions.checkIn"), sheet: "checkin" }} />
     );
   return (
     <MetricState metric={p.data} skeleton={<DriverListSkeleton variant={p.variant} unit={p.unit} />} empty={empty} renderReason={() => null}>

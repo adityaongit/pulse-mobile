@@ -1,3 +1,4 @@
+import { i18n } from "@/i18n/config";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 import Animated, { cancelAnimation, Easing, useAnimatedStyle, useReducedMotion, useSharedValue, withRepeat, withTiming } from "react-native-reanimated";
@@ -16,10 +17,10 @@ import { Press } from "../Press";
 function syncView(s: ShellSync, now: number): { dot: string; label: string } {
   const last = s.sync.lastSuccessAt;
   const rel = last ? ago(last, now) : null;
-  if (s.connection === "auth_revoked" || s.sync.state === "error") return { dot: "bg-recovery-red", label: "Sync failed" };
-  if (s.sync.state === "syncing") return { dot: "bg-coach", label: "Syncing…" };
-  if (s.sync.state === "stale") return { dot: "bg-warning", label: rel ? `Last sync ${rel}` : "Sync is behind" };
-  return { dot: "bg-optimal", label: rel ? `Synced ${rel}` : "Synced" };
+  if (s.connection === "auth_revoked" || s.sync.state === "error") return { dot: "bg-recovery-red", label: i18n.t("ui:sync.failed") };
+  if (s.sync.state === "syncing") return { dot: "bg-coach", label: i18n.t("ui:sync.syncing") };
+  if (s.sync.state === "stale") return { dot: "bg-warning", label: rel ? i18n.t("ui:sync.lastSync", { ago: rel }) : i18n.t("ui:sync.behind") };
+  return { dot: "bg-optimal", label: rel ? i18n.t("ui:sync.syncedAgo", { ago: rel }) : i18n.t("ui:sync.synced") };
 }
 
 /** Re-renders once a minute, so "12m" stays true. */

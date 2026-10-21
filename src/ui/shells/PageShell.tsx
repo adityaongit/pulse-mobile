@@ -1,3 +1,4 @@
+import { i18n } from "@/i18n/config";
 import { createContext, useCallback, useContext, useRef, type ReactNode } from "react";
 import { View } from "react-native";
 import { Text } from "../Text";
@@ -72,7 +73,7 @@ export function PageShell({ title, dateSwitcher, actions, layout = "stack", slot
   return (
     <ScreenScroll header={header} top={top} onScroll={onScroll} onRefresh={onRefresh ?? shellSync?.syncNow}>
       {body && <View className="w-full px-4 pt-2" accessibilityState={{ busy: !!loading }}>
-        {loading && <Text accessibilityLiveRegion="polite" className="absolute h-px w-px opacity-0">{title.trim() ? `Loading ${title}…` : "Loading…"}</Text>}
+        {loading && <Text accessibilityLiveRegion="polite" className="absolute h-px w-px opacity-0">{title.trim() ? i18n.t("ui:loadingTitle", { title }) : i18n.t("common:loading")}</Text>}
         {!!actions && <View className="mb-4 flex-row justify-end gap-2">{actions}</View>}
         <SampleCard />
         <UpdateCard />

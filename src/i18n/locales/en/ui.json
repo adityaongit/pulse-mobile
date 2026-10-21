@@ -1,1 +1,272 @@
-{}
+{
+  "driver": {
+    "sizePts": "{{value}} points",
+    "sizePercent": "{{value}} percent",
+    "sizeSd": "{{value}} standard deviations",
+    "noClearEffect": "{{name}}: no clear effect",
+    "raisedRecovery": "{{name}} raised Recovery by {{size}}",
+    "loweredRecovery": "{{name}} lowered Recovery by {{size}}",
+    "ci": ", 90 percent confidence {{low}} to {{high}}",
+    "fromDays": ", from {{yes}} days with and {{no}} without",
+    "noEffectNext": "{{name}} had no clear effect on next-day {{outcome}}{{ci}}{{from}}",
+    "raisedNext": "{{name}} raised next-day {{outcome}} by {{size}}{{ci}}{{from}}",
+    "loweredNext": "{{name}} lowered next-day {{outcome}} by {{size}}{{ci}}{{from}}",
+    "lowered": "Lowered",
+    "points": "Points",
+    "raised": "Raised",
+    "hurts": "Hurts",
+    "helps": "Helps",
+    "impactSd": "Impact (SD)",
+    "impactPct": "% Impact",
+    "evidence": "{{yes}} days with, {{no}} without.",
+    "evidenceCi": "{{yes}} days with, {{no}} without. 90% CI {{low}} to {{high}}",
+    "emptyRecovery": "No drivers yet: Recovery needs a second night first.",
+    "emptyImpact": "Not enough check-ins yet. Insights need 5 days with and 5 without a behaviour in the last 90 days."
+  },
+  "contributor": {
+    "notMeasured": "Not measured: left out of today’s score",
+    "reasonSentence": "{{label}}: {{reason}}",
+    "recoverySentence": "{{label}} {{value}}, {{position}} your normal range of {{low}} to {{high}}{{points}}",
+    "above": "above",
+    "below": "below",
+    "within": "within",
+    "noChange": ", no change",
+    "added_one": ", added {{count}} point",
+    "added_other": ", added {{count}} points",
+    "tookOff_one": ", took off {{count}} point",
+    "tookOff_other": ", took off {{count}} points",
+    "pts": " pts",
+    "baseline": "Baseline {{mean}} ± {{sd}}{{unit}}",
+    "healthspanSentence": "{{label}}: 6-month average {{value}}{{recent}}{{years}}",
+    "recentAverage": ", 30-day average {{value}}",
+    "noChangeYears": ", no change in years",
+    "yearsYounger": ", {{years}} years younger",
+    "yearsOlder": ", {{years}} years older",
+    "avg6m": "6 Month avg.",
+    "avg30d": "30 Day avg.",
+    "years": "years"
+  },
+  "dial": {
+    "recovery": "Recovery",
+    "strain": "Strain",
+    "sleepPerformance": "Sleep performance",
+    "sleep": "Sleep",
+    "stress": "Stress",
+    "statusPoor": "Poor",
+    "statusSufficient": "Sufficient",
+    "statusOptimal": "Optimal",
+    "openDetails": "{{aria}}. Open {{label}} details"
+  },
+  "sleepStages": {
+    "hoursOfSleep": "Hours of sleep",
+    "restorative": "Restorative sleep",
+    "awake": "Awake",
+    "light": "Light",
+    "deep": "SWS (Deep)",
+    "rem": "REM",
+    "breakdown": "Breakdown",
+    "timeline": "Timeline",
+    "stagesView": "Stages view",
+    "typicalRange": "Typical range",
+    "stages": "Stages",
+    "duration": "Duration",
+    "highlightStage": "Highlight a sleep stage",
+    "rowAria": "{{stage}}, {{pct}} percent, {{duration}}. Typical {{low}} to {{high}} percent",
+    "empty": "No stage data for this sleep. Fitbit only stages sleeps longer than about 3 hours."
+  },
+  "dayStrip": {
+    "chooseDay": "Choose a day",
+    "noRecovery": "{{date}}, no Recovery",
+    "recovery": "{{date}}, Recovery {{pct}} percent, {{band}}",
+    "checkedIn": "{{date}}, checked in",
+    "notCheckedIn": "{{date}}, not checked in"
+  },
+  "tickScale": {
+    "noData": "{{label}}: no data",
+    "value": "{{label}} {{value}}",
+    "valueDescribed": "{{label}} {{value}}: {{describe}}"
+  },
+  "timeline": {
+    "nap": "Nap",
+    "sleep": "Sleep",
+    "sleepAria": "{{name}}, {{duration}}, {{start}} to {{end}}",
+    "distanceNoStrain": "{{distance}} · No strain",
+    "noStrainReason": "No strain: not enough heart-rate data",
+    "spokenDistance": ", {{distance}}",
+    "spokenDistancePace": ", {{distance}} at {{pace}}",
+    "activityAria": "{{name}}{{distance}}, strain {{strain}}, {{start}} to {{end}}",
+    "activityAriaNoStrain": "{{name}}{{distance}}, no strain, {{start}} to {{end}}"
+  },
+  "keyStat": {
+    "vsAvg": "{{diff}} vs avg"
+  },
+  "live": {
+    "reconnectingAria": "Reconnecting to the band",
+    "liveFrom": "Live from {{name}}",
+    "liveFromBand": "Live from the band",
+    "reconnecting": "Reconnecting…",
+    "pill": "Live · {{name}}",
+    "band": "Band",
+    "traceAria": "Live heart rate over the last 2 minutes",
+    "traceCaption": "Last 2 min",
+    "connecting": "Connecting…",
+    "searching": "Searching…",
+    "goLive": "Go live",
+    "buttonAria": "{{label}}: live heart rate over Bluetooth",
+    "stopAria": "Stop live heart rate",
+    "stop": "Stop live"
+  },
+  "sample": {
+    "title": "Sample data",
+    "body": "These numbers are generated for exploring the app. They are not your health data.",
+    "connect": "Connect your data"
+  },
+  "update": {
+    "failed": "Couldn’t download the update. Try again, or get it from GitHub.",
+    "available": "Update available",
+    "body": "Pulse {{version}} is out. Updating keeps your data.",
+    "downloading": "Downloading… {{percent}}%",
+    "toVersion": "Update to Pulse {{version}}",
+    "update": "Update",
+    "whatsNew": "What’s new",
+    "later": "Later"
+  },
+  "sync": {
+    "failed": "Sync failed",
+    "syncing": "Syncing…",
+    "lastSync": "Last sync {{ago}}",
+    "behind": "Sync is behind",
+    "syncedAgo": "Synced {{ago}}",
+    "synced": "Synced"
+  },
+  "calendar": {
+    "close": "Close calendar",
+    "backToToday": "Back to today",
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month",
+    "recoveryValue": "Recovery {{value}}%",
+    "strainValue": "Strain {{value}}",
+    "sleepValue": "Sleep {{value}}%",
+    "dayAriaToday": "Today, {{date}}{{value}}",
+    "dayAria": "{{date}}{{value}}",
+    "dayValue": ", {{value}}",
+    "legendStrain": "Day Strain {{value}}+",
+    "legendSleep": "Sleep {{value}}%+"
+  },
+  "dateSwitcher": {
+    "previousWeek": "Previous week",
+    "nextWeek": "Next week",
+    "previousDay": "Previous day",
+    "nextDay": "Next day",
+    "openCalendar": "{{label}}. Open calendar"
+  },
+  "info": {
+    "about": "About {{label}}"
+  },
+  "menu": {
+    "close": "Close menu"
+  },
+  "linkList": {
+    "external": "Opens outside the app"
+  },
+  "checkIn": {
+    "forDay": "Check in for {{day}}"
+  },
+  "tabs": {
+    "home": "Home",
+    "health": "Health",
+    "journal": "Journal",
+    "more": "More",
+    "primary": "Primary"
+  },
+  "rings": {
+    "noScore": "{{label}}: no score. Open {{label}}",
+    "recovery": "Recovery {{value}} percent, {{band}}. Open Recovery",
+    "sleep": "Sleep performance {{value}} percent. Open Sleep",
+    "strain": "Strain {{value}} percent. Open Strain",
+    "sleepLabel": "Sleep",
+    "recoveryLabel": "Recovery",
+    "strainLabel": "Strain"
+  },
+  "home": {
+    "settings": "Settings",
+    "streak_one": "{{count}}-day streak",
+    "streak_other": "{{count}}-day streak"
+  },
+  "loadingTitle": "Loading {{title}}…",
+  "trend": {
+    "ariaW": "1 week",
+    "ariaM": "1 month",
+    "ariaSixM": "6 months",
+    "ariaOneY": "1 year",
+    "priorW": "vs. prior week",
+    "priorM": "vs. prior month",
+    "priorSixM": "vs. prior 6 months",
+    "priorOneY": "vs. prior year",
+    "wordW": "week",
+    "wordM": "month",
+    "wordSixM": "6 months",
+    "wordOneY": "year",
+    "labelW": "W",
+    "labelM": "M",
+    "labelSixM": "6M",
+    "labelOneY": "1Y",
+    "avg": "Avg",
+    "average": "Average",
+    "summary": "{{label}} over the last {{range}}: average {{average}}, range {{low}} to {{high}}{{missing}}.{{split}}",
+    "missingDays_one": ", {{count}} day missing",
+    "missingDays_other": ", {{count}} days missing",
+    "split": " Average split: {{parts}}.",
+    "noData": "No {{label}} data in the last {{range}}.",
+    "soFar": "So far",
+    "vsPrior": "{{delta}} {{prior}}",
+    "range": "Range",
+    "empty": "No data in this range yet.",
+    "noBreakdown": "No breakdown for this day"
+  },
+  "stress": {
+    "emptyFull": "No stress scored yet today. Stress is measured outside workouts, every 6 minutes.",
+    "emptySpark": "No stress scored yet"
+  },
+  "hrChart": {
+    "daySummary": "Heart rate from {{start}} to {{end}}: low {{low}}, high {{high}} beats per minute.",
+    "emptyDay": "No heart-rate data for this day.",
+    "nightSummary": "Heart rate during sleep from {{start}} to {{end}}: low {{low}}, average {{average}}, high {{high}} beats per minute.",
+    "emptyNight": "No heart-rate data for this night.",
+    "low": "Low {{value}}"
+  },
+  "hypnogram": {
+    "awake": "Awake",
+    "rem": "REM",
+    "light": "Light",
+    "deep": "Deep",
+    "summary_one": "Sleep stages from {{start}} to {{end}}, {{count}} stretch: {{stages}}.",
+    "summary_other": "Sleep stages from {{start}} to {{end}}, {{count}} stretches: {{stages}}.",
+    "stageSummary": "{{stage}} {{duration}}, {{pct}} percent",
+    "tooltip": "{{stage}}, {{minutes}} min"
+  },
+  "energy": {
+    "summary": "Energy from {{start}}: started at {{from}} percent, now {{now}} percent.",
+    "empty": "Energy Bank starts once you wake up."
+  },
+  "zones": {
+    "underAll": "Heart rate stayed under the {{label}} zone ({{min}} bpm) the whole time.",
+    "spokenUnder": "under {{max}} bpm",
+    "spokenAbove": "{{min}} and above bpm",
+    "spokenBetween": "{{min}} to {{max}} bpm",
+    "zoneAria": "{{label}} zone, {{range}}, {{duration}}, {{share}}",
+    "shareUnder1": "under 1 percent",
+    "sharePct": "{{value}} percent",
+    "segmentAria": "{{label}}: {{value}}",
+    "days_one": "{{count}} day",
+    "days_other": "{{count}} days",
+    "emptyRows": "No heart-rate zones yet today.",
+    "emptyStacked": "No days with Recovery in this period."
+  },
+  "strainRecovery": {
+    "range": "from {{low}} to {{high}} percent",
+    "notRecorded": "not recorded",
+    "summary_one": "Strain and Recovery over the last {{count}} day: Strain {{strain}}, Recovery {{recovery}}.",
+    "summary_other": "Strain and Recovery over the last {{count}} days: Strain {{strain}}, Recovery {{recovery}}."
+  }
+}

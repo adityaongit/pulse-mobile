@@ -1,3 +1,4 @@
+import { i18n } from "@/i18n/config";
 import { Moon } from "lucide-react-native";
 import { clock, durationWords, hmm } from "@/lib/format";
 import { Icon } from "../Icon";
@@ -18,7 +19,7 @@ export type SleepCardProps = {
 
 /** Sleep or nap row on the day's timeline (spec §5.12). */
 export function SleepCard({ kind, minutes, start, end, href, timeZone }: SleepCardProps) {
-  const name = kind === "nap" ? "Nap" : "Sleep";
+  const name = i18n.t(kind === "nap" ? "ui:timeline.nap" : "ui:timeline.sleep");
   const s = clock(start, timeZone);
   const e = clock(end, timeZone);
   return (
@@ -36,7 +37,7 @@ export function SleepCard({ kind, minutes, start, end, href, timeZone }: SleepCa
       name={name}
       start={s}
       end={e}
-      label={`${name}, ${durationWords(minutes)}, ${s} to ${e}`}
+      label={i18n.t("ui:timeline.sleepAria", { name, duration: durationWords(minutes), start: s, end: e })}
     />
   );
 }

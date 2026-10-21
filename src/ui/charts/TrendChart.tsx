@@ -1,3 +1,5 @@
+import { i18n } from "@/i18n/config";
+import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { View } from "react-native";
 import { DashPathEffect, Group, LinearGradient, RoundedRect, vec } from "@shopify/react-native-skia";
@@ -66,10 +68,12 @@ export type TrendChartProps = {
   level?: boolean;
 };
 
-const RANGE_ARIA: Record<TrendRange, string> = { w: "1 week", m: "1 month", "6m": "6 months", "1y": "1 year" };
-const RANGE_PRIOR: Record<TrendRange, string> = { w: "vs. prior week", m: "vs. prior month", "6m": "vs. prior 6 months", "1y": "vs. prior year" };
-const RANGE_WORD: Record<TrendRange, string> = { w: "week", m: "month", "6m": "6 months", "1y": "year" };
-const RANGE_LABEL: Record<TrendRange, string> = { w: "W", m: "M", "6m": "6M", "1y": "1Y" };
+// Resolved when read (ui namespace): a range's key suffix, then its spoken name, prior-period text, word and short label.
+const RANGE_KEY = { w: "W", m: "M", "6m": "SixM", "1y": "OneY" } as const;
+const rangeAria = (r: TrendRange) => i18n.t(`ui:trend.aria${RANGE_KEY[r]}`);
+const rangePrior = (r: TrendRange) => i18n.t(`ui:trend.prior${RANGE_KEY[r]}`);
+const rangeWord = (r: TrendRange) => i18n.t(`ui:trend.word${RANGE_KEY[r]}`);
+const rangeLabel = (r: TrendRange) => i18n.t(`ui:trend.label${RANGE_KEY[r]}`);
 const DEFAULT_RANGES: readonly TrendRange[] = ["w", "m", "6m"];
 const HEIGHT = 200;
 const AXIS_H = 30;
@@ -98,6 +102,7 @@ const BAND_TICK = { green: "recovery-green", yellow: "recovery-yellow", red: "re
 const headerClass = (ranges: readonly TrendRange[]) => cn("mb-4 gap-3", ranges.length > 3 ? "flex-col-reverse" : "flex-row items-start justify-between");
 
 function Trend({ points, p }: { points: TrendPoint[]; p: TrendChartProps }) {
+  const { t } = useTranslation("ui");
   const { css, c } = useTheme();
   const today = useOptionalShellCalendar()?.today ?? points.at(-1)?.date ?? "";
   const fallback = p.defaultRange ?? "m";
@@ -127,7 +132,7 @@ function Trend({ points, p }: { points: TrendPoint[]; p: TrendChartProps }) {
   // Durations always read h:mm ("3:00"); wholeTick would print a whole number of minutes raw ("180").
   const fmtTick = p.format === "duration" ? (v: number) => formatValue(p.format, v) : wholeTick((v) => formatValue(p.format, v));
   const showAvg = !line && range !== "w" && avg !== null;
-  const gutter = labelGutter([p.reference?.label, showAvg && "Avg"]);
+  const gutter = labelGutter([p.reference?.label, showAvg && t("trend.avg")]);
   // Reserve room for the widest tick and a rounded-up top tick, using about 7 px per character.
   const widest = formatValue(p.format, Math.max(0, ...rows.map((r) => r.value ?? 0))).length;
   const axisWidth = widest <= 3 ? 32 : 15 + 7 * widest;
@@ -138,10 +143,16 @@ function Trend({ points, p }: { points: TrendPoint[]; p: TrendChartProps }) {
     return xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null;
   };
   const summary = values.length
-    ? `${p.label} over the last ${RANGE_WORD[range]}: average ${spoken(formatValue(p.format, avg), p.unit)}, range ${formatValue(p.format, Math.min(...values))} to ${formatValue(p.format, Math.max(...values))}${rows.length - values.length ? `, ${rows.length - values.length} ${rows.length - values.length === 1 ? "day" : "days"} missing` : ""}.${
-        p.stack ? ` Average split: ${p.stack.map((s) => `${s.label} ${formatValue(p.format, partAvg(s.key))}`).join(", ")}.` : ""
-      }`
-    : `No ${p.label} data in the last ${RANGE_WORD[range]}.`;
+    ? t("trend.summary", {
+        label: p.label,
+        range: rangeWord(range),
+        average: spoken(formatValue(p.format, avg), p.unit),
+        low: formatValue(p.format, Math.min(...values)),
+        high: formatValue(p.format, Math.max(...values)),
+        missing: rows.length - values.length ? t("trend.missingDays", { count: rows.length - values.length }) : "",
+        split: p.stack ? t("trend.split", { parts: p.stack.map((s) => `${s.label} ${formatValue(p.format, partAvg(s.key))}`).join(", ") }) : "",
+      })
+    : t("trend.noData", { label: p.label, range: rangeWord(range) });
 
   const geometry = (width: number, height: number) => {
             const margin = { top: range === "w" ? 18 : 8, right: level && range === "w" ? Math.max(gutter, 14) : gutter, left: 4 };
@@ -197,24 +208,24 @@ function Trend({ points, p }: { points: TrendPoint[]; p: TrendChartProps }) {
     <View className="min-w-0">
       <View className={headerClass(ranges)}>
         <View className="min-w-0 shrink">
-          <Text className="text-xs font-bold uppercase leading-4 tracking-[0.1em] tabular-nums text-muted-foreground">{scrubbed || byDay ? dayLabel(shown?.date ?? today, today) : "Average"}</Text>
+          <Text className="text-xs font-bold uppercase leading-4 tracking-[0.1em] tabular-nums text-muted-foreground">{scrubbed || byDay ? dayLabel(shown?.date ?? today, today) : t("trend.average")}</Text>
           <ValueUnit value={formatValue(p.format, scrubbed || byDay ? (shown?.value ?? null) : avg)} unit={p.unit} className="font-numeric text-[28px] font-bold leading-8" />
           {p.stack && <StackLegend series={p.stack} point={scrubbed || byDay ? shown : { date: "", value: avg, parts: Object.fromEntries(p.stack.map((s) => [s.key, partAvg(s.key) ?? 0])) }} format={p.format} />}
-          {shown?.provisional && <Text className="mt-1 text-xs font-medium text-muted-foreground">{p.stack ? "So far" : "Provisional"}</Text>}
+          {shown?.provisional && <Text className="mt-1 text-xs font-medium text-muted-foreground">{p.stack ? t("trend.soFar") : i18n.t("reasons:tag.provisionalLabel")}</Text>}
           {!scrubbed && !byDay && delta !== null && (
             <View className="mt-1">
               <StatusChip tone={tone === "good" ? "optimal" : tone === "bad" ? "warning" : "neutral"} delta={delta > 0 ? "up" : delta < 0 ? "down" : "flat"}>
-                {`${formatValue(p.format, Math.abs(delta))}${p.unit === "%" ? "%" : p.unit ? ` ${p.unit}` : ""} ${RANGE_PRIOR[range]}`}
+                {t("trend.vsPrior", { delta: `${formatValue(p.format, Math.abs(delta))}${p.unit === "%" ? "%" : p.unit ? ` ${p.unit}` : ""}`, prior: rangePrior(range) })}
               </StatusChip>
             </View>
           )}
         </View>
         {!p.fixedRange && (
           <Segmented
-            label="Range"
+            label={t("trend.range")}
             value={range}
             fill={ranges.length > 3}
-            options={ranges.map((r) => ({ value: r, label: RANGE_LABEL[r], accessibilityLabel: RANGE_ARIA[r] }))}
+            options={ranges.map((r) => ({ value: r, label: rangeLabel(r), accessibilityLabel: rangeAria(r) }))}
             onChange={(r) => {
               setRange(r);
               setX(null);
@@ -225,7 +236,7 @@ function Trend({ points, p }: { points: TrendPoint[]; p: TrendChartProps }) {
 
       {values.length === 0 ? (
         <View className="h-[200px] items-center justify-center">
-          <EmptyState body="No data in this range yet." />
+          <EmptyState body={t("trend.empty")} />
         </View>
       ) : (
         <ChartFigure summary={summary} height={HEIGHT} onWidth={setWidth}>
@@ -331,7 +342,7 @@ function Trend({ points, p }: { points: TrendPoint[]; p: TrendChartProps }) {
                   );
                 })}
                 {p.reference && <Pill x={x1 + 4} y={y(p.reference.y)} text={p.reference.label} color={c["muted-foreground"]} />}
-                {showAvg && <Pill x={x1 + 4} y={y(avg!)} text="Avg" />}
+                {showAvg && <Pill x={x1 + 4} y={y(avg!)} text={t("trend.avg")} />}
                 {/* Value labels over the bars (W) and over a labelled line's dots. */}
                 {range === "w" && !p.stack && !line && rows.map((r, i) => (r.value === null ? null : <ChartLabel key={r.date} x={xs[i]} y={y(r.value) - 11} className="text-[11px] text-foreground">{r.text}</ChartLabel>))}
                 {range === "w" && level && rows.map((r, i) => (r.value === null ? null : <ChartLabel key={r.date} x={xs[i]} y={y(r.value) - 18} className="font-semibold text-foreground-secondary">{`${r.text}${p.unit === "%" ? "%" : ""}`}</ChartLabel>))}
@@ -354,6 +365,7 @@ function Trend({ points, p }: { points: TrendPoint[]; p: TrendChartProps }) {
 const circle = (cx: number, cy: number, r: number) => `M${cx - r},${cy}a${r},${r} 0 1 0 ${2 * r},0a${r},${r} 0 1 0 ${-2 * r},0Z`;
 
 function StackLegend({ series, point, format }: { series: readonly TrendSeries[]; point: TrendPoint | null; format: FormatKey }) {
+  const { t } = useTranslation("ui");
   const { css, c } = useTheme();
   const parts = point?.parts;
   return (
@@ -361,7 +373,7 @@ function StackLegend({ series, point, format }: { series: readonly TrendSeries[]
       {point?.value != null && !parts ? (
         <View className="flex-row items-center gap-1.5">
           <View className="size-2 rounded-xs border border-dashed" style={{ borderColor: c["muted-foreground"] }} />
-          <Text className="text-xs font-medium leading-4 text-muted-foreground">No breakdown for this day</Text>
+          <Text className="text-xs font-medium leading-4 text-muted-foreground">{t("trend.noBreakdown")}</Text>
         </View>
       ) : (
         [...series].reverse().map((s) => (
@@ -378,19 +390,21 @@ function StackLegend({ series, point, format }: { series: readonly TrendSeries[]
 }
 
 export function TrendChart(p: TrendChartProps) {
+  const { t } = useTranslation("ui");
   return (
-    <MetricState metric={p.data} skeleton={<TrendChartSkeleton ranges={p.ranges} day={p.headline === "day"} legend={!!p.stack} />} empty={<EmptyState body="No data in this range yet." />}>
+    <MetricState metric={p.data} skeleton={<TrendChartSkeleton ranges={p.ranges} day={p.headline === "day"} legend={!!p.stack} />} empty={<EmptyState body={t("trend.empty")} />}>
       {(points) => <Trend points={points} p={p} />}
     </MetricState>
   );
 }
 
 export function TrendChartSkeleton({ chip = false, caption = false, ranges = DEFAULT_RANGES, day = false, legend = false }: { chip?: boolean; caption?: boolean; ranges?: readonly TrendRange[]; day?: boolean; legend?: boolean } = {}) {
+  const { t } = useTranslation("ui");
   return (
     <View accessibilityElementsHidden className="min-w-0">
       <View className={headerClass(ranges)}>
         <View className="min-w-0">
-          {day ? <SkeletonText className="w-16" fs={12} lh={16} /> : <Text className="text-xs font-bold uppercase leading-4 tracking-[0.1em] text-muted-foreground">Average</Text>}
+          {day ? <SkeletonText className="w-16" fs={12} lh={16} /> : <Text className="text-xs font-bold uppercase leading-4 tracking-[0.1em] text-muted-foreground">{t("trend.average")}</Text>}
           <SkeletonText className="w-14" fs={28} lh={32} />
           {legend && <SkeletonText className="mt-1.5 w-40" />}
           {chip && <Skeleton className="mt-1 h-6 w-28" />}
@@ -398,7 +412,7 @@ export function TrendChartSkeleton({ chip = false, caption = false, ranges = DEF
         <View className={cn("flex-row gap-0.5 rounded-lg bg-muted p-0.5", ranges.length > 3 && "w-full")}>
           {ranges.map((r) => (
             <View key={r} className={cn("h-10 min-w-11 items-center justify-center rounded-md px-3", ranges.length > 3 && "flex-1")}>
-              <Text className="font-numeric text-[13px] font-bold text-muted-foreground/60">{RANGE_LABEL[r]}</Text>
+              <Text className="font-numeric text-[13px] font-bold text-muted-foreground/60">{rangeLabel(r)}</Text>
             </View>
           ))}
         </View>

@@ -2,6 +2,8 @@
 // src/lib/log.ts, copied here so src/queries depends on nothing outside src/core, src/lib/time and src/lib/reasons
 // (the UI's own port of those libs is written separately). Keep each function identical to the web's.
 import { getLocale, onLocaleChange } from "@/lib/locale";
+import { i18n } from "@/i18n/config";
+import { type LabelKey, groupLabel, labelRecord, withLabel } from "@/lib/metricLabels";
 import { acwrBand, type AcwrBand } from "@/core/scoring/readiness";
 
 // ── format.ts ───────────────────────────────────────────────────────────────
@@ -75,10 +77,10 @@ export const DAY = {
 
 /** "Today", "Yesterday", else "Mon, Sep 28". */
 export function dayLabel(date: string, today: string) {
-  if (date === today) return "Today";
+  if (date === today) return i18n.t("common:today");
   const y = new Date(`${today}T00:00:00Z`);
   y.setUTCDate(y.getUTCDate() - 1);
-  if (date === y.toISOString().slice(0, 10)) return "Yesterday";
+  if (date === y.toISOString().slice(0, 10)) return i18n.t("common:yesterday");
   return formatDay(date, DAY.short);
 }
 
@@ -153,76 +155,83 @@ export type ExtraMetric = {
   note?: string;
 };
 
-const DERIVED_NOTE =
-  "From a Google account, Fitbit's own number. From Health Connect, which doesn't carry it, Pulse computes it from your band's heart rate and steps, following Fitbit's rules as closely as Health Connect allows, so Fitbit's number may differ a little.";
-
-export const EXTRA_METRICS = [
-  { key: "distance", label: "Distance", unit: "km", format: "decimal2", direction: "up", group: "activity", partialToday: true },
-  { key: "floors", label: "Floors", format: "grouped", direction: "up", group: "activity", partialToday: true },
-  { key: "elevation", label: "Elevation gain", unit: "m", format: "int", direction: "up", group: "activity", partialToday: true },
-  { key: "active_minutes", label: "Active minutes", format: "duration", direction: "up", group: "activity", partialToday: true, note: DERIVED_NOTE },
-  { key: "light_minutes", label: "Light activity", format: "duration", direction: "up", group: "activity", partialToday: true, note: DERIVED_NOTE },
-  { key: "azm", label: "Active Zone Minutes", format: "duration", direction: "up", group: "activity", partialToday: true, note: DERIVED_NOTE },
-  { key: "active_calories", label: "Active calories", unit: "kcal", format: "grouped", direction: "neutral", group: "activity", partialToday: true },
-  { key: "sedentary_minutes", label: "Sedentary time", format: "duration", direction: "down", group: "activity", partialToday: true, note: DERIVED_NOTE },
+const EXTRA_DEFS = [
+  { key: "distance", unit: "km", format: "decimal2", direction: "up", group: "activity", partialToday: true },
+  { key: "floors", format: "grouped", direction: "up", group: "activity", partialToday: true },
+  { key: "elevation", unit: "m", format: "int", direction: "up", group: "activity", partialToday: true },
+  { key: "active_minutes", format: "duration", direction: "up", group: "activity", partialToday: true, derived: true },
+  { key: "light_minutes", format: "duration", direction: "up", group: "activity", partialToday: true, derived: true },
+  { key: "azm", format: "duration", direction: "up", group: "activity", partialToday: true, derived: true },
+  { key: "active_calories", unit: "kcal", format: "grouped", direction: "neutral", group: "activity", partialToday: true },
+  { key: "sedentary_minutes", format: "duration", direction: "down", group: "activity", partialToday: true, derived: true },
   // Today's is the samples so far (in the morning mostly the night's), not the day's average: "so far", like Stress's.
-  { key: "avg_hr", label: "Average heart rate", unit: "bpm", format: "int", direction: "neutral", group: "activity", partialToday: true, note: DERIVED_NOTE },
-  { key: "water", label: "Water", unit: "ml", format: "grouped", direction: "up", group: "nutrition", partialToday: true },
-  { key: "calories_in", label: "Calories eaten", unit: "kcal", format: "grouped", direction: "neutral", group: "nutrition", partialToday: true },
-  { key: "protein", label: "Protein", unit: "g", format: "int", direction: "neutral", group: "nutrition", partialToday: true },
-  { key: "carbs", label: "Carbohydrates", unit: "g", format: "int", direction: "neutral", group: "nutrition", partialToday: true },
-  { key: "fat", label: "Fat", unit: "g", format: "int", direction: "neutral", group: "nutrition", partialToday: true },
-  { key: "glucose", label: "Blood glucose", unit: "mg/dL", format: "int", direction: "neutral", group: "vitals" },
-  { key: "core_temp", label: "Core temperature", unit: "°C", format: "decimal1", direction: "neutral", group: "vitals" },
-  { key: "swim_strokes", label: "Swim strokes", format: "grouped", direction: "up", group: "activity", partialToday: true },
-] as const satisfies readonly ExtraMetric[];
+  { key: "avg_hr", unit: "bpm", format: "int", direction: "neutral", group: "activity", partialToday: true, derived: true },
+  { key: "water", unit: "ml", format: "grouped", direction: "up", group: "nutrition", partialToday: true },
+  { key: "calories_in", unit: "kcal", format: "grouped", direction: "neutral", group: "nutrition", partialToday: true },
+  { key: "protein", unit: "g", format: "int", direction: "neutral", group: "nutrition", partialToday: true },
+  { key: "carbs", unit: "g", format: "int", direction: "neutral", group: "nutrition", partialToday: true },
+  { key: "fat", unit: "g", format: "int", direction: "neutral", group: "nutrition", partialToday: true },
+  { key: "glucose", unit: "mg/dL", format: "int", direction: "neutral", group: "vitals" },
+  { key: "core_temp", unit: "°C", format: "decimal1", direction: "neutral", group: "vitals" },
+  { key: "swim_strokes", format: "grouped", direction: "up", group: "activity", partialToday: true },
+] as const satisfies readonly (Omit<ExtraMetric, "label" | "key" | "note"> & { key: LabelKey; derived?: true })[];
 
-export type ExtraKey = (typeof EXTRA_METRICS)[number]["key"];
+/** `label` and `note` are getters (metrics namespace), resolved when read. */
+export const EXTRA_METRICS = EXTRA_DEFS.map((d) => {
+  const m = withLabel(d);
+  return "derived" in d ? Object.defineProperty(m, "note", { get: () => i18n.t("metrics:derivedNote"), enumerable: true }) : m;
+});
+
+export type ExtraKey = (typeof EXTRA_DEFS)[number]["key"];
 export const EXTRA_KEYS = EXTRA_METRICS.map((m) => m.key) as ExtraKey[];
 export const extraMetric = (key: ExtraKey): ExtraMetric => EXTRA_METRICS.find((m) => m.key === key)!;
 
 // ── dashboard.ts ────────────────────────────────────────────────────────────
 
 export const DASHBOARD_GROUPS = [
-  { key: "recovery", label: "Recovery & sleep" },
-  { key: "activity", label: "Activity" },
-  { key: "body", label: "Body" },
-  { key: "nutrition", label: "Nutrition" },
-  { key: "vitals", label: "Vitals" },
+  { key: "recovery" },
+  { key: "activity" },
+  { key: "body" },
+  { key: "nutrition" },
+  { key: "vitals" },
 ] as const;
 export type DashboardGroup = (typeof DASHBOARD_GROUPS)[number]["key"];
 
 /** The eight v1 rows; their units and reasons live in the Home query (`keyStats`). */
 const CORE = [
-  { key: "hrv", label: "Heart rate variability", group: "recovery" },
-  { key: "rhr", label: "Resting heart rate", group: "recovery" },
-  { key: "resp", label: "Respiratory rate", group: "vitals" },
-  { key: "sleep", label: "Sleep performance", group: "recovery" },
-  { key: "calories", label: "Calories", group: "activity" },
-  { key: "steps", label: "Steps", group: "activity" },
-  { key: "spo2", label: "Blood oxygen", group: "vitals" },
-  { key: "skin", label: "Skin temperature", group: "vitals" },
+  { key: "hrv", group: "recovery" },
+  { key: "rhr", group: "recovery" },
+  { key: "resp", group: "vitals" },
+  { key: "sleep", group: "recovery" },
+  { key: "calories", group: "activity" },
+  { key: "steps", group: "activity" },
+  { key: "spo2", group: "vitals" },
+  { key: "skin", group: "vitals" },
 ] as const;
 
 /** Weight and body-fat readings; each opens its detail screen. */
-export const BODY_METRICS = [
-  { key: "weight", label: "Weight", unit: "kg", format: "decimal1", direction: "neutral", href: metricHref("weight") },
-  { key: "body_fat", label: "Body fat", unit: "%", format: "decimal1", direction: "neutral", href: metricHref("body_fat") },
-] as const satisfies readonly { key: string; label: string; unit: string; format: FormatKey; direction: GoodDirection; href: string }[];
-export type BodyKey = (typeof BODY_METRICS)[number]["key"];
+const BODY_DEFS = [
+  { key: "weight", unit: "kg", format: "decimal1", direction: "neutral", href: metricHref("weight") },
+  { key: "body_fat", unit: "%", format: "decimal1", direction: "neutral", href: metricHref("body_fat") },
+] as const satisfies readonly { key: LabelKey; unit: string; format: FormatKey; direction: GoodDirection; href: string }[];
+export const BODY_METRICS = BODY_DEFS.map(withLabel);
+export type BodyKey = (typeof BODY_DEFS)[number]["key"];
 
 export type DashboardKey = (typeof CORE)[number]["key"] | BodyKey | ExtraKey;
 
-const ALL: { key: DashboardKey; label: string; group: DashboardGroup }[] = [
-  ...CORE,
-  ...BODY_METRICS.map((m) => ({ key: m.key, label: m.label, group: "body" as const })),
-  ...EXTRA_METRICS.map((m) => ({ key: m.key, label: m.label, group: m.group })),
-];
+const ALL = (
+  [
+    ...CORE,
+    ...BODY_METRICS.map((m) => ({ key: m.key, group: "body" as const })),
+    ...EXTRA_METRICS.map((m) => ({ key: m.key, group: m.group })),
+  ] as { key: DashboardKey & LabelKey; group: DashboardGroup }[]
+).map(withLabel);
 
 /** Every metric, in editor order: by group, then catalogue order within it. */
 export const DASHBOARD_METRICS = DASHBOARD_GROUPS.flatMap((g) => ALL.filter((m) => m.group === g.key));
 
-export const DASHBOARD_LABEL = Object.fromEntries(ALL.map((m) => [m.key, m.label])) as Record<DashboardKey, string>;
+/** `DASHBOARD_LABEL[key]` resolves the name per read. */
+export const DASHBOARD_LABEL: Record<DashboardKey, string> = labelRecord(ALL.map((m) => m.key));
 
 export const isDashboardKey = (k: string): k is DashboardKey => Object.prototype.hasOwnProperty.call(DASHBOARD_LABEL, k);
 

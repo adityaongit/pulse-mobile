@@ -1,3 +1,4 @@
+import { i18n } from "@/i18n/config";
 import { RoundedRect } from "@shopify/react-native-skia";
 import { recoveryBand } from "@/lib/bands";
 import { DAY, formatDay, formatValue } from "@/lib/format";
@@ -64,9 +65,12 @@ export function StrainRecoveryChart({ points, today }: { points: StrainRecoveryP
   }));
   const strains = points.map((p) => p.strain).filter((v): v is number => v !== null);
   const recs = points.map((p) => p.recovery).filter((v): v is number => v !== null);
-  const summary = `Strain and Recovery over the last ${points.length} days: Strain ${
-    strains.length ? `from ${formatValue("int", Math.min(...strains))} to ${formatValue("int", Math.max(...strains))} percent` : "not recorded"
-  }, Recovery ${recs.length ? `from ${Math.round(Math.min(...recs))} to ${Math.round(Math.max(...recs))} percent` : "not recorded"}.`;
+  const range = (low: string | number, high: string | number) => i18n.t("ui:strainRecovery.range", { low, high });
+  const summary = i18n.t("ui:strainRecovery.summary", {
+    count: points.length,
+    strain: strains.length ? range(formatValue("int", Math.min(...strains)), formatValue("int", Math.max(...strains))) : i18n.t("ui:strainRecovery.notRecorded"),
+    recovery: recs.length ? range(Math.round(Math.min(...recs)), Math.round(Math.max(...recs))) : i18n.t("ui:strainRecovery.notRecorded"),
+  });
 
   return (
     <ChartFigure summary={summary} height={HEIGHT}>

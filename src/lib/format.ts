@@ -1,3 +1,4 @@
+import { i18n } from "@/i18n/config";
 import type { DeltaDir, Tone } from "./bands";
 import { getLocale, onLocaleChange } from "./locale";
 import { displayPrefs, feetInches, quantity } from "./units";
@@ -95,28 +96,28 @@ export const DAY = {
 
 /** "today" or "yesterday", the days named rather than printed; else null. Dates are YYYY-MM-DD in the user's zone. */
 function nearDay(date: string, today: string) {
-  if (date === today) return "today";
+  if (date === today) return "today" as const;
   const y = new Date(`${today}T00:00:00Z`);
   y.setUTCDate(y.getUTCDate() - 1);
-  return date === y.toISOString().slice(0, 10) ? "yesterday" : null;
+  return date === y.toISOString().slice(0, 10) ? ("yesterday" as const) : null;
 }
 
 /** "Today", "Yesterday", else "Mon, Sep 28". Dates are YYYY-MM-DD in the user's zone. */
 export function dayLabel(date: string, today: string) {
   const near = nearDay(date, today);
-  return near ? near[0].toUpperCase() + near.slice(1) : formatDay(date, DAY.short);
+  return near ? i18n.t(`common:${near}`) : formatDay(date, DAY.short);
 }
 
 /** A day inside a sentence: "today", "yesterday", else "on Mon, Sep 28". */
 export function dayPhrase(date: string, today: string) {
-  return nearDay(date, today) ?? `on ${formatDay(date, DAY.short)}`;
+  const near = nearDay(date, today);
+  return near ? i18n.t(`common:phrase.${near}`) : i18n.t("common:phrase.on", { date: formatDay(date, DAY.short) });
 }
 
 /** The date pill's label: "Today", "Yesterday", else "Mon., Sep. 28", abbreviations marked with a period as the
  * reference app prints them ("TUE., APR. 14", home-03); a month short enough to need none stays bare ("May 4"). */
 export function pillLabel(date: string, today: string) {
-  const label = dayLabel(date, today);
-  if (label === "Today" || label === "Yesterday") return label;
+  if (nearDay(date, today)) return dayLabel(date, today);
   const month = formatDay(date, { month: "short" });
   const dot = month === formatDay(date, { month: "long" }) ? "" : ".";
   return `${formatDay(date, { weekday: "short" })}., ${month}${dot} ${formatDay(date, { day: "numeric" })}`;
@@ -175,7 +176,6 @@ export function limitText(v: number, unit: string, side: "min" | "max") {
 }
 
 /** A unit as a word: "millilitres", "fluid ounces". */
-export const unitWord = (unit: string) => UNIT_WORDS[unit] ?? unit;
 
 /** Height as the person reads it: "178 cm", or "5′ 10″". */
 export function heightText(cm: number) {
@@ -189,62 +189,65 @@ export function durationWords(minutes: number) {
   const m = Math.max(0, Math.round(minutes));
   const h = Math.floor(m / 60);
   const r = m % 60;
-  const part = (n: number, w: string) => `${n}${NBSP}${w}${n === 1 ? "" : "s"}`;
-  if (!h) return part(r, "minute");
-  return r ? `${part(h, "hour")} ${part(r, "minute")}` : part(h, "hour");
+  const minutesPart = () => i18n.t("common:duration.minutes", { count: r });
+  const hoursPart = () => i18n.t("common:duration.hours", { count: h });
+  if (!h) return minutesPart();
+  return r ? i18n.t("common:duration.hoursMinutes", { hours: hoursPart(), minutes: minutesPart() }) : hoursPart();
 }
 
 /** Relative age of a timestamp: "12 minutes ago", "3 hours ago". */
 export function ago(ms: number, now: number) {
   const min = Math.max(0, Math.round((now - ms) / 60000));
-  if (min < 1) return "just now";
-  if (min < 60) return `${min}${NBSP}${min === 1 ? "minute" : "minutes"} ago`;
+  if (min < 1) return i18n.t("common:ago.justNow");
+  if (min < 60) return i18n.t("common:ago.minutes", { count: min });
   const h = Math.round(min / 60);
-  if (h < 48) return `${h}${NBSP}${h === 1 ? "hour" : "hours"} ago`;
-  const d = Math.round(h / 24);
-  return `${d}${NBSP}days ago`;
+  if (h < 48) return i18n.t("common:ago.hours", { count: h });
+  return i18n.t("common:ago.days", { count: Math.round(h / 24) });
 }
 
 /** Header sync age, the reference app's battery slot (spec §4.3.2): "Now", "12m", "3h", "2d". */
 export function agoShort(ms: number, now: number) {
   const min = Math.max(0, Math.floor((now - ms) / 60000));
-  if (min < 1) return "Now";
-  if (min < 60) return `${min}m`;
+  if (min < 1) return i18n.t("common:agoShort.now");
+  if (min < 60) return i18n.t("common:agoShort.minutes", { count: min });
   const h = Math.floor(min / 60);
-  return h < 48 ? `${h}h` : `${Math.floor(h / 24)}d`;
+  return h < 48 ? i18n.t("common:agoShort.hours", { count: h }) : i18n.t("common:agoShort.days", { count: Math.floor(h / 24) });
 }
 
 // --- Spoken labels (aria) ---
 
-const UNIT_WORDS: Record<string, string> = {
+const UNIT_KEY = {
   "%": "percent",
-  ms: "milliseconds",
-  bpm: "beats per minute",
-  rpm: "breaths per minute",
-  "°C": "degrees Celsius",
-  "°F": "degrees Fahrenheit",
-  kcal: "calories",
-  "ml/kg/min": "millilitres per kilo per minute",
-  x: "times",
-  min: "minutes",
-  h: "hours",
-  km: "kilometres",
-  "/km": "per kilometre",
-  mi: "miles",
-  "/mi": "per mile",
-  kg: "kilograms",
-  lb: "pounds",
-  m: "metres",
-  ft: "feet",
-  cm: "centimetres",
-  in: "inches",
-  ml: "millilitres",
-  "fl oz": "fluid ounces",
-};
+  "ms": "ms",
+  "bpm": "bpm",
+  "rpm": "rpm",
+  "°C": "celsius",
+  "°F": "fahrenheit",
+  "kcal": "kcal",
+  "ml/kg/min": "mlKgMin",
+  "x": "times",
+  "min": "min",
+  "h": "h",
+  "km": "km",
+  "/km": "perKm",
+  "mi": "mi",
+  "/mi": "perMi",
+  "kg": "kg",
+  "lb": "lb",
+  "m": "m",
+  "ft": "ft",
+  "cm": "cm",
+  "in": "in",
+  "ml": "ml",
+  "fl oz": "flOz",
+} as const;
+
+/** The unit as it is read aloud ("ms" → "milliseconds"); a unit with no spoken form is returned as it is. */
+export const unitWord = (unit: string) => (unit in UNIT_KEY ? i18n.t(`common:unitWords.${UNIT_KEY[unit as keyof typeof UNIT_KEY]}`) : unit);
 
 /** "124 milliseconds", "−0.4 degrees" → reads the minus sign as "minus". */
 export function spoken(value: string, unit?: string) {
-  const v = value.replace(MINUS, "minus ");
+  const v = value.replace(MINUS, `${i18n.t("common:spoken.minus")} `);
   if (!unit) return v;
   return `${v} ${unitWord(unit)}`;
 }
@@ -266,20 +269,18 @@ export type DialAria = {
 /** "Recovery 72 percent, green", "Strain 42 percent so far, target 40 to 60 percent", "Recovery unavailable: calibrating, 4 nights left". */
 export function dialAriaLabel(a: DialAria) {
   if (a.value === null || a.value === undefined) {
-    const why = (a.reasonText ?? "no data").replace(/^(\w)/, (c) => c.toLowerCase()).replace(": ", ", ");
-    return `${a.label} unavailable: ${why}`;
+    const why = (a.reasonText ?? i18n.t("common:spoken.noData")).replace(/^(\w)/, (c) => c.toLowerCase()).replace(": ", ", ");
+    return i18n.t("common:spoken.unavailable", { label: a.label, why });
   }
   const v = spoken(a.valueText ?? String(a.value), a.unit);
-  const prov = a.provisional ? " provisional," : "";
+  const provisional = a.provisional ? i18n.t("common:spoken.provisional") : "";
   if (a.variant === "strain") {
-    const t = a.target ? `, target ${a.target[0].toFixed(0)} to ${a.target[1].toFixed(0)} percent` : "";
-    return `${a.label}${prov} ${v}${a.soFar ? " so far" : ""}${t}`;
+    const target = a.target ? i18n.t("common:spoken.target", { from: a.target[0].toFixed(0), to: a.target[1].toFixed(0) }) : "";
+    return i18n.t("common:spoken.dialStrain", { label: a.label, provisional, value: v, soFar: a.soFar ? i18n.t("common:spoken.soFar") : "", target });
   }
-  const word = a.bandWord ? `, ${a.bandWord.toLowerCase()}` : "";
-  return `${a.label}${prov} ${v}${word}`;
+  const band = a.bandWord ? i18n.t("common:spoken.band", { band: a.bandWord.toLowerCase() }) : "";
+  return i18n.t("common:spoken.dialValue", { label: a.label, provisional, value: v, band });
 }
-
-const TONE_WORD: Record<Tone, string> = { good: ", good", bad: ", worse than usual", neutral: "" };
 
 /** "Heart rate variability 124 milliseconds, above your 30-day average of 98, good". */
 export function statSentence(o: {
@@ -291,11 +292,14 @@ export function statSentence(o: {
   dir?: DeltaDir;
   tone?: Tone;
 }) {
-  let s = `${o.label} ${spoken(o.valueText, o.unit)}`;
-  if (o.averageText && o.averageText !== MISSING) {
-    const rel = o.dir === "up" ? "above" : o.dir === "down" ? "below" : "in line with";
-    s += `, ${rel} your ${o.averageLabel ?? "30-day average"} of ${o.averageText}`;
-    if (o.tone) s += TONE_WORD[o.tone];
-  }
-  return s;
+  const value = spoken(o.valueText, o.unit);
+  if (!o.averageText || o.averageText === MISSING) return i18n.t("common:spoken.stat", { label: o.label, value });
+  return i18n.t("common:spoken.statVsAverage", {
+    label: o.label,
+    value,
+    relation: i18n.t(`common:spoken.${o.dir === "up" ? "above" : o.dir === "down" ? "below" : "inLineWith"}`),
+    averageLabel: o.averageLabel ?? i18n.t("common:spoken.average30"),
+    average: o.averageText,
+    tone: o.tone === "good" ? i18n.t("common:spoken.toneGood") : o.tone === "bad" ? i18n.t("common:spoken.toneBad") : "",
+  });
 }

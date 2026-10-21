@@ -1,3 +1,4 @@
+import { i18n } from "@/i18n/config";
 import { View } from "react-native";
 
 import { DATA_COLORS, ZONE_COLOR, type DataColor } from "@/lib/bands";
@@ -61,7 +62,7 @@ function Rows({ zones, note, noteLink }: { zones: ZoneRow[]; note?: string; note
     return (
       <View>
         <Text className={cn(SECONDARY_ROW, "px-3 py-3 text-[15px] leading-[22px] text-foreground-secondary")}>
-          Heart rate stayed under the {lowest.label} zone ({lowest.min}{" "}bpm) the whole time.
+          {i18n.t("ui:zones.underAll", { label: lowest.label, min: lowest.min })}
         </Text>
         <Note note={note} link={noteLink} />
       </View>
@@ -72,10 +73,10 @@ function Rows({ zones, note, noteLink }: { zones: ZoneRow[]; note?: string; note
       <View accessibilityElementsHidden className="mb-2 flex-row items-baseline justify-between px-1">
         <View className={cn("shrink flex-row items-center gap-1.5", !typical && "opacity-0")}>
           <Hatch className="size-2.5 rounded-xs border border-border" />
-          <Text className={cn(LABEL, "text-muted-foreground")}>Typical range</Text>
+          <Text className={cn(LABEL, "text-muted-foreground")}>{i18n.t("ui:sleepStages.typicalRange")}</Text>
         </View>
         <View className="flex-row items-baseline gap-2">
-          <Text className={cn(LABEL, "text-muted-foreground")}>Duration</Text>
+          <Text className={cn(LABEL, "text-muted-foreground")}>{i18n.t("ui:sleepStages.duration")}</Text>
           <Text className="font-numeric text-[15px] font-bold leading-5 tabular-nums text-foreground">
             {hmm(Math.floor(T / 60))}
             <Text className="text-xs text-muted-foreground">{`:${String(T % 60).padStart(2, "0")}`}</Text>
@@ -86,7 +87,7 @@ function Rows({ zones, note, noteLink }: { zones: ZoneRow[]; note?: string; note
         {sorted.map((z) => {
           const below = z.zone === 0;
           const range = below ? `<${z.max! + 1} bpm` : z.max === null ? `${z.min}+ bpm` : `${z.min}-${z.max} bpm`;
-          const spoken = below ? `under ${z.max! + 1} bpm` : range.replace("-", " to ").replace("+", " and above");
+          const spoken = below ? i18n.t("ui:zones.spokenUnder", { max: z.max! + 1 }) : z.max === null ? i18n.t("ui:zones.spokenAbove", { min: z.min }) : i18n.t("ui:zones.spokenBetween", { min: z.min, max: z.max });
           const sh = share(z.seconds, total);
           const t = Math.round(z.seconds);
           const minutes = Math.floor(t / 60);
@@ -97,7 +98,7 @@ function Rows({ zones, note, noteLink }: { zones: ZoneRow[]; note?: string; note
             <View
               key={z.zone}
               accessible
-              accessibilityLabel={`${z.label} zone, ${spoken}, ${durationWords(minutes)}, ${sh === "<1%" ? "under 1 percent" : sh.replace("%", " percent")}`}
+              accessibilityLabel={i18n.t("ui:zones.zoneAria", { label: z.label, range: spoken, duration: durationWords(minutes), share: sh === "<1%" ? i18n.t("ui:zones.shareUnder1") : i18n.t("ui:zones.sharePct", { value: sh.replace("%", "") }) })}
               className={cn(SECONDARY_ROW, "gap-2 px-3 py-2.5", !z.seconds && "opacity-40")}
             >
               <View className="flex-row items-baseline gap-2">
@@ -158,7 +159,7 @@ function Stacked({ segments, unit }: { segments: StackedSegment[]; unit: "days" 
       </View>
       <View className="mt-3 gap-1.5">
         {segments.map((s) => (
-          <View key={s.key} accessible accessibilityLabel={`${s.label}: ${unit === "days" ? `${s.count} ${s.count === 1 ? "day" : "days"}` : durationWords(s.count)}`} className="flex-row items-center gap-3">
+          <View key={s.key} accessible accessibilityLabel={i18n.t("ui:zones.segmentAria", { label: s.label, value: unit === "days" ? i18n.t("ui:zones.days", { count: s.count }) : durationWords(s.count) })} className="flex-row items-center gap-3">
             <View className={cn("size-2.5 shrink-0 rounded-sm", DATA_COLORS[s.color].bg)} />
             <Text className="w-12 font-numeric text-[15px] font-bold leading-5 tabular-nums">{count(s.count)}</Text>
             <Text className={cn(LABEL, "text-muted-foreground")}>{s.label}</Text>
@@ -171,7 +172,7 @@ function Stacked({ segments, unit }: { segments: StackedSegment[]; unit: "days" 
 
 /** Time in zones as rows, or a stacked breakdown bar (spec §5.8, D5): plain views, not a chart. */
 export function ZoneBars(p: ZoneBarsProps) {
-  const empty = <EmptyState body={p.emptyCopy ?? (p.variant === "rows" ? "No heart-rate zones yet today." : "No days with Recovery in this period.")} />;
+  const empty = <EmptyState body={p.emptyCopy ?? (p.variant === "rows" ? i18n.t("ui:zones.emptyRows") : i18n.t("ui:zones.emptyStacked"))} />;
   if (p.variant === "rows")
     return (
       <MetricState metric={p.data} skeleton={<ZoneBarsSkeleton variant="rows" />} empty={empty}>

@@ -1,3 +1,4 @@
+import { i18n } from "@/i18n/config";
 import { Children, cloneElement, isValidElement, useRef, useState, type ReactNode } from "react";
 import { View } from "react-native";
 import { useIsFocused } from "expo-router";
@@ -78,7 +79,7 @@ export function DetailShell({ title, subtitle, info, backHref, dateSwitcher, dis
   return (
     <ScreenScroll header={header} top={headerHeight} onScroll={onScroll} healthspan={ground === "healthspan"} floatingAction={floatingAction} onRefresh={onRefresh ?? shellSync?.syncNow}>
       {body && <View removeClippedSubviews className="w-full px-4 pt-2" accessibilityState={{ busy: !!loading }}>
-        {loading && <Text accessibilityLiveRegion="polite" className="absolute h-px w-px opacity-0">{title.trim() ? `Loading ${title}…` : "Loading…"}</Text>}
+        {loading && <Text accessibilityLiveRegion="polite" className="absolute h-px w-px opacity-0">{title.trim() ? i18n.t("ui:loadingTitle", { title }) : i18n.t("common:loading")}</Text>}
         {dateSwitcher && !inHeader && (
           <View className="mb-6 items-center">
             <DateSwitcher {...dateSwitcher} placement="header" />

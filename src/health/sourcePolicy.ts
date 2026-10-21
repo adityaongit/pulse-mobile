@@ -1,3 +1,4 @@
+import { i18n } from "@/i18n/config";
 // Which Health Connect records the import keeps (the person's choice, stored on the phone). Health Connect holds
 // whatever every app wrote: the Google Health (Fitbit) app's band data, but also the phone's own step counting (from
 // Google Health itself or another health app), which reads differently and doubled steps. The default keeps the band.
@@ -67,10 +68,31 @@ export const SOURCE_POLICIES: readonly SourcePolicy[] = ["fitbit_only", "fitbit_
 export const DEFAULT_SOURCE_POLICY: SourcePolicy = "fitbit_only";
 
 /** What a settings screen shows for each choice. */
-export const SOURCE_POLICY_LABELS: Record<SourcePolicy, { label: string; detail: string }> = {
-  fitbit_only: { label: "Fitbit only", detail: "What your Fitbit device measured, through the Google Health app, plus other apps' workouts at other times and smart scale readings. Phone step counts and other apps' measurements are left out." },
-  fitbit_first: { label: "Fitbit first", detail: "Your Fitbit device's data; on a day it has none of a kind, what your phone or other apps recorded. Other apps' workouts at other times and smart scale readings are kept too." },
-  all: { label: "All apps", detail: "Everything in Health Connect. Where apps overlap, Pulse takes the largest source rather than adding them up." },
+export const SOURCE_POLICY_LABELS: Record<SourcePolicy, { readonly label: string; readonly detail: string }> = {
+  fitbit_only: {
+    get label() {
+      return i18n.t("errors:sourcePolicy.fitbitOnlyLabel");
+    },
+    get detail() {
+      return i18n.t("errors:sourcePolicy.fitbitOnlyDetail");
+    },
+  },
+  fitbit_first: {
+    get label() {
+      return i18n.t("errors:sourcePolicy.fitbitFirstLabel");
+    },
+    get detail() {
+      return i18n.t("errors:sourcePolicy.fitbitFirstDetail");
+    },
+  },
+  all: {
+    get label() {
+      return i18n.t("errors:sourcePolicy.allLabel");
+    },
+    get detail() {
+      return i18n.t("errors:sourcePolicy.allDetail");
+    },
+  },
 };
 
 export const SOURCE_POLICY_KEY = "pulse.sourcePolicy";

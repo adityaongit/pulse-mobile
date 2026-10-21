@@ -1,3 +1,4 @@
+import { i18n } from "@/i18n/config";
 import { useState } from "react";
 import { View } from "react-native";
 import { Circle } from "@shopify/react-native-skia";
@@ -115,11 +116,11 @@ export function StressChart({ data, variant }: StressChartProps) {
   const empty =
     variant === "full" ? (
       <View className="items-center">
-        <EmptyState body="No stress scored yet today. Stress is measured outside workouts, every 6 minutes." />
+        <EmptyState body={i18n.t("ui:stress.emptyFull")} />
       </View>
     ) : (
       <View className="h-11 justify-center">
-        <Text className="text-xs font-medium leading-4 text-muted-foreground">No stress scored yet</Text>
+        <Text className="text-xs font-medium leading-4 text-muted-foreground">{i18n.t("ui:stress.emptySpark")}</Text>
       </View>
     );
   return (

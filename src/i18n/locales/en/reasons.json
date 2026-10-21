@@ -1,1 +1,36 @@
-{}
+{
+  "calibrating": {
+    "short": "Calibrating",
+    "long": "Calibrating",
+    "longNights_one": "Calibrating: {{count}} night left",
+    "longNights_other": "Calibrating: {{count}} nights left"
+  },
+  "noHrvLastNight": {
+    "short": "No HRV last night",
+    "long": "No HRV in last night’s sleep"
+  },
+  "awaitingSleepSync": {
+    "short": "Waiting for sleep",
+    "long": "Waiting for last night’s sleep to sync"
+  },
+  "insufficientHrData": {
+    "short": "Not enough data",
+    "long": "Not enough heart-rate data"
+  },
+  "bandNotWorn": {
+    "short": "Not worn",
+    "long": "No data: band not worn"
+  },
+  "noData": {
+    "short": "--",
+    "long": "No data"
+  },
+  "tag": {
+    "provisionalLabel": "Provisional",
+    "provisionalExplain": "Based on a short history while your baselines fill in. It firms up as more days arrive.",
+    "staleBaselineLabel": "Baseline stale",
+    "staleBaselineExplain": "Your baseline has 14 nights or more missing. Scores firm up as new nights arrive.",
+    "updatedLabel": "Updated",
+    "updatedExplain": "Updated after a late sync added data."
+  }
+}

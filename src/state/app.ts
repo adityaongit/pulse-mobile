@@ -1,3 +1,4 @@
+import { i18n } from "@/i18n/config";
 // App-wide state: the Store, the profile, where data comes from (Health Connect, or the demo generator for "Explore
 // with sample data"), the sync + scoring run, and the query context the screens read with. Follows halo's
 // src/state/app.tsx (boot, status, run serialisation, the data version, the foreground re-sync, the demo source) in
@@ -279,7 +280,7 @@ export async function setLanguage(choice: LanguageChoice): Promise<void> {
 export async function exploreSample(): Promise<void> {
   const { store, profile, source } = state;
   if (!store) return;
-  patch({ status: "syncing", error: null, progress: { step: "Generating sample data", done: 0, total: 1 } });
+  patch({ status: "syncing", error: null, progress: { step: i18n.t("errors:state.generatingSample"), done: 0, total: 1 } });
   try {
     // The demo data belongs to a demo person with their own profile; keep the person's own to restore later.
     if (profile && source !== "demo") await AsyncStorage.setItem(OWN_PROFILE_KEY, JSON.stringify(profile));
@@ -307,7 +308,7 @@ export async function connectHealth(): Promise<PermissionState | null> {
   if (!store) return null;
   const perms = await askPermissions();
   if (perms.granted.length === 0) {
-    patch({ error: "Health Connect permissions were not granted." });
+    patch({ error: i18n.t("errors:state.permissionsDenied") });
     return perms;
   }
   let profile = state.profile;
@@ -351,18 +352,21 @@ export async function reset(): Promise<void> {
 
 export const deviceTimeZone = () => Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
 
-const STEP_LABEL: Record<string, string> = {
-  write: "Saving your data",
-  done: "Imported",
-  stage1: "Scoring your days",
-  stage2: "Scoring Recovery, Sleep and Strain",
-  journal: "Matching your journal",
-};
+const STEP_LABEL = {
+  write: "errors:state.stepWrite",
+  done: "errors:state.stepDone",
+  stage1: "errors:state.stepStage1",
+  stage2: "errors:state.stepStage2",
+  journal: "errors:state.stepJournal",
+} as const;
 
 /** A sync or scoring step ("read:HeartRate", "stage2"…) as a short line (halo's progressLabel, without the count). */
-export const stepLabel = (step: string): string =>
-  step.startsWith("read:day:")
-    ? "Reading Health Connect"
-    : step.startsWith("read:")
-      ? `Reading ${step.slice(5).replace(/([a-z])([A-Z])/g, "$1 $2").toLowerCase()}`
-      : (STEP_LABEL[step] ?? step);
+export const stepLabel = (step: string): string => {
+  if (step.startsWith("read:day:")) return i18n.t("errors:state.readingDay");
+  if (step.startsWith("read:")) {
+    const type = step.slice(5);
+    const what = i18n.exists(`errors:readType.${type}`) ? i18n.t(`errors:readType.${type as "Steps"}`) : type.replace(/([a-z])([A-Z])/g, "$1 $2").toLowerCase();
+    return i18n.t("errors:state.reading", { what });
+  }
+  return Object.hasOwn(STEP_LABEL, step) ? i18n.t(STEP_LABEL[step as keyof typeof STEP_LABEL]) : step;
+};

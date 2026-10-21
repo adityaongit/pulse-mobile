@@ -1,5 +1,6 @@
 // Band and tone logic for data colour (spec §2.3, §5.0). Colour is a data channel: every helper
 // here returns a meaning first, and the token for it second.
+import { i18n } from "@/i18n/config";
 import { acwrBand, type AcwrBand } from "@/core/scoring/readiness";
 
 /** Data tokens. `bg`/`text` are literal class names so Tailwind sees them; `css` is for Recharts props. */
@@ -72,7 +73,18 @@ export function recoveryBand(value: number): RecoveryBand {
   return "red";
 }
 
-export const BAND_WORD: Record<RecoveryBand, string> = { green: "Green", yellow: "Yellow", red: "Red" };
+// Getters: the word resolves when it is read (common namespace).
+export const BAND_WORD: Record<RecoveryBand, string> = {
+  get green() {
+    return i18n.t("common:band.green");
+  },
+  get yellow() {
+    return i18n.t("common:band.yellow");
+  },
+  get red() {
+    return i18n.t("common:band.red");
+  },
+};
 export const BAND_COLOR: Record<RecoveryBand, DataColor> = {
   green: "recovery-green",
   yellow: "recovery-yellow",
@@ -94,7 +106,17 @@ export function stressLevel(value: number): StressLevel {
   if (value >= 30) return "medium";
   return "low";
 }
-export const STRESS_WORD: Record<StressLevel, string> = { low: "Low", medium: "Medium", high: "High" };
+export const STRESS_WORD: Record<StressLevel, string> = {
+  get low() {
+    return i18n.t("common:stressLevel.low");
+  },
+  get medium() {
+    return i18n.t("common:stressLevel.medium");
+  },
+  get high() {
+    return i18n.t("common:stressLevel.high");
+  },
+};
 export const STRESS_COLOR: Record<StressLevel, DataColor> = {
   low: "stress-low",
   medium: "stress-medium",

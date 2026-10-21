@@ -1,3 +1,4 @@
+import { i18n } from "@/i18n/config";
 import { View } from "react-native";
 import { useGlobalSearchParams } from "expo-router";
 import { useHasCoachKey } from "@/coach/session";
@@ -44,7 +45,7 @@ export function CheckInAction({ onPress }: { onPress?: () => void }) {
   const { d: raw } = useGlobalSearchParams<{ d?: string }>();
   const { d } = parseDay(raw, today);
   const coach = useHasCoachKey();
-  const label = coach ? "Coach" : `Check in for ${dayLabel(d, today)}`;
+  const label = coach ? "Coach" : i18n.t("ui:checkIn.forDay", { day: dayLabel(d, today) });
   return (
     <Press
       activeScale={0.96}

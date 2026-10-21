@@ -1,3 +1,4 @@
+import { i18n } from "@/i18n/config";
 import { useState } from "react";
 import { View } from "react-native";
 import { Circle } from "@shopify/react-native-skia";
@@ -44,7 +45,7 @@ function Chart({ e }: { e: EnergySeries }) {
   const valueAt = (t: number) => e.points.reduce((best, p) => (Math.abs(p.t - t) < Math.abs(best.t - t) ? p : best), e.points[0]).value;
   const drains = [...(e.drains ?? [])].sort((a, b) => b.amount - a.amount).slice(0, 3);
   const startV = e.points.find((p) => p.value !== null)?.value;
-  const summary = `Energy from ${clock(first, tz)}: started at ${formatValue("int", startV)} percent, now ${formatValue("int", latest?.value)} percent.`;
+  const summary = i18n.t("ui:energy.summary", { start: clock(first, tz), from: formatValue("int", startV), now: formatValue("int", latest?.value) });
 
   return (
     <ChartFigure summary={summary} height={HEIGHT}>
@@ -62,7 +63,7 @@ function Chart({ e }: { e: EnergySeries }) {
         const valid = e.points.filter((p) => p.value !== null);
         const ai = x === null ? -1 : nearestIndex(valid.map((p) => tx(p.t)), x);
         const a = ai >= 0 ? valid[ai] : null;
-        const naps = e.naps?.map((n) => ({ kind: "sleep" as const, start: n.start, end: n.end, label: "Nap" }));
+        const naps = e.naps?.map((n) => ({ kind: "sleep" as const, start: n.start, end: n.end, label: i18n.t("ui:timeline.nap") }));
         return (
           <>
             <PlotCanvas width={width} height={height}>
@@ -108,7 +109,7 @@ function Chart({ e }: { e: EnergySeries }) {
 export function EnergyBankChart({ data }: EnergyBankChartProps) {
   const empty = (
     <View className="items-center">
-      <EmptyState body="Energy Bank starts once you wake up." />
+      <EmptyState body={i18n.t("ui:energy.empty")} />
     </View>
   );
   return (

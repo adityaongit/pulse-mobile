@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { View } from "react-native";
 import { router, useLocalSearchParams, usePathname } from "expo-router";
@@ -59,7 +60,7 @@ export function DateSwitcher({ mode, calendar, placement = "body", narrow: narro
   const [weekStart, weekEnd] = weekOf(d);
   const atEnd = week ? weekStart >= weekOf(today)[0] : d >= today;
   const atStart = !!firstDay && (week ? weekStart <= firstDay : d <= firstDay);
-  const unit = week ? "week" : "day";
+  const { t } = useTranslation("ui");
   const step = week ? 7 : 1;
   const by = (n: number) => setDay(stepDay(d, n, today, firstDay));
 
@@ -72,7 +73,7 @@ export function DateSwitcher({ mode, calendar, placement = "body", narrow: narro
     <Press
       activeScale={0.96}
       accessibilityRole="button"
-      accessibilityLabel={`${dir < 0 ? "Previous" : "Next"} ${unit}`}
+      accessibilityLabel={t(week ? (dir < 0 ? "dateSwitcher.previousWeek" : "dateSwitcher.nextWeek") : dir < 0 ? "dateSwitcher.previousDay" : "dateSwitcher.nextDay")}
       accessibilityState={{ disabled }}
       disabled={disabled}
       onPress={() => by(dir * step)}
@@ -89,7 +90,7 @@ export function DateSwitcher({ mode, calendar, placement = "body", narrow: narro
       <Press
         activeScale={0.96}
         accessibilityRole="button"
-        accessibilityLabel={`${label}. Open calendar`}
+        accessibilityLabel={t("dateSwitcher.openCalendar", { label })}
         onPress={() => setOpen(true)}
         hitSlop={{ top: bare ? 4 : 8, bottom: bare ? 4 : 8 }}
         className={cn("items-center justify-center rounded-full", bare ? "h-9 min-w-28 px-2" : cn("h-7 bg-fill-hover px-4", narrow ? "min-w-0 px-2.5" : "min-w-24"))}

@@ -1,3 +1,4 @@
+import { i18n } from "@/i18n/config";
 import { useState } from "react";
 import { Group, RoundedRect } from "@shopify/react-native-skia";
 import { DATA_COLORS } from "@/lib/bands";
@@ -86,7 +87,7 @@ export function ColumnChart({ summary, data, format, unit, tickEvery = 1, refere
             <ScrubTick index={active} />
             {a && (
               <TooltipCard x={centers[active]} width={width} title={a.title ?? a.label}>
-                <TooltipLine color={!any || a.highlight ? ON : c["dial-track"]}>{a.value === null ? "No data" : `${formatValue(format, a.value)}${unitText}`}</TooltipLine>
+                <TooltipLine color={!any || a.highlight ? ON : c["dial-track"]}>{a.value === null ? i18n.t("reasons:noData.long") : `${formatValue(format, a.value)}${unitText}`}</TooltipLine>
               </TooltipCard>
             )}
           </>

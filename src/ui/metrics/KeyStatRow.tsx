@@ -1,3 +1,4 @@
+import { i18n } from "@/i18n/config";
 import type { ReactNode } from "react";
 import { View } from "react-native";
 import { ChevronRight } from "lucide-react-native";
@@ -214,8 +215,7 @@ function Tile({ p, c }: { p: KeyStatRowProps; c: Computed }) {
               <ValueUnit value={c.avgText!} unit={p.unit} className="font-numeric text-lg font-bold leading-6" unitClassName="text-xs font-medium leading-4 text-muted-foreground" />
               {!!c.diffText && (
                 <Text className={cn("font-numeric text-xs font-bold leading-4 tabular-nums", TONE_TEXT[c.tone ?? "neutral"])}>
-                  {c.diffText}
-                  {unitSuffix(p.unit)} vs avg
+                  {i18n.t("ui:keyStat.vsAvg", { diff: `${c.diffText}${unitSuffix(p.unit)}` })}
                 </Text>
               )}
             </>

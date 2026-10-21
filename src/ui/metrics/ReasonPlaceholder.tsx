@@ -1,3 +1,4 @@
+import { i18n } from "@/i18n/config";
 import { View } from "react-native";
 import { reasonCopy } from "@/lib/reasons";
 import { cn } from "../cn";
@@ -42,7 +43,7 @@ export function ReasonPlaceholder({ reason, nightsLeft, size, copy, className }:
     <View className={cn("items-center gap-2", className)}>
       {glyph && <Icon icon={glyph} size={24} tone="foreground-secondary" />}
       <Text className="max-w-40 text-center text-base font-semibold leading-[22px] text-foreground-secondary" numberOfLines={2}>
-        {r.code === "no_data" ? "No data" : r.short}
+        {r.code === "no_data" ? i18n.t("reasons:noData.long") : r.short}
       </Text>
     </View>
   );

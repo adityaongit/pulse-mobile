@@ -1,3 +1,4 @@
+import { i18n } from "@/i18n/config";
 // Live heart rate over Bluetooth: one controller for the app around react-native-ble-plx's BleManager. It owns the
 // Android permissions (Nearby devices), the radio state, the scan for bands advertising the standard Heart Rate
 // Service (0x180D), the connection and the 0x2A37 subscription, and emits each notification as a sample. The React
@@ -100,30 +101,30 @@ function describe(e: unknown, device: string): string {
   if (isBleError(e)) {
     // ATT / GATT status 5 and 15: insufficient authentication / encryption, the band wants to be paired first.
     const auth = [5, 15].includes(e.attErrorCode ?? -1) || [5, 15, 137].includes(e.androidErrorCode ?? -1);
-    if (auth) return `${device} asked to pair. Accept Android's pairing prompt, then connect again.`;
+    if (auth) return i18n.t("errors:ble.askedToPair", { device });
     switch (e.errorCode) {
       case BleErrorCode.OperationTimedOut:
       case BleErrorCode.DeviceConnectionFailed:
       case BleErrorCode.DeviceNotFound:
-        return `Couldn’t reach ${device}. Check Share heart rate is on and nothing else (gym equipment, another app) is connected to it.`;
+        return i18n.t("errors:ble.cantReach", { device });
       case BleErrorCode.DeviceDisconnected:
-        return `${device} disconnected.`;
+        return i18n.t("errors:ble.disconnected", { device });
       case BleErrorCode.CharacteristicNotifyChangeFailed:
       case BleErrorCode.DescriptorWriteFailed:
-        return `${device} refused the heart-rate stream. If Android asks to pair, accept it, then connect again.`;
+        return i18n.t("errors:ble.refusedStream", { device });
       case BleErrorCode.ServiceNotFound:
       case BleErrorCode.CharacteristicNotFound:
-        return `${device} isn’t sharing heart rate. Turn on Share heart rate in Google Health.`;
+        return i18n.t("errors:ble.notSharing", { device });
       case BleErrorCode.BluetoothUnauthorized:
-        return "Pulse needs the Nearby devices permission.";
+        return i18n.t("errors:ble.needsNearby");
       case BleErrorCode.BluetoothPoweredOff:
-        return "Bluetooth is off.";
+        return i18n.t("errors:ble.btOff");
       case BleErrorCode.ScanStartFailed:
-        return "Android paused scanning for a moment (too many scans in a row). Try again in 30 seconds.";
+        return i18n.t("errors:ble.scanPaused");
       case BleErrorCode.LocationServicesDisabled:
-        return "Turn on Location: this Android version needs it to scan for Bluetooth devices.";
+        return i18n.t("errors:ble.needsLocation");
       default:
-        return e.reason || e.message || "Bluetooth error.";
+        return e.reason || e.message || i18n.t("errors:ble.btError");
     }
   }
   return e instanceof Error ? e.message : String(e);
@@ -302,7 +303,7 @@ class LiveHeartRate {
         await this.readRadio();
       }
     } catch (e) {
-      this.error = describe(e, "The band");
+      this.error = describe(e, i18n.t("errors:ble.theBand"));
     } finally {
       this.loaded = true;
       this.emit();
@@ -409,7 +410,7 @@ class LiveHeartRate {
           ? "blocked"
           : "needed";
     } catch (e) {
-      this.error = describe(e, "The band");
+      this.error = describe(e, i18n.t("errors:ble.theBand"));
     }
     if (this.permission === "granted") {
       this.error = null;
@@ -498,9 +499,9 @@ class LiveHeartRate {
         if (mine !== this.userScan) return;
         if (this.link === "scanning") this.link = "idle";
         log("scan end", why, { found: [...this.found.values()].map((d) => `${d.name ?? "?"}${d.paired ? " (paired)" : ""}`) }, err ? String(err) : "");
-        if (why === "error") this.error = describe(err, "The band");
+        if (why === "error") this.error = describe(err, i18n.t("errors:ble.theBand"));
         else if (why === "timeout" && this.found.size === 0)
-          this.error = "No band found. Check Share heart rate is on in Google Health › Fitbit Air › Connections, and keep the band close.";
+          this.error = i18n.t("errors:ble.noBandFound");
         this.emit();
       },
     );
@@ -524,7 +525,7 @@ class LiveHeartRate {
   private beginScan(ms: number, onDevice: (d: Device) => void, onEnd: (why: ScanEnd, err?: unknown) => void) {
     this.endScan("cancel");
     const m = this.manager;
-    if (!m) return onEnd("error", liveError("Bluetooth isn’t available on this phone."));
+    if (!m) return onEnd("error", liveError(i18n.t("errors:ble.btUnavailable")));
     const token = ++this.scanToken;
     const timer = setTimeout(() => this.endScan("timeout"), ms);
     this.scanEnd = (why, err) => {
@@ -691,7 +692,7 @@ class LiveHeartRate {
       if (tagged(e, "superseded") || gen !== this.gen) return;
       log("attempt failed", String((e as Error)?.message ?? e));
       await this.teardown(dev.id);
-      this.error = describe(e, dev.name ?? "The band");
+      this.error = describe(e, dev.name ?? i18n.t("errors:ble.theBand"));
       this.scheduleRetry();
     } finally {
       if (this.inFlight === gen) this.inFlight = null;
@@ -701,7 +702,7 @@ class LiveHeartRate {
   /** Find → connect → discover → subscribe. Resolves once subscribed; "live" comes with the first notification. */
   private async open(dev: BleDevice, gen: number, justSeen: boolean) {
     const m = this.manager;
-    if (!m) throw liveError("Bluetooth isn’t available on this phone.");
+    if (!m) throw liveError(i18n.t("errors:ble.btUnavailable"));
     const check = () => {
       if (gen !== this.gen) throw superseded();
     };
@@ -734,13 +735,13 @@ class LiveHeartRate {
       log("services after refresh", services.map((x) => x.uuid.slice(4, 8)).join(","));
     }
     // Watched only from here: the refresh above drops and remakes our connection on purpose.
-    this.subs.push(m.onDeviceDisconnected(dev.id, (err) => this.lost(gen, err ?? liveError(`${dev.name ?? "The band"} disconnected.`))));
+    this.subs.push(m.onDeviceDisconnected(dev.id, (err) => this.lost(gen, err ?? liveError(i18n.t("errors:ble.disconnected", { device: dev.name ?? i18n.t("errors:ble.theBand") })))));
     const chars = await m.characteristicsForDevice(dev.id, HR_SERVICE_UUID).catch(() => []);
     check();
     if (!chars.some((c) => sameUuid(c.uuid, HR_MEASUREMENT_UUID)))
-      throw liveError(`${dev.name ?? "This device"} isn’t sharing heart rate. Turn on Share heart rate in Google Health › Fitbit Air › Connections.`);
+      throw liveError(i18n.t("errors:ble.notSharingConnections", { device: dev.name ?? i18n.t("errors:ble.thisDevice") }));
     this.subs.push(m.monitorCharacteristicForDevice(dev.id, HR_SERVICE_UUID, HR_MEASUREMENT_UUID, (err, ch) => this.onValue(gen, err, ch?.value ?? null), `pulse-hr-${gen}`));
-    this.armBeatTimer(gen, FIRST_BEAT_MS, `Connected to ${dev.name ?? "the band"}, but no heart rate came. Check Share heart rate is on.`);
+    this.armBeatTimer(gen, FIRST_BEAT_MS, i18n.t("errors:ble.noBeats", { device: dev.name ?? i18n.t("errors:ble.theBandLower") }));
   }
 
   private onValue(gen: number, err: BleError | null, value: string | null) {
@@ -754,7 +755,7 @@ class LiveHeartRate {
     const hr = parseHrMeasurementBase64(value);
     if (!hr) return;
     const t = Date.now();
-    this.armBeatTimer(gen, STALL_MS, `${this.device?.name ?? "The band"} stopped sending heart rate.`);
+    this.armBeatTimer(gen, STALL_MS, i18n.t("errors:ble.stalled", { device: this.device?.name ?? i18n.t("errors:ble.theBand") }));
     if (this.link !== "live") {
       this.link = "live";
       log("live");
@@ -787,7 +788,7 @@ class LiveHeartRate {
     const dev = this.device;
     log("lost", String((err as Error)?.message ?? err));
     void this.teardown(dev?.id).then(() => {
-      this.error = describe(err, dev?.name ?? "The band");
+      this.error = describe(err, dev?.name ?? i18n.t("errors:ble.theBand"));
       if (this.radio !== "on" || !this.foreground()) {
         // Resumes from onRadio / onAppState.
         this.link = this.want ? (this.wasLive ? "lost" : "connecting") : "idle";
@@ -807,7 +808,7 @@ class LiveHeartRate {
     }
     if (this.attempts >= this.maxAttempts) {
       // Give up and say why (the last attempt's reason); connecting again starts over.
-      this.error ??= `Couldn’t find ${this.want.name ?? "the band"}. Check Share heart rate is on in Google Health.`;
+      this.error ??= i18n.t("errors:ble.cantFind", { device: this.want.name ?? i18n.t("errors:ble.theBandLower") });
       this.want = null;
       this.wasLive = false;
       this.link = "idle";

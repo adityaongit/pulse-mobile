@@ -1,3 +1,5 @@
+import { i18n } from "@/i18n/config";
+import { useTranslation } from "react-i18next";
 import { useEffect, useRef, useState } from "react";
 import { Modal, Pressable, View } from "react-native";
 import Animated, { FadeIn, FadeOut, SlideInUp, SlideOutUp } from "react-native-reanimated";
@@ -47,6 +49,7 @@ type Months = Record<string, Map<string, CalendarDay>>;
  */
 export function CalendarPanel(props: CalendarPanelProps) {
   const { loadMonth } = useShellCalendar();
+  const { t } = useTranslation("ui");
   const [months, setMonths] = useState<Months>({});
   const requested = useRef(new Set<string>());
   const load = (month: string) => {
@@ -62,7 +65,7 @@ export function CalendarPanel(props: CalendarPanelProps) {
       {/* Reanimated's Animated.View takes no className, so the animated views carry layout in `style` and the classes go on plain Views inside. */}
       <Animated.View entering={FadeIn.duration(DURATION.base)} exiting={FadeOut.duration(DURATION.base)} style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}>
         <View className="flex-1 bg-dim">
-          <Pressable accessibilityRole="button" accessibilityLabel="Close calendar" onPress={props.onClose} className="flex-1" />
+          <Pressable accessibilityRole="button" accessibilityLabel={t("calendar.close")} onPress={props.onClose} className="flex-1" />
         </View>
       </Animated.View>
       <Animated.View entering={SlideInUp.duration(DURATION.base)} exiting={SlideOutUp.duration(DURATION.base)} pointerEvents="box-none" style={{ position: "absolute", top: 0, left: 0, right: 0 }}>
@@ -75,6 +78,7 @@ export function CalendarPanel(props: CalendarPanelProps) {
 function MonthPanel({ selected, context, onSelect, weekStartsOn = WEEK_STARTS_ON, months, load }: CalendarPanelProps & { months: Months; load: (month: string) => void }) {
   const { today, firstDay } = useShellCalendar();
   const { c } = useTheme();
+  const { t } = useTranslation("ui");
   const insets = useSafeAreaInsets();
   const first = firstDay ?? undefined;
   // Null until the user moves: the panel opens on the selected day's month. This unmounts on close, so each open starts fresh.
@@ -120,8 +124,8 @@ function MonthPanel({ selected, context, onSelect, weekStartsOn = WEEK_STARTS_ON
       <View className="mt-2 min-h-11 flex-row items-center gap-3 px-3">
         {/* Back to today from a past day or another month (spec §11 UX1). */}
         {(selected !== today || month !== monthOf(today)) && (
-          <Press activeScale={0.96} accessibilityRole="button" accessibilityLabel="Back to today" onPress={() => onSelect(today)} hitSlop={6} className="h-8 justify-center rounded-full bg-fill-hover px-3.5">
-            <Text className="text-[11px] font-bold uppercase leading-4 tracking-[0.1em]">Today</Text>
+          <Press activeScale={0.96} accessibilityRole="button" accessibilityLabel={t("calendar.backToToday")} onPress={() => onSelect(today)} hitSlop={6} className="h-8 justify-center rounded-full bg-fill-hover px-3.5">
+            <Text className="text-[11px] font-bold uppercase leading-4 tracking-[0.1em]">{i18n.t("common:today")}</Text>
           </Press>
         )}
         <Legend context={context} />
@@ -132,11 +136,12 @@ function MonthPanel({ selected, context, onSelect, weekStartsOn = WEEK_STARTS_ON
 }
 
 function ChevronButton({ dir, disabled, onPress }: { dir: "prev" | "next"; disabled: boolean; onPress: () => void }) {
+  const { t } = useTranslation("ui");
   return (
     <Press
       activeScale={0.96}
       accessibilityRole="button"
-      accessibilityLabel={dir === "prev" ? "Previous month" : "Next month"}
+      accessibilityLabel={t(dir === "prev" ? "calendar.previousMonth" : "calendar.nextMonth")}
       accessibilityState={{ disabled }}
       disabled={disabled}
       onPress={onPress}
@@ -148,18 +153,19 @@ function ChevronButton({ dir, disabled, onPress }: { dir: "prev" | "next"; disab
 }
 
 const VALUE_TEXT: Record<CalendarContext, (v: number) => string> = {
-  recovery: (v) => `Recovery ${Math.round(v)}%`,
-  strain: (v) => `Strain ${formatValue("pct", v)}`,
-  sleep: (v) => `Sleep ${Math.round(v)}%`,
+  recovery: (v) => i18n.t("ui:calendar.recoveryValue", { value: Math.round(v) }),
+  strain: (v) => i18n.t("ui:calendar.strainValue", { value: formatValue("pct", v) }),
+  sleep: (v) => i18n.t("ui:calendar.sleepValue", { value: Math.round(v) }),
 };
 
 function Day({ day, context, value, selected, today, disabled, onSelect }: { day: string; context: CalendarContext; value: number | null; selected: boolean; today: boolean; disabled: boolean; onSelect: (day: string) => void }) {
+  const { t } = useTranslation("ui");
   const tone = disabled ? { text: NO_SCORE, dot: null } : dayTone(context, value);
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityState={{ selected, disabled }}
-      accessibilityLabel={`${today ? "Today, " : ""}${formatDay(day, DAY.long)}${value !== null && !disabled ? `, ${VALUE_TEXT[context](value)}` : ""}`}
+      accessibilityLabel={t(today ? "calendar.dayAriaToday" : "calendar.dayAria", { date: formatDay(day, DAY.long), value: value !== null && !disabled ? t("calendar.dayValue", { value: VALUE_TEXT[context](value) }) : "" })}
       disabled={disabled}
       onPress={() => onSelect(day)}
       className="h-12 flex-1 items-center justify-center"
@@ -173,20 +179,21 @@ function Day({ day, context, value, selected, today, disabled, onSelect }: { day
   );
 }
 
-const LEGEND: Record<CalendarContext, { label: string; color: keyof typeof DATA_COLORS }[]> = {
-  recovery: [
-    { label: "<34%", color: "recovery-red" },
-    { label: "34% - 66%", color: "recovery-yellow" },
-    { label: ">66%", color: "recovery-green" },
-  ],
-  strain: [{ label: `Day Strain ${STRAIN_DOT}+`, color: "strain" }],
-  sleep: [{ label: `Sleep ${SLEEP_DOT}%+`, color: "sleep" }],
-};
+const legend = (context: CalendarContext): { label: string; color: keyof typeof DATA_COLORS }[] =>
+  context === "recovery"
+    ? [
+        { label: "<34%", color: "recovery-red" },
+        { label: "34% - 66%", color: "recovery-yellow" },
+        { label: ">66%", color: "recovery-green" },
+      ]
+    : context === "strain"
+      ? [{ label: i18n.t("ui:calendar.legendStrain", { value: STRAIN_DOT }), color: "strain" }]
+      : [{ label: i18n.t("ui:calendar.legendSleep", { value: SLEEP_DOT }), color: "sleep" }];
 
 function Legend({ context }: { context: CalendarContext }) {
   return (
     <View className="ml-auto flex-row gap-3">
-      {LEGEND[context].map(({ label, color }) => (
+      {legend(context).map(({ label, color }) => (
         <View key={label} className="flex-row items-center gap-1.5">
           <View className={cn("size-1 rounded-full", DATA_COLORS[color].bg)} />
           <Text className={cn("text-xs font-semibold leading-4 tabular-nums", DATA_COLORS[color].text)}>{label}</Text>

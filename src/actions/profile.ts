@@ -1,3 +1,4 @@
+import { i18n } from "@/i18n/config";
 // Onboarding and Settings › Profile: one action for both. The form hands over its fields as typed (strings), checked
 // with pulse's rules; `save` writes the profile (src/state/app.ts saveProfile, which also reruns the scores).
 import { z } from "zod";
@@ -10,19 +11,19 @@ import { isTimeZone } from "@/lib/timeZone";
 /** Heights the profile takes, kept in cm. */
 const HEIGHT_CM = { min: 100, max: 250 };
 /** The height limits in the person's units: "Between 100 cm and 250 cm", or "Between 3′ 3″ and 8′ 2″". */
-const heightRange = () => `Between ${heightText(HEIGHT_CM.min)} and ${heightText(HEIGHT_CM.max)}`;
+const heightRange = () => i18n.t("errors:profile.heightRange", { low: heightText(HEIGHT_CM.min), high: heightText(HEIGHT_CM.max) });
 
 /** What onboarding and Settings submit. Ages 13 to 100. */
 export const ProfileInput = z.object({
   birthDate: z.iso.date().refine((d) => {
     const age = wholeYears(d, new Date().toISOString().slice(0, 10));
     return age >= 13 && age <= 100;
-  }, "Enter a birth date between 13 and 100 years ago"),
-  sex: z.enum(["male", "female"], "Choose one"),
-  maxHr: z.coerce.number().int().min(100, "Between 100 and 240").max(240, "Between 100 and 240").nullable(),
+  }, { error: () => i18n.t("errors:profile.birthDateRange") }),
+  sex: z.enum(["male", "female"], { error: () => i18n.t("errors:profile.chooseOne") }),
+  maxHr: z.coerce.number().int().min(100, { error: () => i18n.t("errors:profile.maxHrRange") }).max(240, { error: () => i18n.t("errors:profile.maxHrRange") }).nullable(),
   heightCm: z.coerce.number().min(HEIGHT_CM.min, { error: heightRange }).max(HEIGHT_CM.max, { error: heightRange }).nullable(),
-  timeZone: z.string().refine(isTimeZone, "Choose a time zone"),
-  name: z.string().max(60, "Up to 60 characters").nullable(),
+  timeZone: z.string().refine(isTimeZone, { error: () => i18n.t("errors:profile.chooseTimeZone") }),
+  name: z.string().max(60, { error: () => i18n.t("errors:profile.nameLength") }).nullable(),
 });
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- pulse's pattern: the schema and its type share a name
 export type ProfileInput = z.infer<typeof ProfileInput>;
@@ -59,14 +60,14 @@ export async function saveProfileAction(form: ProfileFields, previous: Profile |
   });
   if (!r.success) {
     const fields: Partial<Record<keyof ProfileInput, string>> = {};
-    for (const i of r.error.issues) fields[i.path[0] as keyof ProfileInput] ??= i.path[0] === "birthDate" && i.code !== "custom" ? "Enter your birth date" : i.message;
+    for (const i of r.error.issues) fields[i.path[0] as keyof ProfileInput] ??= i.path[0] === "birthDate" && i.code !== "custom" ? i18n.t("errors:profile.enterBirthDate") : i.message;
     return { ok: false, fields };
   }
   try {
     const goal = { hours: defaultSleepGoal(wholeYears(r.data.birthDate, new Date().toISOString().slice(0, 10))), method: "automatic" as const };
     await save({ ...(previous ?? { sleepGoal: goal }), ...r.data });
   } catch {
-    return { ok: false, error: "Couldn’t save. Try again." };
+    return { ok: false, error: i18n.t("errors:profile.saveFailed") };
   }
   return { ok: true };
 }

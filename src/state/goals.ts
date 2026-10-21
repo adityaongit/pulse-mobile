@@ -1,3 +1,4 @@
+import { i18n } from "@/i18n/config";
 // Daily goals (Fitbit-style), kept on the phone (AsyncStorage "pulse.goals"): the targets, which goals are on, their
 // limits, and the hook Home, Trends and Settings read them with. One module-level store, like My Dashboard's keys
 // (src/screens/home/dashboard.ts), so every screen sees a save at once. The query that scores a day against them
@@ -61,9 +62,9 @@ const fmt = (key: TargetKey, v: number) => {
 /** Null when the kept `value` is allowed for `key`, else why not, in the person's units ("Between 1,000 and 50,000"). */
 export function validateTarget(key: TargetKey, value: number | null): string | null {
   const l = TARGET_LIMITS[key];
-  if (value === null) return l.optional ? null : "Enter a number";
-  if (!Number.isFinite(value)) return "Enter a number";
-  if (value < l.min || value > l.max) return `Between ${fmt(key, l.min)} and ${fmt(key, l.max)}`;
+  if (value === null) return l.optional ? null : i18n.t("errors:goals.enterNumber");
+  if (!Number.isFinite(value)) return i18n.t("errors:goals.enterNumber");
+  if (value < l.min || value > l.max) return i18n.t("errors:goals.between", { low: fmt(key, l.min), high: fmt(key, l.max) });
   return null;
 }
 
@@ -72,9 +73,9 @@ export function parseTarget(key: TargetKey, text: string): { value: number | nul
   const l = TARGET_LIMITS[key];
   const t = text.trim().replace(",", ".");
   const typed = t === "" ? null : Number(t);
-  if (typed !== null && Number.isNaN(typed)) return { value: null, error: "Enter a number" };
+  if (typed !== null && Number.isNaN(typed)) return { value: null, error: i18n.t("errors:goals.enterNumber") };
   // Whole numbers apply to what is typed: 68 fl oz of water is kept as 2,011 ml and change.
-  if (typed !== null && l.decimals === 0 && !Number.isInteger(typed)) return { value: null, error: "Whole numbers only" };
+  if (typed !== null && l.decimals === 0 && !Number.isInteger(typed)) return { value: null, error: i18n.t("errors:goals.wholeOnly") };
   const value = typed === null ? null : quantity(l.unit).stored(typed);
   const error = validateTarget(key, value);
   return { value: error ? null : value, error };

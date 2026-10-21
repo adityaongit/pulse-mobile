@@ -1,3 +1,5 @@
+import { i18n } from "@/i18n/config";
+import { useTranslation } from "react-i18next";
 import { useState, type ReactNode } from "react";
 import { View } from "react-native";
 import { Triangle } from "lucide-react-native";
@@ -64,16 +66,26 @@ function Header({ p, value, right }: { p: Common; value: number | null; right?: 
 }
 
 function RecoveryRow({ p, value, meta }: { p: Extract<ContributorRowProps, { variant: "recovery" }>; value: number | null; meta?: MetricMeta }) {
+  const { t } = useTranslation("ui");
   const { mean, sd } = p.baseline;
   const lo = mean - 3 * sd;
   const hi = mean + 3 * sd;
   const tone = value === null ? "neutral" : deltaTone(p.direction, value, mean, sd).tone;
   const pts = value === null ? null : p.points;
   const unitSpoken = (v: number) => spoken(formatValue(p.format, v), p.unit);
+  const notMeasured = p.reasonCopy ?? t("contributor.notMeasured");
+  const points = pts === null ? "" : pts === 0 ? t("contributor.noChange") : t(pts > 0 ? "contributor.added" : "contributor.tookOff", { count: Math.abs(Math.round(pts)) });
   const sentence =
     value === null
-      ? `${p.label}: ${p.reasonCopy ?? "Not measured: left out of today’s score"}`
-      : `${p.label} ${unitSpoken(value)}, ${value > mean + sd ? "above" : value < mean - sd ? "below" : "within"} your normal range of ${formatValue(p.format, mean - sd)} to ${formatValue(p.format, mean + sd)}${pts === null ? "" : pts === 0 ? ", no change" : `, ${pts > 0 ? "added" : "took off"} ${Math.abs(Math.round(pts))} points`}`;
+      ? t("contributor.reasonSentence", { label: p.label, reason: notMeasured })
+      : t("contributor.recoverySentence", {
+          label: p.label,
+          value: unitSpoken(value),
+          position: t(value > mean + sd ? "contributor.above" : value < mean - sd ? "contributor.below" : "contributor.within"),
+          low: formatValue(p.format, mean - sd),
+          high: formatValue(p.format, mean + sd),
+          points,
+        });
   const body = (
     <View accessible accessibilityLabel={sentence} className="gap-2">
       <Header
@@ -83,7 +95,7 @@ function RecoveryRow({ p, value, meta }: { p: Extract<ContributorRowProps, { var
           pts !== null && (
             <Text className={cn("font-numeric text-base font-bold tabular-nums", pts > 0 ? "text-optimal-text" : pts < 0 ? "text-warning-text" : "text-muted-foreground")}>
               {formatValue("signedInt", pts)}
-              <Text className="text-[13px] font-semibold leading-4 text-foreground-secondary">{" pts"}</Text>
+              <Text className="text-[13px] font-semibold leading-4 text-foreground-secondary">{t("contributor.pts")}</Text>
             </Text>
           )
         }
@@ -95,8 +107,8 @@ function RecoveryRow({ p, value, meta }: { p: Extract<ContributorRowProps, { var
       <View className="flex-row flex-wrap items-center gap-2">
         <Text className={CAPTION}>
           {value === null
-            ? (p.reasonCopy ?? "Not measured: left out of today’s score")
-            : `Baseline ${formatValue(p.format, mean)} ± ${formatValue(p.format, sd).replace(/^\+/, "")}${p.unit ? (isSymbolUnit(p.unit) ? p.unit : ` ${p.unit}`) : ""}`}
+            ? notMeasured
+            : t("contributor.baseline", { mean: formatValue(p.format, mean), sd: formatValue(p.format, sd).replace(/^\+/, ""), unit: p.unit ? (isSymbolUnit(p.unit) ? p.unit : ` ${p.unit}`) : "" })}
         </Text>
       </View>
     </View>
@@ -128,6 +140,7 @@ function MarkerLabel({ at, track, children, edge }: { at: number; track: number;
  * 6-month mean marked above (white) and the 30-day mean below (grey), and the years it adds or takes off at the right.
  */
 function HealthspanRow({ p, value, meta }: { p: Extract<ContributorRowProps, { variant: "healthspan" }>; value: number | null; meta?: MetricMeta }) {
+  const { t } = useTranslation("ui");
   const { c } = useTheme();
   const [track, setTrack] = useState(0);
   const [lo, hi] = p.domain;
@@ -138,10 +151,16 @@ function HealthspanRow({ p, value, meta }: { p: Extract<ContributorRowProps, { v
   const withUnit = (v: number) => `${formatValue(p.format, v)}${p.unit && isSymbolUnit(p.unit) ? p.unit : ""}`;
   const lit = value === null ? -1 : Math.min(SEGMENTS - 1, Math.max(0, Math.floor(at(value) * SEGMENTS)));
   const recent = value === null ? null : p.recent;
+  const noData = p.reasonCopy ?? i18n.t("reasons:noData.long");
   const sentence =
     value === null
-      ? `${p.label}: ${p.reasonCopy ?? "No data"}`
-      : `${p.label}: 6-month average ${spoken(formatValue(p.format, value), p.unit)}${recent === null ? "" : `, 30-day average ${spoken(formatValue(p.format, recent), p.unit)}`}${years === null ? "" : years === 0 ? ", no change in years" : `, ${formatValue("decimal1", Math.abs(years))} years ${years < 0 ? "younger" : "older"}`}`;
+      ? t("contributor.reasonSentence", { label: p.label, reason: noData })
+      : t("contributor.healthspanSentence", {
+          label: p.label,
+          value: spoken(formatValue(p.format, value), p.unit),
+          recent: recent === null ? "" : t("contributor.recentAverage", { value: spoken(formatValue(p.format, recent), p.unit) }),
+          years: years === null ? "" : years === 0 ? t("contributor.noChangeYears") : t(years < 0 ? "contributor.yearsYounger" : "contributor.yearsOlder", { years: formatValue("decimal1", Math.abs(years)) }),
+        });
   const body = (
     <View accessible accessibilityLabel={sentence} className="gap-1">
       <View className="flex-row items-center gap-3">
@@ -152,7 +171,7 @@ function HealthspanRow({ p, value, meta }: { p: Extract<ContributorRowProps, { v
         <View className="min-w-0 flex-1 pb-10 pt-11" onLayout={(e) => setTrack(e.nativeEvent.layout.width)}>
           {value !== null && (
             <MarkerLabel at={at(value)} track={track} edge="top">
-              <Text className="text-xs font-medium leading-4 text-foreground-secondary">6 Month avg.</Text>
+              <Text className="text-xs font-medium leading-4 text-foreground-secondary">{t("contributor.avg6m")}</Text>
               <Text className="font-numeric text-[15px] font-bold leading-5 tabular-nums">{withUnit(value)}</Text>
               <Triangle size={10} color={c.foreground} fill={c.foreground} strokeWidth={0} style={{ transform: [{ rotate: "180deg" }] }} />
             </MarkerLabel>
@@ -169,7 +188,7 @@ function HealthspanRow({ p, value, meta }: { p: Extract<ContributorRowProps, { v
             <MarkerLabel at={at(recent)} track={track} edge="bottom">
               <Triangle size={10} color={c["muted-foreground"]} fill={c["muted-foreground"]} strokeWidth={0} />
               <Text className="font-numeric text-[15px] font-bold leading-5 tabular-nums">{withUnit(recent)}</Text>
-              <Text className="text-xs font-medium leading-4 text-foreground-secondary">30 Day avg.</Text>
+              <Text className="text-xs font-medium leading-4 text-foreground-secondary">{t("contributor.avg30d")}</Text>
             </MarkerLabel>
           )}
         </View>
@@ -177,11 +196,11 @@ function HealthspanRow({ p, value, meta }: { p: Extract<ContributorRowProps, { v
           <Text className={cn("font-numeric text-xl font-bold leading-6 tabular-nums", years === null ? "text-muted-foreground" : years < 0 ? "text-optimal-text" : years > 0 ? "text-warning-text" : "text-foreground-secondary")}>
             {years === null ? MISSING : formatValue("decimal1", years)}
           </Text>
-          <Text className="text-[13px] font-semibold leading-4 text-foreground-secondary">years</Text>
+          <Text className="text-[13px] font-semibold leading-4 text-foreground-secondary">{t("contributor.years")}</Text>
         </View>
       </View>
       {/* Reason copy can be a sentence; it gets its own line. */}
-      {value === null && <Text className="text-xs font-medium leading-4 text-muted-foreground">{p.reasonCopy ?? "No data"}</Text>}
+      {value === null && <Text className="text-xs font-medium leading-4 text-muted-foreground">{noData}</Text>}
     </View>
   );
   if (p.onSelect)

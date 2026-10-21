@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useState, type ReactNode } from "react";
 import { Info } from "lucide-react-native";
 import { cn } from "../cn";
@@ -13,6 +14,7 @@ export type { InfoContent };
  */
 export function InfoButton({ info, label, variant }: { info: InfoContent; label: string; variant: "card" | "header" }) {
   const [open, setOpen] = useState(false);
+  const { t } = useTranslation("ui");
   const { c } = useTheme();
   const header = variant === "header";
   return (
@@ -20,7 +22,7 @@ export function InfoButton({ info, label, variant }: { info: InfoContent; label:
       <Press
         activeScale={0.96}
         accessibilityRole="button"
-        accessibilityLabel={`About ${label}`}
+        accessibilityLabel={t("info.about", { label })}
         onPress={() => setOpen(true)}
         // card: 44 px hit area pulled into the header's padding, as the web's -my-1 -mr-2 size-8 + after:-inset-1.5
         hitSlop={header ? 0 : 6}

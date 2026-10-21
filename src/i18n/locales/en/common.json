@@ -3,9 +3,94 @@
     "save": "Save",
     "cancel": "Cancel",
     "back": "Back",
-    "tryAgain": "Try again"
+    "tryAgain": "Try again",
+    "checkIn": "Check in",
+    "close": "Close",
+    "later": "Later",
+    "update": "Update"
   },
   "loading": "Loading…",
   "today": "Today",
-  "yesterday": "Yesterday"
+  "yesterday": "Yesterday",
+  "phrase": {
+    "today": "today",
+    "yesterday": "yesterday",
+    "on": "on {{date}}"
+  },
+  "duration": {
+    "minutes_one": "{{count}} minute",
+    "minutes_other": "{{count}} minutes",
+    "hours_one": "{{count}} hour",
+    "hours_other": "{{count}} hours",
+    "hoursMinutes": "{{hours}} {{minutes}}"
+  },
+  "ago": {
+    "justNow": "just now",
+    "minutes_one": "{{count}} minute ago",
+    "minutes_other": "{{count}} minutes ago",
+    "hours_one": "{{count}} hour ago",
+    "hours_other": "{{count}} hours ago",
+    "days_one": "{{count}} day ago",
+    "days_other": "{{count}} days ago"
+  },
+  "agoShort": {
+    "now": "Now",
+    "minutes": "{{count}}m",
+    "hours": "{{count}}h",
+    "days": "{{count}}d"
+  },
+  "unitWords": {
+    "percent": "percent",
+    "ms": "milliseconds",
+    "bpm": "beats per minute",
+    "rpm": "breaths per minute",
+    "celsius": "degrees Celsius",
+    "fahrenheit": "degrees Fahrenheit",
+    "kcal": "calories",
+    "mlKgMin": "millilitres per kilo per minute",
+    "times": "times",
+    "min": "minutes",
+    "h": "hours",
+    "km": "kilometres",
+    "perKm": "per kilometre",
+    "mi": "miles",
+    "perMi": "per mile",
+    "kg": "kilograms",
+    "lb": "pounds",
+    "m": "metres",
+    "ft": "feet",
+    "cm": "centimetres",
+    "in": "inches",
+    "ml": "millilitres",
+    "flOz": "fluid ounces"
+  },
+  "spoken": {
+    "minus": "minus",
+    "noData": "no data",
+    "unavailable": "{{label}} unavailable: {{why}}",
+    "provisional": " provisional,",
+    "soFar": " so far",
+    "target": ", target {{from}} to {{to}} percent",
+    "band": ", {{band}}",
+    "dialStrain": "{{label}}{{provisional}} {{value}}{{soFar}}{{target}}",
+    "dialValue": "{{label}}{{provisional}} {{value}}{{band}}",
+    "stat": "{{label}} {{value}}",
+    "statVsAverage": "{{label}} {{value}}, {{relation}} your {{averageLabel}} of {{average}}{{tone}}",
+    "above": "above",
+    "below": "below",
+    "inLineWith": "in line with",
+    "average30": "30-day average",
+    "toneGood": ", good",
+    "toneBad": ", worse than usual"
+  },
+  "band": {
+    "green": "Green",
+    "yellow": "Yellow",
+    "red": "Red"
+  },
+  "stressLevel": {
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High"
+  }
 }

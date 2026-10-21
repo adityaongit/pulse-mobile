@@ -1,3 +1,4 @@
+import { i18n } from "@/i18n/config";
 // Logging from Pulse, as halo's src/screens/journal/actions.ts does it: water, food, weight (and body fat), blood
 // oxygen, mood, symptoms, or (female profiles) a period or ovulation test. Every entry stays on the phone
 // (`logged_entries`, source "pulse"): nothing is written to Health Connect or Google. Same validation and messages as
@@ -60,55 +61,55 @@ const FLOW_KEYS = keys(FLOWS);
 const RESULT_KEYS = keys(OVULATION_RESULTS);
 const num = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v);
 const grams = (v: unknown) => v === null || (num(v) && v >= 0 && v <= 1000);
-const ENUM = "Invalid option";
+const T_ENUM = () => i18n.t("errors:log.invalidOption");
 const VIA_KEYS = new Set<string>(["photo", "text", "manual"]);
 /** Most foods one save takes (a photo estimate lists each food it sees). */
 export const MAX_FOODS = 20;
 
 /** The first problem with `v`, as the web's zod schema reports it; null when it's valid. */
 function invalid(v: LogInput): string | null {
-  if ("at" in v && v.at !== undefined && !validAt(v.at)) return "Choose a time";
+  if ("at" in v && v.at !== undefined && !validAt(v.at)) return i18n.t("errors:log.chooseTime");
   switch (v.kind) {
     case "water":
-      if (!num(v.ml) || !Number.isInteger(v.ml)) return `Enter the amount in ${unitWord(quantity("ml").unit)}.`;
-      if (v.ml < 10) return `At least ${limitText(10, "ml", "min")} ${quantity("ml").unit}`;
-      if (v.ml > 5000) return `At most ${limitText(5000, "ml", "max")} ${quantity("ml").unit}`;
+      if (!num(v.ml) || !Number.isInteger(v.ml)) return i18n.t("errors:log.enterAmount", { unit: unitWord(quantity("ml").unit) });
+      if (v.ml < 10) return i18n.t("errors:log.atLeast", { value: limitText(10, "ml", "min"), unit: quantity("ml").unit });
+      if (v.ml > 5000) return i18n.t("errors:log.atMost", { value: limitText(5000, "ml", "max"), unit: quantity("ml").unit });
       return null;
     case "food":
-      if (!MEAL_KEYS.has(v.meal) || (v.via !== undefined && !VIA_KEYS.has(v.via))) return ENUM;
+      if (!MEAL_KEYS.has(v.meal) || (v.via !== undefined && !VIA_KEYS.has(v.via))) return T_ENUM();
       return invalidFood(v);
     case "weight":
-      if (!num(v.kg) || v.kg < 20 || v.kg > 300) return `Between ${limitText(20, "kg", "min")} and ${limitText(300, "kg", "max")} ${quantity("kg").unit}`;
-      if (v.fatPct !== null && (!num(v.fatPct) || v.fatPct < 2 || v.fatPct > 75)) return "Between 2 and 75%";
+      if (!num(v.kg) || v.kg < 20 || v.kg > 300) return i18n.t("errors:log.betweenUnit", { low: limitText(20, "kg", "min"), high: limitText(300, "kg", "max"), unit: quantity("kg").unit });
+      if (v.fatPct !== null && (!num(v.fatPct) || v.fatPct < 2 || v.fatPct > 75)) return i18n.t("errors:log.fatRange");
       return null;
     case "spo2":
-      return num(v.pct) && v.pct >= 70 && v.pct <= 100 ? null : "Between 70 and 100%";
+      return num(v.pct) && v.pct >= 70 && v.pct <= 100 ? null : i18n.t("errors:log.spo2Range");
     case "mood":
-      if (!Array.isArray(v.moods) || v.moods.length < 1) return "Choose how you feel";
-      if (v.moods.length > 5) return "Choose up to 5 feelings";
-      if (!v.moods.every((m) => MOOD_KEYS.has(m)) || (v.valence !== null && !VALENCE_KEYS.has(v.valence))) return ENUM;
+      if (!Array.isArray(v.moods) || v.moods.length < 1) return i18n.t("errors:log.chooseMood");
+      if (v.moods.length > 5) return i18n.t("errors:log.maxMoods");
+      if (!v.moods.every((m) => MOOD_KEYS.has(m)) || (v.valence !== null && !VALENCE_KEYS.has(v.valence))) return T_ENUM();
       return null;
     case "symptoms":
-      if (!Array.isArray(v.symptoms) || v.symptoms.length < 1) return "Choose a symptom";
-      if (v.symptoms.length > 10) return "Choose up to 10 symptoms";
-      if (!v.symptoms.every((s) => SYMPTOM_KEYS.has(s))) return ENUM;
+      if (!Array.isArray(v.symptoms) || v.symptoms.length < 1) return i18n.t("errors:log.chooseSymptom");
+      if (v.symptoms.length > 10) return i18n.t("errors:log.maxSymptoms");
+      if (!v.symptoms.every((s) => SYMPTOM_KEYS.has(s))) return T_ENUM();
       return null;
     case "period":
-      if (!isDay(v.start) || !isDay(v.end)) return "Choose the first and last day.";
-      if (v.flow !== null && !FLOW_KEYS.has(v.flow)) return ENUM;
+      if (!isDay(v.start) || !isDay(v.end)) return i18n.t("errors:log.chooseDays");
+      if (v.flow !== null && !FLOW_KEYS.has(v.flow)) return T_ENUM();
       return null;
     case "ovulation":
-      return RESULT_KEYS.has(v.result) ? null : ENUM;
+      return RESULT_KEYS.has(v.result) ? null : T_ENUM();
   }
 }
 
 /** The first problem with one food, as the web's rules phrase them (portion and fiber are the phone's additions). */
 export function invalidFood(v: FoodItemInput): string | null {
-  if (typeof v.name !== "string" || v.name.trim().length > 80) return "Use 80 characters or fewer.";
-  if (v.portion !== undefined && (typeof v.portion !== "string" || v.portion.trim().length > 60)) return "Keep the portion to 60 characters or fewer.";
-  if (!num(v.kcal) || !Number.isInteger(v.kcal) || v.kcal < 0) return "Enter calories as a whole number.";
-  if (v.kcal > 10_000) return "At most 10,000 kcal";
-  if (![v.protein, v.carbs, v.fat, v.fiber ?? null].every(grams)) return "Macros are grams, between 0 and 1,000.";
+  if (typeof v.name !== "string" || v.name.trim().length > 80) return i18n.t("errors:log.nameLength");
+  if (v.portion !== undefined && (typeof v.portion !== "string" || v.portion.trim().length > 60)) return i18n.t("errors:log.portionLength");
+  if (!num(v.kcal) || !Number.isInteger(v.kcal) || v.kcal < 0) return i18n.t("errors:log.wholeCalories");
+  if (v.kcal > 10_000) return i18n.t("errors:log.maxKcal");
+  if (![v.protein, v.carbs, v.fat, v.fiber ?? null].every(grams)) return i18n.t("errors:log.macroRange");
   return null;
 }
 
@@ -130,11 +131,11 @@ function foodData(v: FoodItemInput, meal: Meal, via: FoodVia | undefined): FoodD
 
 /** `at` as a moment for a log entry, or why it can't be one (not a time, in the future, over a year back). */
 function momentOf(c: ActionCtx, at: string | undefined): { ok: true; ts: number } | { ok: false; error: string } {
-  if (at !== undefined && !validAt(at)) return fail("Choose a time");
+  if (at !== undefined && !validAt(at)) return fail(i18n.t("errors:log.chooseTime"));
   const now = nowOf(c);
   const ts = at ? fromWall(at, c.timeZone) : now;
-  if (ts > now + 60) return fail("Can’t log the future");
-  if (ts < now - 366 * 86_400) return fail("Can’t log more than a year back");
+  if (ts > now + 60) return fail(i18n.t("errors:log.future"));
+  if (ts < now - 366 * 86_400) return fail(i18n.t("errors:log.tooOld"));
   return { ok: true, ts };
 }
 
@@ -143,9 +144,9 @@ function momentOf(c: ActionCtx, at: string | undefined): { ok: true; ts: number 
  * one): every food is checked before any is saved, and all share the meal and the time.
  */
 export async function logFoods(c: ActionCtx, input: { meal: Meal; via: FoodVia; at?: string; items: FoodItemInput[] }): Promise<ActionResult<{ count: number }>> {
-  if (!MEAL_KEYS.has(input.meal) || !VIA_KEYS.has(input.via)) return fail(ENUM);
-  if (!Array.isArray(input.items) || input.items.length < 1) return fail("Add a food to save.");
-  if (input.items.length > MAX_FOODS) return fail(`Save up to ${MAX_FOODS} foods at a time.`);
+  if (!MEAL_KEYS.has(input.meal) || !VIA_KEYS.has(input.via)) return fail(T_ENUM());
+  if (!Array.isArray(input.items) || input.items.length < 1) return fail(i18n.t("errors:log.addFood"));
+  if (input.items.length > MAX_FOODS) return fail(i18n.t("errors:log.maxFoods", { count: MAX_FOODS }));
   for (const item of input.items) {
     const problem = invalidFood(item);
     if (problem) return fail(input.items.length > 1 && item.name.trim() ? `${item.name.trim()}: ${problem}` : problem);
@@ -162,14 +163,14 @@ export async function logFoods(c: ActionCtx, input: { meal: Meal; via: FoodVia; 
  * time as listed (it is found from there). Food read from Health Connect (logged in Fitbit) is changed in Fitbit only.
  */
 export async function updateFoodEntry(c: ActionCtx, input: { id: string; ts: number; meal: Meal; at?: string; item: FoodItemInput }): Promise<ActionResult> {
-  if (!MEAL_KEYS.has(input.meal)) return fail(ENUM);
+  if (!MEAL_KEYS.has(input.meal)) return fail(T_ENUM());
   const problem = invalidFood(input.item);
   if (problem) return fail(problem);
   const when = momentOf(c, input.at);
   if (!when.ok) return when;
   const row = (await c.store.loggedEntries(Math.min(input.ts, when.ts) - 1, 5000)).find((r) => r.id === input.id);
-  if (!row || row.type !== "nutrition-log") return fail("This food is no longer in your log.");
-  if (row.source !== "pulse") return fail("Food logged in Fitbit is changed in Fitbit.");
+  if (!row || row.type !== "nutrition-log") return fail(i18n.t("errors:log.foodGone"));
+  if (row.source !== "pulse") return fail(i18n.t("errors:log.foodInFitbit"));
   const before = row.data as Partial<FoodData> | null;
   const via = before && typeof before.via === "string" && VIA_KEYS.has(before.via) ? before.via : undefined;
   const data = foodData(input.item, input.meal, via);
@@ -184,8 +185,8 @@ export async function updateFoodEntry(c: ActionCtx, input: { id: string; ts: num
  */
 export async function setFoodSeparate(c: ActionCtx, input: { id: string; ts: number; separate: boolean }): Promise<ActionResult> {
   const row = (await c.store.loggedEntries(input.ts - 1, 5000)).find((r) => r.id === input.id);
-  if (!row || row.type !== "nutrition-log") return fail("This food is no longer in your log.");
-  if (row.source !== "pulse") return fail("Food logged in Fitbit is changed in Fitbit.");
+  if (!row || row.type !== "nutrition-log") return fail(i18n.t("errors:log.foodGone"));
+  if (row.source !== "pulse") return fail(i18n.t("errors:log.foodInFitbit"));
   const { separate: _old, ...data } = (row.data ?? {}) as FoodData;
   await c.store.addLoggedEntries([{ ...row, data: input.separate ? { ...data, separate: true } : data }]);
   return { ok: true, data: undefined };
@@ -199,14 +200,14 @@ export async function logEntry(c: ActionCtx, input: LogInput): Promise<ActionRes
   const tz = c.timeZone;
   // Cycle tracking never exists on a male profile, whatever a request says.
   if (c.profile.sex !== "female" && (isCycleKind(v.kind) || (v.kind === "symptoms" && v.symptoms.some((s) => CYCLE_SYMPTOMS.has(s))))) {
-    return fail("Not available for this profile");
+    return fail(i18n.t("errors:log.notAvailable"));
   }
 
   const now = nowOf(c);
   const today = localDay(now, tz);
   const ts = "at" in v && v.at ? fromWall(v.at, tz) : now;
-  if (ts > now + 60) return fail("Can’t log the future");
-  if (ts < now - 366 * 86_400) return fail("Can’t log more than a year back");
+  if (ts > now + 60) return fail(i18n.t("errors:log.future"));
+  if (ts < now - 366 * 86_400) return fail(i18n.t("errors:log.tooOld"));
 
   let entries: NewEntry[];
   switch (v.kind) {
@@ -232,9 +233,9 @@ export async function logEntry(c: ActionCtx, input: LogInput): Promise<ActionRes
       entries = [{ type: "symptoms", ts, data: { symptoms: v.symptoms } }];
       break;
     case "period": {
-      if (v.end < v.start) return fail("The last day is before the first");
-      if (v.end > today) return fail("Can’t log a future day");
-      if (v.start < addDays(today, -366)) return fail("Can’t log more than a year back");
+      if (v.end < v.start) return fail(i18n.t("errors:log.endBeforeStart"));
+      if (v.end > today) return fail(i18n.t("errors:log.futureDay"));
+      if (v.start < addDays(today, -366)) return fail(i18n.t("errors:log.tooOld"));
       if (v.end > addDays(v.start, 14)) return fail("A period is 15 days at most");
       entries = [{ type: "menstrual-period", ts: fromWall(`${v.start}T00:00`, tz), data: { start: v.start, end: v.end, flow: v.flow } }];
       break;
@@ -249,7 +250,7 @@ export async function logEntry(c: ActionCtx, input: LogInput): Promise<ActionRes
 
 /** Deletes a logged entry. */
 export async function deleteLogEntry(c: ActionCtx, input: { id: string }): Promise<ActionResult> {
-  if (typeof input.id !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(input.id)) return fail("Invalid UUID");
+  if (typeof input.id !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(input.id)) return fail(i18n.t("errors:log.invalidId"));
   await deleteEntry(c.store, input.id);
   return { ok: true, data: undefined };
 }

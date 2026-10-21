@@ -1,3 +1,5 @@
+import { i18n } from "@/i18n/config";
+import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, { useAnimatedStyle, useDerivedValue, type DerivedValue } from "react-native-reanimated";
@@ -22,19 +24,15 @@ export type HeaderRing = { value: number | null; href: string };
 /** The day's three scores for the ring row (the dials' own view model), with their detail links. */
 export type HeaderRings = Record<MiniRingVariant, HeaderRing>;
 
-const RING_ORDER: { key: MiniRingVariant; label: string }[] = [
-  { key: "sleep", label: "Sleep" },
-  { key: "recovery", label: "Recovery" },
-  { key: "strain", label: "Strain" },
-];
+const RING_ORDER: MiniRingVariant[] = ["sleep", "recovery", "strain"];
 /** The ring row is 40 px tall. */
 const RING_ROW = 40;
 
 function ringLabel(key: MiniRingVariant, label: string, value: number | null) {
-  if (value === null) return `${label}: no score. Open ${label}`;
-  if (key === "recovery") return `Recovery ${formatValue("int", value)} percent, ${BAND_WORD[recoveryBand(value)].toLowerCase()}. Open Recovery`;
-  if (key === "sleep") return `Sleep performance ${formatValue("int", value)} percent. Open Sleep`;
-  return `Strain ${formatValue("int", value)} percent. Open Strain`;
+  if (value === null) return i18n.t("ui:rings.noScore", { label });
+  if (key === "recovery") return i18n.t("ui:rings.recovery", { value: formatValue("int", value), band: BAND_WORD[recoveryBand(value)].toLowerCase() });
+  if (key === "sleep") return i18n.t("ui:rings.sleep", { value: formatValue("int", value) });
+  return i18n.t("ui:rings.strain", { value: formatValue("int", value) });
 }
 
 /** The reference app's streak flame: the emoji-like two-tone fire, a red-orange body lit toward its tip with an orange-yellow core (the --flame-* tokens). */
@@ -66,6 +64,7 @@ function StreakFlame({ height }: { height: number }) {
  * that shrinks each dial into its ring is not built here: it measures and animates DOM boxes with a ScrollTimeline.
  */
 export function HomeHeader({ rings, progress, right, streak }: { rings?: HeaderRings; progress: DerivedValue<number>; right?: React.ReactNode; streak?: number }) {
+  const { t } = useTranslation("ui");
   const { today } = useShellCalendar();
   const [d] = useSelectedDay();
   const expanded = useDerivedValue(() => RING_ROW * progress.value);
@@ -91,7 +90,7 @@ export function HomeHeader({ rings, progress, right, streak }: { rings?: HeaderR
             <Press
               activeScale={0.96}
               accessibilityRole="link"
-              accessibilityLabel="Settings"
+              accessibilityLabel={t("home.settings")}
               onPress={() => push("/settings")}
               className="items-center justify-center rounded-full"
               style={{ zIndex: 1, width: 46 * u, height: 46 * u, padding: 3 * u, marginLeft: -3 * u, backgroundColor: groundColorAt(c, top + HEADER_ROW / 2) }}
@@ -102,7 +101,7 @@ export function HomeHeader({ rings, progress, right, streak }: { rings?: HeaderR
             {streakShown && (
               <View
                 accessible
-                accessibilityLabel={`${streak}-day streak`}
+                accessibilityLabel={t("home.streak", { count: streak })}
                 className="flex-row items-center rounded-full bg-foreground/[0.045]"
                 style={{ marginLeft: -19 * u, height: 36 * u, gap: 10 * u, paddingLeft: 32 * u, paddingRight: 12 * u }}
               >
@@ -117,7 +116,8 @@ export function HomeHeader({ rings, progress, right, streak }: { rings?: HeaderR
           <View className="flex-1 flex-row items-center justify-end">{right ?? <SyncStatus hideText={lt380 && !streakShown} />}</View>
         </View>
         <Animated.View style={[row, { position: "absolute", left: 0, right: 0, top: HEADER_ROW, height: RING_ROW, flexDirection: "row", paddingHorizontal: 16 }]}>
-          {RING_ORDER.map(({ key, label }) => {
+          {RING_ORDER.map((key) => {
+            const label = t(`rings.${key}Label`);
             const ring = rings?.[key];
             const value = ring?.value ?? null;
             return (

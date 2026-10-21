@@ -1,3 +1,4 @@
+import { i18n } from "@/i18n/config";
 import type { ReactNode } from "react";
 import { View } from "react-native";
 import { clock, formatValue, spoken } from "@/lib/format";
@@ -102,9 +103,9 @@ export function ActivityCard({ name, kind, strain, start, end, href, timeZone, d
   const distance = distanceText(distanceKm, paceS);
   const noStrain = strain.value === null;
   // The full reason when it is the only caption; beside a distance, the short form keeps the row on one line.
-  const caption = distance ? (noStrain ? `${distance} · No strain` : distance) : noStrain ? "No strain: not enough heart-rate data" : undefined;
+  const caption = distance ? (noStrain ? i18n.t("ui:timeline.distanceNoStrain", { distance }) : distance) : noStrain ? i18n.t("ui:timeline.noStrainReason") : undefined;
   const [d, p] = [quantity("km"), quantity("/km")];
-  const spokenDistance = distanceKm == null ? "" : `, ${spoken(formatValue("decimal2", d.value(distanceKm)), d.unit)}${paceS == null ? "" : ` at ${spoken(formatValue("pace", p.value(paceS)), p.unit)}`}`;
+  const spokenDistance = distanceKm == null ? "" : i18n.t(paceS == null ? "ui:timeline.spokenDistance" : "ui:timeline.spokenDistancePace", { distance: spoken(formatValue("decimal2", d.value(distanceKm)), d.unit), pace: paceS == null ? "" : spoken(formatValue("pace", p.value(paceS)), p.unit) });
   return (
     <TimelineRow
       href={href}
@@ -120,7 +121,7 @@ export function ActivityCard({ name, kind, strain, start, end, href, timeZone, d
       caption={caption}
       start={s}
       end={e}
-      label={`${name}${spokenDistance}, ${noStrain ? "no strain" : `strain ${value}`}, ${s} to ${e}`}
+      label={i18n.t(noStrain ? "ui:timeline.activityAriaNoStrain" : "ui:timeline.activityAria", { name, distance: spokenDistance, strain: value, start: s, end: e })}
     />
   );
 }

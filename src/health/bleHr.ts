@@ -1,3 +1,4 @@
+import { i18n } from "@/i18n/config";
 // Live heart rate over Bluetooth, the pure half: decoding the standard Heart Rate Measurement characteristic (0x2A37)
 // a band sends while it shares heart rate, artifact-filtered RMSSD over the beat-to-beat (RR) intervals, the
 // 2-minute trace the screens draw, and the small policies the controller (ble.ts) uses: which scanned devices look
@@ -221,9 +222,9 @@ export function rankDevices<T extends ScannedHr>(xs: readonly T[]): T[] {
 }
 
 /** "Strong" / "Good" / "Weak" for an RSSI in dBm; null without one. */
-export function signalWord(rssi: number | null | undefined): "Strong" | "Good" | "Weak" | null {
+export function signalWord(rssi: number | null | undefined): string | null {
   if (rssi === null || rssi === undefined) return null;
-  return rssi >= -60 ? "Strong" : rssi >= -75 ? "Good" : "Weak";
+  return i18n.t(rssi >= -60 ? "errors:ble.signalStrong" : rssi >= -75 ? "errors:ble.signalGood" : "errors:ble.signalWeak");
 }
 
 /** Wait before reconnect attempt `attempt` (1-based): 2 s, 4 s, 8 s… capped at 30 s. */
