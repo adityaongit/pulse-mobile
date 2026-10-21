@@ -1,4 +1,5 @@
 // Activity `/activity/[id]` (spec §7.4). Ported from Pulse's src/server/queries/activity.ts.
+import { i18n } from "@/i18n/config";
 import { inUnits } from "@/lib/units";
 import type { Metric } from "@/lib/reasons";
 import { addDays } from "@/lib/time";
@@ -58,16 +59,16 @@ export async function getActivity(id: string, ctx: QueryCtx): Promise<ActivityVM
   const travels = kind === "run" || kind === "walk" || kind === "ride";
   const distance = travels
     ? [
-        { ...tile("distance", "Distance", here.distanceKm, "km", same.map((x) => distanceOf(x).distanceKm), "no_data"), format: "decimal2" as const },
-        ...(kind === "ride" ? [] : [{ ...tile("pace", "Pace", here.paceS, "/km", same.map((x) => distanceOf(x).paceS), "no_data"), format: "pace" as const }]),
+        { ...tile("distance", i18n.t("strain:stat.distance"), here.distanceKm, "km", same.map((x) => distanceOf(x).distanceKm), "no_data"), format: "decimal2" as const },
+        ...(kind === "ride" ? [] : [{ ...tile("pace", i18n.t("strain:stat.pace"), here.paceS, "/km", same.map((x) => distanceOf(x).paceS), "no_data"), format: "pace" as const }]),
       ]
     : [];
   const stats = [
-    tile("duration", "Duration", durationMin(e), "min", same.map(durationMin), "no_data"),
+    tile("duration", i18n.t("strain:stat.duration"), durationMin(e), "min", same.map(durationMin), "no_data"),
     ...distance,
-    tile("avgHr", "Avg HR", a?.avgHr, "bpm", same.map((x) => statOf(x)?.avgHr)),
-    tile("maxHr", "Max HR", a?.maxHr, "bpm", same.map((x) => statOf(x)?.maxHr)),
-    tile("calories", "Calories", e.calories, "kcal", same.map((x) => x.calories), "no_data"),
+    tile("avgHr", i18n.t("strain:stat.avgHr"), a?.avgHr, "bpm", same.map((x) => statOf(x)?.avgHr)),
+    tile("maxHr", i18n.t("strain:stat.maxHr"), a?.maxHr, "bpm", same.map((x) => statOf(x)?.maxHr)),
+    tile("calories", i18n.t("strain:stat.calories"), e.calories, "kcal", same.map((x) => x.calories), "no_data"),
   ];
 
   // Heart-rate recovery on the Pulse engine: the largest drop within 2 minutes after the workout (null below zone 4).
@@ -75,7 +76,7 @@ export async function getActivity(id: string, ctx: QueryCtx): Promise<ActivityVM
   const hrr: ActivityVM["hrr"] =
     hrr60 == null
       ? none("insufficient_hr_data")
-      : ok(hrr60 >= 20 ? { value: hrr60, tone: "optimal", label: "Good" } : hrr60 >= 12 ? { value: hrr60, tone: "neutral", label: "Typical" } : { value: hrr60, tone: "warning", label: "Low" });
+      : ok(hrr60 >= 20 ? { value: hrr60, tone: "optimal", label: i18n.t("strain:hrrWord.good") } : hrr60 >= 12 ? { value: hrr60, tone: "neutral", label: i18n.t("strain:hrrWord.typical") } : { value: hrr60, tone: "warning", label: i18n.t("strain:hrrWord.low") });
 
   return {
     id,
@@ -146,8 +147,8 @@ export function withTypical(m: Metric<ZoneRow[]>, prior: number[][]): Metric<Zon
 function zoneInsight(seconds: number[]): string | null {
   const min = seconds.map((s) => Math.round(s / 60));
   const hard = min[3] + min[4];
-  if (hard >= 10) return `You spent ${hard} minutes in zones 4 and 5, hard work that builds speed and power.`;
-  if (min[2] >= 10) return `You spent ${min[2]} minutes in zone 3, steady aerobic work that builds your base.`;
-  if (min[0] + min[1] >= 10) return `You spent ${min[0] + min[1]} minutes in zones 1 and 2, easy movement that helps you recover.`;
+  if (hard >= 10) return i18n.t("strain:zoneInsight.hard", { count: hard });
+  if (min[2] >= 10) return i18n.t("strain:zoneInsight.steady", { count: min[2] });
+  if (min[0] + min[1] >= 10) return i18n.t("strain:zoneInsight.easy", { count: min[0] + min[1] });
   return null;
 }

@@ -2,6 +2,7 @@
 // each workout's Training Effect for its Activity screen, and HRV Status for the Health tab. Each is Halo's own
 // implementation of Garmin's published method (src/core/algorithms: trainingReadiness.ts, trainingEffect.ts,
 // trainingStatus.ts, hrvStatus.ts); these turn the stored rows into what the cards show.
+import { i18n } from "@/i18n/config";
 import type { ChipTone } from "@/lib/bands";
 import type { Metric } from "@/lib/reasons";
 import { addDays } from "@/lib/time";
@@ -15,35 +16,15 @@ import type { TimePoint } from "./types";
 
 // ── Words ────────────────────────────────────────────────────────────────────
 
-export const READINESS_WORD: Record<ReadinessBand, string> = { prime: "Prime", high: "High", moderate: "Moderate", low: "Low", poor: "Poor" };
-export const READINESS_TONE: Record<ReadinessBand, ChipTone> = { prime: "optimal", high: "optimal", moderate: "neutral", low: "warning", poor: "alert" };
-export const FACTOR_LABEL: Record<ReadinessFactorKey, string> = {
-  sleep: "Last night’s sleep",
-  recoveryTime: "Recovery time",
-  hrv: "HRV status",
-  load: "Load ratio",
-  sleepHistory: "Sleep, last 3 nights",
-  stressHistory: "Stress, last 3 days",
-};
-const LIMIT_LINE: Record<ReadinessFactorKey, string> = {
-  sleep: "Last night’s sleep is holding it back.",
-  recoveryTime: "Your body is still recovering from recent training.",
-  hrv: "Your HRV is off your usual range.",
-  load: "Your recent load is high for you.",
-  sleepHistory: "Your sleep over the last few nights is holding it back.",
-  stressHistory: "Stress over the last few days is holding it back.",
-};
+/** A record whose words resolve when read (the language can change after import). */
+const getters = <K extends string>(keys: readonly K[], word: (k: K) => string): Record<K, string> =>
+  Object.defineProperties({}, Object.fromEntries(keys.map((k) => [k, { get: () => word(k), enumerable: true }]))) as Record<K, string>;
+const keysOf = <K extends string>(o: Record<K, unknown>) => Object.keys(o) as K[];
 
-export const STATUS_WORD: Record<TrainingStatusKind, string> = {
-  productive: "Productive",
-  maintaining: "Maintaining",
-  recovery: "Recovery",
-  peaking: "Peaking",
-  unproductive: "Unproductive",
-  overreaching: "Overreaching",
-  strained: "Strained",
-  detraining: "Detraining",
-};
+export const READINESS_TONE: Record<ReadinessBand, ChipTone> = { prime: "optimal", high: "optimal", moderate: "neutral", low: "warning", poor: "alert" };
+export const READINESS_WORD = getters(keysOf(READINESS_TONE), (k) => i18n.t(`strain:readinessBand.${k}`));
+export const FACTOR_LABEL = getters<ReadinessFactorKey>(["sleep", "recoveryTime", "hrv", "load", "sleepHistory", "stressHistory"], (k) => i18n.t(`strain:readinessFactor.${k}`));
+
 export const STATUS_TONE: Record<TrainingStatusKind, ChipTone> = {
   productive: "optimal",
   peaking: "optimal",
@@ -54,25 +35,10 @@ export const STATUS_TONE: Record<TrainingStatusKind, ChipTone> = {
   detraining: "warning",
   overreaching: "alert",
 };
-const STATUS_LINE: Record<TrainingStatusKind, string> = {
-  productive: "Your training is building fitness.",
-  maintaining: "Your training keeps your fitness where it is; more load would build it.",
-  recovery: "A lighter stretch lets your body recover, ready for harder work.",
-  peaking: "Fitness is up while load eases: good timing for a race or a test.",
-  unproductive: "Load is steady but fitness is slipping. Check your sleep, stress and recovery.",
-  overreaching: "Load is very high and is starting to cost you. Ease off.",
-  strained: "Your HRV is low under this load: your body is struggling to recover.",
-  detraining: "Training is well below your usual, so fitness will slowly fall.",
-};
+export const STATUS_WORD = getters(keysOf(STATUS_TONE), (k) => i18n.t(`strain:statusWord.${k}`));
 
-export const TE_WORD: Record<TeLabel, string> = {
-  no_benefit: "No benefit",
-  minor: "Minor",
-  maintaining: "Maintaining",
-  improving: "Improving",
-  highly_improving: "Highly improving",
-  overreaching: "Overreaching",
-};
+/** The Training Effect labels' keys in the strain namespace. */
+const TE_KEY = { no_benefit: "noBenefit", minor: "minor", maintaining: "maintaining", improving: "improving", highly_improving: "highlyImproving", overreaching: "overreaching" } as const satisfies Record<TeLabel, string>;
 export const TE_TONE: Record<TeLabel, ChipTone> = {
   no_benefit: "neutral",
   minor: "neutral",
@@ -81,17 +47,11 @@ export const TE_TONE: Record<TeLabel, ChipTone> = {
   highly_improving: "optimal",
   overreaching: "warning",
 };
-export const BENEFIT_WORD: Record<PrimaryBenefit, string> = { recovery: "Recovery", base: "Base", tempo: "Tempo", threshold: "Threshold", vo2max: "VO2 max" };
-const BENEFIT_LINE: Record<PrimaryBenefit, string> = {
-  recovery: "Light work that helps you recover.",
-  base: "Steady aerobic work that builds your base.",
-  tempo: "Harder aerobic work that lifts your endurance.",
-  threshold: "Sustained hard work that raises the pace you can hold.",
-  vo2max: "Hard efforts that raise your aerobic ceiling.",
-};
+export const TE_WORD = getters(keysOf(TE_TONE), (k) => i18n.t(`strain:teWord.${TE_KEY[k]}`));
+export const BENEFIT_WORD = getters<PrimaryBenefit>(["recovery", "base", "tempo", "threshold", "vo2max"], (k) => i18n.t(`strain:benefitWord.${k}`));
 
-export const HRV_WORD = { balanced: "Balanced", unbalanced: "Unbalanced", low: "Low" } as const;
-export const HRV_TONE = { balanced: "optimal", unbalanced: "warning", low: "alert" } as const satisfies Record<keyof typeof HRV_WORD, ChipTone>;
+export const HRV_TONE = { balanced: "optimal", unbalanced: "warning", low: "alert" } as const satisfies Record<"balanced" | "unbalanced" | "low", ChipTone>;
+export const HRV_WORD = getters(keysOf(HRV_TONE), (k) => i18n.t(`strain:hrvWord.${k}`));
 
 // ── View models ──────────────────────────────────────────────────────────────
 
@@ -173,7 +133,7 @@ export function readinessVM(t: TrainingRow | null, isToday: boolean): Metric<Tra
     band: READINESS_WORD[r.band],
     tone: READINESS_TONE[r.band],
     atWake: r.atWake?.score ?? null,
-    line: r.limiting ? LIMIT_LINE[r.limiting] : r.longDay ? "A very long day awake before last night holds it back." : "Everything that feeds it is in good shape.",
+    line: r.limiting ? i18n.t(`strain:readinessLimit.${r.limiting}`) : r.longDay ? i18n.t("strain:readinessLongDay") : i18n.t("strain:readinessAllGood"),
     factors: (Object.keys(FACTOR_LABEL) as ReadinessFactorKey[]).map((key) => ({ key, label: FACTOR_LABEL[key], value: r.factors[key] == null ? null : Math.round(r.factors[key]!) })),
   });
 }
@@ -191,7 +151,7 @@ export function statusVM(t: TrainingRow | null, hrv: HrvStatusRow | null, loadRa
   return ok({
     status: STATUS_WORD[s.status],
     tone: STATUS_TONE[s.status],
-    line: STATUS_LINE[s.status],
+    line: i18n.t(`strain:statusLine.${s.status}`),
     loadRatio: loadRatio == null ? null : Math.round(loadRatio * 100) / 100,
     vo2PerMonth: s.vo2PerMonth == null ? null : round1(s.vo2PerMonth),
     hrv: hrv?.status ? HRV_WORD[hrv.status] : null,
@@ -202,7 +162,7 @@ export function statusVM(t: TrainingRow | null, hrv: HrvStatusRow | null, loadRa
 export function trainingEffectVM(t: TrainingRow | null | undefined, id: string): TrainingEffectVM | null {
   const s: TrainingSession | undefined = t?.sessions.find((x) => x.id === id);
   if (!s) return null;
-  return { te: s.te, label: TE_WORD[s.label], tone: TE_TONE[s.label], benefit: BENEFIT_WORD[s.benefit], benefitLine: BENEFIT_LINE[s.benefit], recoveryHours: s.recoveryHours, epoc: s.epoc };
+  return { te: s.te, label: TE_WORD[s.label], tone: TE_TONE[s.label], benefit: BENEFIT_WORD[s.benefit], benefitLine: i18n.t(`strain:benefitLine.${s.benefit}`), recoveryHours: s.recoveryHours, epoc: s.epoc };
 }
 
 /** The Health tab's HRV Status card for `day`, with its last 28 nights. */
@@ -215,12 +175,12 @@ export async function getHrvStatus(day: string, ctx: QueryCtx): Promise<Metric<H
   const nights = [...rows.values()].map((r) => ({ t: ms(Date.parse(`${r.day}T12:00:00Z`) / 1000), v: r.metrics?.hrvMs ?? null }));
   const line =
     h.status === "balanced"
-      ? "Your 7-day average sits in your usual range."
+      ? i18n.t("strain:hrvLine.balanced")
       : h.status === "low"
-        ? "Your 7-day average is well below your usual range: often a sign of strain, illness or poor sleep."
+        ? i18n.t("strain:hrvLine.low")
         : h.direction === "high"
-          ? "Your 7-day average is above your usual range."
-          : "Your 7-day average is a little below your usual range.";
+          ? i18n.t("strain:hrvLine.high")
+          : i18n.t("strain:hrvLine.belowRange");
   return ok({
     status: HRV_WORD[h.status],
     tone: HRV_TONE[h.status],

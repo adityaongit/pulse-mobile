@@ -2,9 +2,11 @@
 // src/app/(app)/activity/[id]/{page,loading}.tsx. Left out while their flags are off
 // (src/lib/features.ts): WorkoutBanner (FEATURES.strengthTrainer) and the cardio / muscular split (FEATURES.muscularLoad).
 import { ScrollView, useWindowDimensions, View } from "react-native"
+import { useTranslation } from "react-i18next"
 import { useLocalSearchParams } from "expo-router"
 import { deltaTone } from "@/lib/bands"
 import { clock, dayLabel, dayPhrase, formatValue } from "@/lib/format"
+import { i18n } from "@/i18n/config"
 import { dayHref } from "@/lib/url"
 import { getActivity } from "@/queries/activity"
 import { getActivityExtras } from "@/queries/mobileExtras"
@@ -48,6 +50,7 @@ const decode = (s: string) => {
 }
 
 export function ActivityScreen() {
+  const { t } = useTranslation("strain")
   const { id: raw } = useLocalSearchParams<{ id: string }>()
   const id = decode(raw)
   const { data, error, reload } = useScreen(async (ctx) => {
@@ -61,19 +64,19 @@ export function ActivityScreen() {
   if (!data) return error ? <ScreenError retry={reload} /> : <ActivitySkeleton />
   const { vm, today, timeZone } = data
   // The web answers an unknown id with its 404 page; React Native has none of its own to show, so this is the screen's empty state.
-  if (!vm) return <DetailShell title="Activity" primary={<EmptyState body="This activity isn’t available." />} />
+  if (!vm) return <DetailShell title={t("activity.title")} primary={<EmptyState body={t("activity.unavailable")} />} />
 
   const noHr = vm.hr.value === null && vm.zones.value === null
   const tiles = vm.stats.filter((k) => !(noHr && k.metric.value === null))
   const strainHref = dayHref("/strain", vm.day, today)
-  const question = `Tell me about my ${vm.name.toLowerCase()} ${dayPhrase(vm.day, today)}.`
+  const question = t("activity.question", { name: vm.name.toLowerCase(), when: dayPhrase(vm.day, today) })
 
   return (
     <View className="flex-1">
       <DetailShell
         title={vm.name}
-        bodySkeleton={BODY_SKELETON}
-        subtitle={`${dayLabel(vm.day, today)} ${clock(vm.start, timeZone)} to ${clock(vm.end, timeZone)}`}
+        bodySkeleton={<BodySkeleton />}
+        subtitle={t("activity.subtitle", { day: dayLabel(vm.day, today), start: clock(vm.start, timeZone), end: clock(vm.end, timeZone) })}
         align="start"
         titleIcon={<Icon icon={ACTIVITY_ICON[vm.kind]} size={24} tone="foreground" strokeWidth={1.75} />}
         backHref={strainHref}
@@ -89,31 +92,31 @@ export function ActivityScreen() {
             </Card>
           ) : (
             <View className="gap-6">
-              <View accessibilityLabel="Heart rate">
+              <View accessibilityLabel={t("activity.heartRate")}>
                 <IntradayHrChart variant="activity" data={hrSeries(vm.hr, vm.maxHr)} />
               </View>
-              <View accessibilityLabel="Time in zones">
-                <ZoneBars variant="rows" data={zoneBars(vm.zones)} note={vm.zoneNote} noteLink={{ label: "View heart-rate settings", href: HR_SETTINGS }} emptyCopy="No heart-rate zones for this activity." />
+              <View accessibilityLabel={t("activity.timeInZones")}>
+                <ZoneBars variant="rows" data={zoneBars(vm.zones)} note={vm.zoneNote} noteLink={{ label: t("activity.viewHrSettings"), href: HR_SETTINGS }} emptyCopy={t("activity.noZones")} />
               </View>
             </View>
           )
         }
         secondary={[
           tiles.length > 0 && (
-            <SectionShell key="stats" variant="section" title="Key statistics" aside="vs. 30-day average">
+            <SectionShell key="stats" variant="section" title={t("activity.keyStats")} aside={t("activity.vsAverage")}>
               <StatTiles tiles={tiles} />
             </SectionShell>
           ),
           // A titled section like Key statistics beside it. Without heart rate there is nothing to recover from, and the notice says why.
           !noHr && <TrainingEffectCard key="te" te={vm.trainingEffect} />,
           !noHr && (
-            <SectionShell key="hrr" variant="section" title="Heart rate recovery">
+            <SectionShell key="hrr" variant="section" title={t("activity.hrRecovery")}>
               <Card className="px-4">
                 <HeartRateRecovery hrr={vm.hrr} />
               </Card>
             </SectionShell>
           ),
-          vm.cost && <SectionShell key="cost" variant="section" title="Recovery cost"><ActivityCostCard cost={vm.cost} /></SectionShell>,
+          vm.cost && <SectionShell key="cost" variant="section" title={t("activity.recoveryCost")}><ActivityCostCard cost={vm.cost} /></SectionShell>,
         ].filter((x) => x !== false && x !== null)}
         // With the coach set up, its pill takes the insight's place (activity-01, spec §11 R44); without it, the templated insight.
         footer={!coach && vm.insight ? <InsightCard body={vm.insight} /> : null}
@@ -153,12 +156,13 @@ function StatTiles({ tiles }: { tiles: ActivityVM["stats"] }) {
  * in the workout for runs and walks.
  */
 function Hero({ vm }: { vm: ActivityVM & Awaited<ReturnType<typeof getActivityExtras>> }) {
+  const { t } = useTranslation("strain")
   const s = vm.strain.value
   return (
     <View className="w-full gap-2">
       <View className="flex-row flex-wrap items-end gap-x-10 gap-y-4">
-        <HeroStat label="Activity strain" value={formatValue("pct", s)} average={vm.strainAverage} format="pct" valueClass={s === null ? "text-muted-foreground" : "text-strain-text"} raw={s} />
-        {vm.steps && <HeroStat label="Activity steps" value={formatValue("grouped", vm.steps.value)} average={vm.steps.average} format="grouped" raw={vm.steps.value} />}
+        <HeroStat label={t("activity.heroStrain")} value={formatValue("pct", s)} average={vm.strainAverage} format="pct" valueClass={s === null ? "text-muted-foreground" : "text-strain-text"} raw={s} />
+        {vm.steps && <HeroStat label={t("activity.heroSteps")} value={formatValue("grouped", vm.steps.value)} average={vm.steps.average} format="grouped" raw={vm.steps.value} />}
       </View>
       {/* The band-off notice under the hero already says why; so it is not repeated here. */}
       {s === null && vm.hr.value !== null && <ReasonPlaceholder reason={vm.strain.reason} size="sm" />}
@@ -167,13 +171,14 @@ function Hero({ vm }: { vm: ActivityVM & Awaited<ReturnType<typeof getActivityEx
 }
 
 function HeroStat({ label, value, raw, average, format, valueClass }: { label: string; value: string; raw: number | null; average: number | null; format: "pct" | "grouped"; valueClass?: string }) {
+  const { t } = useTranslation("strain")
   const dir = raw !== null && average !== null ? deltaTone("neutral", raw, average).dir : null
   return (
     <View>
       <View className="flex-row items-center gap-2">
         <Text className={cn("font-numeric text-[34px] font-bold leading-none tabular-nums", valueClass)}>{value}</Text>
         {dir && average !== null && (
-          <View accessible accessibilityLabel={`30-day average for this kind of activity ${formatValue(format, average)}`}>
+          <View accessible accessibilityLabel={t("activity.spokenAverage", { value: formatValue(format, average) })}>
             <StatusChip tone="neutral" delta={dir} className="self-center">
               {formatValue(format, average)}
             </StatusChip>
@@ -187,33 +192,34 @@ function HeroStat({ label, value, raw, average, format, valueClass }: { label: s
 
 /** The one band-off notice: what is missing and why. */
 function noHrCopy(reason: string | null | undefined) {
-  const what = "heart rate, zones or strain for this activity"
-  return reason === "band_not_worn" ? `Band not worn, so there's no ${what}.` : `Too little heart-rate data to show ${what}.`
+  return reason === "band_not_worn" ? i18n.t("strain:activity.noHrBand") : i18n.t("strain:activity.noHrData")
 }
 
 function HeartRateRecovery({ hrr }: { hrr: ActivityVM["hrr"] }) {
-  if (hrr.value === null) return <ReasonPlaceholder reason="insufficient_hr_data" size="md" copy="Not enough heart-rate data after the workout." />
+  const { t } = useTranslation("strain")
+  if (hrr.value === null) return <ReasonPlaceholder reason="insufficient_hr_data" size="md" copy={t("activity.hrrNone")} />
   return (
     <View className="gap-3">
       <View className="flex-row flex-wrap items-center gap-3">
         <ValueUnit value={formatValue("int", hrr.value.value)} unit="bpm" className="font-numeric text-4xl font-bold leading-10 tracking-[-0.01em]" />
         <StatusChip tone={hrr.value.tone} className="self-center">{hrr.value.label}</StatusChip>
       </View>
-      <Text className={CAPTION}>Drop in the first 60 seconds after you stopped. Above 20 is typical for fit adults.</Text>
+      <Text className={CAPTION}>{t("activity.hrrNote")}</Text>
     </View>
   )
 }
 
 /** Three tiles in two columns (the web's `grid grid-cols-2 gap-3`). */
 function StatsSkeleton() {
+  const { t } = useTranslation("strain")
   const { width } = useWindowDimensions()
   return (
     <View accessibilityElementsHidden className="flex-row flex-wrap gap-3">
       {(
         [
-          ["avgHr", "Avg HR"],
-          ["maxHr", "Max HR"],
-          ["calories", "Calories"],
+          ["avgHr", t("stat.avgHr")],
+          ["maxHr", t("stat.maxHr")],
+          ["calories", t("stat.calories")],
         ] as const
       ).map(([k, l]) => (
         <View key={k} style={{ width: (width - 32 - 12) / 2 }}>
@@ -224,46 +230,62 @@ function StatsSkeleton() {
   )
 }
 
-const LOADING_PRIMARY = (
-  <View accessibilityElementsHidden className="gap-6">
-    <IntradayHrChartSkeleton variant="activity" />
-    <View>
-      <ZoneBarsSkeleton variant="rows" />
-      <SkeletonText className="mt-3 w-56" />
+function LoadingPrimary() {
+  return (
+    <View accessibilityElementsHidden className="gap-6">
+      <IntradayHrChartSkeleton variant="activity" />
+      <View>
+        <ZoneBarsSkeleton variant="rows" />
+        <SkeletonText className="mt-3 w-56" />
+      </View>
     </View>
-  </View>
-)
+  )
+}
 
-const LOADING_SECONDARY = [
-  <SectionShell key="stats" variant="section" title="Key statistics" aside="vs. 30-day average">
-    <StatsSkeleton />
-  </SectionShell>,
-  <SectionShell key="hrr" variant="section" title="Heart rate recovery">
-    <Card accessibilityElementsHidden className="justify-center px-4">
-      <Skeleton className="h-24 rounded-lg bg-skeleton" />
-    </Card>
-  </SectionShell>,
-]
+function LoadingStats() {
+  const { t } = useTranslation("strain")
+  return (
+    <SectionShell variant="section" title={t("activity.keyStats")} aside={t("activity.vsAverage")}>
+      <StatsSkeleton />
+    </SectionShell>
+  )
+}
+
+function LoadingRecovery() {
+  const { t } = useTranslation("strain")
+  return (
+    <SectionShell variant="section" title={t("activity.hrRecovery")}>
+      <Card accessibilityElementsHidden className="justify-center px-4">
+        <Skeleton className="h-24 rounded-lg bg-skeleton" />
+      </Card>
+    </SectionShell>
+  )
+}
+
+const loadingSecondary = () => [<LoadingStats key="stats" />, <LoadingRecovery key="hrr" />]
 
 /** Below the fold while a cold push slides in: the loading state's first sections. */
-const BODY_SKELETON = (
-  <>
-    {LOADING_PRIMARY}
-    <View className="gap-3">{LOADING_SECONDARY.slice(0, 2)}</View>
-  </>
-)
+function BodySkeleton() {
+  return (
+    <>
+      <LoadingPrimary />
+      <View className="gap-3">{loadingSecondary()}</View>
+    </>
+  )
+}
 
 /** The route's loading state (pulse's ActivitySkeleton). */
 function ActivitySkeleton() {
+  const { t } = useTranslation("strain")
   return (
     <DetailShell
       loading
-      title="Activity"
+      title={t("activity.title")}
       align="start"
       hero={
         <View accessibilityElementsHidden className="w-full gap-2">
           <View className="flex-row flex-wrap items-end gap-x-10 gap-y-3">
-            {["Activity strain", "Duration"].map((l) => (
+            {[t("activity.heroStrain"), t("activity.heroDuration")].map((l) => (
               <View key={l}>
                 <SkeletonText className="w-14" lh={34} fs={34} />
                 <Text className={cn(LABEL, "mt-2 text-foreground-secondary")}>{l}</Text>
@@ -273,9 +295,9 @@ function ActivitySkeleton() {
           <SkeletonText className="w-24" />
         </View>
       }
-      primary={LOADING_PRIMARY}
-      bodySkeleton={BODY_SKELETON}
-      secondary={LOADING_SECONDARY}
+      primary={<LoadingPrimary />}
+      bodySkeleton={<BodySkeleton />}
+      secondary={loadingSecondary()}
       footer={<InsightCardSkeleton />}
     />
   )

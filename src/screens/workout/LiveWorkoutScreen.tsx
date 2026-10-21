@@ -9,8 +9,10 @@
 // scored then. A short summary stays on the phone (src/live/storage.ts).
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { View } from "react-native";
+import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
 import { Activity, HeartPulse } from "lucide-react-native";
+import { i18n } from "@/i18n/config";
 import { zoneNumber, zones } from "@/core/scoring/zones";
 import type { LiveSample } from "@/health/ble";
 import { ZONE_COLOR } from "@/lib/bands";
@@ -54,10 +56,7 @@ const BODY = "text-[15px] leading-[22px] text-foreground-secondary";
 const ROW_TITLE = "text-[15px] font-semibold leading-5";
 const NUM = "font-numeric font-bold";
 
-const INFO: InfoContent = {
-  title: "About Live Workout",
-  body: "Strain Coach on your band’s live heart rate. Day Strain builds as you train, on the same Strain math as the rest of Pulse, starting from what today already holds. The coach compares it with today’s Strain Target, and your heart rate with a band set by today’s Recovery: it says push when you’re easy for the day and ease off once you’re in range or climbing past what Recovery can pay for. Nothing here is saved to your scores: the workout counts when Fitbit syncs it.",
-};
+const liveInfo = (): InfoContent => ({ title: i18n.t("strain:live.infoTitle"), body: i18n.t("strain:live.infoBody") });
 
 type Session = {
   start: number;
@@ -119,6 +118,7 @@ const setupQuery = async (ctx: QueryCtx) => ({
 });
 
 export function LiveWorkoutScreen() {
+  const { t } = useTranslation("strain");
   const ctl = useLiveBleControl();
   const isLive = ctl.status === "live";
   const q = useScreen(setupQuery, ["workout-live"]);
@@ -213,7 +213,7 @@ export function LiveWorkoutScreen() {
     <ScoreDial
       variant="strain"
       size="lg"
-      label="Day strain"
+      label={t("live.dayStrain")}
       // Tenths, so the dial sweeps only when the shown number changes.
       value={result ? Math.round(result.dayEnd * 10) / 10 : dayValue === null ? null : Math.round(dayValue * 10) / 10}
       loading={!setup && !result}
@@ -233,7 +233,7 @@ export function LiveWorkoutScreen() {
       <View className="gap-3">
         <RunningStats snap={snap} start={active.start} lost={ctl.status !== "live"} name={ctl.device?.name ?? null} />
         <Button variant="secondary" haptic onPress={() => finish()}>
-          End workout
+          {t("live.end")}
         </Button>
       </View>
     );
@@ -242,10 +242,10 @@ export function LiveWorkoutScreen() {
     primary = (
       <View className="gap-3">
         <Button onPress={start} disabled={!isLive || !setup}>
-          Start another
+          {t("live.startAnother")}
         </Button>
         <Button variant="secondary" onPress={() => (router.canGoBack() ? router.back() : push("/strain"))}>
-          Done
+          {t("live.done")}
         </Button>
       </View>
     );
@@ -254,21 +254,21 @@ export function LiveWorkoutScreen() {
     primary = (
       <View className="gap-3">
         <BandCard setup={setup} />
-        <SectionShell variant="card" title="Haptic cues" info={false}>
+        <SectionShell variant="card" title={t("live.haptics")} info={false}>
           <View className="min-h-11 flex-row items-center gap-3">
-            <Text className={cn(CAPTION, "min-w-0 flex-1")}>A tap to push, two to ease off, a buzz at your target</Text>
-            <Switch value={haptics} onValueChange={setHaptics} label="Haptic cues" />
+            <Text className={cn(CAPTION, "min-w-0 flex-1")}>{t("live.hapticsHint")}</Text>
+            <Switch value={haptics} onValueChange={setHaptics} label={t("live.haptics")} />
           </View>
         </SectionShell>
         <Button onPress={start} disabled={!isLive || !setup}>
-          Start workout
+          {t("live.start")}
         </Button>
       </View>
     );
   }
 
   const secondary = [
-    <SectionShell key="recent" variant="card" title="Recent live workouts" info={false}>
+    <SectionShell key="recent" variant="card" title={t("live.recent")} info={false}>
       {log.length && q.data ? (
         <Divided>
           {log.slice(0, 5).map((r) => (
@@ -276,14 +276,14 @@ export function LiveWorkoutScreen() {
           ))}
         </Divided>
       ) : (
-        <Text className={BODY}>Workouts you coach here are summed up on this phone. Fitbit syncs the workout itself to your scores.</Text>
+        <Text className={BODY}>{t("live.recentEmpty")}</Text>
       )}
     </SectionShell>,
   ];
 
   return (
     <>
-      <DetailShell title="Live workout" info={INFO} backHref="/strain" hero={hero} summary={summary} primary={primary} secondary={running ? undefined : secondary} />
+      <DetailShell title={t("live.title")} info={liveInfo()} backHref="/strain" hero={hero} summary={summary} primary={primary} secondary={running ? undefined : secondary} />
       {running && <KeepAwake tag="workout" />}
     </>
   );
@@ -291,10 +291,11 @@ export function LiveWorkoutScreen() {
 
 /** The coach's line on its tone's tint: the ask in the tone's colour, the reason under it. */
 function GuidanceCard({ tone, title, body }: { tone: GuidanceTone; title: string; body: string }) {
+  const { t: tr } = useTranslation("strain");
   const { c } = useTheme();
   const t = TONE[tone];
   return (
-    <View accessible accessibilityLiveRegion="polite" accessibilityLabel={`${title}. ${body}`} className="gap-1 rounded-2xl p-4" style={{ backgroundColor: alpha(c[t.fill], 0.12) }}>
+    <View accessible accessibilityLiveRegion="polite" accessibilityLabel={tr("live.guidanceSpoken", { title, body })} className="gap-1 rounded-2xl p-4" style={{ backgroundColor: alpha(c[t.fill], 0.12) }}>
       <Text className="text-[17px] font-semibold leading-[22px]" style={{ color: c[t.text] }}>
         {title}
       </Text>
@@ -305,19 +306,21 @@ function GuidanceCard({ tone, title, body }: { tone: GuidanceTone; title: string
 
 /** Elapsed, heart rate and the workout's own Strain, then the zones with the current one lit. */
 function RunningStats({ snap, start, lost, name }: { snap: Snapshot; start: number; lost: boolean; name: string | null }) {
+  const { t } = useTranslation("strain");
   const { c } = useTheme();
   const zc = zoneColor(c, snap.zone);
   const cells = [
-    { label: "Elapsed", value: clockDuration(snap.now - start), color: undefined, spoken: clockDuration(snap.now - start) },
-    { label: "Heart rate", value: snap.bpm === null ? MISSING : String(snap.bpm), color: snap.bpm === null ? undefined : zc, spoken: snap.bpm === null ? "no reading" : `${snap.bpm} beats per minute` },
-    { label: "Workout", value: pct(snap.session), color: c["strain-text"], spoken: `workout strain ${Math.round(snap.session)} percent` },
+    { label: t("live.elapsed"), value: clockDuration(snap.now - start), color: undefined, spoken: clockDuration(snap.now - start) },
+    { label: t("live.heartRate"), value: snap.bpm === null ? MISSING : String(snap.bpm), color: snap.bpm === null ? undefined : zc, spoken: snap.bpm === null ? t("live.noReading") : t("live.beatsPerMinute", { bpm: snap.bpm }) },
+    { label: t("live.workout"), value: pct(snap.session), color: c["strain-text"], spoken: t("live.workoutStrainSpoken", { value: Math.round(snap.session) }) },
   ];
   const band = snap.out?.band;
+  const zoneText = snap.zone === 0 ? t("live.belowZone1") : snap.zone ? t("live.zone", { zone: snap.zone }) : t("live.waiting");
   return (
-    <SectionShell variant="card" title="Now" info={false}>
+    <SectionShell variant="card" title={t("live.now")} info={false}>
       <View className="flex-row gap-3">
         {cells.map((x) => (
-          <View key={x.label} accessible accessibilityLabel={`${x.label}: ${x.spoken}`} className="min-w-0 flex-1 items-center gap-0.5">
+          <View key={x.label} accessible accessibilityLabel={t("live.cellSpoken", { label: x.label, spoken: x.spoken })} className="min-w-0 flex-1 items-center gap-0.5">
             <Text numberOfLines={1} className={cn(NUM, "text-center text-[30px] leading-[34px] tabular-nums")} style={x.color ? { color: x.color } : undefined}>
               {x.value}
             </Text>
@@ -334,11 +337,11 @@ function RunningStats({ snap, start, lost, name }: { snap: Snapshot; start: numb
             <View
               key={z}
               accessible
-              accessibilityLabel={`Zone ${z}${on ? ", current" : ""}: ${clockDuration(secs * 1000)}`}
+              accessibilityLabel={t(on ? "live.zoneSpokenCurrent" : "live.zoneSpoken", { zone: z, time: clockDuration(secs * 1000) })}
               className={cn("min-w-0 flex-1 items-center gap-1 rounded-lg py-2.5", !on && "bg-inset")}
               style={on ? { backgroundColor: alpha(col, 0.2) } : undefined}
             >
-              <Text className={cn("text-xs font-bold leading-4 tracking-[0.05em]", !on && "text-muted-foreground")} style={on ? { color: col } : undefined}>{`Z${z}`}</Text>
+              <Text className={cn("text-xs font-bold leading-4 tracking-[0.05em]", !on && "text-muted-foreground")} style={on ? { color: col } : undefined}>{t("live.zoneShort", { zone: z })}</Text>
               <Text className={cn("font-numeric text-[13px] font-semibold leading-[18px] tabular-nums", on ? "text-foreground" : "text-foreground-secondary")}>{clockDuration(secs * 1000)}</Text>
             </View>
           );
@@ -346,8 +349,7 @@ function RunningStats({ snap, start, lost, name }: { snap: Snapshot; start: numb
       </View>
       <View className="mt-3 flex-row items-center justify-between gap-3">
         <Text className={cn(CAPTION, "flex-1 tabular-nums")}>
-          {snap.zone === 0 ? "Below Zone 1" : snap.zone ? `Zone ${snap.zone}` : "Waiting for a beat"}
-          {band ? ` · today’s band ${Math.round(band.floorBpm)}–${Math.round(band.ceilingBpm)} bpm` : ""}
+          {band ? t("live.zoneWithBand", { zone: zoneText, floor: Math.round(band.floorBpm), ceiling: Math.round(band.ceilingBpm) }) : zoneText}
         </Text>
         <LivePill name={name} lost={lost} />
       </View>
@@ -357,22 +359,23 @@ function RunningStats({ snap, start, lost, name }: { snap: Snapshot; start: numb
 
 /** Before starting: where today stands (Strain so far, target, Recovery). */
 function TodayCard({ setup, error }: { setup: WorkoutSetup | undefined; error: unknown }) {
+  const { t: tr } = useTranslation("strain");
   if (!setup)
     return (
-      <SectionShell variant="card" title="Today" info={false}>
+      <SectionShell variant="card" title={tr("live.today")} info={false}>
         <Text accessibilityRole={error ? "alert" : undefined} className={cn(BODY, !!error && "text-recovery-red-text")}>
-          {error ? "Couldn’t read today’s scores." : "Reading today’s scores…"}
+          {error ? tr("live.readError") : tr("live.reading")}
         </Text>
       </SectionShell>
     );
   const t = setup.target;
   const lines = [
-    t ? `Today’s target is ${Math.round(t[0])} - ${pct(t[1])}.` : "No Strain Target yet today: it needs today’s Recovery. The coach uses your heart-rate band alone.",
-    setup.recovery !== null ? `Recovery ${Math.round(setup.recovery)}% sets how hard the coach lets you go.` : null,
-    setup.synced ? null : "Today’s heart rate hasn’t synced yet, so Day Strain starts from this workout.",
+    t ? tr("live.targetLine", { low: Math.round(t[0]), high: pct(t[1]) }) : tr("live.noTarget"),
+    setup.recovery !== null ? tr("live.recoveryLine", { value: Math.round(setup.recovery) }) : null,
+    setup.synced ? null : tr("live.notSynced"),
   ].filter(Boolean);
   return (
-    <SectionShell variant="card" title="Today" info={false}>
+    <SectionShell variant="card" title={tr("live.today")} info={false}>
       <Text className="text-[15px] leading-[22px]">{lines.join(" ")}</Text>
     </SectionShell>
   );
@@ -380,21 +383,22 @@ function TodayCard({ setup, error }: { setup: WorkoutSetup | undefined; error: u
 
 /** The band: its live bpm and zone, or how to connect it (Settings › Live heart rate, scanning on arrival). */
 function BandCard({ setup }: { setup: WorkoutSetup | undefined }) {
+  const { t } = useTranslation("strain");
   const { c } = useTheme();
   const live = useLiveBle();
   const set = useMemo(() => (setup ? zones(setup.restingHr, setup.maxHr) : null), [setup]);
   if (!showsLive(live))
     return (
-      <SectionShell variant="card" title="Connect your band" info={false} icon={<Icon icon={Activity} size={18} tone="strain-text" />}>
-        <Text className={cn(BODY, "mb-4")}>Live Workout needs your band’s heart rate over Bluetooth. Turn on Share heart rate in Google Health, then connect.</Text>
+      <SectionShell variant="card" title={t("live.connect")} info={false} icon={<Icon icon={Activity} size={18} tone="strain-text" />}>
+        <Text className={cn(BODY, "mb-4")}>{t("live.connectBody")}</Text>
         <GoLiveButton status={live.status} onPress={() => push(GO_LIVE_HREF)} />
       </SectionShell>
     );
   const zone = live.bpm !== null && set ? zoneNumber(set, live.bpm) : null;
   return (
-    <SectionShell variant="card" title="Heart rate" info={false} icon={<Icon icon={HeartPulse} size={18} tone="recovery-red-text" />}>
+    <SectionShell variant="card" title={t("live.heartRate")} info={false} icon={<Icon icon={HeartPulse} size={18} tone="recovery-red-text" />}>
       <View className="flex-row items-center justify-between gap-3">
-        <View accessible accessibilityLabel={live.bpm === null ? "No heart rate yet" : `${live.bpm} beats per minute`}>
+        <View accessible accessibilityLabel={live.bpm === null ? t("live.noHeartRate") : t("live.beatsPerMinute", { bpm: live.bpm })}>
           <Text className={cn(NUM, "text-[40px] leading-[44px] tabular-nums")} style={zone ? { color: zoneColor(c, zone) } : undefined}>
             {live.bpm === null ? MISSING : String(live.bpm)}
             <Text className="font-sans text-[13px] font-semibold text-foreground-secondary"> bpm</Text>
@@ -402,54 +406,56 @@ function BandCard({ setup }: { setup: WorkoutSetup | undefined }) {
         </View>
         <LivePill name={live.device?.name ?? null} lost={live.status !== "live"} />
       </View>
-      {zone !== null && <Text className={cn(CAPTION, "mt-2")}>{zone === 0 ? "Below Zone 1" : `Zone ${zone}`}</Text>}
+      {zone !== null && <Text className={cn(CAPTION, "mt-2")}>{zone === 0 ? t("live.belowZone1") : t("live.zone", { zone })}</Text>}
     </SectionShell>
   );
 }
 
 /** The end of a workout: its Strain, time, heart rate, zones and where the day ended up. */
 function WorkoutSummary({ rec }: { rec: WorkoutRecord }) {
+  const { t: tr } = useTranslation("strain");
   const { c } = useTheme();
   const total = rec.zoneSeconds.reduce((a, b) => a + b, 0);
   const rows: { label: string; value: string; unit?: string; strain?: boolean }[] = [
-    { label: "Workout strain", value: pct(rec.strain), strain: true },
-    { label: "Time", value: clockDuration(rec.ms) },
-    { label: "Heart rate", value: rec.avgHr === null ? MISSING : `${rec.avgHr} avg · ${rec.maxHr ?? MISSING} max`, unit: rec.avgHr === null ? undefined : "bpm" },
-    { label: "Day strain", value: `${pct(rec.dayStart)} → ${pct(rec.dayEnd)}`, strain: true },
+    { label: tr("live.workoutStrain"), value: pct(rec.strain), strain: true },
+    { label: tr("live.time"), value: clockDuration(rec.ms) },
+    { label: tr("live.heartRate"), value: rec.avgHr === null ? MISSING : tr("live.avgMax", { avg: rec.avgHr, max: rec.maxHr ?? MISSING }), unit: rec.avgHr === null ? undefined : "bpm" },
+    { label: tr("live.dayStrain"), value: `${pct(rec.dayStart)} → ${pct(rec.dayEnd)}`, strain: true },
   ];
   const t = rec.target;
-  const verdict = !t ? null : rec.dayEnd >= t[1] ? "Past today’s target: prioritise sleep tonight." : rec.dayEnd >= t[0] ? "Inside today’s target." : `${pct(t[0] - rec.dayEnd)} below today’s target.`;
+  const verdict = !t ? null : rec.dayEnd >= t[1] ? tr("live.verdictPast") : rec.dayEnd >= t[0] ? tr("live.verdictInside") : tr("live.verdictBelow", { value: pct(t[0] - rec.dayEnd) });
   return (
-    <SectionShell variant="card" title="Workout summary" info={false}>
+    <SectionShell variant="card" title={tr("live.summary")} info={false}>
       <Divided>
         {rows.map((r) => (
-          <View key={r.label} accessible accessibilityLabel={`${r.label}: ${r.value.replace("→", "to")}`} className="flex-row items-center justify-between gap-3 py-2.5">
+          <View key={r.label} accessible accessibilityLabel={tr("live.rowSpoken", { label: r.label, value: r.value.replace("→", tr("live.to")) })} className="flex-row items-center justify-between gap-3 py-2.5">
             <Text className={cn(ROW_TITLE, "shrink")}>{r.label}</Text>
             <ValueUnit value={r.value} unit={r.unit} className={cn(NUM, "text-xl leading-6", r.strain && "text-strain-text")} />
           </View>
         ))}
       </Divided>
       {total > 0 && (
-        <View accessible accessibilityLabel="Time in zones" className="mt-2 h-2 flex-row gap-0.5 overflow-hidden rounded">
+        <View accessible accessibilityLabel={tr("live.timeInZones")} className="mt-2 h-2 flex-row gap-0.5 overflow-hidden rounded">
           {rec.zoneSeconds.map((sec, z) => (sec > 0 ? <View key={z} className={z ? undefined : "bg-muted"} style={{ flexGrow: sec, flexBasis: 0, backgroundColor: z ? zoneColor(c, z) : undefined }} /> : null))}
         </View>
       )}
-      <Text className={cn(CAPTION, "mt-3")}>{[verdict, "Kept on this phone; Fitbit syncs the workout itself to your scores."].filter(Boolean).join(" ")}</Text>
+      <Text className={cn(CAPTION, "mt-3")}>{[verdict, tr("live.keptOnPhone")].filter(Boolean).join(" ")}</Text>
     </SectionShell>
   );
 }
 
 function RecentRow({ rec, timeZone, today }: { rec: WorkoutRecord; timeZone: string; today: string }) {
-  const when = `${dayLabel(localDay(Math.floor(rec.at / 1000), timeZone), today)}, ${clock(rec.at, timeZone)}`;
+  const { t } = useTranslation("strain");
+  const when = t("live.when", { day: dayLabel(localDay(Math.floor(rec.at / 1000), timeZone), today), time: clock(rec.at, timeZone) });
   return (
-    <View accessible accessibilityLabel={`${when}: ${clockDuration(rec.ms)}, workout strain ${Math.round(rec.strain)} percent`} className="min-h-14 flex-row items-center gap-3 py-2.5">
+    <View accessible accessibilityLabel={t("live.recentSpoken", { when, duration: clockDuration(rec.ms), value: Math.round(rec.strain) })} className="min-h-14 flex-row items-center gap-3 py-2.5">
       <View className="min-w-0 flex-1 gap-0.5">
         <Text className={ROW_TITLE}>{when}</Text>
-        <Text className={cn(CAPTION, "tabular-nums")}>{`${clockDuration(rec.ms)}${rec.avgHr !== null ? ` · ${rec.avgHr} bpm avg` : ""}`}</Text>
+        <Text className={cn(CAPTION, "tabular-nums")}>{rec.avgHr !== null ? t("live.recentLine", { duration: clockDuration(rec.ms), bpm: rec.avgHr }) : clockDuration(rec.ms)}</Text>
       </View>
       <View className="items-end">
         <Text className={cn(NUM, "text-xl leading-6 tabular-nums text-strain-text")}>{pct(rec.strain)}</Text>
-        <Text className={CAPTION}>Strain</Text>
+        <Text className={CAPTION}>{t("live.strain")}</Text>
       </View>
     </View>
   );

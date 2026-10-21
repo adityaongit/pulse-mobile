@@ -285,7 +285,7 @@ export type ActivityVM = {
   maxHr: number;
   /** How the zones are set: five on % of max heart rate (the Pulse engine's). */
   zoneNote: string;
-  hrr: Metric<{ value: number; tone: ChipTone; label: "Good" | "Typical" | "Low" }>;
+  hrr: Metric<{ value: number; tone: ChipTone; label: string }>;
   /** Mobile: this kind's Activity Cost and the Recovery the morning after this workout; null before the pipeline stored one. */
   cost: (Omit<ActivityCostVM, "items"> & { item: ActivityCostEntry; nextMorning: number | null }) | null;
 };
