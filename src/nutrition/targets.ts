@@ -8,6 +8,7 @@
 //  - fat: 30 % of the calories (inside the 20-35 % the dietary guidelines give);
 //  - carbs: the calories left after protein and fat.
 // No React or database, so the tests run in node. The "basis" sentences and errors are translated here (nutrition, errors).
+import { localeFixed } from "@/lib/locale";
 import { i18n } from "@/i18n/config";
 
 export const TARGET_KEYS = ["kcal", "protein", "carbs", "fat"] as const;
@@ -39,7 +40,7 @@ export type Target = { value: number; custom: boolean; basis: string };
 export type Targets = Record<TargetKey, Target>;
 
 const group = (v: number) => new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(v);
-const kg1 = (v: number) => (Math.round(v * 10) / 10).toFixed(1);
+const kg1 = (v: number) => localeFixed(Math.round(v * 10) / 10, 1);
 
 /** The protein suggestion: 1.6 g per kg of the latest weight, else of a healthy weight for the height, else 100 g. */
 export function proteinTarget(weightKg: number | null, heightCm: number | null): Target {

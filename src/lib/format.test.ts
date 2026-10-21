@@ -1,5 +1,6 @@
-import { describe, expect, it } from "vitest";
-import { agoShort, DAY, dayLabel, dayPhrase, pillLabel, dialAriaLabel, durationWords, formatDay, formatValue, rangeLabel } from "./format";
+import { afterEach, describe, expect, it } from "vitest";
+import { setLocale } from "./locale";
+import { agoShort, DAY, FORMATS, dayLabel, dayPhrase, pillLabel, dialAriaLabel, durationWords, formatDay, formatValue, rangeLabel } from "./format";
 
 describe("format", () => {
   it("shortens sync ages for the header", () => {
@@ -51,5 +52,15 @@ describe("format", () => {
     expect(dialAriaLabel({ variant: "recovery", label: "Recovery", value: null, reasonText: "Calibrating: 4 nights left" })).toBe(
       "Recovery unavailable: calibrating, 4 nights left",
     );
+  });
+});
+
+describe("in another locale", () => {
+  afterEach(() => setLocale("en-US"));
+  it("uses the locale's decimal mark and grouping", () => {
+    setLocale("de-DE");
+    expect(FORMATS.decimal1(5.8)).toBe("5,8");
+    expect(FORMATS.grouped(1234)).toBe("1.234");
+    expect(formatDay("2026-10-21", { month: "short", day: "numeric" })).toMatch(/21\.\s?Okt/);
   });
 });

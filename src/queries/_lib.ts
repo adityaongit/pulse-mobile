@@ -1,7 +1,7 @@
 // The few helpers the queries need from Pulse's src/lib/{format,bands,url,extraMetrics,dashboard}.ts and
 // src/lib/log.ts, copied here so src/queries depends on nothing outside src/core, src/lib/time and src/lib/reasons
 // (the UI's own port of those libs is written separately). Keep each function identical to the web's.
-import { getLocale, onLocaleChange } from "@/lib/locale";
+import { decimalMark, getLocale, onLocaleChange } from "@/lib/locale";
 import { i18n } from "@/i18n/config";
 import { type LabelKey, labelRecord, withLabel } from "@/lib/metricLabels";
 import { acwrBand, type AcwrBand } from "@/core/scoring/readiness";
@@ -13,7 +13,7 @@ let grouped = new Intl.NumberFormat(getLocale(), { maximumFractionDigits: 0 });
 const minus = (s: string) => s.replace("-", MINUS);
 const fixed = (v: number, d: number) => {
   const s = v.toFixed(d);
-  return minus(/^-0(\.0+)?$/.test(s) ? s.slice(1) : s);
+  return minus((/^-0(\.0+)?$/.test(s) ? s.slice(1) : s).replace(".", decimalMark()));
 };
 const signed = (v: number, d: number) => (Number(v.toFixed(d)) > 0 ? `+${fixed(v, d)}` : fixed(v, d));
 const pad = (n: number) => String(n).padStart(2, "0");

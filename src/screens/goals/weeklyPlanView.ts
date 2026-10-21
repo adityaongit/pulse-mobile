@@ -1,5 +1,6 @@
 // The Weekly Plan sheet's words (src/screens/goals/WeeklyPlan.tsx; halo src/screens/home/weeklyPlanView.ts): value and
 // target text, the status word and its DeltaMark, the line under each target, and Pulse Age's years. Pure, so it is tested without React.
+import { localeFixed } from "@/lib/locale";
 import { i18n } from "@/i18n/config";
 import type { PlanStatus } from "@/core/algorithms/weeklyPlan";
 import type { DeltaDir, Tone } from "@/lib/bands";
@@ -82,5 +83,5 @@ export function ageText(years: number | null): string | null {
   if (years === null) return null;
   const r = Math.round(years * 10) / 10;
   if (r === 0) return `0.0${NBSP}yr`;
-  return `${r > 0 ? "+" : "−"}${Math.abs(r).toFixed(1)}${NBSP}yr`;
+  return `${r > 0 ? "+" : "−"}${localeFixed(Math.abs(r), 1)}${NBSP}yr`;
 }

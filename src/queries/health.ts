@@ -1,4 +1,5 @@
 // Health hub and its four detail screens (spec §7.6–7.10). Ported from Pulse's src/server/queries/health.ts.
+import { localeFixed } from "@/lib/locale";
 import { i18n } from "@/i18n/config";
 import { inUnits, quantity, shownValue } from "@/lib/units";
 import { metricLabel } from "@/lib/metricLabels";
@@ -324,10 +325,10 @@ export async function getHealthspan(day: string, ctx: QueryCtx): Promise<Healths
 
 /** Lean body mass's caption: the body composition behind the % (lean and fat mass in the person's units; FFMI and FMI are kg/m² by definition). */
 function leanCaption(c: HealthspanContribution, b: HealthspanBody | null | undefined, age: number) {
-  const parts = [i18n.t("health:hs.leanBodyFat", { pct: (100 - c.value).toFixed(1) })];
+  const parts = [i18n.t("health:hs.leanBodyFat", { pct: localeFixed(100 - c.value, 1) })];
   const kg = quantity("kg");
-  if (b?.leanKg != null && b.fatKg != null) parts.push(i18n.t("health:hs.leanMass", { lean: kg.value(b.leanKg).toFixed(1), fat: kg.value(b.fatKg).toFixed(1), unit: kg.unit }));
-  if (b?.ffmi != null && b.fmi != null) parts.push(i18n.t("health:hs.leanIndex", { ffmi: b.ffmi.toFixed(1), fmi: b.fmi.toFixed(1) }));
+  if (b?.leanKg != null && b.fatKg != null) parts.push(i18n.t("health:hs.leanMass", { lean: localeFixed(kg.value(b.leanKg), 1), fat: localeFixed(kg.value(b.fatKg), 1), unit: kg.unit }));
+  if (b?.ffmi != null && b.fmi != null) parts.push(i18n.t("health:hs.leanIndex", { ffmi: localeFixed(b.ffmi, 1), fmi: localeFixed(b.fmi, 1) }));
   return i18n.t(c.estimated ? "health:hs.leanCaptionEstimated" : "health:hs.leanCaption", { parts: parts.join(" · ") });
 }
 type HealthspanBody = Extract<NonNullable<DayRow["healthspan"]>, { reason: null }>["bodyComposition"];
@@ -354,10 +355,10 @@ function healthspanInsight(pace: number | null, deltaYears: number, cs: Healthsp
   const parts = [
     pace == null
       ? i18n.t("health:insight.paceNone", { days: healthspanConfig.paceMinDays })
-      : i18n.t("health:insight.paceIs", { pace: pace.toFixed(1) }),
+      : i18n.t("health:insight.paceIs", { pace: localeFixed(pace, 1) }),
   ];
-  if (best && best.years < 0) parts.push(i18n.t("health:insight.boost", { label: label(best), years: Math.abs(best.years).toFixed(1) }));
-  if (worst && worst.years > 0) parts.push(i18n.t("health:insight.adds", { label: HS_META[worst.key].label, years: worst.years.toFixed(1) }));
+  if (best && best.years < 0) parts.push(i18n.t("health:insight.boost", { label: label(best), years: localeFixed(Math.abs(best.years), 1) }));
+  if (worst && worst.years > 0) parts.push(i18n.t("health:insight.adds", { label: HS_META[worst.key].label, years: localeFixed(worst.years, 1) }));
   // Say how much of Pulse Age is measured; the engine scales the inputs present to stand for all nine.
   if (termsUsed != null)
     parts.push(i18n.t(termsUsed < HEALTHSPAN_TERM_COUNT ? "health:insight.termsSome" : "health:insight.termsAll", { used: termsUsed, total: HEALTHSPAN_TERM_COUNT }));
@@ -375,7 +376,7 @@ const VITALS: { key: VitalKey; short: string; unit: string; signed?: boolean; pi
 ];
 
 const num = (v: number, dp: number, signed = false) => {
-  const s = Math.abs(v).toFixed(dp);
+  const s = localeFixed(Math.abs(v), dp);
   return signed ? `${v >= 0 ? "+" : "−"}${s}` : v < 0 ? `−${s}` : s;
 };
 

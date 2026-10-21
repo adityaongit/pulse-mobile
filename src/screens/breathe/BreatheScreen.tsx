@@ -5,6 +5,7 @@
 // shows the heart rate, and when the band sends RR intervals a spot HRV before and after (src/live/spotHrv.ts); without
 // the band it is a plain pacer. Sessions are kept on the phone (src/live/storage.ts) and never reach the Store. The
 // screen stays awake while a session runs.
+import { localeFixed } from "@/lib/locale";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { View } from "react-native";
 import { useTranslation } from "react-i18next";
@@ -376,7 +377,7 @@ function Summary({ rec }: { rec: BreathRecord }) {
       unit: hrvNone ? undefined : "ms",
       note: hrv !== null ? t("breathe.pctAfter", { pct: signedPct(hrv) }) : rec.hrStart === null ? t("breathe.needsBand") : t("breathe.needsRr"),
     },
-    ...(rec.rsa !== null ? [{ label: t("breathe.swing"), value: rec.rsa.toFixed(1), unit: "bpm", note: t("breathe.swingNote") }] : []),
+    ...(rec.rsa !== null ? [{ label: t("breathe.swing"), value: localeFixed(rec.rsa, 1), unit: "bpm", note: t("breathe.swingNote") }] : []),
   ];
   return (
     <SectionShell variant="card" title={rec.completed ? t("breathe.sessionComplete") : t("breathe.sessionEnded")} info={false}>

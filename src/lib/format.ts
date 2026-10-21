@@ -1,6 +1,6 @@
 import { i18n } from "@/i18n/config";
 import type { DeltaDir, Tone } from "./bands";
-import { getLocale, onLocaleChange } from "./locale";
+import { decimalMark, getLocale, onLocaleChange } from "./locale";
 import { displayPrefs, feetInches, quantity } from "./units";
 
 // Number, date and spoken-label formatting (spec §3.3, §6). Formatters are referenced by key so a
@@ -19,7 +19,7 @@ const minus = (s: string) => s.replace("-", MINUS);
 // "-0.0" collapses to "0.0"; the hyphen becomes a real minus sign.
 const fixed = (v: number, d: number) => {
   const s = v.toFixed(d);
-  return minus(/^-0(\.0+)?$/.test(s) ? s.slice(1) : s);
+  return minus((/^-0(\.0+)?$/.test(s) ? s.slice(1) : s).replace(".", decimalMark()));
 };
 const signed = (v: number, d: number) => (Number(v.toFixed(d)) > 0 ? `+${fixed(v, d)}` : fixed(v, d));
 const pad = (n: number) => String(n).padStart(2, "0");
