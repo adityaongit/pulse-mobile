@@ -1,1 +1,37 @@
-{}
+{
+  "recovery": { "title": "Recovery ready", "body": "{{percent}}%: {{band}}" },
+  "cantSync": {
+    "title": "Pulse can’t sync",
+    "body": "Health Connect hasn’t synced for {{gap}}. Open Pulse to sync."
+  },
+  "since": {
+    "hours_one": "{{count}} hour",
+    "hours_other": "{{count}} hours",
+    "days_one": "{{count}} day",
+    "days_other": "{{count}} days"
+  },
+  "checkIn": { "title": "Check in", "body": "How was today? Take a minute for your check-in." },
+  "strainTarget": {
+    "title": "Strain target reached",
+    "inside": "Day Strain {{strain}} is inside today’s target of {{range}}.",
+    "past": "Day Strain {{strain}} is past today’s target of {{range}}. Prioritise sleep tonight to recover."
+  },
+  "monitor": {
+    "illnessTitle": "Your body may be fighting something",
+    "illnessBody": "Several vitals moved away from your normal range together, a pattern that often comes before feeling unwell. Consider an easier day.",
+    "title_one": "{{count}} vital outside your normal range",
+    "title_other": "{{count}} vitals outside your normal range",
+    "body_one": "{{names}} is outside your usual range. This can be an early sign of illness or heavy strain.",
+    "body_other": "{{names}} are outside your usual range. This can be an early sign of illness or heavy strain.",
+    "oneVital": "A vital",
+    "namesAnd": "{{list}} and {{last}}"
+  },
+  "report": {
+    "title": "Weekly report ready",
+    "recovery": "Recovery averaged {{value}}%",
+    "strain": "Day Strain {{value}}",
+    "withParts": "{{range}}: {{parts}}.",
+    "empty": "Your week of {{range}} is in."
+  },
+  "windDown": { "title": "Wind down", "body": "Bed by {{time}} to meet tonight’s sleep need." }
+}

@@ -3,6 +3,7 @@
 // source. The web's src/server/push.ts sends two daily alerts, "Recovery ready" once per local day once today's Recovery exists and "Pulse can't sync" once per local day; the markers
 // (the day each was last sent) stand in for its per-subscription claim columns. The smart alerts (strain target,
 // Health Monitor, weekly report, bedtime reminder) are decided in smart.ts and share these types and markers.
+import { i18n } from "@/i18n/config";
 import { BAND_WORD, recoveryBand } from "@/lib/bands";
 import { localDay } from "@/lib/time";
 
@@ -84,14 +85,13 @@ export const DEEP_LINK = {
 } as const;
 
 /** The web's "Recovery ready" body: "78%: Green". */
-export const recoveryBody = (value: number) => `${Math.round(value)}%: ${BAND_WORD[recoveryBand(Math.round(value))]}`;
+export const recoveryBody = (value: number) => i18n.t("notifications:recovery.body", { percent: Math.round(value), band: BAND_WORD[recoveryBand(Math.round(value))] });
 
 /** "38 hours" / "3 days", no Intl.PluralRules (Hermes). */
 export function sinceWords(seconds: number): string {
   const hours = Math.floor(seconds / 3600);
-  if (hours < 48) return `${hours} ${hours === 1 ? "hour" : "hours"}`;
-  const days = Math.floor(hours / 24);
-  return `${days} days`;
+  if (hours < 48) return i18n.t("notifications:since.hours", { count: hours });
+  return i18n.t("notifications:since.days", { count: Math.floor(hours / 24) });
 }
 
 /** A marker for `day` already sent: today or (a clock set back) later, as the web's `col < day` claim. */
@@ -109,14 +109,14 @@ export function decide(input: DecideInput): Alert[] {
   const day = localDay(input.now, input.timeZone);
   const rec = input.recoveryToday;
   if (input.settings.recoveryReady && rec != null && Number.isFinite(rec) && !sentFor(input.markers.recoveryDay, day)) {
-    out.push({ kind: "recovery", title: "Recovery ready", body: recoveryBody(rec), url: DEEP_LINK.recovery, day, mark: { recoveryDay: day } });
+    out.push({ kind: "recovery", title: i18n.t("notifications:recovery.title"), body: recoveryBody(rec), url: DEEP_LINK.recovery, day, mark: { recoveryDay: day } });
   }
   const last = input.lastSyncTs;
   if (input.settings.cantSync && last != null && input.now - last >= CANT_SYNC_AFTER_S && !sentFor(input.markers.cantSyncDay, day)) {
     out.push({
       kind: "cant_sync",
-      title: "Pulse can’t sync",
-      body: `Health Connect hasn’t synced for ${sinceWords(input.now - last)}. Open Pulse to sync.`,
+      title: i18n.t("notifications:cantSync.title"),
+      body: i18n.t("notifications:cantSync.body", { gap: sinceWords(input.now - last) }),
       url: DEEP_LINK.source,
       day,
       mark: { cantSyncDay: day },

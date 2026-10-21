@@ -3,6 +3,7 @@
 // phone. No React in here, so the background task can import it; the tap → screen hook is in links.ts.
 import { Platform } from "react-native";
 import * as Notifications from "expo-notifications";
+import { i18n } from "@/i18n/config";
 import { DEEP_LINK } from "./decide";
 
 export const CHANNEL_ID = "pulse";
@@ -76,7 +77,7 @@ export async function scheduleCheckIn(hour: number, minute: number): Promise<voi
   await Notifications.cancelScheduledNotificationAsync(CHECK_IN_ID).catch(() => {});
   await Notifications.scheduleNotificationAsync({
     identifier: CHECK_IN_ID,
-    content: { title: "Check in", body: "How was today? Take a minute for your check-in.", data: { url: DEEP_LINK.journal } },
+    content: { title: i18n.t("notifications:checkIn.title"), body: i18n.t("notifications:checkIn.body"), data: { url: DEEP_LINK.journal } },
     trigger: { type: Notifications.SchedulableTriggerInputTypes.DAILY, hour, minute, channelId: CHANNEL_ID },
   });
 }
