@@ -1,6 +1,7 @@
 // Trends `/trends?metric=&r=` (web: (app)/trends/page.tsx, loading.tsx): one daily metric over up to a year, each range
 // against the one before.
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { parseRange, RANGES, type TrendRange } from "@/lib/url";
@@ -14,7 +15,7 @@ import { ActionLink, SectionShell } from "@/ui/shells/SectionShell";
 import { chartHref, type ChartRange } from "@/screens/chart/href";
 import { SkeletonText } from "@/ui/Skeleton";
 import { MetricPicker } from "./MetricPage";
-import { Divided, HistoryChart, HistoryChartSkeleton, LoadError, PERIOD } from "./parts";
+import { Divided, HistoryChart, HistoryChartSkeleton, LoadError, infoAs, period } from "./parts";
 
 /** The chart's points and each range's change against the one before, once per loaded view model. */
 function shape(vm: TrendsVM, m: TrendMetric) {
@@ -25,6 +26,7 @@ function shape(vm: TrendsVM, m: TrendMetric) {
 }
 
 export default function TrendsScreen() {
+  const { t } = useTranslation("trends");
   const { metric, r } = useLocalSearchParams<{ metric?: string; r?: string }>();
   const m = parseTrendMetric(metric);
   const range = parseRange(r);
@@ -33,24 +35,24 @@ export default function TrendsScreen() {
   const vm = data?.metric === m.key ? data : undefined;
   const shaped = useMemo(() => (vm ? shape(vm, m) : undefined), [vm, m]);
 
-  if (error && !vm) return <LoadError title="Trends" reload={reload} />;
+  if (error && !vm) return <LoadError title={t("screenTitle")} reload={reload} />;
   if (!vm || !shaped) return <Loading current={m.key} r={r} />;
 
   return (
     <DetailShell
-      title="Trends"
+      title={t("screenTitle")}
       bodySkeleton={<LoadingBody current={m.key} r={r} />}
       primary={
         <View className="gap-4">
           <MetricPicker current={m.key} r={r} />
           <View className="gap-3">
-            <SectionShell variant="card" title={m.label} aside={<ActionLink label="Explore" href={chartHref({ metric: m.key, r: range as ChartRange })} />} action={{ label: "Details", href: m.href }}>
+            <SectionShell variant="card" title={m.label} info={infoAs(m.infoTitle, m.label)} aside={<ActionLink label={t("explore")} href={chartHref({ metric: m.key, r: range as ChartRange })} />} action={{ label: t("details"), href: m.href }}>
               <HistoryChart key={m.key} range={range} label={m.label} unit={m.unit} format={m.format} colorBy={m.colorBy} level={isLevelMetric(m.key)} direction={m.direction} data={shaped.data} deltas={shaped.deltas} />
             </SectionShell>
-            <SectionShell variant="card" title="Averages">
+            <SectionShell variant="card" title={t("averages")} info={infoAs("Averages", t("averages"))}>
               <Divided>
                 {vm.periods.map((p) => (
-                  <KeyStatRow key={p.range} variant="row" label={PERIOD[p.range].label} caption={`vs. ${PERIOD[p.range].prior}`} metric={p.average} unit={m.unit} format={m.format} average={p.prior} averageLabel={PERIOD[p.range].prior} direction={m.direction} />
+                  <KeyStatRow key={p.range} variant="row" label={period(p.range).label} caption={period(p.range).vsPrior} metric={p.average} unit={m.unit} format={m.format} average={p.prior} averageLabel={period(p.range).prior} direction={m.direction} />
                 ))}
               </Divided>
             </SectionShell>
@@ -63,10 +65,11 @@ export default function TrendsScreen() {
 
 /** Trends: the real picker, the chart card with its plot and toggle, the Averages rows with their labels (spec §5.19). */
 function Loading({ current, r }: { current: TrendMetric["key"]; r?: string }) {
+  const { t } = useTranslation("trends");
   return (
     <DetailShell
       loading
-      title="Trends"
+      title={t("screenTitle")}
       primary={<LoadingBody current={current} r={r} />}
       bodySkeleton={<LoadingBody current={current} r={r} />}
     />
@@ -75,6 +78,7 @@ function Loading({ current, r }: { current: TrendMetric["key"]; r?: string }) {
 
 /** The loading state's page: also what a cold push shows below the header while it slides in. */
 function LoadingBody({ current, r }: { current: TrendMetric["key"]; r?: string }) {
+  const { t } = useTranslation("trends");
   return (
     <View accessibilityElementsHidden className="gap-4">
       <MetricPicker current={current} r={r} />
@@ -82,10 +86,10 @@ function LoadingBody({ current, r }: { current: TrendMetric["key"]; r?: string }
         <SectionShell variant="card" title={" "} aside={<SkeletonText className="w-20" />}>
           <HistoryChartSkeleton />
         </SectionShell>
-        <SectionShell variant="card" title="Averages">
+        <SectionShell variant="card" title={t("averages")} info={false}>
           <Divided>
             {RANGES.map((x) => (
-              <KeyStatRowSkeleton key={x} variant="row" label={PERIOD[x].label} />
+              <KeyStatRowSkeleton key={x} variant="row" label={period(x).label} />
             ))}
           </Divided>
         </SectionShell>

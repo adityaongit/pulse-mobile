@@ -1,6 +1,7 @@
 // The Trend View's chart (web: components/charts/TrendViewChart.tsx, Recharts). One Skia <Canvas> of marks with every
 // piece of text laid over it as React Native <Text>, as the kit's charts are built (src/ui/charts). The numbers (domain,
 // ticks, rows) come from trendViewLayout.ts, once per data set; the plot below only maps them to pixels.
+import { i18n } from "@/i18n/config";
 import { Fragment, useMemo } from "react";
 import { Group, RoundedRect, DashPathEffect } from "@shopify/react-native-skia";
 import { Path } from "@/ui/charts/path";
@@ -182,7 +183,7 @@ function Plot({ p, m, width, height }: { p: TrendViewChartProps; m: Model; width
         );
       })}
 
-      {m.showAvg && <Pill x={2} y={y(p.average!)} text="AVG." fill={c.foreground} color={c.background} />}
+      {m.showAvg && <Pill x={2} y={y(p.average!)} text={i18n.t("trends:avgPill")} fill={c.foreground} color={c.background} />}
 
       {/* Each column's value over it (bars: the bar's colour; a stack's total: the text colour). */}
       {(p.chart === "stack" || p.chart === "bars") && m.labelled && !m.faint &&

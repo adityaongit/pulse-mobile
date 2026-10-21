@@ -19,13 +19,16 @@ import {
   type TickLevel,
   type WindowStats,
 } from "@/lib/chartmath";
+import { i18n } from "@/i18n/config";
 import { formatValue, isSymbolUnit, type FormatKey } from "@/lib/format";
 import type { ChartColorBy, ChartDayVM, ChartDef, ChartSeriesVM, DayView } from "@/queries/chart";
 
 export type Range = ExplorerRange | "day";
 export const DAILY_RANGES: readonly ExplorerRange[] = ["w", "m", "6m", "1y", "all"];
-export const RANGE_LABEL: Record<Range, string> = { day: "Day", w: "W", m: "M", "6m": "6M", "1y": "1Y", all: "All" };
-export const RANGE_ARIA: Record<Range, string> = { day: "One day", w: "1 week", m: "1 month", "6m": "6 months", "1y": "1 year", all: "All time" };
+const RANGE_WORD = { w: "W", m: "M", "6m": "SixM", "1y": "OneY" } as const;
+/** The toggle's short label and its spoken form; the four shared ranges come from the ui namespace's trend keys. */
+export const rangeLabel = (r: Range) => (r === "day" || r === "all" ? i18n.t(`trends:explorerRange.${r}`) : i18n.t(`ui:trend.label${RANGE_WORD[r]}`));
+export const rangeAria = (r: Range) => (r === "day" || r === "all" ? i18n.t(`trends:explorerAria.${r}`) : i18n.t(`ui:trend.aria${RANGE_WORD[r]}`));
 
 /** The `r` param: a known range, `day` only for a metric with a day view; else `m` (or `day` for a day-only view). */
 export function parseRange(raw: string | undefined, hasDay: boolean): Range {
@@ -127,36 +130,36 @@ export function dayCompareView(view: DayView, picked: DayView | "none" | null): 
   return DAY_DEFAULT_COMPARE[view] ?? null;
 }
 
-const DAY_NOUN: Record<DayView, string> = { hr: "heart rate", strain: "strain", stress: "stress", energy: "the Energy Bank", sleep: "sleep" };
-
 /** The header's line under the metric's name: what its day view draws, and what sits beside it. Short enough for two lines. */
 export function dayWhy(view: DayView, metric: string, compare: DayView | null): string {
-  const w = compare ? `, with ${DAY_NOUN[compare]}` : "";
-  if (view === "strain") return compare ? `Strain as it builds${w}` : "Strain as it builds through the day";
-  if (view === "stress") return `Stress minute by minute${w}`;
-  if (view === "energy") return `Energy Bank through the day${w}`;
-  if (view === "sleep") return "Heart rate and sleep stages, overnight";
-  const base = metric === "rhr" ? "Heart rate against resting HR" : metric === "avg_hr" ? "Heart rate against its average" : metric === "workouts" ? "Heart rate, workouts highlighted" : "Heart rate minute by minute";
-  return `${base}${w}`;
+  if (view === "sleep") return i18n.t("trends:dayWhy.sleep");
+  const name = view !== "hr" ? view : metric === "rhr" ? "hrResting" : metric === "avg_hr" ? "hrAverage" : metric === "workouts" ? "hrWorkouts" : "hr";
+  return compare ? i18n.t(`trends:dayWhy.${name}With`, { what: i18n.t(`trends:dayNoun.${compare}`) }) : i18n.t(`trends:dayWhy.${name}`);
 }
 
 /** The labelled line a heart-rate day draws for its metric: the day's average for Average heart rate, else its resting heart rate. */
 export function dayReference(metric: string, refs: ChartDayVM["refs"]): { y: number; label: string; name: string } | null {
-  if (metric === "avg_hr") return refs.average !== null ? { y: refs.average, label: "Day average", name: "the day's average" } : null;
-  return refs.resting !== null ? { y: refs.resting, label: "Resting HR", name: "resting HR" } : null;
+  if (metric === "avg_hr") return refs.average !== null ? { y: refs.average, label: i18n.t("trends:dayRef.dayAverage"), name: i18n.t("trends:dayRef.nameDayAverage") } : null;
+  return refs.resting !== null ? { y: refs.resting, label: i18n.t("trends:dayRef.restingHr"), name: i18n.t("trends:dayRef.nameRestingHr") } : null;
 }
 
-export const STAGE_NAME = { awake: "Awake", rem: "REM", light: "Light", deep: "Deep" } as const;
+/** The stage names (getters, so they follow the language in use). */
+export const STAGE_NAME = {
+  get awake() { return i18n.t("ui:hypnogram.awake"); },
+  get rem() { return i18n.t("ui:hypnogram.rem"); },
+  get light() { return i18n.t("ui:hypnogram.light"); },
+  get deep() { return i18n.t("ui:hypnogram.deep"); },
+};
 
 /** Per point of a night: the stage it falls in and that stretch's times ("REM · 02:14–02:37"); before bed or after waking, that. */
 export function stageNotes(xs: readonly number[], stages: ChartDayVM["stages"], bed: number | null, wake: number | null): string[] {
   const sorted = [...stages].sort((a, b) => a.from - b.from);
   const froms = sorted.map((s) => s.from);
   return xs.map((x) => {
-    if (bed !== null && x < bed) return "Before sleep";
-    if (wake !== null && x >= wake) return "After waking";
+    if (bed !== null && x < bed) return i18n.t("trends:note.beforeSleep");
+    if (wake !== null && x >= wake) return i18n.t("trends:note.afterWaking");
     const g = sorted[lastAtOrBefore(froms, x)];
-    return g && x < g.to ? `${STAGE_NAME[g.stage]} · ${minuteText(g.from)}–${minuteText(g.to)}` : "";
+    return g && x < g.to ? i18n.t("trends:note.stageSpan", { stage: STAGE_NAME[g.stage], from: minuteText(g.from), to: minuteText(g.to) }) : "";
   });
 }
 
@@ -167,7 +170,7 @@ export function gainNotes(series: Series, window = 60): string[] {
     if (y === null) return "";
     const before = runningAt(series, x - window) ?? 0;
     const gain = y - before;
-    return gain >= 0.05 ? `+${formatValue(series.format, gain)} in the last hour` : "No change in the last hour";
+    return gain >= 0.05 ? i18n.t("trends:note.gainedHour", { gain: formatValue(series.format, gain) }) : i18n.t("trends:note.noChangeHour");
   });
 }
 
@@ -184,7 +187,7 @@ export function workoutNotes(xs: readonly number[], spans: ChartDayVM["spans"]):
   const workouts = spans.filter((s) => s.kind === "workout");
   return xs.map((x) => {
     const w = workouts.find((s) => x >= s.from && x <= s.to);
-    return w ? `${w.label} · ${lengthText(w.to - w.from)}` : null;
+    return w ? i18n.t("trends:note.workoutLength", { label: w.label, length: lengthText(w.to - w.from) }) : null;
   });
 }
 
@@ -263,16 +266,16 @@ export type NoteBasis = {
 export function noteFor(v: number | null, format: FormatKey, unit: string | undefined, basis: NoteBasis): string {
   if (v === null) return "";
   const { baseline, goal, average, reference } = basis;
-  if (reference) return `${deltaText(v - reference.y, format, unit)} vs. ${reference.name}`;
+  if (reference) return i18n.t("trends:note.vsReference", { delta: deltaText(v - reference.y, format, unit), name: reference.name });
   if (baseline) {
-    if (v > baseline.mean + baseline.sd) return "Above your normal range";
-    if (v < baseline.mean - baseline.sd) return "Below your normal range";
-    return "Within your normal range";
+    if (v > baseline.mean + baseline.sd) return i18n.t("trends:note.aboveRange");
+    if (v < baseline.mean - baseline.sd) return i18n.t("trends:note.belowRange");
+    return i18n.t("trends:note.withinRange");
   }
-  if (goal != null) return v >= goal ? "Goal met" : `${formatValue(format, goal - v)}${unitText(unit)} to goal`;
+  if (goal != null) return v >= goal ? i18n.t("trends:note.goalMet") : i18n.t("trends:note.toGoal", { amount: `${formatValue(format, goal - v)}${unitText(unit)}` });
   if (average != null) {
     const d = v - average;
-    return formatValue(format, Math.abs(d)) === formatValue(format, 0) ? "At the average" : `${deltaText(d, format, unit)} vs. average`;
+    return formatValue(format, Math.abs(d)) === formatValue(format, 0) ? i18n.t("trends:note.atAverage") : i18n.t("trends:note.vsAverage", { delta: deltaText(d, format, unit) });
   }
   return "";
 }

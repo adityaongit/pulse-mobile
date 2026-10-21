@@ -4,6 +4,8 @@
 // views behind the day charts (heart rate, Day Strain as it builds, stress, Energy Bank, the night's stages and heart
 // rate). Built from the same day rows and series as the screens' own queries, so every number matches the card it was
 // opened from.
+import { i18n } from "@/i18n/config";
+import { metricLabel } from "@/lib/metricLabels";
 import { inUnits } from "@/lib/units";
 import { timeline } from "@/core/engine/context";
 import { addDays, fractionalYears } from "@/lib/time";
@@ -68,7 +70,7 @@ export const CHART_METRICS: readonly ChartDef[] = [
   ...TREND_METRICS.filter((m) => !OWN.has(m.key)).map(
     (m): ChartDef => ({
       key: m.key,
-      label: m.label,
+      get label() { return m.label; },
       group: m.group,
       ...(m.unit && { unit: m.unit }),
       format: m.format,
@@ -86,12 +88,12 @@ export const CHART_METRICS: readonly ChartDef[] = [
       ...(DAY_OF[m.key] && { day: DAY_OF[m.key] }),
     }),
   ),
-  { key: "calories", label: "Calories", group: "Activity", unit: "kcal", format: "grouped", colorBy: "single", direction: "neutral", pick: (r) => r.metrics?.calories, partialToday: true, mark: "bar" },
-  { key: "workouts", label: "Workout duration", group: "Activity", format: "duration", colorBy: "strain", direction: "up", source: "workouts", partialToday: true, mark: "bar", day: "hr" },
+  { key: "calories", get label() { return metricLabel("calories"); }, group: "activity", unit: "kcal", format: "grouped", colorBy: "single", direction: "neutral", pick: (r) => r.metrics?.calories, partialToday: true, mark: "bar" },
+  { key: "workouts", get label() { return i18n.t("trends:metric.workoutDuration"); }, group: "activity", format: "duration", colorBy: "strain", direction: "up", source: "workouts", partialToday: true, mark: "bar", day: "hr" },
   {
     key: "efficiency",
-    label: "Sleep efficiency",
-    group: "Recovery & sleep",
+    get label() { return i18n.t("trends:metric.sleepEfficiency"); },
+    group: "recovery",
     unit: "%",
     format: "int",
     colorBy: "sleep",
@@ -102,8 +104,8 @@ export const CHART_METRICS: readonly ChartDef[] = [
   },
   {
     key: "restorative",
-    label: "Restorative sleep",
-    group: "Recovery & sleep",
+    get label() { return i18n.t("trends:metric.restorativeSleep"); },
+    group: "recovery",
     format: "duration",
     colorBy: "sleep",
     direction: "up",
@@ -111,15 +113,15 @@ export const CHART_METRICS: readonly ChartDef[] = [
     mark: "bar",
     day: "sleep",
   },
-  { key: "debt", label: "Sleep debt", group: "Recovery & sleep", unit: "h", format: "decimal1", colorBy: "sleep", direction: "down", pick: (r) => (r.sleep?.main ? r.sleep.debtMin / 60 : null), mark: "bar", day: "sleep" },
-  { key: "energy", label: "Energy Bank", group: "Recovery & sleep", unit: "%", format: "int", colorBy: "band", direction: "up", pick: (r) => r.energyBank?.value, mark: "bar", domain: [0, 100], day: "energy" },
-  { key: "spo2", label: "Blood oxygen", group: "Vitals", unit: "%", format: "decimal1", colorBy: "single", direction: "up", pick: (r) => r.metrics?.spo2Pct, mark: "line", baseline: true },
-  { key: "skin_temp", label: "Skin temp (from baseline)", group: "Vitals", unit: "°C", format: "signed1", colorBy: "single", direction: "neutral", pick: (r) => r.recovery?.inputs.skinTempDev, mark: "line", baseline: true, deviation: true },
-  { key: "vo2max", label: "VO2 max", group: "Vitals", unit: "ml/kg/min", format: "decimal1", colorBy: "single", direction: "up", pick: (r) => r.metrics?.vo2maxRun ?? r.metrics?.vo2maxDaily, mark: "line", sparse: true },
+  { key: "debt", get label() { return metricLabel("debt"); }, group: "recovery", unit: "h", format: "decimal1", colorBy: "sleep", direction: "down", pick: (r) => (r.sleep?.main ? r.sleep.debtMin / 60 : null), mark: "bar", day: "sleep" },
+  { key: "energy", get label() { return i18n.t("trends:metric.energyBank"); }, group: "recovery", unit: "%", format: "int", colorBy: "band", direction: "up", pick: (r) => r.energyBank?.value, mark: "bar", domain: [0, 100], day: "energy" },
+  { key: "spo2", get label() { return metricLabel("spo2"); }, group: "vitals", unit: "%", format: "decimal1", colorBy: "single", direction: "up", pick: (r) => r.metrics?.spo2Pct, mark: "line", baseline: true },
+  { key: "skin_temp", get label() { return i18n.t("trends:metric.skinTempDeviation"); }, group: "vitals", unit: "°C", format: "signed1", colorBy: "single", direction: "neutral", pick: (r) => r.recovery?.inputs.skinTempDev, mark: "line", baseline: true, deviation: true },
+  { key: "vo2max", get label() { return metricLabel("vo2max"); }, group: "vitals", unit: "ml/kg/min", format: "decimal1", colorBy: "single", direction: "up", pick: (r) => r.metrics?.vo2maxRun ?? r.metrics?.vo2maxDaily, mark: "line", sparse: true },
   {
     key: "pulse_age",
-    label: "Pulse Age",
-    group: "Body",
+    get label() { return i18n.t("trends:metric.pulseAge"); },
+    group: "body",
     format: "decimal1",
     colorBy: "single",
     direction: "down",
@@ -141,11 +143,11 @@ export const chartDef = (key: string | undefined): ChartDef | null => {
 
 /** The day views' series names (the legend's and the readout's), units and formats. */
 export const DAY_VIEW: Record<DayView, { label: string; unit?: string; format: FormatKey }> = {
-  hr: { label: "Heart rate", unit: "bpm", format: "int" },
-  strain: { label: "Day strain", unit: "%", format: "int" },
-  stress: { label: "Stress", format: "int" },
-  sleep: { label: "Night heart rate", unit: "bpm", format: "int" },
-  energy: { label: "Energy Bank", unit: "%", format: "int" },
+  hr: { get label() { return i18n.t("trends:dayView.heartRate"); }, unit: "bpm", format: "int" },
+  strain: { get label() { return i18n.t("trends:dayView.dayStrain"); }, unit: "%", format: "int" },
+  stress: { get label() { return i18n.t("trends:metric.stress"); }, format: "int" },
+  sleep: { get label() { return i18n.t("trends:dayView.nightHeartRate"); }, unit: "bpm", format: "int" },
+  energy: { get label() { return i18n.t("trends:metric.energyBank"); }, unit: "%", format: "int" },
 };
 
 // ── Daily series ────────────────────────────────────────────────────────────
@@ -200,7 +202,7 @@ export async function getChartSeries(key: string, ctx: QueryCtx): Promise<ChartS
     const { mean, sd } = meanSd(recent);
     if (mean !== null && sd !== undefined && recent.length >= 7) baseline = { mean, sd };
   }
-  const reference = def.reference ?? (def.key === "pulse_age" ? { y: fractionalYears(ctx.profile.birthDate, today), label: "Your age" } : null);
+  const reference = def.reference ?? (def.key === "pulse_age" ? { y: fractionalYears(ctx.profile.birthDate, today), label: i18n.t("trends:chart.yourAge") } : null);
   return { key: def.key, today, days, values, provisional, partial, baseline, reference };
 }
 
@@ -326,7 +328,7 @@ export async function getChartDay(view: DayView, day: string, ctx: QueryCtx): Pr
       to: Math.max(from + 60, xs[xs.length - 1] ?? 1440),
       xs,
       ys: eb.curve.map((p) => p.v),
-      spans: eb.naps.map((n) => ({ kind: "sleep" as const, label: "Nap", from: m(n.start), to: m(n.end) })),
+      spans: eb.naps.map((n) => ({ kind: "sleep" as const, label: i18n.t("trends:chart.nap"), from: m(n.start), to: m(n.end) })),
       now: day === today ? m(eb.until) : null,
     };
   }

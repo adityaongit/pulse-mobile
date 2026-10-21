@@ -2,6 +2,7 @@
 // metric over the 7 days ending on the selected day, that day's column highlighted. Each card is a link with a chevron
 // into its Trend View on W. The cards come from `getWeeklyTrends` (trendView.ts), loaded with the screen's own view model.
 import { View } from "react-native";
+import { useTranslation } from "react-i18next";
 import { trendHref } from "@/lib/url";
 import type { TrendViewVM } from "@/queries/trendView";
 import { Skeleton } from "@/ui/Skeleton";
@@ -10,9 +11,10 @@ import { SectionShell } from "@/ui/shells/SectionShell";
 import { TrendViewChart } from "./TrendViewChart";
 
 export function WeeklyTrends({ cards, d, today }: { cards: TrendViewVM[]; d: string; today: string }) {
+  const { t } = useTranslation("trends");
   if (!cards.length) return null;
   return (
-    <SectionShell variant="section" title="Weekly Trends">
+    <SectionShell variant="section" title={t("weeklyTrends")}>
       <View className="gap-3">
         {cards.map((vm) => (
           <SectionShell key={vm.key} variant="card" title={vm.card} info={false} href={trendHref(vm.key, { d, today, r: "w" })}>
@@ -43,8 +45,9 @@ export function WeeklyTrends({ cards, d, today }: { cards: TrendViewVM[]; d: str
 
 /** The loading shape: the heading and one card per title, each a legend row over the chart's height. */
 export function WeeklyTrendsSkeleton({ titles }: { titles: string[] }) {
+  const { t: tr } = useTranslation("trends");
   return (
-    <SectionShell variant="section" title="Weekly Trends">
+    <SectionShell variant="section" title={tr("weeklyTrends")}>
       <View accessibilityElementsHidden className="gap-3">
         {titles.map((t) => (
           <SectionShell key={t} variant="card" title={t} info={false}>

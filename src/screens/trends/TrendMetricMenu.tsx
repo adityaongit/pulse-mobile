@@ -2,6 +2,7 @@
 // the metric in caps with its icon and a chevron; it opens a panel under it listing the screen's other metrics. A choice
 // keeps the range and day. The panel is the kit's MenuPanel, placed from the card's measured position.
 import { View } from "react-native";
+import { useTranslation } from "react-i18next";
 import { Check, ChevronDown, type LucideIcon } from "lucide-react-native";
 import { cn } from "@/ui/cn";
 import { haptic } from "@/ui/haptics";
@@ -16,12 +17,13 @@ export type TrendMetricOption = { key: string; label: string; icon?: LucideIcon 
 const ITEM = "text-[13px] font-bold uppercase leading-4 tracking-[0.1em]";
 
 export function TrendMetricMenu({ current, options, onSelect }: { current: string; options: TrendMetricOption[]; onSelect: (key: string) => void }) {
+  const { t } = useTranslation("trends");
   const on = options.find((o) => o.key === current) ?? options[0];
   const { ref, anchor, open, close } = useMenu();
   return (
     <>
       <View ref={ref} collapsable={false}>
-        <CardButton accessibilityLabel={`${on.label}. Change metric`} onPress={() => (haptic.tap(), open())} activeScale={0.99} className="min-h-14 w-full flex-row items-center gap-3 rounded-xl px-4">
+        <CardButton accessibilityLabel={t("changeMetric", { label: on.label })} onPress={() => (haptic.tap(), open())} activeScale={0.99} className="min-h-14 w-full flex-row items-center gap-3 rounded-xl px-4">
           <View accessibilityElementsHidden className="size-6 items-center justify-center">{on.icon && <Icon icon={on.icon} size={20} tone="muted-foreground" strokeWidth={1.75} />}</View>
           <Text numberOfLines={1} className="min-w-0 flex-1 text-[15px] font-bold uppercase leading-5 tracking-[0.08em]">{on.label}</Text>
           <Turn on={!!anchor}>

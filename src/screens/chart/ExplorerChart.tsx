@@ -27,6 +27,7 @@ import {
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, { cancelAnimation, Easing, useAnimatedStyle, useDerivedValue, useReducedMotion, useSharedValue, withDecay, withTiming, type SharedValue } from "react-native-reanimated";
 import { scheduleOnRN } from "react-native-worklets";
+import { i18n } from "@/i18n/config";
 import { bandStops, type Band } from "@/lib/charts";
 import { barsWeight, clampStart, dataXAt, firstTickAtOrAfter, minuteText, nearestValued, pickLevel, type TickLevel } from "@/lib/chartmath";
 import { linePath, segments } from "@/ui/charts/geometry";
@@ -434,7 +435,7 @@ export function ExplorerChart(p: ExplorerChartProps) {
   const plotRight = LEFT + plotW;
   // The stretches' names (a workout's with its length on the workouts day), the night's bed and wake, the latest value.
   const spanText = React.useMemo(
-    () => spans.map((s) => (workoutsFirst && s.kind === "workout" ? `${s.label} · ${lengthText(s.to - s.from)}` : s.label)),
+    () => spans.map((s) => (workoutsFirst && s.kind === "workout" ? i18n.t("trends:note.workoutLength", { label: s.label, length: lengthText(s.to - s.from) }) : s.label)),
     [spans, workoutsFirst],
   );
   const spanTextW = React.useMemo(() => spanText.map((t) => measure(workoutsFirst ? fonts.sans(700, 11) : nameFont, t)), [spanText, workoutsFirst, fonts, nameFont]);
@@ -445,8 +446,10 @@ export function ExplorerChart(p: ExplorerChartProps) {
     () => ({
       bedTime: bed === null ? "" : minuteText(bed),
       wakeTime: wake === null ? "" : minuteText(wake),
-      bedW: measure(nameFont, "Bed "),
-      wakeW: measure(nameFont, "Wake "),
+      bedName: i18n.t("trends:bed"),
+      wakeName: i18n.t("trends:wake"),
+      bedW: measure(nameFont, `${i18n.t("trends:bed")} `),
+      wakeW: measure(nameFont, `${i18n.t("trends:wake")} `),
       bedTimeW: bed === null ? 0 : measure(timeFont, minuteText(bed)),
       wakeTimeW: wake === null ? 0 : measure(timeFont, minuteText(wake)),
     }),
@@ -550,7 +553,7 @@ export function ExplorerChart(p: ExplorerChartProps) {
               canvas.drawLine(x, top, x, laneBottom, paints.goal);
               const w = night.bedW + night.bedTimeW;
               const tx = Math.min(plotRight - w, Math.max(LEFT, x - 2));
-              canvas.drawText("Bed", tx, TOP + 12, paints.pillText, nameFont);
+              canvas.drawText(night.bedName, tx, TOP + 12, paints.pillText, nameFont);
               canvas.drawText(night.bedTime, tx + night.bedW, TOP + 12, paints.ink, timeFont);
               bedRight = tx + w;
             }
@@ -562,7 +565,7 @@ export function ExplorerChart(p: ExplorerChartProps) {
               const w = night.wakeW + night.wakeTimeW;
               const tx = Math.max(LEFT, Math.min(plotRight - w, x - w + 2));
               if (tx > bedRight + 8) {
-                canvas.drawText("Wake", tx, TOP + 12, paints.pillText, nameFont);
+                canvas.drawText(night.wakeName, tx, TOP + 12, paints.pillText, nameFont);
                 canvas.drawText(night.wakeTime, tx + night.wakeW, TOP + 12, paints.ink, timeFont);
               }
             }
@@ -816,7 +819,7 @@ export function ExplorerChart(p: ExplorerChartProps) {
   return (
     <View style={{ width, height }}>
       <GestureDetector gesture={gesture}>
-        <View style={{ width, height }} accessible accessibilityRole="image" accessibilityLabel={`${p.primary.label}${p.compare ? ` with ${p.compare.label}` : ""}. Pinch to zoom, drag to pan, hold to inspect a point.`}>
+        <View style={{ width, height }} accessible accessibilityRole="image" accessibilityLabel={p.compare ? i18n.t("trends:chartAriaWith", { label: p.primary.label, compare: p.compare.label }) : i18n.t("trends:chartAria", { label: p.primary.label })}>
           {/* The chart draws in by a native wipe (the canvas is not redrawn for it); the crosshair is a canvas of its own,
               so inspecting a point never redraws the series. */}
           <NativeReveal progress={progress} width={width} height={height}>

@@ -4,6 +4,8 @@
 import { useState } from "react";
 import { Pressable, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
+import { useTranslation } from "react-i18next";
+import { groupLabel, type GroupKey } from "@/lib/metricLabels";
 import { ChevronDown } from "lucide-react-native";
 import { CHART_GROUPS, chartDef, DAY_VIEW } from "@/queries/chart";
 import { Turn } from "@/screens/trends/parts";
@@ -26,6 +28,7 @@ function Chip({ label, on, onPress }: { label: string; on: boolean; onPress: () 
 }
 
 export function ChartMetricPage() {
+  const { t } = useTranslation("trends");
   const p = useLocalSearchParams<{ for?: string; metric?: string; r?: string; d?: string; compare?: string }>();
   const def = chartDef(p.metric);
   const range = parseRange(p.r, !!def?.day);
@@ -33,7 +36,7 @@ export function ChartMetricPage() {
   const isCompare = p.for === "compare";
   const groups: Group[] = isCompare
     ? view
-      ? [{ group: "Same day", metrics: DAY_COMPARE.filter((x) => x.view !== view).map((x) => ({ key: x.key, label: DAY_VIEW[x.view].label })) }]
+      ? [{ group: "sameDay", metrics: DAY_COMPARE.filter((x) => x.view !== view).map((x) => ({ key: x.key, label: DAY_VIEW[x.view].label })) }]
       : CHART_GROUPS.map((g) => ({ group: g.group as string, metrics: g.metrics.filter((m) => m.key !== def?.key).map(({ key, label }) => ({ key, label })) })).filter((g) => g.metrics.length)
     : CHART_GROUPS.map((g) => ({ group: g.group as string, metrics: g.metrics.map(({ key, label }) => ({ key, label })) }));
   const current = isCompare ? (p.compare ?? null) : (def?.key ?? null);
@@ -50,11 +53,11 @@ export function ChartMetricPage() {
   const pickCompare = (key: string | null) => go({ compare: key ?? (view ? NO_COMPARE : null) });
 
   return (
-    <TaskPage title={isCompare ? "Compare with" : "Metric"}>
+    <TaskPage title={isCompare ? t("compareWith") : t("metricTitle")}>
       <View className="px-4">
         {isCompare && (
           <View className="flex-row pb-3">
-            <Chip label="None" on={current === null || current === NO_COMPARE} onPress={() => pickCompare(null)} />
+            <Chip label={t("none")} on={current === null || current === NO_COMPARE} onPress={() => pickCompare(null)} />
           </View>
         )}
         {groups.map(({ group, metrics }, i) => {
@@ -62,7 +65,7 @@ export function ChartMetricPage() {
           return (
             <View key={group} className={cn("border-b border-border", i === groups.length - 1 && "border-b-0")}>
               <Pressable accessibilityRole="button" accessibilityState={{ expanded: on }} onPress={() => (!on && haptic.toggle(true), setOpen(group))} className="min-h-[52px] flex-row items-center justify-between gap-3">
-                <Text className="text-[15px] font-semibold leading-[22px]">{group}</Text>
+                <Text className="text-[15px] font-semibold leading-[22px]">{group === "sameDay" ? t("sameDay") : groupLabel(group as GroupKey)}</Text>
                 <View className="flex-row items-center gap-2">
                   <Text className="text-[13px] font-medium text-muted-foreground">{metrics.length}</Text>
                   <Turn on={on}>

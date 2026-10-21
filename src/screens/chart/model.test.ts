@@ -66,9 +66,9 @@ const dayVm = (p: Partial<ChartDayVM>): ChartDayVM => ({
   ...p,
 });
 
-const STEPS: ChartDef = { key: "steps", label: "Steps", group: "Activity", format: "grouped", colorBy: "single", direction: "up", mark: "bar" };
-const HRV: ChartDef = { key: "hrv", label: "Heart rate variability", group: "Vitals", unit: "ms", format: "int", colorBy: "single", direction: "up", mark: "line" };
-const RECOVERY: ChartDef = { key: "recovery", label: "Recovery", group: "Recovery & sleep", unit: "%", format: "int", colorBy: "band", direction: "up", mark: "bar", domain: [0, 100] };
+const STEPS: ChartDef = { key: "steps", label: "Steps", group: "activity", format: "grouped", colorBy: "single", direction: "up", mark: "bar" };
+const HRV: ChartDef = { key: "hrv", label: "Heart rate variability", group: "vitals", unit: "ms", format: "int", colorBy: "single", direction: "up", mark: "line" };
+const RECOVERY: ChartDef = { key: "recovery", label: "Recovery", group: "recovery", unit: "%", format: "int", colorBy: "band", direction: "up", mark: "bar", domain: [0, 100] };
 
 describe("ranges", () => {
   it("parses the range param", () => {

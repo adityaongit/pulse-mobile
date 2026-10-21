@@ -3,6 +3,9 @@ import { useMemo, type ReactNode } from "react";
 import { View } from "react-native";
 import Animated, { useAnimatedStyle, withTiming } from "react-native-reanimated";
 import { router } from "expo-router";
+import { useTranslation } from "react-i18next";
+import { i18n } from "@/i18n/config";
+import { cardInfo } from "@/ui/shells/cardInfo";
 import { CircleAlert } from "lucide-react-native";
 import { deltaTone, type GoodDirection } from "@/lib/bands";
 import { formatValue, type FormatKey } from "@/lib/format";
@@ -25,15 +28,22 @@ import { Divided } from "@/ui/Divided";
 import { Press } from "@/ui/Press";
 import { DURATION } from "@/ui/motion";
 
-export const PERIOD: Record<TrendRange, { label: string; prior: string }> = {
-  w: { label: "Last 7 days", prior: "the 7 days before" },
-  m: { label: "Last 30 days", prior: "the 30 days before" },
-  "6m": { label: "Last 6 months", prior: "the 6 months before" },
-  "1y": { label: "Last 12 months", prior: "the year before" },
-};
+const RANGE_WORD = { w: "W", m: "M", "6m": "SixM", "1y": "OneY" } as const;
+/** The toggle's short label and its spoken form, from the ui namespace's trend keys. */
+export const rangeLabel = (r: TrendRange) => i18n.t(`ui:trend.label${RANGE_WORD[r]}`);
+export const rangeAria = (r: TrendRange) => i18n.t(`ui:trend.aria${RANGE_WORD[r]}`);
 
-const RANGE_LABEL: Record<TrendRange, string> = { w: "W", m: "M", "6m": "6M", "1y": "1Y" };
-const RANGE_ARIA: Record<TrendRange, string> = { w: "1 week", m: "1 month", "6m": "6 months", "1y": "1 year" };
+/** A range's row name, and the period it is read against ("the 7 days before"). */
+export const period = (r: TrendRange) => ({ label: i18n.t(`trends:periodLabel.${r}`), prior: i18n.t(`trends:periodPrior.${r}`), vsPrior: i18n.t(`trends:vsPrior.${r}`), infoId: i18n.t(`trends:periodLabel.${r}`, { lng: "en" }) });
+
+/** A card's explanation (`cardInfo` looks it up by the English name `id`) under the title the person reads. */
+/** A card's title and explanation: `cardInfo` finds the text by the English `id`, the person reads `title`. */
+export const cardOf = (id: string, title: string) => ({ title, info: infoAs(id, title) });
+
+export const infoAs = (id: string, title: string) => {
+  const info = cardInfo(id);
+  return info && { ...info, title };
+};
 
 /** Sets the route's `?r=` (the web's toggle writes it too, so the range survives a metric change). */
 export const setRange = (r: TrendRange) => router.setParams({ r });
@@ -68,15 +78,16 @@ const SCORE_DOMAIN: [number, number] = [0, 100];
  * its value, M each day against weekly ticks, 6M and 1Y a level segment per month (with its change) over the faint days.
  */
 export function HistoryChart(p: HistoryChartProps) {
+  const { t } = useTranslation("trends");
   const shown = !!p.data?.value?.length;
   return (
     <View className="min-w-0">
       {shown && (
         <View className="mb-3">
-          <Segmented label="Range" fill value={p.range} options={RANGES.map((r) => ({ value: r, label: RANGE_LABEL[r], accessibilityLabel: RANGE_ARIA[r] }))} onChange={setRange} />
+          <Segmented label={t("range")} fill value={p.range} options={RANGES.map((r) => ({ value: r, label: rangeLabel(r), accessibilityLabel: rangeAria(r) }))} onChange={setRange} />
         </View>
       )}
-      <MetricState metric={p.data} skeleton={<Skeleton className="h-[240px] rounded-lg bg-skeleton" />} empty={<EmptyState body="No data in this range yet." />}>
+      <MetricState metric={p.data} skeleton={<Skeleton className="h-[240px] rounded-lg bg-skeleton" />} empty={<EmptyState body={t("emptyRange")} />}>
         {(points) => <History {...p} points={points} />}
       </MetricState>
     </View>
@@ -85,17 +96,18 @@ export function HistoryChart(p: HistoryChartProps) {
 
 /** HistoryChart's shape while it loads: the range toggle, the average with its chip, and the chart's height. */
 export function HistoryChartSkeleton() {
+  const { t } = useTranslation("trends");
   return (
     <View accessibilityElementsHidden className="min-w-0 gap-3">
       <View className="flex-row gap-0.5 rounded-lg bg-muted p-0.5">
         {RANGES.map((r) => (
           <View key={r} className="h-10 flex-1 items-center justify-center rounded-md px-3">
-            <Text className="font-numeric text-[13px] font-bold text-muted-foreground/60">{RANGE_LABEL[r]}</Text>
+            <Text className="font-numeric text-[13px] font-bold text-muted-foreground/60">{rangeLabel(r)}</Text>
           </View>
         ))}
       </View>
       <View>
-        <Text className="text-xs font-bold uppercase leading-4 tracking-[0.1em] text-muted-foreground">Average</Text>
+        <Text className="text-xs font-bold uppercase leading-4 tracking-[0.1em] text-muted-foreground">{t("average")}</Text>
         <SkeletonText className="w-14" fs={28} lh={32} />
         <Skeleton className="mt-1 h-6 w-28" />
       </View>
@@ -105,6 +117,7 @@ export function HistoryChartSkeleton() {
 }
 
 function History({ points, ...p }: HistoryChartProps & { points: HistoryPoint[] }) {
+  const { t } = useTranslation("trends");
   const { range } = p;
   const frame = useMemo(() => {
     const days = points.slice(-RANGE_DAYS[range]);
@@ -120,19 +133,19 @@ function History({ points, ...p }: HistoryChartProps & { points: HistoryPoint[] 
   return (
     <View className="min-w-0 gap-3">
       <View>
-        <Text className="text-xs font-bold uppercase leading-4 tracking-[0.1em] text-muted-foreground">Average</Text>
+        <Text className="text-xs font-bold uppercase leading-4 tracking-[0.1em] text-muted-foreground">{t("average")}</Text>
         <ValueUnit value={formatValue(p.format, frame.average)} unit={p.unit} className="font-numeric text-[28px] font-bold leading-8" />
         {delta !== null && (
           <View className="mt-1 flex-row">
             <StatusChip tone={tone === "good" ? "optimal" : tone === "bad" ? "warning" : "neutral"} delta={delta > 0 ? "up" : delta < 0 ? "down" : "flat"}>
-              {`${formatValue(p.format, Math.abs(delta))}${p.unit === "%" ? "%" : p.unit ? ` ${p.unit}` : ""} vs. ${PERIOD[range].prior}`}
+              {t(`deltaVsPrior.${range}`, { delta: `${formatValue(p.format, Math.abs(delta))}${p.unit === "%" ? "%" : p.unit ? ` ${p.unit}` : ""}` })}
             </StatusChip>
           </View>
         )}
       </View>
       {frame.average === null ? (
         <View className="h-[240px] items-center justify-center">
-          <EmptyState body="No data in this range yet." />
+          <EmptyState body={t("emptyRange")} />
         </View>
       ) : (
         <View className="min-w-0">
@@ -177,7 +190,8 @@ export function CardButton({ onPress, className, accessibilityLabel, activeScale
 
 /** The web's error view for every route: the shell stays, the screen offers a retry (spec §7). */
 export function LoadError({ title, reload }: { title: string; reload: () => void }) {
-  return <DetailShell title={title} primary={<View accessibilityRole="alert" className="pt-16"><EmptyState icon={CircleAlert} body="Couldn’t load this screen." action={{ label: "Try again", onClick: reload }} /></View>} />;
+  const { t } = useTranslation("trends");
+  return <DetailShell title={title} primary={<View accessibilityRole="alert" className="pt-16"><EmptyState icon={CircleAlert} body={t("loadError")} action={{ label: t("actions.tryAgain", { ns: "common" }), onClick: reload }} /></View>} />;
 }
 
 export { Divided };

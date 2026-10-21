@@ -2,6 +2,8 @@
 // day's value against its 30-day average, history over W / M / 6M / 1Y with the range's stats, where the number comes
 // from), plus the sections that make that metric useful, chosen per key below. Ported from Pulse's
 // src/server/queries/metric.ts; the hourly section reads the day's steps from store.readSteps.
+import { i18n } from "@/i18n/config";
+import { metricLabel } from "@/lib/metricLabels";
 import { clockTick, formatValue, NBSP } from "@/lib/format";
 import { quantity } from "@/lib/units";
 import { addDays, localMidnight } from "@/lib/time";
@@ -53,7 +55,6 @@ type SectionKind = Section["kind"];
 
 /** Per metric: what it is, where it comes from, and the sections its screen adds to the shell. */
 type Config = {
-  about: string;
   group: Group;
   sections: SectionKind[];
   /** Sums make sense over a range (steps, distance), so the stats show a total. */
@@ -72,64 +73,52 @@ const PROTEIN_G_PER_KG = 0.8;
 
 const LEVELS = ["intensity"] as const;
 const CONFIG: Record<DetailKey, Config> = {
-  steps: { group: "activity", total: true, sections: ["hourly", "goal", "weekday"], about: "Steps counted through the day." },
+  steps: { group: "activity", total: true, sections: ["hourly", "goal", "weekday"] },
   calories: {
     group: "activity",
     total: true,
     stack: "calories",
     sections: ["workouts"],
-    about: "Everything you burned: your resting burn plus movement. Resting is the total minus active calories, since the source sends no separate resting roll-up.",
   },
-  hrv: { group: "vitals", baseline: true, sections: ["outliers"], about: "Variation in time between heartbeats during sleep, measured in milliseconds. Compare it with your own usual range." },
-  rhr: { group: "vitals", baseline: true, sections: ["outliers"], about: "Your resting heart rate as Fitbit reports it to Health Connect, or Pulse's estimate from your night's sleep when Fitbit has none for the day. Recovery and Health Monitor score this same number." },
-  resp: { group: "vitals", baseline: true, sections: ["outliers"], about: "Breaths per minute during sleep, measured by your band." },
-  spo2: { group: "vitals", baseline: true, sections: ["outliers"], about: "Estimated blood oxygen saturation during sleep, measured by your band." },
-  skin: { group: "vitals", baseline: true, sections: ["outliers"], about: "Nightly skin temperature above or below your personal baseline. This is a temperature difference, not your body temperature." },
-  weight: { group: "body", reading: true, sections: ["readings"], about: "Your weight, from a connected scale or a manual log in your health app." },
-  body_fat: { group: "body", reading: true, sections: ["readings"], about: "Body fat percentage, from a smart scale or a manual log." },
-  distance: { group: "activity", total: true, stack: "distance", sections: ["weekday"], about: "Distance covered on foot and in workouts, from your steps and GPS." },
-  floors: { group: "activity", total: true, sections: ["weekday"], about: "Floors climbed, counted from changes in altitude as you walk." },
-  elevation: { group: "activity", total: true, sections: ["weekday"], about: "Height gained over the day." },
-  active_minutes: { group: "activity", total: true, sections: ["weekly", ...LEVELS], about: "Minutes of moderate or harder movement, the time that counts toward the 150 minutes a week the WHO recommends." },
-  light_minutes: { group: "activity", total: true, sections: [...LEVELS], about: "Minutes of light movement, such as an easy walk or chores." },
+  hrv: { group: "vitals", baseline: true, sections: ["outliers"] },
+  rhr: { group: "vitals", baseline: true, sections: ["outliers"] },
+  resp: { group: "vitals", baseline: true, sections: ["outliers"] },
+  spo2: { group: "vitals", baseline: true, sections: ["outliers"] },
+  skin: { group: "vitals", baseline: true, sections: ["outliers"] },
+  weight: { group: "body", reading: true, sections: ["readings"] },
+  body_fat: { group: "body", reading: true, sections: ["readings"] },
+  distance: { group: "activity", total: true, stack: "distance", sections: ["weekday"] },
+  floors: { group: "activity", total: true, sections: ["weekday"] },
+  elevation: { group: "activity", total: true, sections: ["weekday"] },
+  active_minutes: { group: "activity", total: true, sections: ["weekly", ...LEVELS] },
+  light_minutes: { group: "activity", total: true, sections: [...LEVELS] },
   azm: {
     group: "activity",
     total: true,
     sections: ["weekly", ...LEVELS],
-    about: "Active Zone Minutes: a minute in the moderate zone counts once and a minute in the vigorous or peak zones counts twice, toward 150 a week.",
   },
-  active_calories: { group: "activity", total: true, sections: ["workouts"], about: "Calories burned by movement above your resting burn." },
+  active_calories: { group: "activity", total: true, sections: ["workouts"] },
   sedentary_minutes: {
     group: "activity",
     sections: ["hourly", ...LEVELS],
-    about: "Time awake and still: minutes with no steps and a low heart rate, outside sleep and workouts. The hourly view shows your steps: the gaps are when you sat.",
   },
-  avg_hr: { group: "vitals", baseline: true, sections: ["outliers"], about: "Your average heart rate over the whole day, from your band." },
-  water: { group: "nutrition", total: true, sections: ["entries"], about: "Water you logged in your health app." },
-  calories_in: { group: "nutrition", sections: ["balance", "macros", "entries"], about: "Calories from the food you logged." },
-  protein: { group: "nutrition", sections: ["macros", "entries"], about: "Protein from the food you logged." },
-  carbs: { group: "nutrition", sections: ["macros", "entries"], about: "Carbohydrates from the food you logged." },
-  fat: { group: "nutrition", sections: ["macros", "entries"], about: "Fat from the food you logged." },
-  glucose: { group: "vitals", reading: true, baseline: true, sections: ["outliers"], about: "Blood glucose readings from a connected meter or a manual log." },
-  core_temp: { group: "vitals", reading: true, baseline: true, sections: ["outliers"], about: "Core body temperature readings from a connected sensor." },
-  swim_strokes: { group: "activity", total: true, sections: [], about: "Strokes counted during pool swims." },
+  avg_hr: { group: "vitals", baseline: true, sections: ["outliers"] },
+  water: { group: "nutrition", total: true, sections: ["entries"] },
+  calories_in: { group: "nutrition", sections: ["balance", "macros", "entries"] },
+  protein: { group: "nutrition", sections: ["macros", "entries"] },
+  carbs: { group: "nutrition", sections: ["macros", "entries"] },
+  fat: { group: "nutrition", sections: ["macros", "entries"] },
+  glucose: { group: "vitals", reading: true, baseline: true, sections: ["outliers"] },
+  core_temp: { group: "vitals", reading: true, baseline: true, sections: ["outliers"] },
+  swim_strokes: { group: "activity", total: true, sections: [] },
 };
 
 /** Vitals and body measurements are levels with no meaningful zero; activity and nutrition are amounts counted from zero. */
 export const isLevelMetric = (k: string) => isDetailKey(k) && (CONFIG[k].group === "vitals" || CONFIG[k].group === "body");
 
-/** Where the number comes from, by group. */
-const SOURCE: Record<Group, string> = {
-  activity: "Your health app's daily roll-up, counted by your band or your phone. Pulse shows it as it comes and does not score it.",
-  body: "Readings synced from your health app. A day without a reading shows the latest one before it.",
-  // mobile: water and food logged in Pulse's Journal add to the synced totals (common.ts loadDays, food.ts).
-  nutrition: "Your health app's daily total of your logs, plus what you log in Pulse's Journal. A meal logged in both Pulse and Fitbit counts once.",
-  vitals: "Your health app's daily value, from your band or a connected device. Pulse shades your usual range from the last 90 days.",
-};
-
 const CALORIES = {
   key: "calories",
-  label: "Calories",
+  get label() { return metricLabel("calories"); },
   unit: "kcal",
   format: "grouped" as FormatKey,
   direction: "neutral" as GoodDirection,
@@ -141,7 +130,7 @@ function defOf(key: DetailKey) {
   const t = key === "calories" ? CALORIES : trendMetric(key);
   // mobile: an extra Pulse derives itself (activity minutes, AZM, average HR) says so in place of the group's source line.
   const note = (EXTRA_METRICS as readonly ExtraMetric[]).find((m) => m.key === key)?.note;
-  return { key, label: t.label, unit: t.unit, format: t.format, direction: t.direction, pick: t.pick, partialToday: !!t.partialToday, note, ...CONFIG[key] };
+  return { key, label: t.label, unit: t.unit, format: t.format, direction: t.direction, pick: t.pick, partialToday: !!t.partialToday, note, ...CONFIG[key], about: i18n.t(`trends:metricAbout.${key}`) };
 }
 
 export type Point = { day: string; value: number | null; provisional?: boolean; parts?: Record<string, number> | null };
@@ -198,7 +187,8 @@ const SPAN = RANGE_DAYS["1y"];
 /** Sedentary time's daytime window, local minutes. */
 const DAY_FROM = 7 * 60;
 const DAY_TO = 22 * 60;
-const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+/** Mon to Sun in the language in use (2024-01-01 was a Monday). */
+const weekdayName = (i: number) => formatDay(addDays("2024-01-01", i), { weekday: "short" });
 
 /** The metric's screen for `day`. */
 export async function getMetricDetail(key: DetailKey, day: string, ctx: QueryCtx): Promise<MetricDetailVM> {
@@ -242,7 +232,7 @@ export async function getMetricDetail(key: DetailKey, day: string, ctx: QueryCtx
     direction: m.direction,
     group: m.group,
     about: m.about,
-    source: m.note ?? SOURCE[m.group],
+    source: m.note ?? i18n.t(`trends:metricSource.${m.group}`),
     day,
     today,
     value: value === null ? none(detailReason(key, rows.get(day), isToday)) : ok(value),
@@ -368,7 +358,7 @@ const BUILD: Record<Exclude<SectionKind, "outliers">, (s: SectionCtx, key: Detai
       sums[w].n++;
     }
     if (sums.every((x) => !x.n)) return null;
-    return { kind: "weekday", weeks: 12, days: sums.map((x, i) => ({ label: WEEKDAYS[i], value: x.n ? x.sum / x.n : null })) };
+    return { kind: "weekday", weeks: 12, days: sums.map((x, i) => ({ label: weekdayName(i), value: x.n ? x.sum / x.n : null })) };
   },
 
   weekly: (s) => {
@@ -397,13 +387,13 @@ const BUILD: Record<Exclude<SectionKind, "outliers">, (s: SectionCtx, key: Detai
     rows:
       key === "azm"
         ? [
-            stat(s, "zones13", "Light and moderate zones", (r) => r.metrics?.lightModerateMin, "up"),
-            stat(s, "zones45", "Vigorous and peak zones", (r) => r.metrics?.vigorousPeakMin, "up"),
+            stat(s, "zones13", i18n.t("trends:stat.zones13"), (r) => r.metrics?.lightModerateMin, "up"),
+            stat(s, "zones45", i18n.t("trends:stat.zones45"), (r) => r.metrics?.vigorousPeakMin, "up"),
           ]
         : [
-            stat(s, "active_minutes", "Active minutes", (r) => r.extra.active_minutes, "up"),
-            stat(s, "light_minutes", "Light activity", (r) => r.extra.light_minutes, "up"),
-            stat(s, "sedentary_minutes", "Sedentary time", (r) => r.extra.sedentary_minutes, "down"),
+            stat(s, "active_minutes", metricLabel("active_minutes"), (r) => r.extra.active_minutes, "up"),
+            stat(s, "light_minutes", metricLabel("light_minutes"), (r) => r.extra.light_minutes, "up"),
+            stat(s, "sedentary_minutes", metricLabel("sedentary_minutes"), (r) => r.extra.sedentary_minutes, "down"),
           ],
   }),
 
@@ -432,12 +422,12 @@ const BUILD: Record<Exclude<SectionKind, "outliers">, (s: SectionCtx, key: Detai
     return {
       kind: "balance",
       rows: [
-        stat(s, "calories_in", "Eaten", (x) => x.extra.calories_in, "none", opts),
-        stat(s, "calories", "Burned", (x) => x.metrics?.calories, "none", opts),
+        stat(s, "calories_in", i18n.t("trends:stat.eaten"), (x) => x.extra.calories_in, "none", opts),
+        stat(s, "calories", i18n.t("trends:stat.burned"), (x) => x.metrics?.calories, "none", opts),
         {
           key: "balance",
-          label: "Difference",
-          caption: "Eaten minus burned",
+          label: i18n.t("trends:stat.difference"),
+          caption: i18n.t("trends:stat.eatenMinusBurned"),
           metric: finite(eaten) && finite(burned) ? ok(eaten - burned) : none("no_data"),
           average: null,
           direction: "none",
@@ -452,12 +442,12 @@ const BUILD: Record<Exclude<SectionKind, "outliers">, (s: SectionCtx, key: Detai
     const r = s.rows.get(s.day);
     const g = { protein: r?.extra.protein, carbs: r?.extra.carbs, fat: r?.extra.fat };
     const kcal = (finite(g.protein) ? g.protein * 4 : 0) + (finite(g.carbs) ? g.carbs * 4 : 0) + (finite(g.fat) ? g.fat * 9 : 0);
-    const share = (v: number | undefined, per: number) => (finite(v) && kcal > 0 ? `${Math.round(((v * per) / kcal) * 100)}% of macro calories` : undefined);
+    const share = (v: number | undefined, per: number) => (finite(v) && kcal > 0 ? i18n.t("trends:stat.macroShare", { percent: Math.round(((v * per) / kcal) * 100) }) : undefined);
     const row = (key: "protein" | "carbs" | "fat", label: string, per: number): KeyStat => ({
       ...stat(s, key, label, (x) => x.extra[key], "none", { unit: "g", format: "int" }),
       ...(share(g[key], per) && { caption: share(g[key], per) }),
     });
-    const rows = [row("protein", "Protein", 4), row("carbs", "Carbohydrates", 4), row("fat", "Fat", 9)];
+    const rows = [row("protein", metricLabel("protein"), 4), row("carbs", metricLabel("carbs"), 4), row("fat", metricLabel("fat"), 9)];
     // Protein's reference: 0.8 g per kg of the latest weight on or before the day.
     let weight: number | null = null;
     for (let k = 0; k < 2 * SPAN && weight === null; k++) weight = s.rows.get(addDays(s.day, -k))?.metrics?.weightKg ?? null;
@@ -466,8 +456,8 @@ const BUILD: Record<Exclude<SectionKind, "outliers">, (s: SectionCtx, key: Detai
     if (weight)
       rows.push({
         key: "protein_target",
-        label: "Protein reference",
-        caption: `${Number((PROTEIN_G_PER_KG / kg.change(1)).toFixed(2))} g per ${kg.unit} at ${formatValue("decimal1", kg.value(weight))}${NBSP}${kg.unit}`,
+        label: i18n.t("trends:stat.proteinReference"),
+        caption: i18n.t("trends:stat.proteinPerUnit", { perUnit: Number((PROTEIN_G_PER_KG / kg.change(1)).toFixed(2)), unit: kg.unit, weight: `${formatValue("decimal1", kg.value(weight))}${NBSP}${kg.unit}` }),
         metric: ok(weight * PROTEIN_G_PER_KG),
         average: null,
         direction: "none",
@@ -490,8 +480,8 @@ const BUILD: Record<Exclude<SectionKind, "outliers">, (s: SectionCtx, key: Detai
       const before = latest && items.find((x) => x.day <= addDays(latest.day, -n));
       return {
         key: `change${n}`,
-        label: `Change over ${n} days`,
-        ...(before && { caption: `Since ${formatDay(before.day, DAY.monthDay)}` }),
+        label: i18n.t("trends:stat.changeOverDays", { count: n }),
+        ...(before && { caption: i18n.t("trends:stat.since", { day: formatDay(before.day, DAY.monthDay) }) }),
         metric: before ? ok(latest.value - before.value) : none("no_data"),
         average: null,
         direction: "none",
