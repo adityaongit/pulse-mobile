@@ -6,7 +6,7 @@ import { dayLabel } from "@/lib/format";
 import { parseDay } from "@/lib/url";
 import { Glass } from "../Glass";
 import { haptic } from "../haptics";
-import { Text } from "../Text";
+import { Mark } from "../brand";
 import { useTheme } from "../theme";
 import { FAB_SIZE, TAB_ROOTS, useTabBarBottom } from "./layout";
 import { useShellCalendar } from "./ShellStatus";
@@ -14,7 +14,7 @@ import { push } from "../navigate";
 import { Press } from "../Press";
 import { GLASS_RADIUS } from "../radius";
 
-/** The reference app's ringed monogram: "P" in a 30 px circle with the indigo-to-blue rim. */
+/** The reference app's ringed monogram, with Pulse's mark in a 30 px circle with the indigo-to-blue rim. */
 function Monogram() {
   const { c } = useTheme();
   return (
@@ -28,13 +28,13 @@ function Monogram() {
         </Defs>
         <Circle cx={15} cy={15} r={14.25} fill={c["action-face"]} stroke="url(#rim)" strokeWidth={1.5} />
       </Svg>
-      <Text className="font-numeric text-[15px] font-bold leading-[15px] text-foreground">P</Text>
+      <Mark size={16} />
     </View>
   );
 }
 
 /**
- * The "Check in" action (spec §4.2.1): indigo-rimmed glass with the "P" monogram. It opens the check-in sheet, the route
+ * The "Check in" action (spec §4.2.1): indigo-rimmed glass with Pulse's mark. It opens the check-in sheet, the route
  * app/checkin.tsx, over the screen you are on, for the day that screen shows: `/checkin?d=` carries the screen's
  * `d` as the web keeps `?d=` beside `?checkin=1`. (The tab bar sits in the tabs layout, so the day is the focused route's:
  * the global params, not the layout's own.) With a coach key saved, it opens the coach instead (the web's coach access).

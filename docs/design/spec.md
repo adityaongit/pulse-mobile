@@ -326,7 +326,7 @@ Unchanged from v1 (lucide-react, `strokeWidth={1.75}`, sizes 16 / 20 / 24, `curr
 | Avatar (no photo) | `CircleUserRound` 28 px, `strokeWidth={1.5}` | The reference app's default avatar is this outline [latest-home-collapsed-1], [latest-home-top-3] |
 | Streak | `Flame` 16 px, `fill-current` | The reference app's flame is filled orange [latest-home-sticky-header-user-2025] |
 | Sync status (in place of band battery) | `Watch` 22 px with an 8 px status dot at its top right | The reference app draws the band outline with a green dot [latest-home-sticky-header-user-2025] |
-| Round action | the Pulse monogram "P" in a 30 px ring, not an icon | The reference app's "W" in a ring [latest-tabbar-1] |
+| Round action | Pulse's mark (the two bars) in a 30 px ring | The reference app's "W" in a ring [latest-tabbar-1]; the mark replaced the "P" (owner, 2026-10-21) |
 | Daily Outlook, Day in Review | `Sun`, `Moon` | [latest-home-collapsing-1], [latest-home-top-1] |
 | Close (sheets, info card, calendar has none) | `X` 22 px | [latest-popover-info-1] |
 
@@ -535,7 +535,7 @@ The round glass button [latest-tabbar-1]; on detail screens it floats alone at t
 
 - Phone on tab roots: `size-[62px]` inside the tab-bar wrapper. Phone on detail routes and every route ≥ 768: `fixed right-3 bottom-[max(calc(env(safe-area-inset-bottom)-6px),12px)] z-30 size-[62px] md:right-6 md:bottom-6 md:size-14 xl:right-8 xl:bottom-8`.
 - Material: `rounded-full bg-linear-to-b from-(--glass-action-top) to-(--glass-action-bottom) backdrop-blur-md` plus a 1.5 px gradient rim drawn as a wrapper `p-[1.5px] rounded-full bg-linear-to-br from-action-rim-from/70 to-action-rim-to/80` around the fill (sampled rim `#2e3053` → `#4c94db`), and the glass shadow.
-- Content: a 30 px circle `rounded-full ring-[1.5px] ring-action-rim-from` holding "P" (`font-numeric text-[15px] font-bold`), as the reference app's ringed "W".
+- Content: a 30 px circle `rounded-full ring-[1.5px] ring-action-rim-from` holding Pulse's mark at 16 px (`Mark` in `src/ui/brand.tsx`), as the reference app's ringed "W".
 - `aria-label="Check in for {date label}"`; opens the check-in `ResponsiveSheet` (§7.11). When today's check-in is done the button stays and opens the sheet in edit mode. Press `active:scale-[0.96]`; hover `hover:brightness-110` (filter, 150 ms).
 - Hidden on `/settings` and while any overlay is open (`data-overlay-open` on `<body>` hides it, so it never sits over a sheet).
 
