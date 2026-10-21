@@ -5,6 +5,8 @@
 import type { ChipTone, DashboardKey, FormatKey, GoodDirection, RecoveryBand as Band, StressLevel } from "./_lib";
 import type { Metric, MetricTag, ReasonCode } from "@/lib/reasons";
 import type { EnergyBand } from "@/core/engine/energyBank";
+import type { BloodPressureCategory } from "@/core/scoring/bloodPressure";
+import type { BloodPressureSummary } from "./bloodPressure";
 
 export type { Band, ChipTone, GoodDirection, Metric, MetricTag, ReasonCode, StressLevel };
 export type SleepStatus = "poor" | "sufficient" | "optimal";
@@ -336,7 +338,7 @@ export type SleepVM = {
 
 // ── Health ───────────────────────────────────────────────────────────────────
 
-export type VitalKey = "resp" | "spo2" | "restingHr" | "hrv" | "skinTempDev";
+export type VitalKey = "resp" | "spo2" | "restingHr" | "hrv" | "skinTempDev" | "bp";
 export type Vital = {
   key: VitalKey;
   label: string;
@@ -348,6 +350,14 @@ export type Vital = {
   chip: { tone: ChipTone; text: string } | null;
   /** 30 days ending on the day, for the vital sheet. */
   trend: Trend;
+  /** Formatted custom display for dual-scalar vitals e.g. "120/80" for BP */
+  customValue?: string;
+  /** Optional paired vital payload for blood pressure */
+  bp?: {
+    systolic: number;
+    diastolic: number;
+    category: BloodPressureCategory;
+  } | null;
 };
 
 export type HealthHubVM = {
@@ -416,6 +426,7 @@ export type MonitorVM = {
   count: Metric<{ inRange: number; total: number; status: "within" | "out" | "illness"; outOfRange: number }>;
   illness: { level: string; score: number } | null;
   vitals: Vital[];
+  bloodPressure: BloodPressureSummary;
   heartRhythm: HeartRhythm;
   /** Weight and body fat always; blood glucose and core temperature only once the owner has ever had one. */
   measurements: Measurement[];

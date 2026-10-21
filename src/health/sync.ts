@@ -8,6 +8,8 @@ import { readAhead } from "@/lib/ahead";
 import { READ_TYPES, ensureInitialized, permissionState, readAll, type ReadType } from "@/health/connect";
 import { deriveDayExtras, restingHrOn, type Interval } from "@/health/derive";
 import {
+  createBloodPressureDiagnostics,
+  mapBloodPressure,
   mapDailyValuesSteps,
   mapExercisesSteps,
   mapExternalEntries,
@@ -44,9 +46,9 @@ export { forgetChanges };
  * every day became the first day of some incremental sync, which rewrote its row without that night (no skin
  * temperature, nightly vitals from the fallback windows, a nap promoted to the main sleep, the night's minutes counted
  * as sedentary); heart-rate and steps records running over midnight keep their samples after it. 4: every HRV sample is
- * kept (`hrv_days`), not only the nightly mean, for the Pulse engine.
+ * kept (`hrv_days`), not only the nightly mean, for the Pulse engine. 5: Blood pressure readings ingested.
  */
-export const IMPORT_VERSION = 4;
+export const IMPORT_VERSION = 5;
 
 /**
  * How far before the window's first local midnight the reads start. Health Connect returns a record only to a read whose
@@ -250,7 +252,9 @@ export async function syncHealthConnect(store: Store, opts: SyncOptions): Promis
     const input: HealthInput = {};
     let recordsKept = 0;
     const windowTypes = WINDOW_TYPES.filter((t) => granted.has(t));
-    const takeWindow = readAhead(windowTypes.length, READ_CONCURRENCY, (k) => readAll(windowTypes[k], range(windowTypes[k]), undefined, origins));
+    const takeWindow = readAhead(windowTypes.length, READ_CONCURRENCY, (k) =>
+      readAll(windowTypes[k], range(windowTypes[k]), undefined, windowTypes[k] === "BloodPressure" ? undefined : origins),
+    );
     let windowRead = 0;
     for (const type of WINDOW_TYPES) {
       progress(`read:${type}`, done, total);
@@ -391,6 +395,8 @@ export async function syncHealthConnect(store: Store, opts: SyncOptions): Promis
     await slice();
     // Water, food and cycle logs made in Fitbit: the window's rows are replaced, so what Fitbit deleted goes too.
     const external = inWindow(mapExternalEntries(input, tz));
+    const bpDiag = createBloodPressureDiagnostics();
+    const bpReadings = inWindow(mapBloodPressure(input.BloodPressure ?? [], tz, nowTs, bpDiag));
 
     // Every HRV sample (the Pulse engine labels them by sleep stage); their days rerun stage 1.
     const hrv = mapHrv(input.HeartRateVariabilityRmssd ?? []);
@@ -403,6 +409,7 @@ export async function syncHealthConnect(store: Store, opts: SyncOptions): Promis
     if (exercises.length) await store.upsertExercises(exercises);
     if (dailyValues.length) await store.upsertDailyValues(dailyValues);
     if (metrics.length) await store.upsertMetrics(metrics);
+    if (bpReadings.length) await store.upsertBloodPressure(bpReadings);
     await store.replaceExternalEntries({ from: fromDay, to: today }, external);
     if (dirty.length) await store.markIntradayDirty(dirty);
     counts.sessions = sessions.length;
@@ -412,6 +419,8 @@ export async function syncHealthConnect(store: Store, opts: SyncOptions): Promis
     counts.derived = derived.length;
     counts.externalEntries = external.length;
     counts.metrics = metrics.length;
+    counts.bloodPressure = bpReadings.length;
+    counts["bloodPressure:rejected"] = bpDiag.rejected;
     done++;
 
     // Under "Fitbit only", nothing at all from the Fitbit app means the policy is hiding everything (another band's app,

@@ -107,12 +107,32 @@ const LOG_TYPES = new Set<ReadType>([
   "Hydration",
   "Nutrition",
   "BloodGlucose",
+  "BloodPressure",
   "BodyTemperature",
   "MenstruationPeriod",
   "MenstruationFlow",
   "IntermenstrualBleeding",
   "OvulationTest",
 ]);
+
+export type SourceDecision = {
+  accepted: boolean;
+  reason: "primary_source" | "blood_pressure_exemption" | "disabled_source" | "invalid_record";
+};
+
+export function decideSource(type: ReadType, r: Classified, policy: SourcePolicy, options?: { isValidRecord?: boolean }): SourceDecision {
+  if (options?.isValidRecord === false) return { accepted: false, reason: "invalid_record" };
+  if (type === "BloodPressure") {
+    return isFitbit(type, r)
+      ? { accepted: true, reason: "primary_source" }
+      : { accepted: true, reason: "blood_pressure_exemption" };
+  }
+  if (policy === "all") return { accepted: true, reason: "primary_source" };
+  if (policy === "fitbit_only") {
+    return isFitbit(type, r) ? { accepted: true, reason: "primary_source" } : { accepted: false, reason: "disabled_source" };
+  }
+  return { accepted: true, reason: "primary_source" };
+}
 
 /** Measured by the phone rather than a band, watch or other device. */
 export function isPhoneMeasured(type: ReadType, r: Classified): boolean {
@@ -144,6 +164,8 @@ export function applySourcePolicy<T extends Classified>(type: ReadType, records:
 
 /** applySourcePolicy, pausing as it goes (src/lib/yield.ts): "fitbit_first" reads a local day per record, an Intl call each. */
 export function* applySourcePolicySteps<T extends Classified>(type: ReadType, records: T[], policy: SourcePolicy, tz: string): Steps<T[]> {
+  // Blood pressure has a narrow exemption from source-name restrictions: validated cuffs write through third-party apps.
+  if (type === "BloodPressure") return records;
   if (policy === "all") return records;
   if (policy === "fitbit_only") return records.filter((r) => isFitbit(type, r));
   const fitbitDays = new Set<string | null>();
