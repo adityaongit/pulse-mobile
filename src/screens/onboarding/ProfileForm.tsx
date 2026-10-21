@@ -2,6 +2,7 @@
 // src/components/profile/ProfileForm.tsx: a year-first birth date picker, the sex choice as a segmented control, the time
 // zone (on first run the device's, one line, "Change" opens the picker), and, in Settings, height and max heart rate.
 // `footer` renders the submit, so each host places it (onboarding pins it to the bottom, the sheet to its foot).
+import { useTranslation } from "react-i18next";
 import { useState, type ReactNode } from "react";
 import { haptic } from "@/ui/haptics";
 import { View } from "react-native";
@@ -38,6 +39,7 @@ export function ProfileForm({
   /** The Edit profile sheet: smaller fields, and the host places the fields and the footer itself (the sheet pins the footer under its scrolling body). */
   sheet?: (fields: ReactNode, footer: ReactNode) => ReactNode;
 }) {
+  const { t } = useTranslation("onboarding");
   const [name, setName] = useState(defaults.name ?? "");
   const [birthDate, setBirthDate] = useState(defaults.birthDate);
   const [sex, setSex] = useState<"male" | "female" | null>(defaults.sex);
@@ -75,69 +77,69 @@ export function ProfileForm({
   const fields = (
     <View className={gap}>
       {/* No autofill: Android paints an autofilled field olive over our fill. */}
-      <Field label="Name" hint="Shown on Home and in Settings. Stays on this phone." error={f?.name} optional>
-        <TextField variant={variant} accessibilityLabel="Name" autoCapitalize="words" autoComplete="off" importantForAutofill="no" placeholder="Your name" value={name} onChangeText={setName} invalid={!!f?.name} />
+      <Field label={t("form.name")} hint={t("form.nameHint")} error={f?.name} optional>
+        <TextField variant={variant} accessibilityLabel={t("form.name")} autoCapitalize="words" autoComplete="off" importantForAutofill="no" placeholder={t("form.namePlaceholder")} value={name} onChangeText={setName} invalid={!!f?.name} />
       </Field>
-      <Field label="Birth date" hint="For heart rate zones, sleep need and Pulse Age." error={f?.birthDate}>
+      <Field label={t("form.birthDate")} hint={t("form.birthDateHint")} error={f?.birthDate}>
         <BirthDatePicker value={birthDate} onChange={setBirthDate} invalid={!!f?.birthDate} compact={compact} />
       </Field>
 
       <View accessibilityRole="radiogroup" className="gap-2">
-        <Text className={`${compact ? "" : "mb-2 "}text-xs font-bold uppercase leading-4 tracking-[0.1em] text-foreground-secondary`}>{RANGES_LABEL}</Text>
+        <Text className={`${compact ? "" : "mb-2 "}text-xs font-bold uppercase leading-4 tracking-[0.1em] text-foreground-secondary`}>{t("form.rangesLabel")}</Text>
         <RadioSegments
-          label={RANGES_LABEL}
+          label={t("form.rangesLabel")}
           value={sex}
           onChange={setSex}
           options={[
-            { value: "male", label: "Male" },
-            { value: "female", label: "Female" },
+            { value: "male", label: t("form.male") },
+            { value: "female", label: t("form.female") },
           ]}
         />
         {f?.sex ? (
           <Text accessibilityLiveRegion="polite" className="text-[13px] font-medium leading-[18px] text-recovery-red-text">
-            Choose one
+            {t("form.chooseOne")}
           </Text>
         ) : (
           <Text className="text-[13px] leading-[18px] text-muted-foreground">
-            Strain, sleep targets, VO2 max and Pulse Age use male and female reference tables. Choose the one closer to your body today; on long-term hormone therapy, that is usually the one that matches your hormones.
+            {t("form.rangesHint")}
           </Text>
         )}
       </View>
 
       {zoneOpen || !timeZone || f?.timeZone ? (
-        <Field label="Time zone" hint="Where you live. Your days start at midnight here." error={f?.timeZone}>
+        <Field label={t("form.timeZone")} hint={t("form.timeZoneHint")} error={f?.timeZone}>
           <TimeZonePicker value={timeZone} onChange={setTimeZone} invalid={!!f?.timeZone} compact={compact} />
         </Field>
       ) : (
         <View className="min-h-14 flex-row items-center gap-3 rounded-xl bg-field py-2 pl-4 pr-2">
           <View className="min-w-0 flex-1">
-            <Text className="text-xs font-bold uppercase leading-4 tracking-[0.1em] text-foreground-secondary">Time zone</Text>
+            <Text className="text-xs font-bold uppercase leading-4 tracking-[0.1em] text-foreground-secondary">{t("form.timeZone")}</Text>
             <Text numberOfLines={1} className="text-[15px] leading-5 text-foreground">
               {describeZone(timeZone)}
             </Text>
           </View>
-          <SmallButton label="Change" accessibilityLabel="Change time zone" onPress={() => setZoneOpen(true)} />
+          <SmallButton label={t("form.change")} accessibilityLabel={t("form.changeTimeZone")} onPress={() => setZoneOpen(true)} />
         </View>
       )}
 
       {!onboarding && (
         <View className={gap}>
-          <Field label="Height" hint="Adds lean body mass to Pulse Age." error={f?.heightCm} optional>
+          <Field label={t("form.height")} hint={t("form.heightHint")} error={f?.heightCm} optional>
             {imperial ? (
               <View className="flex-row gap-2">
                 <View className="flex-1">
-                  <TextField variant={variant} accessibilityLabel="Height, feet" keyboardType="number-pad" right={unitSuffix("ft")} value={feet} onChangeText={setFeet} invalid={!!f?.heightCm} />
+                  <TextField variant={variant} accessibilityLabel={t("form.heightFeet")} keyboardType="number-pad" right={unitSuffix("ft")} value={feet} onChangeText={setFeet} invalid={!!f?.heightCm} />
                 </View>
                 <View className="flex-1">
-                  <TextField variant={variant} accessibilityLabel="Height, inches" keyboardType="number-pad" right={unitSuffix("in")} value={inches} onChangeText={setInches} invalid={!!f?.heightCm} />
+                  <TextField variant={variant} accessibilityLabel={t("form.heightInches")} keyboardType="number-pad" right={unitSuffix("in")} value={inches} onChangeText={setInches} invalid={!!f?.heightCm} />
                 </View>
               </View>
             ) : (
-              <TextField variant={variant} accessibilityLabel="Height in cm" keyboardType="decimal-pad" placeholder="cm" value={heightCm} onChangeText={setHeightCm} invalid={!!f?.heightCm} />
+              <TextField variant={variant} accessibilityLabel={t("form.heightCm")} keyboardType="decimal-pad" placeholder="cm" value={heightCm} onChangeText={setHeightCm} invalid={!!f?.heightCm} />
             )}
           </Field>
-          <Field label="Max heart rate" hint="Leave blank to estimate it from your age." error={f?.maxHr} optional>
-            <TextField variant={variant} accessibilityLabel="Max heart rate in bpm" keyboardType="number-pad" placeholder="bpm" value={maxHr} onChangeText={setMaxHr} invalid={!!f?.maxHr} />
+          <Field label={t("form.maxHr")} hint={t("form.maxHrHint")} error={f?.maxHr} optional>
+            <TextField variant={variant} accessibilityLabel={t("form.maxHrBpm")} keyboardType="number-pad" placeholder="bpm" value={maxHr} onChangeText={setMaxHr} invalid={!!f?.maxHr} />
           </Field>
         </View>
       )}
@@ -162,9 +164,10 @@ export function ProfileForm({
 
 /** The submit, as the web's `SaveButton`: a sheet-size pill that reads "Saving…" while the action runs. */
 export function SaveButton({ pending, label, onPress }: { pending: boolean; label: string; onPress: () => void }) {
+  const { t } = useTranslation("onboarding");
   return (
     <Button disabled={pending} onPress={onPress}>
-      {pending ? "Saving…" : label}
+      {pending ? t("profile.saving") : label}
     </Button>
   );
 }

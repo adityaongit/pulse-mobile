@@ -1,1 +1,96 @@
-{}
+{
+  "welcome": {
+    "title": "Your Fitbit, scored every morning",
+    "subtitle": "Sleep, Recovery and Strain from Health Connect, worked out on this phone.",
+    "exploreSample": "Explore with sample data",
+    "private": "Stays on this phone. No account, no server.",
+    "sampleFailed": "Couldn’t build the sample data. Try again."
+  },
+  "progress": {
+    "buildingSample": "Building sample data",
+    "importing": "Importing from Health Connect"
+  },
+  "profile": {
+    "title": "Two things Health Connect doesn’t share",
+    "intro": "Pulse compares your heart rate with people of your age, using the reference ranges you choose. You can change these later in Settings.",
+    "saveContinue": "Save and continue",
+    "saving": "Saving…"
+  },
+  "form": {
+    "name": "Name",
+    "nameHint": "Shown on Home and in Settings. Stays on this phone.",
+    "namePlaceholder": "Your name",
+    "birthDate": "Birth date",
+    "birthDateHint": "For heart rate zones, sleep need and Pulse Age.",
+    "rangesLabel": "Reference ranges",
+    "male": "Male",
+    "female": "Female",
+    "chooseOne": "Choose one",
+    "rangesHint": "Strain, sleep targets, VO2 max and Pulse Age use male and female reference tables. Choose the one closer to your body today; on long-term hormone therapy, that is usually the one that matches your hormones.",
+    "timeZone": "Time zone",
+    "timeZoneHint": "Where you live. Your days start at midnight here.",
+    "change": "Change",
+    "changeTimeZone": "Change time zone",
+    "height": "Height",
+    "heightHint": "Adds lean body mass to Pulse Age.",
+    "heightFeet": "Height, feet",
+    "heightInches": "Height, inches",
+    "heightCm": "Height in cm",
+    "maxHr": "Max heart rate",
+    "maxHrHint": "Leave blank to estimate it from your age.",
+    "maxHrBpm": "Max heart rate in bpm"
+  },
+  "birth": {
+    "notChosen": "Not chosen",
+    "choose": "Choose your birth date",
+    "month": "Month",
+    "day": "Day",
+    "year": "Year",
+    "scrollHint": "Scroll or tap to pick",
+    "done": "Done"
+  },
+  "zone": {
+    "search": "Search city or GMT offset",
+    "close": "Close time zones",
+    "show": "Show time zones",
+    "list": "Time zones",
+    "noMatch": "No time zone matches “{{query}}”."
+  },
+  "connect": {
+    "button": "Connect Health Connect",
+    "open": "Open Health Connect",
+    "notNow": "Not now",
+    "unavailable": "Health Connect isn’t available on this phone.",
+    "updateRequired": "Health Connect needs an update. Open it, update it, then come back.",
+    "openFailed": "Couldn’t open Health Connect. Try again.",
+    "waitingTitle": "Waiting for Health Connect",
+    "waitingBody": "Choose what Pulse can read in Health Connect’s window. You come back here when you’re done.",
+    "refusedTitle": "Allow Health Connect",
+    "refusedBody": "Pulse needs at least heart rate and sleep. Allow every permission, including access to older data.",
+    "title": "What Pulse reads",
+    "intro": "From Health Connect, kept on this phone. The first import reads the last 180 days.",
+    "introSample": "From Health Connect, kept on this phone. The first import reads the last 180 days. Your sample data is cleared once you connect.",
+    "readSteps": "Steps, distance and workouts",
+    "readHeart": "Heart rate and HRV",
+    "readSleep": "Sleep and its stages",
+    "readBreathing": "Breathing, oxygen and temperature",
+    "readFood": "Food and water you log in Fitbit",
+    "readBody": "Weight, body fat and VO2 max"
+  },
+  "importing": {
+    "stopped": "The import stopped",
+    "titleSample": "Building your sample data",
+    "title": "Importing your data",
+    "bodySample": "Half a year of a demo person’s days, scored on this phone.",
+    "body": "Up to 180 days from Health Connect, scored on this phone. The first import takes a few minutes."
+  },
+  "background": {
+    "titleOn": "Background sync is on",
+    "title": "Keep Pulse up to date",
+    "bodyOn": "Pulse syncs while it’s closed. Change it in Settings › Notifications & background.",
+    "bodyBattery": "One more step: under Battery, choose Allow background activity or Unrestricted. Many phones pause Pulse in the background otherwise.",
+    "body": "Sync while Pulse is closed. Many phones also need Pulse allowed to run in the background; the button opens that setting.",
+    "openBattery": "Open battery settings",
+    "turnOn": "Turn on background sync"
+  }
+}

@@ -3,6 +3,7 @@
 // profile step is pulse's src/app/onboarding/Onboarding.tsx on the AuthShell frame: birth date, sex and the time zone
 // (the device's, one tap to change); height and max HR wait for Settings. Where to start comes from the app state
 // (src/state/app.ts): a saved profile without a source opens on the connect step, an import in flight on its progress.
+import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { AppState, Linking, View } from "react-native";
 import { isBatteryOptimizationEnabledAsync } from "expo-battery";
@@ -55,6 +56,7 @@ function ProgressFooter({ progress, fallback }: { progress: Progress | null; fal
 }
 
 function Welcome({ onConnect }: { onConnect: () => void }) {
+  const { t } = useTranslation("onboarding");
   const [building, setBuilding] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const progress = useApp((s) => (building ? s.progress : null));
@@ -68,7 +70,7 @@ function Welcome({ onConnect }: { onConnect: () => void }) {
       haptic.success();
     } catch (e) {
       setBuilding(false);
-      setError(e instanceof Error ? e.message : "Couldn’t build the sample data. Try again.");
+      setError(e instanceof Error ? e.message : t("welcome.sampleFailed"));
       haptic.error();
     }
   };
@@ -78,7 +80,7 @@ function Welcome({ onConnect }: { onConnect: () => void }) {
       wordmark={false}
       footer={
         building ? (
-          <ProgressFooter progress={progress} fallback="Building sample data" />
+          <ProgressFooter progress={progress} fallback={t("progress.buildingSample")} />
         ) : (
           <>
             {!!error && (
@@ -87,10 +89,10 @@ function Welcome({ onConnect }: { onConnect: () => void }) {
               </Text>
             )}
             <ConnectButton onPress={onConnect} />
-            <TextButton label="Explore with sample data" onPress={explore} />
+            <TextButton label={t("welcome.exploreSample")} onPress={explore} />
             <View className="mt-2 flex-row items-center justify-center gap-1.5">
               <Icon icon={Lock} size={13} tone="muted-foreground" strokeWidth={2} />
-              <Text className="text-[13px] leading-[18px] text-muted-foreground">Stays on this phone. No account, no server.</Text>
+              <Text className="text-[13px] leading-[18px] text-muted-foreground">{t("welcome.private")}</Text>
             </View>
           </>
         )
@@ -100,9 +102,9 @@ function Welcome({ onConnect }: { onConnect: () => void }) {
         <HeartbeatMark />
         <View className="items-center gap-2">
           <Text accessibilityRole="header" className="text-center text-[24px] font-bold leading-[30px] tracking-[-0.02em]">
-            Your Fitbit, scored every morning
+            {t("welcome.title")}
           </Text>
-          <Text className="max-w-[300px] text-center text-[15px] leading-[22px] text-foreground-secondary">Sleep, Recovery and Strain from Health Connect, worked out on this phone.</Text>
+          <Text className="max-w-[300px] text-center text-[15px] leading-[22px] text-foreground-secondary">{t("welcome.subtitle")}</Text>
         </View>
       </View>
     </Frame>
@@ -110,12 +112,13 @@ function Welcome({ onConnect }: { onConnect: () => void }) {
 }
 
 function Profile({ onSaved }: { onSaved: () => void }) {
+  const { t } = useTranslation("onboarding");
   return (
     <Frame>
       <Text accessibilityRole="header" className="text-[28px] font-bold leading-[34px] tracking-[-0.02em]">
-        Two things Health Connect doesn’t share
+        {t("profile.title")}
       </Text>
-      <Text className="mb-7 mt-2 text-base leading-6 text-foreground-secondary">Pulse compares your heart rate with people of your age, using the reference ranges you choose. You can change these later in Settings.</Text>
+      <Text className="mb-7 mt-2 text-base leading-6 text-foreground-secondary">{t("profile.intro")}</Text>
       <ProfileForm
         onboarding
         defaults={{ birthDate: "", sex: null, maxHr: null, heightCm: null, timeZone: null }}
@@ -126,7 +129,7 @@ function Profile({ onSaved }: { onSaved: () => void }) {
         }}
         footer={({ pending, submit }) => (
           <View className="mt-4">
-            <SaveButton pending={pending} label="Save and continue" onPress={submit} />
+            <SaveButton pending={pending} label={t("profile.saveContinue")} onPress={submit} />
           </View>
         )}
       />
@@ -136,6 +139,7 @@ function Profile({ onSaved }: { onSaved: () => void }) {
 
 /** The first import (or the sample's build), with its progress; the tabs open when it ends. */
 function Importing({ sample }: { sample: boolean }) {
+  const { t } = useTranslation("onboarding");
   const progress = useApp((s) => s.progress);
   const error = useApp((s) => (s.status === "error" ? s.error : null));
   return (
@@ -146,19 +150,19 @@ function Importing({ sample }: { sample: boolean }) {
             <Text accessibilityRole="alert" className="mb-2 text-center text-[13px] font-medium leading-[18px] text-recovery-red-text">
               {error}
             </Text>
-            <ConnectButton label="Try again" onPress={() => void refresh()} />
+            <ConnectButton label={t("actions.tryAgain", { ns: "common" })} onPress={() => void refresh()} />
           </>
         ) : (
-          <ProgressFooter progress={progress} fallback={sample ? "Building sample data" : "Importing from Health Connect"} />
+          <ProgressFooter progress={progress} fallback={sample ? t("progress.buildingSample") : t("progress.importing")} />
         )
       }
     >
       <View className="items-center gap-2">
         <Text accessibilityRole="header" className="text-center text-[22px] font-semibold leading-7 tracking-[-0.01em]">
-          {error ? "The import stopped" : sample ? "Building your sample data" : "Importing your data"}
+          {error ? t("importing.stopped") : sample ? t("importing.titleSample") : t("importing.title")}
         </Text>
         <Text className="max-w-[300px] text-center text-[15px] leading-[22px] text-foreground-secondary">
-          {sample ? "Half a year of a demo person’s days, scored on this phone." : "Up to 180 days from Health Connect, scored on this phone. The first import takes a few minutes."}
+          {sample ? t("importing.bodySample") : t("importing.body")}
         </Text>
       </View>
       {!sample && !error && <BackgroundOffer />}
@@ -172,6 +176,7 @@ function Importing({ sample }: { sample: boolean }) {
  * sync that finishes"), and their switch is in the app's own settings, so the button opens those when it is not set.
  */
 function BackgroundOffer() {
+  const { t } = useTranslation("onboarding");
   const [on, setOn] = useState(false);
   const [unrestricted, setUnrestricted] = useState<boolean | null>(null);
   useEffect(() => {
@@ -191,17 +196,17 @@ function BackgroundOffer() {
   const done = on && unrestricted !== false;
   return (
     <Card className="mt-8 gap-3 p-4">
-      <Text className="text-[15px] font-semibold leading-5">{done ? "Background sync is on" : "Keep Pulse up to date"}</Text>
+      <Text className="text-[15px] font-semibold leading-5">{done ? t("background.titleOn") : t("background.title")}</Text>
       <Text className="text-[13px] leading-[18px] text-foreground-secondary">
         {done
-          ? "Pulse syncs while it’s closed. Change it in Settings › Notifications & background."
+          ? t("background.bodyOn")
           : on
-            ? "One more step: under Battery, choose Allow background activity or Unrestricted. Many phones pause Pulse in the background otherwise."
-            : "Sync while Pulse is closed. Many phones also need Pulse allowed to run in the background; the button opens that setting."}
+            ? t("background.bodyBattery")
+            : t("background.body")}
       </Text>
       {!done && (
         <Button variant="outline" onPress={() => void (on ? Linking.openSettings() : turnOn())}>
-          {on ? "Open battery settings" : "Turn on background sync"}
+          {on ? t("background.openBattery") : t("background.turnOn")}
         </Button>
       )}
     </Card>

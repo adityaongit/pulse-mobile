@@ -2,6 +2,7 @@
 // offset, or tap. The list opens in the flow under the field, so a sheet's scroll area never clips it. Differences
 // forced by touch: there is no hover or arrow-key highlight (the row last pressed is the active one), and the list closes
 // when a zone is picked or the chevron is tapped, not when the field loses focus (the press on a row would be lost).
+import { useTranslation } from "react-i18next";
 import { useMemo, useRef, useState, type RefObject } from "react";
 import { Pressable, ScrollView, View, type TextInput } from "react-native";
 import { Check, ChevronDown, Search } from "lucide-react-native";
@@ -17,6 +18,7 @@ const ROW = 48;
 const LIST = ROW * 3 + 8;
 
 export function TimeZonePicker({ value, onChange, invalid, inputRef, compact }: { value: string; onChange: (zone: string) => void; invalid?: boolean; inputRef?: RefObject<TextInput | null>; /** The Edit profile sheet's smaller field. */ compact?: boolean }) {
+  const { t } = useTranslation("onboarding");
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [active, setActive] = useState(0);
@@ -48,12 +50,12 @@ export function TimeZonePicker({ value, onChange, invalid, inputRef, compact }: 
       <TextField
         variant={compact ? "compact" : "field"}
         ref={input}
-        accessibilityLabel="Time zone"
+        accessibilityLabel={t("form.timeZone")}
         accessibilityState={{ expanded: open }}
         invalid={invalid}
         autoCapitalize="none"
         spellCheck={false}
-        placeholder={open || !value ? "Search city or GMT offset" : describeZone(value)}
+        placeholder={open || !value ? t("zone.search") : describeZone(value)}
         value={open ? query : value ? describeZone(value) : ""}
         onFocus={() => !open && show(true)}
         onChangeText={(t) => {
@@ -67,7 +69,7 @@ export function TimeZonePicker({ value, onChange, invalid, inputRef, compact }: 
           </View>
         }
         right={
-          <Pressable accessibilityRole="button" accessibilityLabel={open ? "Close time zones" : "Show time zones"} onPress={() => {
+          <Pressable accessibilityRole="button" accessibilityLabel={open ? t("zone.close") : t("zone.show")} onPress={() => {
               haptic.tap();
               show(!open);
             }} className={cn(compact ? "h-11" : "h-13", "w-12 items-center justify-center rounded-r-xl")}>
@@ -78,9 +80,9 @@ export function TimeZonePicker({ value, onChange, invalid, inputRef, compact }: 
         }
       />
       {open && (
-        <View accessibilityLabel="Time zones" className="overflow-hidden rounded-xl bg-field p-1" style={{ height: matches.length ? Math.min(LIST, matches.length * ROW + 8) : undefined }}>
+        <View accessibilityLabel={t("zone.list")} className="overflow-hidden rounded-xl bg-field p-1" style={{ height: matches.length ? Math.min(LIST, matches.length * ROW + 8) : undefined }}>
           {matches.length === 0 ? (
-            <Text className="px-3 py-3 text-[15px] leading-5 text-muted-foreground">No time zone matches “{query}”.</Text>
+            <Text className="px-3 py-3 text-[15px] leading-5 text-muted-foreground">{t("zone.noMatch", { query })}</Text>
           ) : (
             // A plain ScrollView, not a FlatList: a virtualized list may not nest inside the form's scroll view. About 420
             // rows at most, drawn only while the list is open. ponytail: move the list into its own sheet if opening it hitches.
