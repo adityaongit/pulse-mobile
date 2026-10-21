@@ -15,7 +15,7 @@ const UNIT_WORDS = new Set(["bpm", "ms", "rpm", "km", "mi", "kcal", "min", "kg",
 /** Cognates and names (Fitness, Total, REM) are the same in two languages; a sentence of four words is not. */
 const SENTENCE = 4;
 /** Keys whose English uses a glossary word in another sense ("Coach" the verb; the training-status words (Recovery, Strained); "Recovery time" is a duration, stripped below), so the translation rightly drops it. */
-const GLOSSARY_EXEMPT = (key: string) => key === "guidance.warmingBody" || /^(trainingStatus|trainingInfo|trainingEffect|statusWord)\./.test(key);
+const GLOSSARY_EXEMPT = (key: string) => key === "guidance.warmingBody" || /^(trainingStatus|trainingInfo|trainingEffect|statusWord|benefitWord)\./.test(key);
 const PLURAL = /_(zero|one|two|few|many|other)$/;
 
 type Flat = Map<string, string>;
