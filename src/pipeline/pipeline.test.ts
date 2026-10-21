@@ -94,6 +94,30 @@ describe("runPipeline on the 180-day seed", () => {
     expect(factor.value).toBeCloseTo(counts.reduce((a, b) => a + b, 0) / counts.length, 1);
   });
 
+  it("feeds Pulse Age Fitbit's VO2 max, and Pulse's own estimate only when the 28 days have none", async () => {
+    const sunday = allDays.filter((d) => new Date(`${d}T00:00:00Z`).getUTCDay() === 0).at(-1)!;
+    const measured = col(sunday, "healthspan");
+    if (measured.reason !== null) throw new Error(`no Pulse Age on ${sunday}: ${measured.reason}`);
+    expect(measured.vo2maxSource).not.toBe("estimate");
+
+    // The same history with every Fitbit VO2 max removed.
+    const bare = await seeded();
+    await bare.upsertMetrics((await bare.allMetrics()).map((m) => ({ ...m, vo2maxRun: null, vo2maxDaily: null })));
+    await run(bare);
+    const bareRows = new Map((await allRows(bare)).map((r) => [r.day, r]));
+    const age = bareRows.get(sunday)!.healthspan!;
+    if (age.reason !== null) throw new Error(`no Pulse Age on ${sunday}: ${age.reason}`);
+    expect(age.vo2maxSource).toBe("estimate");
+    const window = allDays.filter((d) => d > dayAt(allDays.indexOf(sunday) - 28) && d <= sunday);
+    const estimates = window.flatMap((d) => {
+      const v = bareRows.get(d)?.healthspan?.fitnessEstimate?.vo2max;
+      return v == null ? [] : [v];
+    });
+    expect(estimates.length).toBeGreaterThan(0);
+    const factor = age.contributions.find((c) => c.key === "vo2max")!;
+    expect(factor.value).toBeCloseTo(estimates.reduce((a, b) => a + b, 0) / estimates.length, 1);
+  });
+
   it("resolves the demo profile's max HR to Tanaka's 183", () => {
     expect(resolveMaxHr({ ...DEMO_PROFILE }, TODAY)).toBe(183);
     expect(col(dayAt(120), "strain").maxHr).toBe(183);
@@ -153,7 +177,8 @@ describe("parity with the web app", () => {
     // 27: workouts' engine zones and the reports' training balance on Training Load. Version 26's value was "56420b3a0a69eda6".
     // 28: Pulse Age's steps are the day's count. Version 27's value was "bfc30f8718e6d5cb".
     // Version 29: Fitbit's HRV and resting HR are every vital's source of truth. Version 28's value was "32eeb5d9e23357a3".
-    "daily_scores.scoring_version": "22839852f7ee4661",
+    // 30: Pulse Age's VO2 max falls back to the estimate (the seed has Fitbit's, so only the version moves). Version 29's value was "22839852f7ee4661".
+    "daily_scores.scoring_version": "25a36d10947fc464",
     // Version 15: Activity Strain is the session's Banister TRIMP plus its muscular load through 5.05 · ln(1 + 0.09 · T)
     // (a seeded 45-minute strength session goes from 8.2 to 9.9 on 0–21), each activity stores its `cardioTrimp` and
     // `muscularTrimp`, and its zone seconds count Zone 1 from 40 % of the reserve. Version 14's value was "cb2d75373aaf4d20".

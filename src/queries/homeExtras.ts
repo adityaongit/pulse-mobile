@@ -8,7 +8,7 @@ import { EXTRA_METRICS, type ExtraKey, type ExtraMetric } from "@/lib/extraMetri
 import type { ReasonCode } from "@/lib/reasons";
 import { addDays } from "@/lib/time";
 import { metricHref, trendHref } from "@/lib/url";
-import { activityKind, type DayRow, exercisesBetween, finite, hrReason, loadDays, maybe, priorStats, recoveryMetric, sleepMetric, dayStrainOf, vitalReason } from "./common";
+import { activityKind, type DayRow, exercisesBetween, finite, hrReason, loadDays, maybe, priorStats, recoveryMetric, sleepMetric, dayStrainOf, vitalReason, vo2Of } from "./common";
 import type { QueryCtx } from "./ctx";
 import { getStress } from "./health";
 import { worn, zoneSum } from "./trendView";
@@ -104,7 +104,8 @@ function statSpecs(row: DayRow | undefined, isToday: boolean, rows: Map<string, 
     zones45: scored(weekly(rows, zoneSum(3, 5)), dailyReason, "min", "up", trendHref("zones45")),
     zones_all: scored(weekly(rows, zoneSum(0, 5)), dailyReason, "min", "up", "/strain"),
     strength: scored(weekly(rows, strengthDay), dailyReason, "min", "up", trendHref("strength")),
-    vo2max: scored((r) => (r.fitness?.reason === null ? r.fitness.vo2max : null), "no_data", "ml/kg/min", "up", "/health/fitness", "decimal1"),
+    // Fitbit's VO2 max, else Pulse's estimate (provisional), as the Fitness page shows it.
+    vo2max: spec((r) => vo2Of(r)?.value, maybe(row && vo2Of(row)?.value, "no_data", !!(row && vo2Of(row)?.estimate)), "ml/kg/min", "up", "/health/fitness", "decimal1"),
     lean_mass: scored(lean, "no_data", "kg", "neutral", metricHref("weight"), "decimal1"),
   } satisfies Record<ScoredKey, StatSpec>);
   for (const b of BODY_METRICS) {

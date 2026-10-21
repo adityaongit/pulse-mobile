@@ -77,7 +77,7 @@ export const newEngineFold = () => ({
   ebDays: 0,
   sleepS: [] as number[],
   /** Pulse Age: the last 28 days' inputs (with their VO2 max and lean %), and the week's result as of its Monday. */
-  ageDays: [] as { day: PulseAgeDay; vo2: number | null; vo2Run: boolean; lean: number | null }[],
+  ageDays: [] as { day: PulseAgeDay; vo2: number | null; vo2Run: boolean; vo2Est: number | null; lean: number | null }[],
   ageWeek: null as { day: string; row: HealthspanRow } | null,
 });
 
@@ -564,20 +564,23 @@ const isSunday = (day: string) => new Date(`${day}T00:00:00Z`).getUTCDay() === 0
  * Pulse Age for day D. The study computes the week starting Monday W from the 28 days before W; the screens show a
  * week on its Sunday, so the value is stored on that Sunday, from the 28 days ending with it (the same days), with the
  * age at W, and every day after carries it until the next Sunday. Before the first Sunday, each day shows what its own
- * 28 days give. Fitbit's VO2 max and body-fat readings feed VO2 max and lean %. `halo`: halo's row, for the Fitness Age
- * estimate and body composition it also carries.
+ * 28 days give. Fitbit's VO2 max and body-fat readings feed VO2 max and lean %; with no Fitbit VO2 max in the 28 days,
+ * Pulse's own daily estimate stands in. `halo`: halo's row, for the Fitness Age estimate and body composition it also carries.
  */
 export function scoreEnginePulseAge(f: Fold, d: Day, s: EngineSleep, halo: HealthspanRow, opts: PipelineOptions, data: Data): HealthspanRow {
   const e = f.engine;
-  foldPulseAgeDay(f, d, s, data);
   const fitnessEstimate = halo.fitnessEstimate;
+  foldPulseAgeDay(f, d, s, data, fitnessEstimate?.vo2max ?? null);
   if (isSunday(d.day) || !e.ageWeek) {
     const age = fractionalYears(opts.profile.birthDate, addDays(d.day, 1));
+    // Fitbit's readings are the source of truth; the estimate counts only when the 28 days have none.
+    const measured = e.ageDays.flatMap((x) => (x.vo2 == null ? [] : [x.vo2]));
+    const vo2 = measured.length ? measured : e.ageDays.flatMap((x) => (x.vo2Est == null ? [] : [x.vo2Est]));
     const r = pulseAge({
       age,
       sex: opts.profile.sex,
       days: e.ageDays.map((x) => x.day),
-      vo2: e.ageDays.flatMap((x) => (x.vo2 == null ? [] : [x.vo2])),
+      vo2,
       leanPct: e.ageDays.flatMap((x) => (x.lean == null ? [] : [x.lean])),
     });
     const refs = references(age, opts.profile.sex);
@@ -596,7 +599,7 @@ export function scoreEnginePulseAge(f: Fold, d: Day, s: EngineSleep, halo: Healt
           contributions: r.factors.flatMap((x) =>
             x.value == null || x.years == null ? [] : [{ key: x.key, value: r2(x.value), reference: r2(refs[x.key]), years: r2(x.years) }],
           ),
-          vo2maxSource: e.ageDays.some((x) => x.vo2Run) ? "run" : e.ageDays.some((x) => x.vo2 != null) ? "daily" : null,
+          vo2maxSource: e.ageDays.some((x) => x.vo2Run) ? "run" : measured.length ? "daily" : vo2.length ? "estimate" : null,
           bodyComposition: halo.reason === null ? halo.bodyComposition : null,
           dataDays,
           termsUsed: r.present,
@@ -612,7 +615,7 @@ export function scoreEnginePulseAge(f: Fold, d: Day, s: EngineSleep, halo: Healt
 }
 
 /** Adds day D's Pulse Age inputs to the 28-day window. */
-function foldPulseAgeDay(f: Fold, d: Day, s: EngineSleep, data: Data) {
+function foldPulseAgeDay(f: Fold, d: Day, s: EngineSleep, data: Data, vo2Est: number | null) {
   // Steps, zone and strength minutes on every day with data (heart rate or steps), as the study's daily metrics. Steps
   // are the day's count (reference study, `biological-age-muscular.md` § factors: HealthMetric `steps`), the total the
   // Steps screen shows, not Strain's awake steps, which leave out workouts and sleep.
@@ -633,6 +636,7 @@ function foldPulseAgeDay(f: Fold, d: Day, s: EngineSleep, data: Data) {
       },
       vo2: d.dm?.vo2maxRun ?? d.dm?.vo2maxDaily ?? null,
       vo2Run: d.dm?.vo2maxRun != null,
+      vo2Est,
       lean: bodyFat == null ? null : 100 - bodyFat,
     },
     28,

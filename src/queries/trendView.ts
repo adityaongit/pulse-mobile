@@ -19,7 +19,7 @@ import {
   type TrendViewRange,
 } from "@/lib/trend";
 import { addDays, localMinutes } from "@/lib/time";
-import { activityKind, exercisesBetween, finite, firstDay, loadDays, meanSd, todayOf, dayStrainOf, type DayRow, type ExerciseRow, type QueryCtx } from "./common";
+import { activityKind, exercisesBetween, finite, firstDay, loadDays, meanSd, todayOf, dayStrainOf, type DayRow, type ExerciseRow, type QueryCtx, vo2Of } from "./common";
 
 // The Trend View `/trend/[key]` (spec §11 R29): one metric over a W / M / 6M window that steps back through time,
 // against the window before it, with a verdict, a breakdown and an explainer.
@@ -276,7 +276,7 @@ export const TREND_VIEW = {
   },
   vo2max: {
     group: "health", label: "VO2 Max", short: "VO2 max", unit: "ml/kg/min", format: "decimal1", direction: "up", colorBy: "single", chart: "line", agg: "daily",
-    pick: (r) => (r.fitness?.reason === null ? r.fitness.vo2max : null), typical: true,
+    pick: (r) => vo2Of(r)?.value, typical: true,
     about: { title: "What is VO2 Max?", body: [
       "VO2 max is the most oxygen your body can use during hard exercise, in millilitres per kilogram of body weight per minute. Fitbit estimates it from your runs, or from your resting heart rate when you don't run.",
       "It is one of the strongest signs of long-term health: higher fitness goes with a longer life. Steady aerobic training raises it over weeks and months.",

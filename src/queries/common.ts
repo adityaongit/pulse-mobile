@@ -83,6 +83,17 @@ export type DayRow = {
   extra: Partial<Record<ExtraKey, number>>;
 };
 
+/**
+ * The day's VO2 max, the one every screen shows: Fitbit's (the fitness row: the latest run in 90 days, else the latest
+ * daily value), and only without one, Pulse's own estimate from resting HR and activity.
+ */
+export const vo2Of = (r: DayRow): { value: number; estimate: boolean } | null =>
+  r.fitness?.reason === null
+    ? { value: r.fitness.vo2max, estimate: false }
+    : r.healthspan?.fitnessEstimate
+      ? { value: r.healthspan.fitnessEstimate.vo2max, estimate: true }
+      : null;
+
 /** Every day in [from, to], one Store read per table (in parallel); days without rows come back empty. */
 export async function loadDays(ctx: QueryCtx, from: string, to: string): Promise<Map<string, DayRow>> {
   const { store } = ctx;
