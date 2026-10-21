@@ -3,6 +3,7 @@
 // (X, Back, swipe down, Save) leaves that screen as it was (spec §11 UX2). There is no offline queue (the phone
 // writes to its own database, so a save cannot be "offline") and Select Behaviors is not a dialog (the pencil opens
 // Settings' behaviours screen).
+import { useTranslation } from "react-i18next";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { TextInput, View } from "react-native";
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from "react-native-reanimated";
@@ -70,6 +71,7 @@ function Answer({ kind, on, label, onPress }: { kind: "no" | "yes"; on: boolean;
 
 /** /checkin?d=2026-10-02: the sheet the round check-in button opens. `d` is the screen's day (today when absent). */
 export function CheckInPage() {
+  const { t: tr } = useTranslation("journal");
   const { today } = useShellCalendar();
   const { d: raw } = useLocalSearchParams<{ d?: string }>();
   const { d: urlDay } = parseDay(raw, today);
@@ -205,13 +207,13 @@ export function CheckInPage() {
   const add = async () => {
     const name = label.trim();
     if (!name) return;
-    if (name.length > 32) return invalid("Use 32 characters or fewer.");
+    if (name.length > 32) return invalid(tr("checkIn.errLength"));
     const key = name.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
-    if (tags.some((t) => t.tag === key || t.label.toLowerCase() === name.toLowerCase())) return invalid("That behaviour already exists.");
+    if (tags.some((t) => t.tag === key || t.label.toLowerCase() === name.toLowerCase())) return invalid(tr("checkIn.errExists"));
     setAdding(true);
     const r = await addCustomTag(actionCtx(), { label: name }).catch(() => ({ ok: false as const, error: "network" }));
     setAdding(false);
-    if (!r.ok) return invalid(r.error.startsWith("Tag already exists") ? "That behaviour already exists." : r.error.startsWith("Too many") ? "You’ve reached the behaviour limit." : "Couldn’t add it. Try again.");
+    if (!r.ok) return invalid(r.error.startsWith("Tag already exists") ? tr("checkIn.errExists") : r.error.startsWith("Too many") ? tr("checkIn.errLimit") : tr("checkIn.errAdd"));
     setAddError(null);
     setLabel("");
     // A new behaviour starts as "Yes": you add one because you just did it. It joins the list until the next load.
@@ -229,14 +231,14 @@ export function CheckInPage() {
   return (
     <>
       <TaskPage
-        title="Journal"
+        title={tr("checkIn.title")}
         glow
         onClose={close}
         action={
           <Press
             activeBg="bg-fill-hover"
             accessibilityRole="button"
-            accessibilityLabel="Select behaviours"
+            accessibilityLabel={tr("checkIn.selectBehaviours")}
             onPress={() => {
               haptic.tap();
               picked.current = true;
@@ -247,25 +249,25 @@ export function CheckInPage() {
             <Pencil size={22} color={c.foreground} strokeWidth={1.75} />
           </Press>
         }
-        done={done ? { title: "Saved", body: "Have a great day!", onDone: finish } : null}
+        done={done ? { title: tr("checkIn.saved"), body: tr("checkIn.savedBody"), onDone: finish } : null}
         footer={
           <>
-            {saveError && <FormAlert>Couldn’t save. Check your connection and try again.</FormAlert>}
+            {saveError && <FormAlert>{tr("checkIn.saveFailed")}</FormAlert>}
             {/* Nothing answered, nothing to save: the sheet can open by itself (Log yesterday) right where the Journal tab was
                 tapped, and a second tap must not file an empty check-in. */}
             <Button onPress={save} disabled={saving || !loaded || !dirty}>
-              {saving ? "Saving…" : "Save journal"}
+              {saving ? tr("checkIn.saving") : tr("checkIn.save")}
             </Button>
           </>
         }
       >
         {/* ‹ TODAY ›: a day back or forward; never past today (journal-01). */}
-        <View accessibilityRole="toolbar" accessibilityLabel="Journal day" className="flex-row items-center justify-center gap-2">
-          <Button variant="ghost" size="icon-touch" accessibilityLabel={`Previous day, ${formatDay(prev, DAY.long)}`} onPress={() => go(prev)}>
+        <View accessibilityRole="toolbar" accessibilityLabel={tr("checkIn.dayToolbar")} className="flex-row items-center justify-center gap-2">
+          <Button variant="ghost" size="icon-touch" accessibilityLabel={tr("checkIn.previousDay", { day: formatDay(prev, DAY.long) })} onPress={() => go(prev)}>
             <ChevronLeft size={20} color={c.foreground} strokeWidth={2} />
           </Button>
           <Text className="min-w-28 text-center text-xs font-bold uppercase leading-4 tracking-[0.1em]">{dayLabel(day, today)}</Text>
-          <Button variant="ghost" size="icon-touch" accessibilityLabel={`Next day, ${formatDay(next, DAY.long)}`} disabled={next > today} onPress={() => go(next)}>
+          <Button variant="ghost" size="icon-touch" accessibilityLabel={tr("checkIn.nextDay", { day: formatDay(next, DAY.long) })} disabled={next > today} onPress={() => go(next)}>
             <ChevronRight size={20} color={c.foreground} strokeWidth={2} />
           </Button>
         </View>
@@ -284,15 +286,15 @@ export function CheckInPage() {
             <View className="mt-6">
               <FormAlert>
                 <View className="flex-row items-center justify-between gap-3">
-                  <Text className="shrink text-sm leading-5 text-recovery-red-text">Couldn’t load your journal.</Text>
+                  <Text className="shrink text-sm leading-5 text-recovery-red-text">{tr("checkIn.loadFailed")}</Text>
                   <Button variant="secondary" onPress={() => load(day)}>
-                    Try again
+                    {tr("actions.tryAgain", { ns: "common" })}
                   </Button>
                 </View>
               </FormAlert>
             </View>
           ) : (
-            <View accessibilityRole="progressbar" accessibilityLabel="Loading" className="items-center py-16">
+            <View accessibilityRole="progressbar" accessibilityLabel={tr("checkIn.loading")} className="items-center py-16">
               <Spinner />
             </View>
           ))}
@@ -313,8 +315,8 @@ export function CheckInPage() {
                         <View className="min-h-18 flex-row items-center gap-3 py-3">
                           <Text className="min-w-0 flex-1 text-[17px] leading-6">{t.question}</Text>
                           <View accessibilityRole="radiogroup" accessibilityLabel={t.question} className="flex-row gap-2">
-                            <Answer kind="no" label="No" on={v === 0} onPress={() => answer(t.tag, v === 0 ? undefined : 0)} />
-                            <Answer kind="yes" label="Yes" on={v !== undefined && v > 0} onPress={() => answer(t.tag, v !== undefined && v > 0 ? undefined : 1)} />
+                            <Answer kind="no" label={tr("checkIn.no")} on={v === 0} onPress={() => answer(t.tag, v === 0 ? undefined : 0)} />
+                            <Answer kind="yes" label={tr("checkIn.yes")} on={v !== undefined && v > 0} onPress={() => answer(t.tag, v !== undefined && v > 0 ? undefined : 1)} />
                           </View>
                         </View>
                         {/* journal-12: a "yes" opens its follow-up; "--" until the slider moves. */}
@@ -325,7 +327,7 @@ export function CheckInPage() {
                               <Text className="font-numeric text-[15px] font-semibold leading-[22px] tabular-nums">{d === undefined ? MISSING : followUpText(f, d)}</Text>
                             </View>
                             <View className="px-2">
-                              <Slider label={f.question} valueText={d === undefined ? "Not set" : followUpText(f, d)} min={f.min} max={f.max} step={f.step} value={d ?? f.min} onChange={(x) => setDetails((s) => ({ ...s, [t.tag]: x }))} />
+                              <Slider label={f.question} valueText={d === undefined ? tr("checkIn.notSet") : followUpText(f, d)} min={f.min} max={f.max} step={f.step} value={d ?? f.min} onChange={(x) => setDetails((s) => ({ ...s, [t.tag]: x }))} />
                             </View>
                           </View>
                         )}
@@ -335,11 +337,11 @@ export function CheckInPage() {
                 </View>
                 {g.key === "custom" && (
                   <View className="mt-4 gap-2">
-                    <Text className="text-[15px] font-medium leading-[22px]">Add a behaviour</Text>
+                    <Text className="text-[15px] font-medium leading-[22px]">{tr("checkIn.addTitle")}</Text>
                     <View className="flex-row gap-2">
                       <Input
                         ref={input}
-                        accessibilityLabel="Add a behaviour"
+                        accessibilityLabel={tr("checkIn.addTitle")}
                         returnKeyType="done"
                         value={label}
                         onChangeText={(t) => {
@@ -347,13 +349,13 @@ export function CheckInPage() {
                           setAddError(null);
                         }}
                         onSubmitEditing={() => void add()}
-                        placeholder="e.g. Cold shower…"
+                        placeholder={tr("checkIn.addPlaceholder")}
                         maxLength={32}
                         className="flex-1 text-base"
                       />
                       {/* "Add" fits beside the field on a phone; the name says what it adds (label in name). */}
-                      <Button variant="secondary" disabled={adding || !label.trim()} accessibilityLabel={adding ? undefined : "Add behaviour"} onPress={() => void add()}>
-                        {adding ? "Adding…" : "Add"}
+                      <Button variant="secondary" disabled={adding || !label.trim()} accessibilityLabel={adding ? undefined : tr("checkIn.addLabel")} onPress={() => void add()}>
+                        {adding ? tr("checkIn.adding") : tr("checkIn.add")}
                       </Button>
                     </View>
                     {!!addError && (
@@ -368,12 +370,12 @@ export function CheckInPage() {
           })}
         {DETAILS && loaded && (
           <View className="mt-7">
-            <TaskSection>Notes</TaskSection>
+            <TaskSection>{tr("checkIn.notes")}</TaskSection>
             <Input
-              accessibilityLabel="Notes"
+              accessibilityLabel={tr("checkIn.notes")}
               value={note}
               onChangeText={setNote}
-              placeholder="Add a note…"
+              placeholder={tr("checkIn.notePlaceholder")}
               maxLength={2000}
               multiline
               textAlignVertical="top"

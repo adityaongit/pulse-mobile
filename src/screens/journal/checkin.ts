@@ -1,5 +1,6 @@
 // The check-in's pure logic, from pulse's (app)/journal/CheckIn.tsx: which answers Save writes, and the heading.
 // Tested in Node (checkin.test.ts).
+import { i18n } from "@/i18n/config";
 import { formatDay } from "@/lib/format";
 
 export type Values = Record<string, number | undefined>;
@@ -17,4 +18,6 @@ export function changedEntries(values: Values, details: Values, saved: Record<st
 }
 
 export const heading = (day: string, today: string) =>
-  day === today ? `What’s happening today, ${formatDay(day, { month: "long", day: "numeric" })}?` : `What happened on ${formatDay(day, { weekday: "long", month: "long", day: "numeric" })}?`;
+  day === today
+    ? i18n.t("journal:checkIn.headingToday", { date: formatDay(day, { month: "long", day: "numeric" }) })
+    : i18n.t("journal:checkIn.headingPast", { date: formatDay(day, { weekday: "long", month: "long", day: "numeric" }) });

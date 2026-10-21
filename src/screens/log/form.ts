@@ -1,5 +1,6 @@
 // The log sheets' form state and its translation to the log action's input: the pure half of pulse's
 // (app)/journal/Log.tsx (EMPTY, toInput, num, wallNow), unchanged, so it is tested in Node (form.test.ts).
+import { i18n } from "@/i18n/config";
 import { unitWord } from "@/lib/format";
 import { quantity } from "@/lib/units";
 import type { FoodItemInput, LogInput } from "@/actions/log";
@@ -26,9 +27,9 @@ export const EMPTY_FOOD: FoodForm = { name: "", portion: "", kcal: "", protein: 
 /** One food's fields as the action's item (portion and fiber only when given), or the first problem to show. */
 export function foodItemOf(f: FoodForm): FoodItemInput | string {
   const kcal = num(f.kcal);
-  if (kcal == null || Number.isNaN(kcal) || !Number.isInteger(kcal)) return "Enter calories as a whole number.";
+  if (kcal == null || Number.isNaN(kcal) || !Number.isInteger(kcal)) return i18n.t("journal:form.calories");
   const [protein, carbs, fat, fiber] = [f.protein, f.carbs, f.fat, f.fiber].map(num);
-  if ([protein, carbs, fat, fiber].some((g) => Number.isNaN(g))) return "Macros are grams, as numbers.";
+  if ([protein, carbs, fat, fiber].some((g) => Number.isNaN(g))) return i18n.t("journal:form.macros");
   const portion = f.portion.trim();
   return { name: f.name, ...(portion && { portion }), kcal, protein, carbs, fat, ...(fiber !== null && { fiber }) };
 }
@@ -70,13 +71,13 @@ export function toInput(kind: LogKind, f: Form, at: string): LogInput | string {
       // Typed in the person's units (a whole number of ml or fl oz), kept as whole millilitres.
       const typed = num(s("ml"));
       const q = quantity("ml");
-      return typed && Number.isInteger(typed) ? { kind, ml: Math.round(q.stored(typed)), at } : `Enter the amount in ${unitWord(q.unit)}.`;
+      return typed && Number.isInteger(typed) ? { kind, ml: Math.round(q.stored(typed)), at } : i18n.t("journal:form.amount", { unit: unitWord(q.unit) });
     }
     case "food": {
       const [kcal, protein, carbs, fat] = ["kcal", "protein", "carbs", "fat"].map((k) => num(s(k)));
-      if (!s("meal")) return "Choose a meal.";
-      if (kcal == null || Number.isNaN(kcal) || !Number.isInteger(kcal)) return "Enter calories as a whole number.";
-      if ([protein, carbs, fat].some((g) => Number.isNaN(g))) return "Macros are grams, as numbers.";
+      if (!s("meal")) return i18n.t("journal:form.meal");
+      if (kcal == null || Number.isNaN(kcal) || !Number.isInteger(kcal)) return i18n.t("journal:form.calories");
+      if ([protein, carbs, fat].some((g) => Number.isNaN(g))) return i18n.t("journal:form.macros");
       return { kind, name: s("name"), meal: s("meal") as never, kcal, protein, carbs, fat, at };
     }
     case "weight": {
@@ -84,23 +85,23 @@ export function toInput(kind: LogKind, f: Form, at: string): LogInput | string {
       const typed = num(s("kg"));
       const fatPct = num(s("fat"));
       const q = quantity("kg");
-      if (typed == null || Number.isNaN(typed)) return `Enter your weight in ${unitWord(q.unit)}.`;
-      if (Number.isNaN(fatPct)) return "Body fat is a percentage, as a number.";
+      if (typed == null || Number.isNaN(typed)) return i18n.t("journal:form.weight", { unit: unitWord(q.unit) });
+      if (Number.isNaN(fatPct)) return i18n.t("journal:form.bodyFat");
       return { kind, kg: q.stored(typed), fatPct, at };
     }
     case "spo2": {
       const pct = num(s("pct"));
-      return pct == null || Number.isNaN(pct) ? "Enter blood oxygen as a percentage, e.g. 95." : { kind, pct, at };
+      return pct == null || Number.isNaN(pct) ? i18n.t("journal:form.oxygen") : { kind, pct, at };
     }
     case "mood":
-      return a("moods").length ? { kind, moods: a("moods") as never, valence: (s("valence") || null) as never, at } : "Choose how you feel.";
+      return a("moods").length ? { kind, moods: a("moods") as never, valence: (s("valence") || null) as never, at } : i18n.t("journal:form.mood");
     case "symptoms":
-      return a("symptoms").length ? { kind, symptoms: a("symptoms") as never, at } : "Choose a symptom.";
+      return a("symptoms").length ? { kind, symptoms: a("symptoms") as never, at } : i18n.t("journal:form.symptom");
     case "period":
-      if (!s("start") || !s("end")) return "Choose the first and last day.";
+      if (!s("start") || !s("end")) return i18n.t("journal:form.period");
       return { kind, start: s("start"), end: s("end"), flow: (s("flow") || null) as never };
     case "ovulation":
-      return s("result") ? { kind, result: s("result") as never, at } : "Choose the result.";
+      return s("result") ? { kind, result: s("result") as never, at } : i18n.t("journal:form.result");
   }
 }
 

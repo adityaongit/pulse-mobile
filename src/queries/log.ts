@@ -5,6 +5,7 @@
 // to Health Connect (it asks for no write permission), so every entry is kept on the phone only, in the Store's
 // logged entries, exactly as the web's demo mode keeps them: every type's access is "demo" (kept in Pulse) and
 // `atGoogle` is always false.
+import { i18n } from "@/i18n/config";
 import type { LoggedEntryRow, Store } from "@/data/store";
 import { addDays, localDay, localMidnight } from "@/lib/time";
 import { quantityText } from "@/lib/format";
@@ -14,6 +15,17 @@ import { type QueryCtx, todayOf } from "./common";
 import { type FoodData, nutritionOn } from "./food";
 
 export { LOG_TYPES, type LoggedEntry, type LogType } from "./_lib";
+
+/** Text from the journal namespace, read when called (never at import) so it follows the language in use. */
+const tr = (key: string, o?: Record<string, unknown>) => i18n.t(`journal:${key}` as never, o as never) as unknown as string;
+/** An enum value as its key: `BRAIN_FOG` is `brainFog`. */
+const camel = (k: string) => k.toLowerCase().replace(/_(\w)/g, (_, c: string) => c.toUpperCase());
+/** A `[value, label]` pair whose label resolves when read; `extra` follows (the symptoms' cycle flag). */
+const choice = <K extends string, X extends unknown[]>(ns: string, key: K, ...extra: X) => {
+  const pair: unknown[] = [key, "", ...extra];
+  Object.defineProperty(pair, 1, { get: () => tr(`${ns}.${camel(key)}`), enumerable: true });
+  return pair as unknown as readonly [K, string, ...X];
+};
 
 // ── lib/log.ts ──────────────────────────────────────────────────────────────
 
@@ -38,98 +50,96 @@ export const KIND_TYPES: Record<LogKind, LogType[]> = {
   period: ["menstrual-period"],
   ovulation: ["ovulation-test"],
 };
-export const KIND_LABEL: Record<LogKind, string> = {
-  water: "Water",
-  food: "Food",
-  weight: "Weight",
-  spo2: "Blood oxygen",
-  mood: "Mood",
-  symptoms: "Symptoms",
-  period: "Period",
-  ovulation: "Ovulation test",
-};
+export const KIND_LABEL = Object.fromEntries(LOG_KINDS.map((k) => [k, ""])) as Record<LogKind, string>;
+for (const k of LOG_KINDS) Object.defineProperty(KIND_LABEL, k, { get: () => tr(`kind.${k}`), enumerable: true });
 export const isCycleKind = (k: LogKind) => k === "period" || k === "ovulation";
 
 /** The water page's one-tap amounts in the person's units: a glass and a bottle, 250 and 500 ml, or 8 and 16 fl oz. */
 export const waterSteps = (): readonly number[] => (quantity("ml").unit === "ml" ? [250, 500] : [8, 16]);
 
+const MEALS_KEYS = ["BREAKFAST", "LUNCH", "DINNER", "SNACK"] as const;
+export type Meal = (typeof MEALS_KEYS)[number];
 export const MEALS = [
-  ["BREAKFAST", "Breakfast"],
-  ["LUNCH", "Lunch"],
-  ["DINNER", "Dinner"],
-  ["SNACK", "Snack"],
+  choice("meal", "BREAKFAST"),
+  choice("meal", "LUNCH"),
+  choice("meal", "DINNER"),
+  choice("meal", "SNACK"),
 ] as const;
-export type Meal = (typeof MEALS)[number][0];
 
 /** Google's valence enum, in the order the sheet shows it. */
+const VALENCES_KEYS = ["UNPLEASANT", "BASELINE", "PLEASANT"] as const;
+export type Valence = (typeof VALENCES_KEYS)[number];
 export const VALENCES = [
-  ["UNPLEASANT", "Unpleasant"],
-  ["BASELINE", "Neutral"],
-  ["PLEASANT", "Pleasant"],
+  choice("valence", "UNPLEASANT"),
+  choice("valence", "BASELINE"),
+  choice("valence", "PLEASANT"),
 ] as const;
-export type Valence = (typeof VALENCES)[number][0];
 
 /** A short list from Google's 70-odd moods: the ones a daily log reaches for. No NEUTRAL: the valence row has it. */
+const MOODS_KEYS = ["HAPPY", "CALM", "ENERGIZED", "CONTENT", "GRATEFUL", "EXCITED", "FATIGUED", "STRESSED", "ANXIOUS", "IRRITATED", "SAD", "OVERWHELMED", "LONELY"] as const;
+export type Mood = (typeof MOODS_KEYS)[number];
 export const MOODS = [
-  ["HAPPY", "Happy"],
-  ["CALM", "Calm"],
-  ["ENERGIZED", "Energized"],
-  ["CONTENT", "Content"],
-  ["GRATEFUL", "Grateful"],
-  ["EXCITED", "Excited"],
-  ["FATIGUED", "Tired"],
-  ["STRESSED", "Stressed"],
-  ["ANXIOUS", "Anxious"],
-  ["IRRITATED", "Irritated"],
-  ["SAD", "Sad"],
-  ["OVERWHELMED", "Overwhelmed"],
-  ["LONELY", "Lonely"],
+  choice("mood", "HAPPY"),
+  choice("mood", "CALM"),
+  choice("mood", "ENERGIZED"),
+  choice("mood", "CONTENT"),
+  choice("mood", "GRATEFUL"),
+  choice("mood", "EXCITED"),
+  choice("mood", "FATIGUED"),
+  choice("mood", "STRESSED"),
+  choice("mood", "ANXIOUS"),
+  choice("mood", "IRRITATED"),
+  choice("mood", "SAD"),
+  choice("mood", "OVERWHELMED"),
+  choice("mood", "LONELY"),
 ] as const;
-export type Mood = (typeof MOODS)[number][0];
 
 /** A short list from Google's symptom enum. `cycle` ones show on female profiles only. */
+const SYMPTOMS_KEYS = ["HEADACHE", "FATIGUE", "SICK", "FEVER", "COUGH", "NAUSEA", "DIZZINESS", "BRAIN_FOG", "BACK_PAIN", "JOINT_PAIN", "INSOMNIA", "HEARTBURN", "BLOATED", "DIARRHEA", "CONSTIPATION", "CRAMPS", "TENDER_BREASTS", "PMS", "ACNE", "HOT_FLASHES"] as const;
+export type Symptom = (typeof SYMPTOMS_KEYS)[number];
 export const SYMPTOMS = [
-  ["HEADACHE", "Headache", false],
-  ["FATIGUE", "Fatigue", false],
-  ["SICK", "Feeling sick", false],
-  ["FEVER", "Fever", false],
-  ["COUGH", "Cough", false],
-  ["NAUSEA", "Nausea", false],
-  ["DIZZINESS", "Dizziness", false],
-  ["BRAIN_FOG", "Brain fog", false],
-  ["BACK_PAIN", "Back pain", false],
-  ["JOINT_PAIN", "Joint pain", false],
-  ["INSOMNIA", "Insomnia", false],
-  ["HEARTBURN", "Heartburn", false],
-  ["BLOATED", "Bloating", false],
-  ["DIARRHEA", "Diarrhea", false],
-  ["CONSTIPATION", "Constipation", false],
-  ["CRAMPS", "Cramps", true],
-  ["TENDER_BREASTS", "Tender breasts", true],
-  ["PMS", "PMS", true],
-  ["ACNE", "Acne", true],
-  ["HOT_FLASHES", "Hot flashes", true],
+  choice("symptom", "HEADACHE", false),
+  choice("symptom", "FATIGUE", false),
+  choice("symptom", "SICK", false),
+  choice("symptom", "FEVER", false),
+  choice("symptom", "COUGH", false),
+  choice("symptom", "NAUSEA", false),
+  choice("symptom", "DIZZINESS", false),
+  choice("symptom", "BRAIN_FOG", false),
+  choice("symptom", "BACK_PAIN", false),
+  choice("symptom", "JOINT_PAIN", false),
+  choice("symptom", "INSOMNIA", false),
+  choice("symptom", "HEARTBURN", false),
+  choice("symptom", "BLOATED", false),
+  choice("symptom", "DIARRHEA", false),
+  choice("symptom", "CONSTIPATION", false),
+  choice("symptom", "CRAMPS", true),
+  choice("symptom", "TENDER_BREASTS", true),
+  choice("symptom", "PMS", true),
+  choice("symptom", "ACNE", true),
+  choice("symptom", "HOT_FLASHES", true),
 ] as const;
-export type Symptom = (typeof SYMPTOMS)[number][0];
 export const CYCLE_SYMPTOMS: ReadonlySet<string> = new Set(SYMPTOMS.filter((s) => s[2]).map((s) => s[0]));
 
 /** Google records period flow nowhere but free-text notes, so Pulse keeps it locally and writes it into `notes`. */
+const FLOWS_KEYS = ["SPOTTING", "LIGHT", "MEDIUM", "HEAVY"] as const;
+export type Flow = (typeof FLOWS_KEYS)[number];
 export const FLOWS = [
-  ["SPOTTING", "Spotting"],
-  ["LIGHT", "Light"],
-  ["MEDIUM", "Medium"],
-  ["HEAVY", "Heavy"],
+  choice("flow", "SPOTTING"),
+  choice("flow", "LIGHT"),
+  choice("flow", "MEDIUM"),
+  choice("flow", "HEAVY"),
 ] as const;
-export type Flow = (typeof FLOWS)[number][0];
 
+const OVULATION_RESULTS_KEYS = ["NEGATIVE", "POSITIVE", "LUTEINIZING_HORMONE_SURGE", "ESTROGEN_SURGE", "INDETERMINATE"] as const;
+export type OvulationResult = (typeof OVULATION_RESULTS_KEYS)[number];
 export const OVULATION_RESULTS = [
-  ["NEGATIVE", "Negative"],
-  ["POSITIVE", "Positive"],
-  ["LUTEINIZING_HORMONE_SURGE", "LH surge"],
-  ["ESTROGEN_SURGE", "Estrogen surge"],
-  ["INDETERMINATE", "Unclear"],
+  choice("ovulationResult", "NEGATIVE"),
+  choice("ovulationResult", "POSITIVE"),
+  choice("ovulationResult", "LUTEINIZING_HORMONE_SURGE"),
+  choice("ovulationResult", "ESTROGEN_SURGE"),
+  choice("ovulationResult", "INDETERMINATE"),
 ] as const;
-export type OvulationResult = (typeof OVULATION_RESULTS)[number][0];
 
 const labelOf = (list: readonly (readonly [string, string, ...unknown[]])[], v: string) => list.find((x) => x[0] === v)?.[1] ?? v;
 
@@ -157,34 +167,35 @@ export function describeEntry(type: LogType, data: unknown): { title: string; de
   const n = (v: number) => FORMATS.grouped(v);
   switch (type) {
     case "hydration-log":
-      return { title: "Water", detail: quantityText((data as LogData[typeof type]).ml, "ml", "grouped") };
+      return { title: tr("entry.water"), detail: quantityText((data as LogData[typeof type]).ml, "ml", "grouped") };
     case "nutrition-log": {
       const f = data as LogData[typeof type];
-      const macros = [f.protein != null && `${f.protein} g protein`, f.carbs != null && `${f.carbs} g carbs`, f.fat != null && `${f.fat} g fat`];
-      const meal = MEALS.find((m) => m[0] === f.meal)?.[1] ?? "Food";
+      const macros = [f.protein != null && tr("entry.protein", { g: f.protein }), f.carbs != null && tr("entry.carbs", { g: f.carbs }), f.fat != null && tr("entry.fat", { g: f.fat })];
+      const meal = MEALS.find((m) => m[0] === f.meal)?.[1] ?? tr("entry.food");
       const detail = [`${n(f.kcal)} kcal`, ...macros].filter(Boolean).join(", ");
       return { title: f.name ?? meal, detail: f.portion ? `${f.portion} · ${detail}` : detail };
     }
     case "weight":
-      return { title: "Weight", detail: quantityText((data as LogData[typeof type]).kg, "kg", "decimal1") };
+      return { title: tr("entry.weight"), detail: quantityText((data as LogData[typeof type]).kg, "kg", "decimal1") };
     case "body-fat":
-      return { title: "Body fat", detail: `${(data as LogData[typeof type]).pct}%` };
+      return { title: tr("entry.bodyFat"), detail: `${(data as LogData[typeof type]).pct}%` };
     case "oxygen-saturation":
-      return { title: "Blood oxygen", detail: `${(data as LogData[typeof type]).pct}%` };
+      return { title: tr("entry.bloodOxygen"), detail: `${(data as LogData[typeof type]).pct}%` };
     case "moods": {
       const m = data as LogData[typeof type];
-      return { title: "Mood", detail: [m.valence && labelOf(VALENCES, m.valence), ...m.moods.map((x) => labelOf(MOODS, x))].filter(Boolean).join(", ") };
+      return { title: tr("entry.mood"), detail: [m.valence && labelOf(VALENCES, m.valence), ...m.moods.map((x) => labelOf(MOODS, x))].filter(Boolean).join(", ") };
     }
     case "symptoms":
-      return { title: "Symptoms", detail: (data as LogData[typeof type]).symptoms.map((x) => labelOf(SYMPTOMS, x)).join(", ") };
+      return { title: tr("entry.symptoms"), detail: (data as LogData[typeof type]).symptoms.map((x) => labelOf(SYMPTOMS, x)).join(", ") };
     case "menstrual-period": {
       const p = data as LogData[typeof type];
-      if (p.spotting) return { title: "Spotting", detail: "between periods" };
-      const days = Math.round((Date.parse(p.end) - Date.parse(p.start)) / 86_400_000) + 1;
-      return { title: "Period", detail: [`${days} ${days === 1 ? "day" : "days"}`, p.flow && `${labelOf(FLOWS, p.flow).toLowerCase()} flow`].filter(Boolean).join(", ") };
+      if (p.spotting) return { title: tr("entry.spotting"), detail: tr("entry.betweenPeriods") };
+      const count = Math.round((Date.parse(p.end) - Date.parse(p.start)) / 86_400_000) + 1;
+      const days = tr("entry.periodDays", { count });
+      return { title: tr("entry.period"), detail: p.flow ? tr("entry.periodDaysFlow", { days, flow: tr(`flowWord.${camel(p.flow)}`) }) : days };
     }
     case "ovulation-test":
-      return { title: "Ovulation test", detail: labelOf(OVULATION_RESULTS, (data as LogData[typeof type]).result) };
+      return { title: tr("entry.ovulationTest"), detail: labelOf(OVULATION_RESULTS, (data as LogData[typeof type]).result) };
   }
 }
 

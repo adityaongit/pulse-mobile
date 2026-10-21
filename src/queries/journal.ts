@@ -1,6 +1,8 @@
 // Journal `/journal`, Behaviour insights `/journal/insights` and More › Behaviours, ported from Pulse's
 // src/server/queries/journal.ts, with the tag-table helpers of src/server/journalTags.ts. Every Postgres read is a
 // Store read; the VM shapes are the web's (types.ts).
+import { i18n } from "@/i18n/config";
+import { behavior } from "@/lib/behaviors";
 import type { ImpactMetric, TagImpact } from "@/core/algorithms/journalImpact";
 import type { JournalEntry } from "@/data/types";
 import type { JournalTagRow, Store } from "@/data/store";
@@ -97,10 +99,20 @@ const GROUP: Record<string, JournalTag["group"]> = {
   illness: "context",
 };
 
+/**
+ * A tag's name as shown. The store keeps the English name a default tag was seeded with (stored text is never
+ * translated), so a tag whose stored name is its catalogue's English name shows the catalogue's name in the language in
+ * use; a name the person typed is shown as typed.
+ */
+function shownLabel(tag: string, stored: string): string {
+  const b = behavior(tag);
+  return b && stored === i18n.t(`journal:behavior.${tag}` as never, { lng: "en" } as never) ? b.label : stored;
+}
+
 /** Every tag, hidden ones included, in check-in order (position inside a group, then insertion order). */
 async function tagsOf(ctx: QueryCtx): Promise<JournalTag[]> {
   const rows = await tagRows(ctx.store);
-  return rows.map((r) => ({ tag: r.tag, label: r.label, isDefault: r.isDefault, hidden: r.hidden, group: GROUP[r.tag] ?? "custom" }));
+  return rows.map((r) => ({ tag: r.tag, label: shownLabel(r.tag, r.label), isDefault: r.isDefault, hidden: r.hidden, group: GROUP[r.tag] ?? "custom" }));
 }
 
 /** More › Behaviours: every tag, hidden ones included, with how many days answered it. */
@@ -153,9 +165,12 @@ export async function getJournal(day: string, ctx: QueryCtx): Promise<JournalVM>
   const teaser = strongest
     ? {
         ready: true,
-        text: `Your strongest effect so far: ${(label.get(strongest.tag) ?? strongest.tag).toLowerCase()} ${strongest.effects.recovery.delta! < 0 ? "lowers" : "raises"} next-day Recovery by ${Math.abs(Math.round(strongest.effects.recovery.delta!))}%.`,
+        text: i18n.t(strongest.effects.recovery.delta! < 0 ? "journal:teaser.lowers" : "journal:teaser.raises", {
+          behaviour: (label.get(strongest.tag) ?? strongest.tag).toLowerCase(),
+          pct: Math.abs(Math.round(strongest.effects.recovery.delta!)),
+        }),
       }
-    : { ready: false, text: "Insights appear after 5 days with and 5 without a behaviour." };
+    : { ready: false, text: i18n.t("journal:teaser.notReady") };
 
   const history: JournalVM["history"] = [];
   for (let d = today; d >= addDays(today, -29); d = addDays(d, -1)) {

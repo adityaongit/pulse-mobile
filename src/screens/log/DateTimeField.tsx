@@ -3,6 +3,7 @@
 // dialogs (InfoDialog), with Done. Android: the system date dialog, then the time dialog. Both come from @expo/ui's
 // drop-in for @react-native-community/datetimepicker (in Expo Go). Values are the app's wall strings:
 // `YYYY-MM-DDTHH:mm`, or `YYYY-MM-DD` for mode "date".
+import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { Modal, Platform, Pressable } from "react-native";
 import { DateTimePicker } from "@expo/ui/community/datetime-picker";
@@ -29,18 +30,19 @@ const FRAME = "h-11 justify-center rounded-lg border border-input px-2.5";
 
 export function DateTimeField({ value, onChange, mode, max, min, label }: DateTimeFieldProps) {
   const { c, scheme } = useTheme();
+  const { t } = useTranslation("journal");
   const [step, setStep] = useState<"date" | "time" | null>(null);
   const date = mode === "date";
   const clamp = (w: string) => (max && w > max ? max : min && w < min ? min : w);
   const maximumDate = max ? wallToDate(max) : undefined;
   const minimumDate = min ? wallToDate(min) : undefined;
-  const shown = value ? (date ? formatDay(value, DAY.full) : `${formatDay(value.slice(0, 10), DAY.full)}, ${timeOfDay(Number(value.slice(11, 13)), Number(value.slice(14, 16)))}`) : date ? "Choose a day" : "Choose a time";
+  const shown = value ? (date ? formatDay(value, DAY.full) : `${formatDay(value.slice(0, 10), DAY.full)}, ${timeOfDay(Number(value.slice(11, 13)), Number(value.slice(14, 16)))}`) : date ? t("field.chooseDay") : t("field.chooseTime");
   const current = wallToDate(value || (date ? dateToDay(new Date()) : dateToWall(new Date())));
 
   const field = (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={`${label}, ${shown}`}
+      accessibilityLabel={t("field.aria", { label, value: shown })}
       accessibilityState={{ expanded: step !== null }}
       onPress={() => {
         haptic.tap();
@@ -61,7 +63,7 @@ export function DateTimeField({ value, onChange, mode, max, min, label }: DateTi
       <>
         {field}
         <Modal visible={step !== null} transparent animationType="fade" onRequestClose={() => setStep(null)}>
-          <Pressable accessibilityLabel="Close" onPress={() => setStep(null)} className="flex-1 items-center justify-center bg-dim-strong px-4">
+          <Pressable accessibilityLabel={t("actions.close", { ns: "common" })} onPress={() => setStep(null)} className="flex-1 items-center justify-center bg-dim-strong px-4">
             {/* The card swallows taps, so only the dim closes it. */}
             <Panel ring={null} shadow={null} onStartShouldSetResponder={() => true} className="w-full max-w-[360px] items-center gap-4 rounded-3xl p-4">
               <DateTimePicker
@@ -79,7 +81,7 @@ export function DateTimeField({ value, onChange, mode, max, min, label }: DateTi
                 }}
               />
               <Button onPress={() => setStep(null)}>
-                Done
+                {t("field.done")}
               </Button>
             </Panel>
           </Pressable>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { ChevronRight } from "lucide-react-native";
 import { dayLabel } from "@/lib/format";
@@ -55,8 +56,9 @@ function FitTags({ tags }: { tags: string[] }) {
 
 /** Journal's History (spec §7.11): the days with answers, newest first, each a row that selects that day. */
 export function History({ history, day, today, onSelect }: { history: JournalVM["history"]; day: string; today: string; onSelect: (day: string) => void }) {
+  const { t } = useTranslation("journal");
   const [all, setAll] = useState(false);
-  if (!history.length) return <EmptyState body="No check-ins yet. Your first one takes under a minute." action={{ label: "Check in", sheet: "checkin" }} />;
+  if (!history.length) return <EmptyState body={t("history.empty")} action={{ label: t("actions.checkIn", { ns: "common" }), sheet: "checkin" }} />;
   return (
     <Card className="gap-0 px-4 py-1">
       <View>
@@ -68,7 +70,7 @@ export function History({ history, day, today, onSelect }: { history: JournalVM[
                 activeBg="bg-accent"
                 accessibilityRole="button"
                 accessibilityState={{ selected }}
-                accessibilityLabel={`${dayLabel(h.day, today)}: ${h.yes.length ? h.yes.join(", ") : "no behaviours"}`}
+                accessibilityLabel={t("history.row", { day: dayLabel(h.day, today), behaviours: h.yes.length ? h.yes.join(", ") : t("history.noneSpoken") })}
                 onPress={() => onSelect(h.day)}
                 className="-mx-2 min-h-13 flex-row items-center gap-3 rounded-lg px-2 py-2"
               >
@@ -79,7 +81,7 @@ export function History({ history, day, today, onSelect }: { history: JournalVM[
                   <FitTags tags={h.yes} />
                 ) : (
                   <View accessibilityElementsHidden className="min-w-0 flex-1 flex-row justify-end">
-                    <Text className="text-xs font-medium leading-4 text-muted-foreground">No behaviours</Text>
+                    <Text className="text-xs font-medium leading-4 text-muted-foreground">{t("history.none")}</Text>
                   </View>
                 )}
                 <Icon icon={ChevronRight} size={16} tone="muted-foreground" strokeWidth={1.75} />
@@ -90,7 +92,7 @@ export function History({ history, day, today, onSelect }: { history: JournalVM[
       </View>
       {history.length > RECENT && (
         <Press activeBg="bg-accent" accessibilityRole="button" onPress={() => setAll(!all)} className="-mx-2 mb-1 h-11 items-center justify-center rounded-lg border-t border-border">
-          <Text className="text-xs font-bold uppercase tracking-[0.1em] text-foreground-body">{all ? "Show last week" : "Show 30 days"}</Text>
+          <Text className="text-xs font-bold uppercase tracking-[0.1em] text-foreground-body">{all ? t("history.showWeek") : t("history.show30")}</Text>
         </Press>
       )}
     </Card>

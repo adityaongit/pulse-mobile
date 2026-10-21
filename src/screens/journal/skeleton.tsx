@@ -1,5 +1,7 @@
 // What Journal shows while its data loads: the web's loading.tsx (strip, then Log, Check-in, the day's log, Insights,
 // This week, History), box for box.
+import { useTranslation } from "react-i18next";
+import { cardInfo } from "@/ui/shells/cardInfo";
 import { View } from "react-native";
 import { ChevronRight } from "lucide-react-native";
 import { Card } from "@/ui/Card";
@@ -11,21 +13,22 @@ import { Skeleton, SkeletonText } from "@/ui/Skeleton";
 import { Text } from "@/ui/Text";
 
 export function JournalSkeleton() {
+  const { t } = useTranslation("journal");
   return (
     <>
       <View accessibilityElementsHidden className="-mx-4">
         <DayStripSkeleton indicator="journal" />
       </View>
       <View accessibilityElementsHidden className="gap-8">
-        <SectionShell variant="section" title="Log">
+        <SectionShell variant="section" title={t("page.log")}>
           <View className="-mx-4 flex-row gap-2 overflow-hidden px-4">
             {Array.from({ length: 5 }, (_, i) => (
               <Skeleton key={i} className="h-24 w-24 shrink-0 rounded-2xl" />
             ))}
           </View>
         </SectionShell>
-        <SectionShell variant="section" title="Check-in">
-          <SectionShell variant="card" title="Check-in">
+        <SectionShell variant="section" title={t("page.checkIn")}>
+          <SectionShell variant="card" title={t("page.checkIn")}>
             <View className="gap-4">
               <View>
                 <SkeletonText className="w-full" lh={22} fs={15} />
@@ -35,7 +38,7 @@ export function JournalSkeleton() {
             </View>
           </SectionShell>
         </SectionShell>
-        <SectionShell variant="section" title="Logged today">
+        <SectionShell variant="section" title={t("page.loggedToday")}>
           <Card className="gap-0 px-4 py-1">
             {Array.from({ length: 4 }, (_, i) => (
               <View key={i} className={i > 0 ? "min-h-14 flex-row items-center gap-3 border-t border-border py-2" : "min-h-14 flex-row items-center gap-3 py-2"}>
@@ -48,15 +51,15 @@ export function JournalSkeleton() {
         </SectionShell>
         <SectionShell
           variant="section"
-          title="Insights"
-          action={<Text className="text-xs font-bold uppercase leading-4 tracking-[0.1em] text-foreground-secondary">See all</Text>}
+          title={t("page.insights")}
+          action={<Text className="text-xs font-bold uppercase leading-4 tracking-[0.1em] text-foreground-secondary">{t("page.seeAll")}</Text>}
         >
           <InsightCardSkeleton action />
         </SectionShell>
-        <SectionShell variant="section" title="This week">
+        <SectionShell variant="section" title={t("page.thisWeek")} info={cardInfo("This week")}>
           <Skeleton className="h-[400px] rounded-2xl" />
         </SectionShell>
-        <SectionShell variant="section" title="History">
+        <SectionShell variant="section" title={t("page.history")} info={cardInfo("History")}>
           <Card className="gap-0 px-4 py-1">
             {Array.from({ length: 7 }, (_, i) => (
               <View key={i} className={i > 0 ? "min-h-13 flex-row items-center gap-3 border-t border-border py-2" : "min-h-13 flex-row items-center gap-3 py-2"}>
