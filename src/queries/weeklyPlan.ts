@@ -3,6 +3,7 @@
 // The scoring is pure (src/core/algorithms/weeklyPlan.ts); this maps the Store's days into it. Pure over the Store.
 import { STRENGTH_TYPES, type HealthspanInput } from "@/core/algorithms/healthspan";
 import { HISTORY_WEEKS, PLAN_KEYS, weeklyPlan, type PlanDay, type PlanItem, type PlanKey, type PlanSettings, type WeekPlan } from "@/core/algorithms/weeklyPlan";
+import { i18n } from "@/i18n/config";
 import { addDays } from "@/lib/time";
 import { type FormatKey, metricHref, weekOf } from "./_lib";
 import { type DayRow, type ExerciseRow, exercisesBetween, finite, loadDays, nightNeedMin, type QueryCtx, todayOf } from "./common";
@@ -30,13 +31,31 @@ export type PlanMeta = {
   ageInput: HealthspanInput;
 };
 
+/** Keys in the catalogue, words resolved when read (getters), so a language switch shows at once. */
+const planMeta = (key: PlanKey, rest: Pick<PlanMeta, "format" | "href" | "ageInput">): PlanMeta => ({
+  key,
+  ...rest,
+  get label() {
+    return i18n.t(`goals:planLabel.${key}`);
+  },
+  get short() {
+    return i18n.t(`goals:planShort.${key}`);
+  },
+  get detail() {
+    return i18n.t(`goals:planDetail.${key}`);
+  },
+  get unit() {
+    return i18n.t(`goals:planUnit.${key}`);
+  },
+});
+
 export const PLAN_META: Record<PlanKey, PlanMeta> = {
-  zone13: { key: "zone13", label: "Moderate activity", short: "Moderate", detail: "Zones 1–3, from a brisk walk up", unit: "min", format: "grouped", href: "/strain#zones", ageInput: "zone13" },
-  zone45: { key: "zone45", label: "Vigorous activity", short: "Vigorous", detail: "Zones 4–5", unit: "min", format: "grouped", href: "/strain#zones", ageInput: "zone45" },
-  strength: { key: "strength", label: "Strength sessions", short: "Strength", detail: "Strength, weights, HIIT or calisthenics", unit: "sessions", format: "int", href: "/activities", ageInput: "strength" },
-  steps: { key: "steps", label: "Daily steps", short: "Steps", detail: "Average a day", unit: "steps", format: "grouped", href: metricHref("steps"), ageInput: "steps" },
-  consistency: { key: "consistency", label: "Sleep consistency", short: "Consistency", detail: "Your last 7 nights", unit: "%", format: "int", href: "/sleep#consistency", ageInput: "sri" },
-  sleepNeed: { key: "sleepNeed", label: "Sleep need met", short: "Sleep need", detail: "Nights you slept your need", unit: "nights", format: "int", href: "/sleep#need", ageInput: "sleepHours" },
+  zone13: planMeta("zone13", { format: "grouped", href: "/strain#zones", ageInput: "zone13" }),
+  zone45: planMeta("zone45", { format: "grouped", href: "/strain#zones", ageInput: "zone45" }),
+  strength: planMeta("strength", { format: "int", href: "/activities", ageInput: "strength" }),
+  steps: planMeta("steps", { format: "grouped", href: metricHref("steps"), ageInput: "steps" }),
+  consistency: planMeta("consistency", { format: "int", href: "/sleep#consistency", ageInput: "sri" }),
+  sleepNeed: planMeta("sleepNeed", { format: "int", href: "/sleep#need", ageInput: "sleepHours" }),
 };
 
 export type PlanRow = PlanItem &

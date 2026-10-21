@@ -3,6 +3,7 @@
 // label, a ZoneBars-style bar with the percent, value over target, a DeltaMark once met), then the week's Active Zone
 // Minutes as a row. The card opens the sheet `/goals?d=`: every goal's full row (value, target, progress, the last 7
 // days as grey dots, streak) and a way to Settings › Goals.
+import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { Moon, Target } from "lucide-react-native";
 import { dayLabel, formatValue, MISSING, NBSP } from "@/lib/format";
@@ -46,15 +47,16 @@ function useGoalsDay(day: string) {
 export function GoalsCard({ day, isToday }: { day: string; isToday: boolean }) {
   const { goals, ready, data } = useGoalsDay(day);
   const keys = GOAL_KEYS.filter((k) => goals.enabled[k]);
-  const title = isToday ? "Today’s goals" : "Goals";
+  const { t } = useTranslation("goals");
+  const title = isToday ? t("card.titleToday") : t("card.title");
   if (ready && keys.length === 0)
     return (
       <SectionShell variant="card" title={title}>
-        <EmptyState body="No goals switched on." action={{ label: "Set goals", href: GOALS_SETTINGS }} />
+        <EmptyState body={t("card.emptyBody")} action={{ label: t("card.emptyAction"), href: GOALS_SETTINGS }} />
       </SectionShell>
     );
   return (
-    <SectionShell variant="card" title={title} href={`/goals?d=${day}`} aside={data && <Text className={ASIDE}>{`${data.done} of ${data.goals.length} done`}</Text>}>
+    <SectionShell variant="card" title={title} href={`/goals?d=${day}`} aside={data && <Text className={ASIDE}>{t("card.done", { done: data.done, total: data.goals.length })}</Text>}>
       <Divided>
         {data ? data.goals.map((g) => <GoalRowCompact key={g.key} g={g} />) : keys.map((k) => <RowSkeleton key={k} k={k} />)}
         {data?.week && <WeekStrip week={data.week} dayTarget={goals.targets.azm} />}
@@ -65,6 +67,7 @@ export function GoalsCard({ day, isToday }: { day: string; isToday: boolean }) {
 
 /** One goal: icon, label over a bar with the percent, value over target, a DeltaMark once met. */
 function GoalRowCompact({ g }: { g: GoalRow }) {
+  const { t } = useTranslation("goals");
   const { c } = useTheme();
   const pct = g.value === null ? null : Math.round(g.progress * 100);
   return (
@@ -72,10 +75,10 @@ function GoalRowCompact({ g }: { g: GoalRow }) {
       icon={goalIcon(g.key)}
       label={g.short}
       value={valueText(g)}
-      of={`of ${targetText(g)}`}
+      of={t("card.of", { target: targetText(g) })}
       muted={g.value === null}
       mark={g.done ? DONE : null}
-      spoken={`${g.label}: ${valueText(g)} of ${targetText(g)}${g.done ? ", reached" : g.partial ? ", so far today" : ""}`}
+      spoken={t(g.done ? "card.spokenReached" : g.partial ? "card.spokenSoFar" : "card.spoken", { label: g.label, value: valueText(g), target: targetText(g) })}
     >
       <BarLine value={g.done ? 1 : g.value === null ? null : g.progress} color={goalColor(c, g.key)} caption={pct === null ? null : `${pct}%`} />
     </GoalRowShell>
@@ -94,46 +97,50 @@ function RowSkeleton({ k }: { k: GoalKey }) {
 
 /** The week's Active Zone Minutes as a row ("96 of 150 min"); on the Goals page, a dot per day under it, filled on days at the daily goal. */
 function WeekStrip({ week, dayTarget, days }: { week: GoalsWeek; dayTarget: number; days?: boolean }) {
+  const { t } = useTranslation("goals");
   const cols = week.days.map((d) => ({ day: d.day, met: d.value !== null && d.value >= dayTarget }));
   const total = Math.round(week.total);
   const row = (
     <GoalRowShell
       icon={goalIcon("azm")}
-      label="Active Zone Minutes"
-      caption="This week, Monday to Sunday"
+      label={t("goalLabel.azm")}
+      caption={t("week.caption")}
       value={String(total)}
-      of={`of ${week.target}${NBSP}min`}
+      of={t("week.of", { target: week.target })}
       mark={week.done ? DONE : null}
-      spoken={`Active Zone Minutes this week: ${total} of ${week.target} minutes${week.done ? ", reached" : ""}`}
+      spoken={t(week.done ? "week.spokenReached" : "week.spoken", { total, target: week.target })}
     />
   );
   if (!days) return row;
   return (
     <View className="pb-3">
       {row}
-      <WeekColumns cols={cols} current={week.to} label={`Active Zone Minutes, days at the daily goal: ${cols.filter((d) => d.met).length} of ${cols.length}`} className={UNDER_LABEL} />
+      <WeekColumns cols={cols} current={week.to} label={t("week.daysLabel", { met: cols.filter((d) => d.met).length, total: cols.length })} className={UNDER_LABEL} />
     </View>
   );
 }
 
 /** One goal's full row on the Goals page: label and its standing, a bar with the percent, value over target, then the last 7 days. */
 function GoalLine({ g }: { g: GoalRow }) {
+  const { t } = useTranslation("goals");
   const { c } = useTheme();
   const met = g.history.filter((h) => h.done).length;
   const pct = Math.round(g.progress * 100);
-  const caption = g.done ? (g.streak > 1 ? `Reached · ${g.streak}-day streak` : "Reached") : g.streak > 0 ? `${g.streak}-day streak on the line` : `Met ${met} of the last 7 days`;
+  const caption = g.done ? (g.streak > 1 ? t("line.reachedStreak", { count: g.streak }) : t("line.reached")) : g.streak > 0 ? t("line.onTheLine", { count: g.streak }) : t("line.met", { met });
+  const spokenArgs = { label: g.label, value: valueText(g), target: targetText(g), pct, caption };
   return (
     <View className="pb-3">
-      <GoalRowShell icon={goalIcon(g.key)} label={g.label} caption={caption} value={valueText(g)} of={`of ${targetText(g)}`} muted={g.value === null} mark={g.done ? DONE : null} spoken={`${g.label}: ${valueText(g)} of ${targetText(g)}${g.value === null ? "" : `, ${pct} percent`}. ${caption}`}>
+      <GoalRowShell icon={goalIcon(g.key)} label={g.label} caption={caption} value={valueText(g)} of={t("card.of", { target: targetText(g) })} muted={g.value === null} mark={g.done ? DONE : null} spoken={t(g.value === null ? "line.spoken" : "line.spokenPct", spokenArgs)}>
         <BarLine value={g.done ? 1 : g.progress} color={goalColor(c, g.key)} caption={g.value === null ? MISSING : `${pct}%`} />
       </GoalRowShell>
-      <WeekColumns cols={g.history.map((h) => ({ day: h.day, met: h.done }))} current={g.history[g.history.length - 1]?.day ?? ""} label={`${g.label}, last 7 days: met ${met} of 7`} className={UNDER_LABEL} />
+      <WeekColumns cols={g.history.map((h) => ({ day: h.day, met: h.done }))} current={g.history[g.history.length - 1]?.day ?? ""} label={t("line.daysLabel", { label: g.label, met })} className={UNDER_LABEL} />
     </View>
   );
 }
 
 /** The sheet `/goals?d=` (halo's GoalsPage). */
 export function GoalsPageBody() {
+  const { t } = useTranslation("goals");
   const [day] = useSelectedDay();
   const { today } = useShellCalendar();
   const { goals, data } = useGoalsDay(day);
@@ -142,7 +149,7 @@ export function GoalsPageBody() {
     push(GOALS_SETTINGS);
   };
   return (
-    <TaskPage title="Goals" description={dayLabel(day, today)} footer={<Button variant="secondary" onPress={edit}>Edit goals</Button>}>
+    <TaskPage title={t("page.title")} description={dayLabel(day, today)} footer={<Button variant="secondary" onPress={edit}>{t("page.edit")}</Button>}>
       <Card className="gap-0 px-4 py-1">
         {data ? <GoalsList goals={goals} rows={data.goals} week={data.week} /> : <View className="gap-4 py-3">{GOAL_KEYS.filter((k) => goals.enabled[k]).map((k) => <SkeletonText key={k} lh={26} fs={22} className="w-40" />)}</View>}
       </Card>
@@ -151,6 +158,7 @@ export function GoalsPageBody() {
 }
 
 function GoalsList({ goals, rows, week }: { goals: Goals; rows: GoalRow[]; week: GoalsWeek | null }) {
+  const { t } = useTranslation("goals");
   const off = GOAL_KEYS.filter((k) => !goals.enabled[k]);
   return (
     <View>
@@ -160,8 +168,8 @@ function GoalsList({ goals, rows, week }: { goals: Goals; rows: GoalRow[]; week:
       </Divided>
       {off.length > 0 && (
         <View className="mt-5 gap-2">
-          <TaskSection>Off</TaskSection>
-          <Text className="text-sm leading-[19px] text-muted-foreground">{`${off.map((k) => GOAL_META[k].label).join(", ")}. Switch them on in Settings › Goals.`}</Text>
+          <TaskSection>{t("page.off")}</TaskSection>
+          <Text className="text-sm leading-[19px] text-muted-foreground">{t("page.offBody", { labels: off.map((k) => GOAL_META[k].label).join(", ") })}</Text>
         </View>
       )}
     </View>

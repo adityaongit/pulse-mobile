@@ -1,6 +1,7 @@
 // Daily goals (Fitbit-style, a phone-only addition): how far `day` has come toward each target the person set, with a
 // week of history for the rings and streaks, and Active Zone Minutes against the weekly target. Pulse's own screens
 // never set goals; they are kept on the phone (src/state/goals.ts) and come in as `goals`. Pure over the Store.
+import { i18n } from "@/i18n/config";
 import { inUnits, quantity } from "@/lib/units";
 import { addDays } from "@/lib/time";
 import { type FormatKey, metricHref, weekOf } from "./_lib";
@@ -44,15 +45,30 @@ export type GoalMeta = {
   href: string;
 };
 
+/** The catalogue keeps keys; the words resolve when read (getters), so a language switch shows at once. */
+const goalMeta = (key: GoalKey, rest: Omit<GoalMeta, "key" | "label" | "short" | "goalName">): GoalMeta => ({
+  key,
+  ...rest,
+  get label() {
+    return i18n.t(`goals:goalLabel.${key}`);
+  },
+  get short() {
+    return i18n.t(`goals:goalShort.${key}`);
+  },
+  get goalName() {
+    return i18n.t(`goals:goalName.${key}`);
+  },
+});
+
 export const GOAL_META: Record<GoalKey, GoalMeta> = {
-  steps: { key: "steps", label: "Steps", short: "Steps", goalName: "Step goal", format: "grouped", partialToday: true, href: metricHref("steps") },
-  distance: { key: "distance", label: "Distance", short: "Distance", goalName: "Distance goal", unit: "km", format: "decimal2", partialToday: true, href: metricHref("distance") },
-  floors: { key: "floors", label: "Floors", short: "Floors", goalName: "Floor goal", format: "grouped", partialToday: true, href: metricHref("floors") },
-  azm: { key: "azm", label: "Active Zone Minutes", short: "Zone min", goalName: "Active Zone Minutes goal", format: "duration", partialToday: true, href: metricHref("azm") },
-  active_minutes: { key: "active_minutes", label: "Active minutes", short: "Active", goalName: "Active minutes goal", format: "duration", partialToday: true, href: metricHref("active_minutes") },
-  active_calories: { key: "active_calories", label: "Active calories", short: "Calories", goalName: "Active calories goal", unit: "kcal", format: "grouped", partialToday: true, href: metricHref("active_calories") },
-  water: { key: "water", label: "Water", short: "Water", goalName: "Water goal", unit: "ml", format: "grouped", partialToday: true, href: metricHref("water") },
-  sleep: { key: "sleep", label: "Sleep", short: "Sleep", goalName: "Sleep goal", format: "duration", partialToday: false, href: "/sleep" },
+  steps: goalMeta("steps", { format: "grouped", partialToday: true, href: metricHref("steps") }),
+  distance: goalMeta("distance", { unit: "km", format: "decimal2", partialToday: true, href: metricHref("distance") }),
+  floors: goalMeta("floors", { format: "grouped", partialToday: true, href: metricHref("floors") }),
+  azm: goalMeta("azm", { format: "duration", partialToday: true, href: metricHref("azm") }),
+  active_minutes: goalMeta("active_minutes", { format: "duration", partialToday: true, href: metricHref("active_minutes") }),
+  active_calories: goalMeta("active_calories", { unit: "kcal", format: "grouped", partialToday: true, href: metricHref("active_calories") }),
+  water: goalMeta("water", { unit: "ml", format: "grouped", partialToday: true, href: metricHref("water") }),
+  sleep: goalMeta("sleep", { format: "duration", partialToday: false, href: "/sleep" }),
 };
 
 /** One day of a goal: the value so far, the day's target, progress on [0, 1] (null with no value) and whether it was met. */

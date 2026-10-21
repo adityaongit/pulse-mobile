@@ -3,9 +3,10 @@
 // target, then the Weekly plan's targets with the evidence behind each default. A cleared box turns its goal off. Saved as typed (src/state/goals.ts, src/state/weeklyPlan.ts), so the
 // cards and trend lines follow at once; an out-of-range number is shown in red and not saved.
 import { useState, type ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { ChevronDown, Moon, Target, type LucideIcon } from "lucide-react-native";
-import { isDefaultPlan, parsePlanTarget, PLAN_LIMITS, withPlanEnabled, withPlanTarget } from "@/core/algorithms/weeklyPlan";
+import { isDefaultPlan, parsePlanTarget, withPlanEnabled, withPlanTarget } from "@/core/algorithms/weeklyPlan";
 import { GOAL_KEYS, GOAL_META, type GoalKey } from "@/queries/goals";
 import { PLAN_KEYS, PLAN_META, type PlanKey } from "@/queries/weeklyPlan";
 import { STAT_ICON } from "@/screens/_lib/view";
@@ -25,19 +26,6 @@ import { Text } from "@/ui/Text";
 import { toast } from "@/ui/Toast";
 import { SleepGoal } from "./SleepGoal";
 import { PLAN_ICON } from "./WeeklyPlan";
-
-const GOAL_HINT: Partial<Record<TargetKey, string>> = {
-  azmWeek: "Fitbit counts moderate minutes once and vigorous or peak minutes twice.",
-};
-
-const PLAN_HINT: Record<PlanKey, string> = {
-  zone13: "WHO: 150–300 minutes a week. Zones 1–3, from 50% of your max heart rate, a brisk walk.",
-  zone45: "WHO: 75–150 minutes a week, or mix them with moderate minutes.",
-  strength: "Strength, weights, HIIT or calisthenics workouts. WHO: 2 or more days a week.",
-  steps: "Your daily average over the week. The benefit levels off around 8,000 to 10,000 steps a day (Paluch 2022).",
-  consistency: "Your sleep consistency over the last 7 nights. 80% and up is optimal.",
-  sleepNeed: "Nights you sleep the need Pulse sets for that night.",
-};
 
 /**
  * One goal or habit: one row (icon, name, the target's box), then its error or hint under the row at full width from the
@@ -81,13 +69,14 @@ function useDrafts<K extends string>() {
 
 /** A target's number with its unit inside the box; blank shows "Off" (a cleared target turns its goal off). */
 function NumberField({ value, unit, onChange, onBlur, invalid, label, decimals }: { value: string; unit: string; onChange: (t: string) => void; onBlur: () => void; invalid: boolean; label: string; decimals: number }) {
+  const { t } = useTranslation("goals");
   return (
     <TextField
       variant="number"
       value={value}
       onChangeText={onChange}
       onBlur={onBlur}
-      placeholder="Off"
+      placeholder={t("settings.off")}
       keyboardType={decimals ? "decimal-pad" : "number-pad"}
       accessibilityLabel={label}
       invalid={invalid}
@@ -98,20 +87,21 @@ function NumberField({ value, unit, onChange, onBlur, invalid, label, decimals }
 
 /** Sleep's goal follows the night's sleep need, or is off; a fixed number of hours set before stays a choice until changed. */
 function SleepChoice({ goals, update }: Pick<ReturnType<typeof useGoals>, "goals" | "update">) {
+  const { t } = useTranslation("goals");
   const { ref, anchor, open, close } = useMenu();
   const fixed = goals.targets.sleep;
   const value: SleepChoiceKey = !goals.enabled.sleep ? "off" : fixed === null ? "need" : "fixed";
   const options: SelectOption<SleepChoiceKey>[] = [
-    { value: "need", label: "Sleep need" },
-    ...(fixed === null ? [] : [{ value: "fixed" as const, label: `${hmm(fixed * 60)} a night` }]),
-    { value: "off", label: "Off" },
+    { value: "need", label: t("settings.sleepNeed") },
+    ...(fixed === null ? [] : [{ value: "fixed" as const, label: t("settings.fixed", { duration: hmm(fixed * 60) }) }]),
+    { value: "off", label: t("settings.off") },
   ];
   const on = options.find((o) => o.value === value)!;
   const pick = (v: SleepChoiceKey) => void update((g) => (v === "off" ? withEnabled(g, "sleep", false) : withEnabled(v === "need" ? withTarget(g, "sleep", null) : g, "sleep", true)));
   return (
     <View ref={ref} collapsable={false}>
-      <Press activeBg="bg-fill-pressed" accessibilityRole="button" accessibilityLabel={`Sleep goal, ${on.label}`} accessibilityState={{ expanded: !!anchor }} onPress={() => (haptic.tap(), open())} className="h-9 flex-row items-center justify-end gap-1 rounded-lg border border-input px-2 dark:bg-input/30">
-        <Text numberOfLines={1} className={cn("shrink text-[15px]", value === "off" && "text-muted-foreground")}>{value === "need" ? "Need" : on.label}</Text>
+      <Press activeBg="bg-fill-pressed" accessibilityRole="button" accessibilityLabel={t("settings.sleepChoiceAria", { choice: on.label })} accessibilityState={{ expanded: !!anchor }} onPress={() => (haptic.tap(), open())} className="h-9 flex-row items-center justify-end gap-1 rounded-lg border border-input px-2 dark:bg-input/30">
+        <Text numberOfLines={1} className={cn("shrink text-[15px]", value === "off" && "text-muted-foreground")}>{value === "need" ? t("settings.need") : on.label}</Text>
         <Icon icon={ChevronDown} size={16} tone="muted-foreground" strokeWidth={2} />
       </Press>
       <ChoiceMenu anchor={anchor} close={close} value={value} options={options} onChange={pick} />
@@ -121,6 +111,7 @@ function SleepChoice({ goals, update }: Pick<ReturnType<typeof useGoals>, "goals
 type SleepChoiceKey = "need" | "fixed" | "off";
 
 function DailyGoals() {
+  const { t } = useTranslation("goals");
   const { goals, update, reset } = useGoals();
   const d = useDrafts<TargetKey>();
   // A goal that is off shows an empty box; its last target is kept for when a number is typed again.
@@ -128,7 +119,7 @@ function DailyGoals() {
   const field = (k: GoalKey, tk: TargetKey, rule: boolean) => {
     const l = TARGET_LIMITS[tk];
     const weekly = tk === "azmWeek";
-    const label = weekly ? "Active Zone Minutes a week" : GOAL_META[k].label;
+    const label = weekly ? t("settings.azmWeek") : GOAL_META[k].label;
     return (
       <TargetField
         key={tk}
@@ -157,7 +148,7 @@ function DailyGoals() {
               }}
               onBlur={() => d.blur(tk)}
               invalid={!!d.errors[tk]}
-              label={`${label} target`}
+              label={t("settings.targetAria", { label })}
               decimals={l.decimals}
             />
           )
@@ -168,36 +159,37 @@ function DailyGoals() {
   const doReset = async () => {
     await reset();
     d.clear();
-    toast.success("Goals reset to Fitbit’s defaults");
+    toast.success(t("settings.goalsReset"));
   };
   return (
     <>
-      <SectionShell variant="card" title="Daily goals">
-        <Text className={cn(BODY, "pb-1")}>Each goal is a row on Strain that fills through the day. Clear a number to turn its goal off.</Text>
+      <SectionShell variant="card" title={t("settings.dailyTitle")}>
+        <Text className={cn(BODY, "pb-1")}>{t("settings.dailyBody")}</Text>
         <View>{GOAL_KEYS.map((k, i) => field(k, k, i > 0))}</View>
       </SectionShell>
-      <SectionShell variant="card" title="Weekly goal">
-        <Text className={cn(BODY, "pb-1")}>Active Zone Minutes add up Monday to Sunday, while the daily Active Zone Minutes goal is on.</Text>
+      <SectionShell variant="card" title={t("settings.weeklyTitle")}>
+        <Text className={cn(BODY, "pb-1")}>{t("settings.weeklyBody")}</Text>
         {field("azm", "azmWeek", false)}
-        <Text className={cn(HINT, "pt-2")}>{GOAL_HINT.azmWeek}</Text>
+        <Text className={cn(HINT, "pt-2")}>{t("settings.azmWeekHint")}</Text>
       </SectionShell>
-      <Button variant="outline-pill" disabled={isDefaultGoals(goals)} onPress={() => void doReset()}>Reset to Fitbit defaults</Button>
+      <Button variant="outline-pill" disabled={isDefaultGoals(goals)} onPress={() => void doReset()}>{t("settings.resetGoals")}</Button>
     </>
   );
 }
 
 function WeeklyTargets() {
+  const { t: tr } = useTranslation("goals");
   const { plan, update, reset } = useWeeklyPlan();
   const d = useDrafts<PlanKey>();
   const doReset = async () => {
     await reset();
     d.clear();
-    toast.success("Weekly plan reset to its defaults");
+    toast.success(tr("settings.planReset"));
   };
   return (
     <>
-      <SectionShell variant="card" title="Weekly plan">
-        <Text className={cn(BODY, "pb-1")}>Weekly targets for the habits Pulse Age scores, Monday to Sunday, with a streak for every week you meet them. Clear a number to turn it off.</Text>
+      <SectionShell variant="card" title={tr("settings.planTitle")}>
+        <Text className={cn(BODY, "pb-1")}>{tr("settings.planBody")}</Text>
         <View>
           {PLAN_KEYS.map((k, i) => (
             <TargetField
@@ -207,11 +199,11 @@ function WeeklyTargets() {
               label={PLAN_META[k].label}
               on={plan.enabled[k]}
               error={d.errors[k]}
-              hint={PLAN_HINT[k]}
+              hint={tr(`planHint.${k}`)}
               field={
                 <NumberField
                   value={d.drafts[k] ?? (plan.enabled[k] ? String(plan.targets[k]) : "")}
-                  unit={PLAN_LIMITS[k].unit}
+                  unit={tr(`planUnit.${k}`)}
                   onChange={(t) => {
                     // Cleared: the target goes off, its number kept for when one is typed again.
                     if (!t.trim()) {
@@ -225,7 +217,7 @@ function WeeklyTargets() {
                   }}
                   onBlur={() => d.blur(k)}
                   invalid={!!d.errors[k]}
-                  label={`${PLAN_META[k].label} target`}
+                  label={tr("settings.targetAria", { label: PLAN_META[k].label })}
                   decimals={0}
                 />
               }
@@ -233,7 +225,7 @@ function WeeklyTargets() {
           ))}
         </View>
       </SectionShell>
-      <Button variant="outline-pill" disabled={isDefaultPlan(plan)} onPress={() => void doReset()}>Reset weekly plan</Button>
+      <Button variant="outline-pill" disabled={isDefaultPlan(plan)} onPress={() => void doReset()}>{tr("settings.resetPlan")}</Button>
     </>
   );
 }

@@ -1,20 +1,19 @@
 // The Weekly Plan sheet's words (src/screens/goals/WeeklyPlan.tsx; halo src/screens/home/weeklyPlanView.ts): value and
 // target text, the status word and its DeltaMark, the line under each target, and Pulse Age's years. Pure, so it is tested without React.
+import { i18n } from "@/i18n/config";
 import type { PlanStatus } from "@/core/algorithms/weeklyPlan";
 import type { DeltaDir, Tone } from "@/lib/bands";
 import { formatValue, MISSING, NBSP } from "@/lib/format";
 import type { PlanRow } from "@/queries/weeklyPlan";
 
-/** Each status's word and its DeltaMark, as KeyStatRow marks a value: done up and good, behind and missed down and bad, on pace a grey dot, no data none. */
+/** Each status's word and its DeltaMark, as KeyStatRow marks a value: done up and good, behind and missed down and bad, on pace a grey dot, no data none. The word is a getter: it resolves when read. */
 export const PLAN_STATUS: Record<PlanStatus, { word: string; mark: { dir: DeltaDir; tone: Tone } | null }> = {
-  done: { word: "Done", mark: { dir: "up", tone: "good" } },
-  on_pace: { word: "On pace", mark: { dir: "flat", tone: "neutral" } },
-  behind: { word: "Behind", mark: { dir: "down", tone: "bad" } },
-  missed: { word: "Missed", mark: { dir: "down", tone: "bad" } },
-  no_data: { word: "No data", mark: null },
+  done: { get word() { return i18n.t("goals:planStatus.done"); }, mark: { dir: "up", tone: "good" } },
+  on_pace: { get word() { return i18n.t("goals:planStatus.onPace"); }, mark: { dir: "flat", tone: "neutral" } },
+  behind: { get word() { return i18n.t("goals:planStatus.behind"); }, mark: { dir: "down", tone: "bad" } },
+  missed: { get word() { return i18n.t("goals:planStatus.missed"); }, mark: { dir: "down", tone: "bad" } },
+  no_data: { get word() { return i18n.t("goals:planStatus.noData"); }, mark: null },
 };
-
-const plural = (n: number, one: string, many = `${one}s`) => `${formatValue("grouped", n)}${NBSP}${n === 1 ? one : many}`;
 
 type Row = Pick<PlanRow, "key" | "value" | "target" | "format" | "status" | "expected" | "streak">;
 
@@ -23,36 +22,38 @@ export const planValueText = (it: Pick<Row, "value" | "format">) => (it.value ==
 
 /** "of 150 min", "of 2 sessions", "of 8,000", "of 80%", "of 5 nights". */
 export function planTargetText(it: Pick<Row, "key" | "target" | "format">): string {
-  const t = formatValue(it.format, it.target);
+  const value = formatValue(it.format, it.target);
   switch (it.key) {
     case "zone13":
     case "zone45":
-      return `of ${t}${NBSP}min`;
+      return i18n.t("goals:planTarget.minutes", { value });
     case "strength":
-      return `of ${plural(it.target, "session")}`;
+      return i18n.t("goals:planTarget.sessions", { count: it.target, value: formatValue("grouped", it.target) });
     case "consistency":
-      return `of ${t}%`;
+      return i18n.t("goals:planTarget.percent", { value });
     case "sleepNeed":
-      return `of ${plural(it.target, "night")}`;
+      return i18n.t("goals:planTarget.nights", { count: it.target, value: formatValue("grouped", it.target) });
     default:
-      return `of ${t}`;
+      return i18n.t("goals:planTarget.plain", { value });
   }
 }
 
 /** What is left to the target, in the target's words: "70 min", "1 session", "500 steps a day", "2 points", "3 nights". */
 function leftText(it: Row, left: number): string {
+  const count = Math.ceil(left);
+  const value = formatValue("grouped", count);
   switch (it.key) {
     case "zone13":
     case "zone45":
-      return `${Math.ceil(left)}${NBSP}min`;
+      return i18n.t("goals:planLeft.minutes", { value: count });
     case "strength":
-      return plural(Math.ceil(left), "session");
+      return i18n.t("goals:planLeft.sessions", { count, value });
     case "steps":
-      return `${plural(Math.ceil(left), "step")} a day`;
+      return i18n.t("goals:planLeft.steps", { count, value });
     case "consistency":
-      return plural(Math.ceil(left), "point");
+      return i18n.t("goals:planLeft.points", { count, value });
     case "sleepNeed":
-      return plural(Math.ceil(left), "night");
+      return i18n.t("goals:planLeft.nights", { count, value });
   }
 }
 
@@ -62,17 +63,17 @@ export function planCaption(it: Row): string {
   const left = it.value === null ? it.target : Math.max(0, it.target - it.value);
   switch (it.status) {
     case "done":
-      return n > 1 ? `Done · ${n}-week streak` : "Done this week";
+      return n > 1 ? i18n.t("goals:planCaption.doneStreak", { count: n }) : i18n.t("goals:planCaption.done");
     case "on_pace":
-      return n > 0 ? `${leftText(it, left)} to go · ${n}-week streak on the line` : `On pace · ${leftText(it, left)} to go`;
+      return n > 0 ? i18n.t("goals:planCaption.onPaceStreak", { left: leftText(it, left), count: n }) : i18n.t("goals:planCaption.onPace", { left: leftText(it, left) });
     case "behind":
       // Totals: how far under an even pace; averages and counts: how far from the target.
-      if ((it.key === "zone13" || it.key === "zone45") && it.expected !== null) return `${leftText(it, it.expected - (it.value ?? 0))} behind pace`;
-      return it.key === "steps" || it.key === "consistency" ? `${leftText(it, left)} short` : `${leftText(it, left)} to go`;
+      if ((it.key === "zone13" || it.key === "zone45") && it.expected !== null) return i18n.t("goals:planCaption.behindPace", { left: leftText(it, it.expected - (it.value ?? 0)) });
+      return i18n.t(it.key === "steps" || it.key === "consistency" ? "goals:planCaption.short" : "goals:planCaption.toGo", { left: leftText(it, left) });
     case "missed":
-      return it.streak.longest > 1 ? `Missed · best run ${it.streak.longest} weeks` : "Missed this week";
+      return it.streak.longest > 1 ? i18n.t("goals:planCaption.missedBest", { count: it.streak.longest }) : i18n.t("goals:planCaption.missed");
     case "no_data":
-      return "No data yet";
+      return i18n.t("goals:planCaption.noData");
   }
 }
 

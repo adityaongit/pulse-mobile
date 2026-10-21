@@ -3,8 +3,10 @@
 // streak, and a row per target with a ZoneBars-style bar (a tick where an even pace would be), the status word and a
 // DeltaMark. It opens the sheet `/weekly-plan?d=`: every target's full row (status and what is left, the week's days as
 // grey dots, the last 8 weeks, what the habit is worth on Pulse Age), each a link to its screen.
+import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { CalendarCheck, Dumbbell, Flame, Footprints, HeartPulse, Moon, type LucideIcon } from "lucide-react-native";
+import { i18n } from "@/i18n/config";
 import { DAY, formatDay, rangeLabel } from "@/lib/format";
 import { getWeeklyPlan, PLAN_KEYS, type PlanKey, type PlanRow, type WeeklyPlanVM } from "@/queries/weeklyPlan";
 import { useScreen } from "@/screens/useScreen";
@@ -30,8 +32,9 @@ import { PLAN_STATUS, planCaption, planTargetText, planValueText } from "./weekl
 
 export const PLAN_ICON: Record<PlanKey, LucideIcon> = { zone13: HeartPulse, zone45: Flame, strength: Dumbbell, steps: Footprints, consistency: CalendarCheck, sleepNeed: Moon };
 
-const titleOf = (vm: { isCurrentWeek: boolean; monday: string }) => (vm.isCurrentWeek ? "This week" : `Week of ${formatDay(vm.monday, DAY.monthDay)}`);
-const streakText = (weeks: number) => (weeks === 1 ? "Every target met last week" : `Every target met ${weeks} weeks running`);
+const titleOf = (vm: { isCurrentWeek: boolean; monday: string }) => (vm.isCurrentWeek ? i18n.t("goals:plan.thisWeek") : i18n.t("goals:plan.weekOf", { date: formatDay(vm.monday, DAY.monthDay) }));
+const cardTitleOf = (vm: { isCurrentWeek: boolean; monday: string }) => (vm.isCurrentWeek ? i18n.t("goals:plan.cardThisWeek") : i18n.t("goals:plan.cardWeekOf", { date: formatDay(vm.monday, DAY.monthDay).toLowerCase() }));
+const streakText = (weeks: number) => i18n.t("goals:plan.streak", { count: weeks });
 /** Where an even pace would be by now, on [0, 1]; null once done or missed. */
 const paceOf = (it: PlanRow) => (it.expected !== null && it.status !== "done" && it.status !== "missed" && it.target > 0 ? Math.min(1, it.expected / it.target) : null);
 
@@ -44,20 +47,21 @@ function usePlanWeek(day: string) {
 
 /** Strain's Weekly plan card. */
 export function WeeklyPlanCard({ day }: { day: string }) {
+  const { t } = useTranslation("goals");
   const { keys, ready, data } = usePlanWeek(day);
   if (ready && keys.length === 0)
     return (
-      <SectionShell variant="card" title="Weekly plan">
-        <EmptyState body="No weekly targets switched on." action={{ label: "Set weekly targets", href: GOALS_SETTINGS }} />
+      <SectionShell variant="card" title={t("plan.title")}>
+        <EmptyState body={t("plan.emptyBody")} action={{ label: t("plan.emptyAction"), href: GOALS_SETTINGS }} />
       </SectionShell>
     );
   const streak = data?.planStreak.current ?? 0;
   return (
     <SectionShell
       variant="card"
-      title={data ? `Weekly plan · ${titleOf(data).toLowerCase()}` : "Weekly plan"}
+      title={data ? cardTitleOf(data) : t("plan.title")}
       href={`/weekly-plan?d=${day}`}
-      aside={data && <Text className={ASIDE}>{`${data.onTrack} of ${data.items.length} on track`}</Text>}
+      aside={data && <Text className={ASIDE}>{t("plan.onTrack", { on: data.onTrack, total: data.items.length })}</Text>}
     >
       {data ? (
         <View>
@@ -79,6 +83,7 @@ export function WeeklyPlanCard({ day }: { day: string }) {
 }
 
 function PlanRowCompact({ it }: { it: PlanRow }) {
+  const { t } = useTranslation("goals");
   const { c } = useTheme();
   const status = PLAN_STATUS[it.status];
   return (
@@ -89,7 +94,7 @@ function PlanRowCompact({ it }: { it: PlanRow }) {
       of={planTargetText(it)}
       muted={it.value === null}
       mark={status.mark}
-      spoken={`${it.label}: ${planValueText(it)} ${planTargetText(it)}, ${status.word}`}
+      spoken={t("plan.spoken", { label: it.label, value: planValueText(it), target: planTargetText(it), status: status.word })}
     >
       <BarLine value={it.progress} color={planColor(c, it.key)} tick={paceOf(it)} caption={status.word} />
     </GoalRowShell>
@@ -99,6 +104,7 @@ function PlanRowCompact({ it }: { it: PlanRow }) {
 /** The last 8 weeks as small grey squares, oldest first: filled when the target was met, outlined otherwise. */
 /** One target's full row in the sheet; the head links to its screen. */
 function PlanLine({ it, onOpen }: { it: PlanRow; onOpen: () => void }) {
+  const { t } = useTranslation("goals");
   const { c } = useTheme();
   return (
     <GoalRowShell
@@ -108,7 +114,7 @@ function PlanLine({ it, onOpen }: { it: PlanRow; onOpen: () => void }) {
       of={planTargetText(it)}
       muted={it.value === null}
       mark={PLAN_STATUS[it.status].mark}
-      spoken={`${it.label}: ${planValueText(it)} ${planTargetText(it)}. ${planCaption(it)}`}
+      spoken={t("plan.spokenLine", { label: it.label, value: planValueText(it), target: planTargetText(it), caption: planCaption(it) })}
       onPress={onOpen}
     >
       <BarLine value={it.progress} color={planColor(c, it.key)} tick={paceOf(it)} />
@@ -119,13 +125,10 @@ function PlanLine({ it, onOpen }: { it: PlanRow; onOpen: () => void }) {
 
 // Each row is the target, its bar and one line, so the page reads at a glance (the owner found the week's days, the
 // last 8 weeks and the per-habit Pulse Age effect too noisy here). A tap opens the habit's screen; Pulse Age has its own.
-const WHY_THESE = {
-  title: "Why these",
-  body: "These are the habits Pulse Age scores. The defaults follow the WHO’s 150 moderate or 75 vigorous minutes and two strength days a week, about 8,000 steps a day, and a steady sleep schedule. A tick on a bar marks where an even pace would be by now.",
-};
 
 /** The page `/weekly-plan?d=` (halo's PlanPage). */
 export function WeeklyPlanPageBody() {
+  const { t } = useTranslation("goals");
   const [day] = useSelectedDay();
   const { keys, data } = usePlanWeek(day);
   const go = (href: string) => {
@@ -134,13 +137,13 @@ export function WeeklyPlanPageBody() {
   };
   return (
     <TaskPage
-      title={data ? titleOf(data) : "This week"}
-      description={data ? `${rangeLabel(data.monday, data.sunday)} · ${data.onTrack} of ${data.items.length} on track` : undefined}
-      action={<InfoButton info={WHY_THESE} label="Why these" variant="header" />}
+      title={data ? titleOf(data) : t("plan.thisWeek")}
+      description={data ? t("plan.pageDescription", { range: rangeLabel(data.monday, data.sunday), on: data.onTrack, total: data.items.length }) : undefined}
+      action={<InfoButton info={{ title: t("plan.whyTitle"), body: t("plan.whyBody") }} label={t("plan.whyTitle")} variant="header" />}
       footer={
         <View className="flex-row gap-3">
-          <Button variant="secondary" className="flex-1" onPress={() => go(GOALS_SETTINGS)}>Edit targets</Button>
-          <Button variant="secondary" className="flex-1" onPress={() => go("/health/healthspan")}>Pulse Age</Button>
+          <Button variant="secondary" className="flex-1" onPress={() => go(GOALS_SETTINGS)}>{t("plan.editTargets")}</Button>
+          <Button variant="secondary" className="flex-1" onPress={() => go("/health/healthspan")}>{t("plan.pulseAge")}</Button>
         </View>
       }
     >
