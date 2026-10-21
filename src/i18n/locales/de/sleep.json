@@ -1,0 +1,110 @@
+{
+  "title": "Schlaf",
+  "band": {
+    "optimal": "optimal",
+    "sufficient": "ausreichend",
+    "poor": "schlecht"
+  },
+  "status": {
+    "poor": "Schlecht",
+    "sufficient": "Ausreichend",
+    "optimal": "Optimal"
+  },
+  "stat": {
+    "hours": "Stunden vs. Bedarf",
+    "consistency": "Sleep Consistency",
+    "efficiency": "Schlafeffizienz",
+    "restorative": "Erholsamer Schlaf",
+    "sleepStress": "Schlafstress",
+    "timeInBed": "Zeit im Bett",
+    "wakeEvents": "Aufwachmomente",
+    "resp": "Atemfrequenz",
+    "debt": "Sleep Debt"
+  },
+  "stage": {
+    "awake": "Wach",
+    "rem": "REM",
+    "light": "Leicht",
+    "deep": "Tief"
+  },
+  "insight": {
+    "laterBedtime_one": "Dein Schlaf war {{band}}. Regelmäßigkeit ist der einfachste Gewinn: Du bist {{count}} Minute später ins Bett gegangen als üblich.",
+    "laterBedtime_other": "Dein Schlaf war {{band}}. Regelmäßigkeit ist der einfachste Gewinn: Du bist {{count}} Minuten später ins Bett gegangen als üblich.",
+    "earlierBedtime_one": "Dein Schlaf war {{band}}. Regelmäßigkeit ist der einfachste Gewinn: Du bist {{count}} Minute früher ins Bett gegangen als üblich.",
+    "earlierBedtime_other": "Dein Schlaf war {{band}}. Regelmäßigkeit ist der einfachste Gewinn: Du bist {{count}} Minuten früher ins Bett gegangen als üblich.",
+    "steadier": "Dein Schlaf war {{band}}. Mit gleichmäßigeren Schlafens- und Aufstehzeiten würde deine Consistency steigen.",
+    "lessSleep_one": "Dein Schlaf war {{band}}. Du hast {{count}} Minute weniger geschlafen, als du gebraucht hättest; eine frühere Nacht hilft.",
+    "lessSleep_other": "Dein Schlaf war {{band}}. Du hast {{count}} Minuten weniger geschlafen, als du gebraucht hättest; eine frühere Nacht hilft.",
+    "onTrack": "Dein Schlaf war {{band}}. Du hast deinen üblichen Rhythmus gehalten und nah an deinem Bedarf geschlafen.",
+    "explore": "Entdecke deine Schlaf-Insights"
+  },
+  "cards": {
+    "lastNight": "Schlaf der letzten Nacht",
+    "vsPrior30": "vs. die 30 Tage davor",
+    "hoursVsNeeded": "Stunden vs. Bedarf",
+    "consistency": "Sleep Consistency",
+    "efficiency": "Schlafeffizienz",
+    "tonight": "Schlaf heute Nacht"
+  },
+  "need": {
+    "hoursOfSleep": "Schlafstunden",
+    "sleepNeeded": "Sleep Need",
+    "calibrating": "Dein Bedarf pendelt sich nach 7 Nächten ein. Bis dahin gelten {{need}}.",
+    "healthyMinimum": "Gesundes Minimum",
+    "recentStrain": "Jüngster Strain",
+    "sleepDebt": "Sleep Debt",
+    "naps": "Nickerchen",
+    "priorAverage": "Durchschnitt der 30 Nächte davor {{value}}%"
+  },
+  "consistency": {
+    "optimal": "Optimale Schlafens-/Aufstehzeit",
+    "aria": "Schlafens- und Aufstehzeiten der letzten fünf Nächte",
+    "ariaLast": "Schlafens- und Aufstehzeiten der letzten fünf Nächte, letzte Nacht {{bed}} bis {{wake}}"
+  },
+  "efficiency": {
+    "asleep": "Schlafend",
+    "awake": "Wach",
+    "wakeEvents": "Aufwachmomente"
+  },
+  "planner": {
+    "calibrating": "Der Sleep Planner braucht 7 Nächte, um deine Aufstehzeit zu lernen.",
+    "shareOfNeed": "{{pct}}% des Bedarfs",
+    "typicalWake": "Typisches Aufstehen",
+    "weekdayWake": "Aufstehzeit unter der Woche",
+    "weekendWake": "Aufstehzeit am Wochenende",
+    "needTonight": "Bedarf heute Nacht: <n>{{value}}</n>",
+    "plan": {
+      "peak": "Peak",
+      "perform": "Perform",
+      "getBy": "Get by"
+    }
+  },
+  "weekly": {
+    "sleep": "Sleep Performance",
+    "hours": "Stunden vs. Bedarf (Stunden)",
+    "hoursNeed": "Stunden vs. Bedarf (%)",
+    "restorative": "Erholsamer Schlaf",
+    "consistency": "Sleep Consistency",
+    "timeInBed": "Zeit im Bett",
+    "efficiency": "Schlafeffizienz"
+  },
+  "skeleton": {
+    "healthyMinimum": "Gesundes Minimum",
+    "recentStrain": "Jüngster Strain",
+    "sleepDebt": "Sleep Debt"
+  },
+  "nap": {
+    "title": "Nickerchen",
+    "notFound": "Diese Seite wurde nicht gefunden.",
+    "when": "{{day}} {{start}} bis {{end}}",
+    "activity": "Aktivität",
+    "activityStrain": "Aktivitäts-Strain",
+    "duration": "Dauer",
+    "keyStats": "Kennzahlen",
+    "vs30": "vs. 30-Tage-Durchschnitt",
+    "avgHr": "Ø HF",
+    "maxHr": "Max. HF",
+    "calories": "Kalorien",
+    "hrr": "Herzfrequenz-Erholung"
+  }
+}

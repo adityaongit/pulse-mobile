@@ -1,0 +1,59 @@
+{
+  "title": "Recovery",
+  "loadError": "Dieser Bildschirm konnte nicht geladen werden.",
+  "legendPeriod": "letzte 30 Tage",
+  "legendSkeleton": "Heute vs. letzte 30 Tage",
+  "exploreInsights": "Entdecke deine Recovery-Insights",
+  "weeklyTitle": {
+    "recovery": "Recovery",
+    "hrv": "Herzfrequenzvariabilität",
+    "rhr": "Ruheherzfrequenz",
+    "resp": "Atemfrequenz",
+    "sleep": "Sleep Performance"
+  },
+  "behaviors": {
+    "title": "Verhaltens-Insights",
+    "body": "Manches, was du gestern getan hast, könnte deinen heutigen Recovery-Score beeinflusst haben.",
+    "spokenUp": "{{label}}, ging mit höherer Recovery einher",
+    "spokenDown": "{{label}}, ging mit niedrigerer Recovery einher",
+    "spokenNeutral": "{{label}}, kein klarer Effekt"
+  },
+  "subject": {
+    "hrv": "HRV",
+    "rhr": "Ruheherzfrequenz",
+    "resp": "Atemfrequenz",
+    "sleep": "Schlaf",
+    "skin": "Hauttemperatur"
+  },
+  "driver": {
+    "strongSleep": "Starke Nacht",
+    "weakSleep": "Schlaf unter einer guten Nacht",
+    "typicalSleep": "Typische Nacht",
+    "skinWarmer": "Hauttemperatur wärmer als üblich",
+    "skinCooler": "Hauttemperatur kühler als üblich",
+    "hrvBelow": "HRV unter der Baseline",
+    "atBaseline": "{{subject}} auf Baseline",
+    "slightlyAbove": "{{subject}} leicht über der Baseline",
+    "slightlyBelow": "{{subject}} leicht unter der Baseline",
+    "above": "{{subject}} über der Baseline",
+    "below": "{{subject}} unter der Baseline"
+  },
+  "phrase": {
+    "hrvGood": "dein HRV liegt über deiner Baseline",
+    "hrvBad": "dein HRV liegt unter deiner Baseline",
+    "rhrGood": "deine Ruheherzfrequenz ist niedriger als üblich",
+    "rhrBad": "deine Ruheherzfrequenz ist höher als üblich",
+    "respGood": "deine Atemfrequenz ist stabil",
+    "respBad": "deine Atemfrequenz ist gestiegen",
+    "sleepGood": "du hast gut geschlafen",
+    "sleepBad": "dein Schlaf war zu kurz",
+    "skinGood": "deine Hauttemperatur ist normal",
+    "skinBad": "deine Hauttemperatur wich von deinem Normalwert ab"
+  },
+  "insight": {
+    "lifted": "{{phrase}}, was die Recovery heute gehoben hat.",
+    "heldBack": "{{phrase}}, was die Recovery heute gebremst hat.",
+    "mixed": "{{good}}, aber {{bad}}. Zusammen haben sie die heutige Recovery geprägt.",
+    "steady": "Deine Werte liegen nah an deiner Baseline, deshalb ist die Recovery nahe deinem üblichen Niveau."
+  }
+}

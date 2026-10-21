@@ -1,0 +1,41 @@
+{
+  "recovery": { "title": "Recovery pronto", "body": "{{percent}}%: {{band}}" },
+  "cantSync": {
+    "title": "O Pulse não consegue sincronizar",
+    "body": "O Health Connect não sincroniza há {{gap}}. Abra o Pulse para sincronizar."
+  },
+  "since": {
+    "hours_one": "{{count}} hora",
+    "hours_many": "{{count}} de horas",
+    "hours_other": "{{count}} horas",
+    "days_one": "{{count}} dia",
+    "days_many": "{{count}} de dias",
+    "days_other": "{{count}} dias"
+  },
+  "checkIn": { "title": "Check-in", "body": "Como foi o dia? Tire um minuto para o seu check-in." },
+  "strainTarget": {
+    "title": "Strain Target atingido",
+    "inside": "O Day Strain {{strain}} está dentro do Strain Target de hoje, {{range}}.",
+    "past": "O Day Strain {{strain}} passou do Strain Target de hoje, {{range}}. Priorize o sono esta noite para se recuperar."
+  },
+  "monitor": {
+    "illnessTitle": "Seu corpo pode estar combatendo algo",
+    "illnessBody": "Vários sinais vitais saíram da sua faixa normal ao mesmo tempo, um padrão que costuma vir antes de você se sentir mal. Considere um dia mais leve.",
+    "title_one": "{{count}} sinal vital fora da sua faixa normal",
+    "title_many": "{{count}} de sinais vitais fora da sua faixa normal",
+    "title_other": "{{count}} sinais vitais fora da sua faixa normal",
+    "body_one": "{{names}} está fora da sua faixa habitual. Pode ser um sinal precoce de doença ou de esforço intenso.",
+    "body_many": "{{names}} estão fora da sua faixa habitual. Pode ser um sinal precoce de doença ou de esforço intenso.",
+    "body_other": "{{names}} estão fora da sua faixa habitual. Pode ser um sinal precoce de doença ou de esforço intenso.",
+    "oneVital": "Um sinal vital",
+    "namesAnd": "{{list}} e {{last}}"
+  },
+  "report": {
+    "title": "Relatório semanal pronto",
+    "recovery": "Recovery médio de {{value}}%",
+    "strain": "Day Strain {{value}}",
+    "withParts": "{{range}}: {{parts}}.",
+    "empty": "Sua semana de {{range}} chegou."
+  },
+  "windDown": { "title": "Hora de desacelerar", "body": "Na cama às {{time}} para atingir o Sleep Need de hoje." }
+}

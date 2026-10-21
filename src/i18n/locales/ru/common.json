@@ -1,0 +1,106 @@
+{
+  "actions": {
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "back": "Назад",
+    "tryAgain": "Повторить",
+    "checkIn": "Отметиться",
+    "close": "Закрыть",
+    "later": "Позже",
+    "update": "Обновить"
+  },
+  "loading": "Загрузка…",
+  "today": "Сегодня",
+  "yesterday": "Вчера",
+  "phrase": {
+    "today": "сегодня",
+    "yesterday": "вчера",
+    "on": "{{date}}"
+  },
+  "duration": {
+    "minutes_one": "{{count}} минута",
+    "minutes_few": "{{count}} минуты",
+    "minutes_many": "{{count}} минут",
+    "minutes_other": "{{count}} минуты",
+    "hours_one": "{{count}} час",
+    "hours_few": "{{count}} часа",
+    "hours_many": "{{count}} часов",
+    "hours_other": "{{count}} часа",
+    "hoursMinutes": "{{hours}} {{minutes}}"
+  },
+  "ago": {
+    "justNow": "только что",
+    "minutes_one": "{{count}} минуту назад",
+    "minutes_few": "{{count}} минуты назад",
+    "minutes_many": "{{count}} минут назад",
+    "minutes_other": "{{count}} минуты назад",
+    "hours_one": "{{count}} час назад",
+    "hours_few": "{{count}} часа назад",
+    "hours_many": "{{count}} часов назад",
+    "hours_other": "{{count}} часа назад",
+    "days_one": "{{count}} день назад",
+    "days_few": "{{count}} дня назад",
+    "days_many": "{{count}} дней назад",
+    "days_other": "{{count}} дня назад"
+  },
+  "agoShort": {
+    "now": "Сейчас",
+    "minutes": "{{count}} мин",
+    "hours": "{{count}} ч",
+    "days": "{{count}} д"
+  },
+  "unitWords": {
+    "percent": "процентов",
+    "ms": "миллисекунд",
+    "bpm": "ударов в минуту",
+    "rpm": "вдохов в минуту",
+    "celsius": "градусов Цельсия",
+    "fahrenheit": "градусов Фаренгейта",
+    "kcal": "калорий",
+    "mlKgMin": "миллилитров на килограмм в минуту",
+    "times": "раз",
+    "min": "минут",
+    "h": "часов",
+    "km": "километров",
+    "perKm": "на километр",
+    "mi": "миль",
+    "perMi": "на милю",
+    "kg": "килограммов",
+    "lb": "фунтов",
+    "m": "метров",
+    "ft": "футов",
+    "cm": "сантиметров",
+    "in": "дюймов",
+    "ml": "миллилитров",
+    "flOz": "жидких унций"
+  },
+  "spoken": {
+    "minus": "минус",
+    "noData": "нет данных",
+    "unavailable": "{{label}} недоступно: {{why}}",
+    "provisional": " предварительно,",
+    "soFar": " на данный момент",
+    "target": ", цель от {{from}} до {{to}} процентов",
+    "band": ", {{band}}",
+    "dialStrain": "{{label}}{{provisional}} {{value}}{{soFar}}{{target}}",
+    "dialValue": "{{label}}{{provisional}} {{value}}{{band}}",
+    "stat": "{{label}} {{value}}",
+    "statVsAverage": "{{label}} {{value}}, {{relation}} твоего показателя «{{averageLabel}}» {{average}}{{tone}}",
+    "above": "выше",
+    "below": "ниже",
+    "inLineWith": "на уровне",
+    "average30": "среднее за 30 дней",
+    "toneGood": ", хорошо",
+    "toneBad": ", хуже обычного"
+  },
+  "band": {
+    "green": "Зелёная",
+    "yellow": "Жёлтая",
+    "red": "Красная"
+  },
+  "stressLevel": {
+    "low": "Низкий",
+    "medium": "Средний",
+    "high": "Высокий"
+  }
+}

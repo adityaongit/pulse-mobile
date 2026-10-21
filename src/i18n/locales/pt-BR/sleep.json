@@ -1,0 +1,113 @@
+{
+  "title": "Sono",
+  "band": {
+    "optimal": "ideal",
+    "sufficient": "suficiente",
+    "poor": "ruim"
+  },
+  "status": {
+    "poor": "Ruim",
+    "sufficient": "Suficiente",
+    "optimal": "Ideal"
+  },
+  "stat": {
+    "hours": "Horas vs. necessárias",
+    "consistency": "Sleep Consistency",
+    "efficiency": "Eficiência do sono",
+    "restorative": "Sono restaurador",
+    "sleepStress": "Estresse no sono",
+    "timeInBed": "Tempo na cama",
+    "wakeEvents": "Despertares",
+    "resp": "Frequência respiratória",
+    "debt": "Sleep Debt"
+  },
+  "stage": {
+    "awake": "Acordado",
+    "rem": "REM",
+    "light": "Leve",
+    "deep": "Profundo"
+  },
+  "insight": {
+    "laterBedtime_one": "Seu sono foi {{band}}. A regularidade é a vitória mais fácil: você foi dormir {{count}} minuto mais tarde que o normal.",
+    "laterBedtime_many": "Seu sono foi {{band}}. A regularidade é a vitória mais fácil: você foi dormir {{count}} de minutos mais tarde que o normal.",
+    "laterBedtime_other": "Seu sono foi {{band}}. A regularidade é a vitória mais fácil: você foi dormir {{count}} minutos mais tarde que o normal.",
+    "earlierBedtime_one": "Seu sono foi {{band}}. A regularidade é a vitória mais fácil: você foi dormir {{count}} minuto mais cedo que o normal.",
+    "earlierBedtime_many": "Seu sono foi {{band}}. A regularidade é a vitória mais fácil: você foi dormir {{count}} de minutos mais cedo que o normal.",
+    "earlierBedtime_other": "Seu sono foi {{band}}. A regularidade é a vitória mais fácil: você foi dormir {{count}} minutos mais cedo que o normal.",
+    "steadier": "Seu sono foi {{band}}. Manter um horário mais regular de dormir e acordar melhoraria sua Sleep Consistency.",
+    "lessSleep_one": "Seu sono foi {{band}}. Você dormiu {{count}} minuto a menos que o necessário; dormir mais cedo ajuda.",
+    "lessSleep_many": "Seu sono foi {{band}}. Você dormiu {{count}} de minutos a menos que o necessário; dormir mais cedo ajuda.",
+    "lessSleep_other": "Seu sono foi {{band}}. Você dormiu {{count}} minutos a menos que o necessário; dormir mais cedo ajuda.",
+    "onTrack": "Seu sono foi {{band}}. Você manteve sua rotina habitual e dormiu perto do necessário.",
+    "explore": "Explore seus insights de sono"
+  },
+  "cards": {
+    "lastNight": "Sono da noite passada",
+    "vsPrior30": "vs. 30 dias anteriores",
+    "hoursVsNeeded": "Horas vs. necessárias",
+    "consistency": "Sleep Consistency",
+    "efficiency": "Eficiência do sono",
+    "tonight": "Sono de hoje à noite"
+  },
+  "need": {
+    "hoursOfSleep": "Horas de sono",
+    "sleepNeeded": "Sono necessário",
+    "calibrating": "Sua necessidade se ajusta após 7 noites. Usando {{need}} até lá.",
+    "healthyMinimum": "Mínimo saudável",
+    "recentStrain": "Strain recente",
+    "sleepDebt": "Sleep Debt",
+    "naps": "Cochilos",
+    "priorAverage": "Média das 30 noites anteriores {{value}}%"
+  },
+  "consistency": {
+    "optimal": "Horário ideal de dormir/acordar",
+    "aria": "Horários de dormir e acordar das últimas cinco noites",
+    "ariaLast": "Horários de dormir e acordar das últimas cinco noites, ontem à noite das {{bed}} às {{wake}}"
+  },
+  "efficiency": {
+    "asleep": "Dormindo",
+    "awake": "Acordado",
+    "wakeEvents": "Despertares"
+  },
+  "planner": {
+    "calibrating": "O planejador de sono precisa de 7 noites para aprender seu horário de acordar.",
+    "shareOfNeed": "{{pct}}% do necessário",
+    "typicalWake": "Despertar típico",
+    "weekdayWake": "Horário de acordar em dias úteis",
+    "weekendWake": "Horário de acordar no fim de semana",
+    "needTonight": "Necessário hoje à noite: <n>{{value}}</n>",
+    "plan": {
+      "peak": "Pico",
+      "perform": "Desempenho",
+      "getBy": "Básico"
+    }
+  },
+  "weekly": {
+    "sleep": "Sleep Performance",
+    "hours": "Horas vs. necessárias (horas)",
+    "hoursNeed": "Horas vs. necessárias (%)",
+    "restorative": "Sono restaurador",
+    "consistency": "Sleep Consistency",
+    "timeInBed": "Tempo na cama",
+    "efficiency": "Eficiência do sono"
+  },
+  "skeleton": {
+    "healthyMinimum": "Mínimo saudável",
+    "recentStrain": "Strain recente",
+    "sleepDebt": "Sleep Debt"
+  },
+  "nap": {
+    "title": "Cochilo",
+    "notFound": "Esta página não foi encontrada.",
+    "when": "{{day}} {{start}} às {{end}}",
+    "activity": "Atividade",
+    "activityStrain": "Strain da atividade",
+    "duration": "Duração",
+    "keyStats": "Estatísticas principais",
+    "vs30": "vs. média de 30 dias",
+    "avgHr": "FC média",
+    "maxHr": "FC máx.",
+    "calories": "Calorias",
+    "hrr": "Recuperação da frequência cardíaca"
+  }
+}

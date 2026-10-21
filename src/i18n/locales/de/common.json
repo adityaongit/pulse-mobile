@@ -1,0 +1,96 @@
+{
+  "actions": {
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "back": "Zurück",
+    "tryAgain": "Erneut versuchen",
+    "checkIn": "Check-in",
+    "close": "Schließen",
+    "later": "Später",
+    "update": "Aktualisieren"
+  },
+  "loading": "Lädt…",
+  "today": "Heute",
+  "yesterday": "Gestern",
+  "phrase": {
+    "today": "heute",
+    "yesterday": "gestern",
+    "on": "am {{date}}"
+  },
+  "duration": {
+    "minutes_one": "{{count}} Minute",
+    "minutes_other": "{{count}} Minuten",
+    "hours_one": "{{count}} Stunde",
+    "hours_other": "{{count}} Stunden",
+    "hoursMinutes": "{{hours}} {{minutes}}"
+  },
+  "ago": {
+    "justNow": "gerade eben",
+    "minutes_one": "vor {{count}} Minute",
+    "minutes_other": "vor {{count}} Minuten",
+    "hours_one": "vor {{count}} Stunde",
+    "hours_other": "vor {{count}} Stunden",
+    "days_one": "vor {{count}} Tag",
+    "days_other": "vor {{count}} Tagen"
+  },
+  "agoShort": {
+    "now": "Jetzt",
+    "minutes": "{{count}} Min.",
+    "hours": "{{count}} Std.",
+    "days": "{{count}} T."
+  },
+  "unitWords": {
+    "percent": "Prozent",
+    "ms": "Millisekunden",
+    "bpm": "Schläge pro Minute",
+    "rpm": "Atemzüge pro Minute",
+    "celsius": "Grad Celsius",
+    "fahrenheit": "Grad Fahrenheit",
+    "kcal": "Kalorien",
+    "mlKgMin": "Milliliter pro Kilo pro Minute",
+    "times": "Mal",
+    "min": "Minuten",
+    "h": "Stunden",
+    "km": "Kilometer",
+    "perKm": "pro Kilometer",
+    "mi": "Meilen",
+    "perMi": "pro Meile",
+    "kg": "Kilogramm",
+    "lb": "Pfund",
+    "m": "Meter",
+    "ft": "Fuß",
+    "cm": "Zentimeter",
+    "in": "Zoll",
+    "ml": "Milliliter",
+    "flOz": "Flüssigunzen"
+  },
+  "spoken": {
+    "minus": "minus",
+    "noData": "keine Daten",
+    "unavailable": "{{label}} nicht verfügbar: {{why}}",
+    "provisional": " vorläufig,",
+    "soFar": " bisher",
+    "target": ", Ziel {{from}} bis {{to}} Prozent",
+    "band": ", {{band}}",
+    "dialStrain": "{{label}}{{provisional}} {{value}}{{soFar}}{{target}}",
+    "dialValue": "{{label}}{{provisional}} {{value}}{{band}}",
+    "stat": "{{label}} {{value}}",
+    "statVsAverage": "{{label}} {{value}}, {{relation}} dem Wert ({{averageLabel}}) von {{average}}{{tone}}",
+    "above": "über",
+    "below": "unter",
+    "inLineWith": "im Einklang mit",
+    "average30": "30-Tage-Durchschnitt",
+    "toneGood": ", gut",
+    "toneBad": ", schlechter als üblich"
+  },
+  "band": {
+    "green": "Grün",
+    "yellow": "Gelb",
+    "red": "Rot"
+  },
+  "stressLevel": {
+    "low": "Niedrig",
+    "medium": "Mittel",
+    "high": "Hoch"
+  }
+}

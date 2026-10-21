@@ -1,0 +1,216 @@
+{
+  "goalLabel": {
+    "steps": "Schritte",
+    "distance": "Distanz",
+    "floors": "Etagen",
+    "azm": "Active Zone Minutes",
+    "active_minutes": "Aktive Minuten",
+    "active_calories": "Aktive Kalorien",
+    "water": "Wasser",
+    "sleep": "Schlaf"
+  },
+  "goalShort": {
+    "steps": "Schritte",
+    "distance": "Distanz",
+    "floors": "Etagen",
+    "azm": "Zonen-Min.",
+    "active_minutes": "Aktiv",
+    "active_calories": "Kalorien",
+    "water": "Wasser",
+    "sleep": "Schlaf"
+  },
+  "goalName": {
+    "steps": "Schrittziel",
+    "distance": "Distanzziel",
+    "floors": "Etagenziel",
+    "azm": "Ziel für Active Zone Minutes",
+    "active_minutes": "Ziel für aktive Minuten",
+    "active_calories": "Ziel für aktive Kalorien",
+    "water": "Wasserziel",
+    "sleep": "Schlafziel"
+  },
+  "planLabel": {
+    "zone13": "Moderate Aktivität",
+    "zone45": "Intensive Aktivität",
+    "strength": "Krafteinheiten",
+    "steps": "Tägliche Schritte",
+    "consistency": "Sleep Consistency",
+    "sleepNeed": "Sleep Need erreicht"
+  },
+  "planShort": {
+    "zone13": "Moderat",
+    "zone45": "Intensiv",
+    "strength": "Kraft",
+    "steps": "Schritte",
+    "consistency": "Konstanz",
+    "sleepNeed": "Sleep Need"
+  },
+  "planDetail": {
+    "zone13": "Zonen 1–3, ab zügigem Gehen",
+    "zone45": "Zonen 4–5",
+    "strength": "Kraft, Gewichte, HIIT oder Calisthenics",
+    "steps": "Durchschnitt pro Tag",
+    "consistency": "Deine letzten 7 Nächte",
+    "sleepNeed": "Nächte, in denen du deinen Bedarf geschlafen hast"
+  },
+  "planUnit": {
+    "zone13": "min",
+    "zone45": "min",
+    "strength": "Einheiten",
+    "steps": "Schritte",
+    "consistency": "%",
+    "sleepNeed": "Nächte"
+  },
+  "planHint": {
+    "zone13": "WHO: 150–300 Minuten pro Woche. Zonen 1–3, ab 50% deiner maximalen Herzfrequenz, zügiges Gehen.",
+    "zone45": "WHO: 75–150 Minuten pro Woche, oder mische sie mit moderaten Minuten.",
+    "strength": "Workouts mit Kraft, Gewichten, HIIT oder Calisthenics. WHO: 2 oder mehr Tage pro Woche.",
+    "steps": "Dein Tagesdurchschnitt über die Woche. Der Nutzen flacht bei etwa 8.000 bis 10.000 Schritten pro Tag ab (Paluch 2022).",
+    "consistency": "Deine Sleep Consistency der letzten 7 Nächte. 80% und mehr ist optimal.",
+    "sleepNeed": "Nächte, in denen du den Bedarf schläfst, den Pulse für diese Nacht festlegt."
+  },
+  "planStatus": {
+    "done": "Geschafft",
+    "onPace": "Im Plan",
+    "behind": "Im Rückstand",
+    "missed": "Verpasst",
+    "noData": "Keine Daten"
+  },
+  "planTarget": {
+    "minutes": "von {{value}} min",
+    "sessions_one": "von {{value}} Einheit",
+    "sessions_other": "von {{value}} Einheiten",
+    "percent": "von {{value}}%",
+    "nights_one": "von {{value}} Nacht",
+    "nights_other": "von {{value}} Nächten",
+    "plain": "von {{value}}"
+  },
+  "planLeft": {
+    "minutes": "{{value}} min",
+    "sessions_one": "{{value}} Einheit",
+    "sessions_other": "{{value}} Einheiten",
+    "steps_one": "{{value}} Schritt pro Tag",
+    "steps_other": "{{value}} Schritte pro Tag",
+    "points_one": "{{value}} Punkt",
+    "points_other": "{{value}} Punkte",
+    "nights_one": "{{value}} Nacht",
+    "nights_other": "{{value}} Nächte"
+  },
+  "planCaption": {
+    "doneStreak_one": "Geschafft · {{count}}-Wochen-Serie",
+    "doneStreak_other": "Geschafft · {{count}}-Wochen-Serie",
+    "done": "Diese Woche geschafft",
+    "onPaceStreak_one": "Noch {{left}} · {{count}}-Wochen-Serie steht auf dem Spiel",
+    "onPaceStreak_other": "Noch {{left}} · {{count}}-Wochen-Serie steht auf dem Spiel",
+    "onPace": "Im Plan · noch {{left}}",
+    "behindPace": "{{left}} im Rückstand",
+    "short": "{{left}} fehlen",
+    "toGo": "Noch {{left}}",
+    "missedBest_one": "Verpasst · beste Serie {{count}} Woche",
+    "missedBest_other": "Verpasst · beste Serie {{count}} Wochen",
+    "missed": "Diese Woche verpasst",
+    "noData": "Noch keine Daten"
+  },
+  "plan": {
+    "title": "Wochenplan",
+    "thisWeek": "Diese Woche",
+    "weekOf": "Woche ab {{date}}",
+    "cardThisWeek": "Wochenplan · diese Woche",
+    "cardWeekOf": "Wochenplan · Woche ab {{date}}",
+    "onTrack": "{{on}} von {{total}} im Plan",
+    "pageDescription": "{{range}} · {{on}} von {{total}} im Plan",
+    "streak_one": "Letzte Woche alle Ziele erreicht",
+    "streak_other": "Seit {{count}} Wochen in Folge alle Ziele erreicht",
+    "emptyBody": "Keine Wochenziele eingeschaltet.",
+    "emptyAction": "Wochenziele festlegen",
+    "spoken": "{{label}}: {{value}} {{target}}, {{status}}",
+    "spokenLine": "{{label}}: {{value}} {{target}}. {{caption}}",
+    "whyTitle": "Warum diese",
+    "whyBody": "Das sind die Gewohnheiten, die Pulse Age bewertet. Die Standardwerte folgen den 150 moderaten oder 75 intensiven Minuten der WHO und zwei Krafttagen pro Woche, etwa 8.000 Schritten pro Tag und einem gleichmäßigen Schlafrhythmus. Ein Strich auf einem Balken zeigt, wo ein gleichmäßiges Tempo inzwischen wäre.",
+    "editTargets": "Ziele bearbeiten",
+    "pulseAge": "Pulse Age"
+  },
+  "card": {
+    "titleToday": "Ziele für heute",
+    "title": "Ziele",
+    "done": "{{done}} von {{total}} geschafft",
+    "emptyBody": "Keine Ziele eingeschaltet.",
+    "emptyAction": "Ziele festlegen",
+    "of": "von {{target}}",
+    "spoken": "{{label}}: {{value}} von {{target}}",
+    "spokenReached": "{{label}}: {{value}} von {{target}}, erreicht",
+    "spokenSoFar": "{{label}}: {{value}} von {{target}}, bisher heute"
+  },
+  "week": {
+    "caption": "Diese Woche, Montag bis Sonntag",
+    "of": "von {{target}} min",
+    "spoken": "Active Zone Minutes diese Woche: {{total}} von {{target}} Minuten",
+    "spokenReached": "Active Zone Minutes diese Woche: {{total}} von {{target}} Minuten, erreicht",
+    "daysLabel": "Active Zone Minutes, Tage mit erreichtem Tagesziel: {{met}} von {{total}}"
+  },
+  "line": {
+    "reachedStreak_one": "Erreicht · {{count}}-Tage-Serie",
+    "reachedStreak_other": "Erreicht · {{count}}-Tage-Serie",
+    "reached": "Erreicht",
+    "onTheLine_one": "{{count}}-Tage-Serie steht auf dem Spiel",
+    "onTheLine_other": "{{count}}-Tage-Serie steht auf dem Spiel",
+    "met": "{{met}} der letzten 7 Tage erreicht",
+    "spoken": "{{label}}: {{value}} von {{target}}. {{caption}}",
+    "spokenPct": "{{label}}: {{value}} von {{target}}, {{pct}} Prozent. {{caption}}",
+    "daysLabel": "{{label}}, letzte 7 Tage: {{met}} von 7 erreicht"
+  },
+  "page": {
+    "title": "Ziele",
+    "edit": "Ziele bearbeiten",
+    "off": "Aus",
+    "offBody": "{{labels}}. Schalte sie in Einstellungen › Ziele ein."
+  },
+  "weekdayLetter": {
+    "mon": "M",
+    "tue": "D",
+    "wed": "M",
+    "thu": "D",
+    "fri": "F",
+    "sat": "S",
+    "sun": "S"
+  },
+  "settings": {
+    "off": "Aus",
+    "need": "Bedarf",
+    "sleepNeed": "Sleep Need",
+    "fixed": "{{duration}} pro Nacht",
+    "sleepChoiceAria": "Schlafziel, {{choice}}",
+    "azmWeek": "Active Zone Minutes pro Woche",
+    "targetAria": "Ziel für {{label}}",
+    "azmWeekHint": "Fitbit zählt moderate Minuten einmal und intensive oder Spitzen-Minuten zweimal.",
+    "dailyTitle": "Tagesziele",
+    "dailyBody": "Jedes Ziel ist eine Zeile unter Strain, die sich im Laufe des Tages füllt. Lösche eine Zahl, um ihr Ziel auszuschalten.",
+    "weeklyTitle": "Wochenziel",
+    "weeklyBody": "Active Zone Minutes summieren sich von Montag bis Sonntag, solange das tägliche Active-Zone-Minutes-Ziel an ist.",
+    "resetGoals": "Auf Fitbit-Standard zurücksetzen",
+    "goalsReset": "Ziele auf Fitbits Standardwerte zurückgesetzt",
+    "planTitle": "Wochenplan",
+    "planBody": "Wochenziele für die Gewohnheiten, die Pulse Age bewertet, von Montag bis Sonntag, mit einer Serie für jede Woche, in der du sie erreichst. Lösche eine Zahl, um sie auszuschalten.",
+    "resetPlan": "Wochenplan zurücksetzen",
+    "planReset": "Wochenplan auf Standard zurückgesetzt"
+  },
+  "sleepGoal": {
+    "title": "Schlafziel",
+    "automatic": "Automatisch",
+    "manual": "Manuell",
+    "toast": "Schlafziel: {{duration}}",
+    "errorFormat": "Ganze Stunden und Minuten von 0 bis 59",
+    "errorRange": "Zwischen 4 und 12 Stunden",
+    "hoursAria": "Schlafziel Stunden",
+    "minutesAria": "Schlafziel Minuten",
+    "saveAria": "Schlafziel speichern",
+    "body": "Woran sich Sleep Performance, Sleep Need, Sleep Debt und Energy Bank orientieren. Eine Änderung bewertet deinen Verlauf neu.",
+    "goal": "Ziel",
+    "method": "Wie das Ziel festgelegt wird",
+    "estimate": "Der durchschnittliche Schlaf vor deinen {{best}} besten Recovery-Morgen der letzten {{nights}}: {{duration}}.",
+    "estimateEarly": "Der durchschnittliche Schlaf vor deinen {{best}} besten Recovery-Morgen der letzten {{nights}}: {{duration}}. Eine erste Schätzung: Sie festigt sich mit 90 Nächten, 15 davon mit Recovery 67 oder mehr (bisher {{high}}).",
+    "use": "{{duration}} verwenden",
+    "useAria": "{{duration}} als Schlafziel verwenden",
+    "notEnough": "Noch nicht genug Nächte: Die Schätzung braucht Nächte mit einem Recovery-Wert, eine davon mit 67 oder mehr. Bis dahin bleibt das Ziel, wie es ist."
+  }
+}

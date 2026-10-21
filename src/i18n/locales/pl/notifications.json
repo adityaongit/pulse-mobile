@@ -1,0 +1,45 @@
+{
+  "recovery": { "title": "Recovery gotowe", "body": "{{percent}}%: {{band}}" },
+  "cantSync": {
+    "title": "Pulse nie może się zsynchronizować",
+    "body": "Health Connect nie synchronizował się od {{gap}}. Otwórz Pulse, aby zsynchronizować."
+  },
+  "since": {
+    "hours_one": "{{count}} godziny",
+    "hours_few": "{{count}} godzin",
+    "hours_many": "{{count}} godzin",
+    "hours_other": "{{count}} godziny",
+    "days_one": "{{count}} dnia",
+    "days_few": "{{count}} dni",
+    "days_many": "{{count}} dni",
+    "days_other": "{{count}} dnia"
+  },
+  "checkIn": { "title": "Check-in", "body": "Jak minął dzień? Poświęć minutę na check-in." },
+  "strainTarget": {
+    "title": "Strain Target osiągnięty",
+    "inside": "Day Strain {{strain}} mieści się w dzisiejszym celu {{range}}.",
+    "past": "Day Strain {{strain}} przekracza dzisiejszy cel {{range}}. Dziś wieczorem postaw na sen, aby się zregenerować."
+  },
+  "monitor": {
+    "illnessTitle": "Twój organizm może z czymś walczyć",
+    "illnessBody": "Kilka parametrów jednocześnie odeszło od Twojej normy, co często poprzedza złe samopoczucie. Rozważ spokojniejszy dzień.",
+    "title_one": "{{count}} parametr poza Twoją normą",
+    "title_few": "{{count}} parametry poza Twoją normą",
+    "title_many": "{{count}} parametrów poza Twoją normą",
+    "title_other": "{{count}} parametru poza Twoją normą",
+    "body_one": "{{names}} jest poza Twoim zwykłym zakresem. To może być wczesny znak choroby lub dużego wysiłku.",
+    "body_few": "{{names}} są poza Twoim zwykłym zakresem. To może być wczesny znak choroby lub dużego wysiłku.",
+    "body_many": "{{names}} są poza Twoim zwykłym zakresem. To może być wczesny znak choroby lub dużego wysiłku.",
+    "body_other": "{{names}} są poza Twoim zwykłym zakresem. To może być wczesny znak choroby lub dużego wysiłku.",
+    "oneVital": "Jeden parametr",
+    "namesAnd": "{{list}} i {{last}}"
+  },
+  "report": {
+    "title": "Raport tygodniowy gotowy",
+    "recovery": "Średnie Recovery: {{value}}%",
+    "strain": "Day Strain {{value}}",
+    "withParts": "{{range}}: {{parts}}.",
+    "empty": "Twój tydzień {{range}} jest już dostępny."
+  },
+  "windDown": { "title": "Czas się wyciszyć", "body": "Połóż się do {{time}}, aby zrealizować dzisiejsze Sleep Need." }
+}

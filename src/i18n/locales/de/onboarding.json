@@ -1,0 +1,96 @@
+{
+  "welcome": {
+    "title": "Dein Fitbit, jeden Morgen bewertet",
+    "subtitle": "Schlaf, Recovery und Strain aus Health Connect, auf diesem Handy berechnet.",
+    "exploreSample": "Mit Beispieldaten erkunden",
+    "private": "Bleibt auf diesem Handy. Kein Konto, kein Server.",
+    "sampleFailed": "Die Beispieldaten konnten nicht erstellt werden. Versuch es noch einmal."
+  },
+  "progress": {
+    "buildingSample": "Beispieldaten werden erstellt",
+    "importing": "Import aus Health Connect"
+  },
+  "profile": {
+    "title": "Zwei Dinge, die Health Connect nicht teilt",
+    "intro": "Pulse vergleicht deine Herzfrequenz mit Menschen deines Alters, anhand der Referenzbereiche, die du wählst. Du kannst sie später in den Einstellungen ändern.",
+    "saveContinue": "Speichern und weiter",
+    "saving": "Wird gespeichert…"
+  },
+  "form": {
+    "name": "Name",
+    "nameHint": "Wird auf dem Start und in den Einstellungen angezeigt. Bleibt auf diesem Handy.",
+    "namePlaceholder": "Dein Name",
+    "birthDate": "Geburtsdatum",
+    "birthDateHint": "Für Herzfrequenzzonen, Sleep Need und Pulse Age.",
+    "rangesLabel": "Referenzbereiche",
+    "male": "Männlich",
+    "female": "Weiblich",
+    "chooseOne": "Wähle eins",
+    "rangesHint": "Strain, Schlafziele, VO2 max und Pulse Age nutzen Referenztabellen für Männer und Frauen. Wähle die, die deinem Körper heute näher ist; bei einer langfristigen Hormontherapie ist das meist die, die zu deinen Hormonen passt.",
+    "timeZone": "Zeitzone",
+    "timeZoneHint": "Wo du lebst. Deine Tage beginnen hier um Mitternacht.",
+    "change": "Ändern",
+    "changeTimeZone": "Zeitzone ändern",
+    "height": "Größe",
+    "heightHint": "Fügt Pulse Age die fettfreie Körpermasse hinzu.",
+    "heightFeet": "Größe, Fuß",
+    "heightInches": "Größe, Zoll",
+    "heightCm": "Größe in cm",
+    "maxHr": "Maximale Herzfrequenz",
+    "maxHrHint": "Leer lassen, um sie aus deinem Alter zu schätzen.",
+    "maxHrBpm": "Maximale Herzfrequenz in bpm"
+  },
+  "birth": {
+    "notChosen": "Nicht gewählt",
+    "choose": "Wähle dein Geburtsdatum",
+    "month": "Monat",
+    "day": "Tag",
+    "year": "Jahr",
+    "scrollHint": "Scrollen oder tippen zum Auswählen",
+    "done": "Fertig"
+  },
+  "zone": {
+    "search": "Stadt oder GMT-Versatz suchen",
+    "close": "Zeitzonen schließen",
+    "show": "Zeitzonen anzeigen",
+    "list": "Zeitzonen",
+    "noMatch": "Keine Zeitzone passt zu „{{query}}“."
+  },
+  "connect": {
+    "button": "Health Connect verbinden",
+    "open": "Health Connect öffnen",
+    "notNow": "Jetzt nicht",
+    "unavailable": "Health Connect ist auf diesem Handy nicht verfügbar.",
+    "updateRequired": "Health Connect braucht ein Update. Öffne es, aktualisiere es und komm dann zurück.",
+    "openFailed": "Health Connect konnte nicht geöffnet werden. Versuch es noch einmal.",
+    "waitingTitle": "Warte auf Health Connect",
+    "waitingBody": "Wähle im Fenster von Health Connect, was Pulse lesen darf. Danach kommst du hierher zurück.",
+    "refusedTitle": "Health Connect erlauben",
+    "refusedBody": "Pulse braucht mindestens Herzfrequenz und Schlaf. Erlaube jede Berechtigung, auch den Zugriff auf ältere Daten.",
+    "title": "Was Pulse liest",
+    "intro": "Aus Health Connect, auf diesem Handy gespeichert. Der erste Import liest die letzten 180 Tage.",
+    "introSample": "Aus Health Connect, auf diesem Handy gespeichert. Der erste Import liest die letzten 180 Tage. Deine Beispieldaten werden gelöscht, sobald du dich verbindest.",
+    "readSteps": "Schritte, Distanz und Workouts",
+    "readHeart": "Herzfrequenz und HRV",
+    "readSleep": "Schlaf und seine Phasen",
+    "readBreathing": "Atmung, Sauerstoff und Temperatur",
+    "readFood": "Essen und Wasser, die du in Fitbit einträgst",
+    "readBody": "Gewicht, Körperfett und VO2 max"
+  },
+  "importing": {
+    "stopped": "Der Import wurde angehalten",
+    "titleSample": "Deine Beispieldaten werden erstellt",
+    "title": "Deine Daten werden importiert",
+    "bodySample": "Ein halbes Jahr aus den Tagen einer Demo-Person, auf diesem Handy bewertet.",
+    "body": "Bis zu 180 Tage aus Health Connect, auf diesem Handy bewertet. Der erste Import dauert ein paar Minuten."
+  },
+  "background": {
+    "titleOn": "Hintergrund-Synchronisierung ist an",
+    "title": "Halte Pulse aktuell",
+    "bodyOn": "Pulse synchronisiert, solange es geschlossen ist. Ändere das in Einstellungen › Benachrichtigungen & Hintergrund.",
+    "bodyBattery": "Noch ein Schritt: Wähle unter Akku „Hintergrundaktivität zulassen“ oder „Uneingeschränkt“. Viele Handys pausieren Pulse sonst im Hintergrund.",
+    "body": "Synchronisiere, während Pulse geschlossen ist. Viele Handys brauchen außerdem die Erlaubnis, dass Pulse im Hintergrund laufen darf; die Schaltfläche öffnet diese Einstellung.",
+    "openBattery": "Akkueinstellungen öffnen",
+    "turnOn": "Hintergrund-Synchronisierung einschalten"
+  }
+}

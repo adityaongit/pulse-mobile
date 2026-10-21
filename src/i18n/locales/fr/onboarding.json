@@ -1,0 +1,96 @@
+{
+  "welcome": {
+    "title": "Ton Fitbit, noté chaque matin",
+    "subtitle": "Sleep, Recovery et Strain depuis Health Connect, calculés sur ce téléphone.",
+    "exploreSample": "Explorer avec des données d’exemple",
+    "private": "Reste sur ce téléphone. Pas de compte, pas de serveur.",
+    "sampleFailed": "Impossible de créer les données d’exemple. Réessaie."
+  },
+  "progress": {
+    "buildingSample": "Création des données d’exemple",
+    "importing": "Importation depuis Health Connect"
+  },
+  "profile": {
+    "title": "Deux choses que Health Connect ne partage pas",
+    "intro": "Pulse compare ta fréquence cardiaque à celle de personnes de ton âge, avec les plages de référence que tu choisis. Tu pourras les modifier plus tard dans Réglages.",
+    "saveContinue": "Enregistrer et continuer",
+    "saving": "Enregistrement…"
+  },
+  "form": {
+    "name": "Nom",
+    "nameHint": "Affiché sur l’Accueil et dans Réglages. Reste sur ce téléphone.",
+    "namePlaceholder": "Ton nom",
+    "birthDate": "Date de naissance",
+    "birthDateHint": "Pour les zones de fréquence cardiaque, le Sleep Need et Pulse Age.",
+    "rangesLabel": "Plages de référence",
+    "male": "Homme",
+    "female": "Femme",
+    "chooseOne": "Choisis-en un",
+    "rangesHint": "Strain, objectifs de sommeil, VO2 max et Pulse Age utilisent des tables de référence masculines et féminines. Choisis celle qui est la plus proche de ton corps aujourd’hui ; sous traitement hormonal de longue durée, c’est en général celle qui correspond à tes hormones.",
+    "timeZone": "Fuseau horaire",
+    "timeZoneHint": "Là où tu vis. Tes journées commencent à minuit ici.",
+    "change": "Modifier",
+    "changeTimeZone": "Changer de fuseau horaire",
+    "height": "Taille",
+    "heightHint": "Ajoute la masse maigre à Pulse Age.",
+    "heightFeet": "Taille, pieds",
+    "heightInches": "Taille, pouces",
+    "heightCm": "Taille en cm",
+    "maxHr": "Fréquence cardiaque max.",
+    "maxHrHint": "Laisse vide pour l’estimer d’après ton âge.",
+    "maxHrBpm": "Fréquence cardiaque max. en bpm"
+  },
+  "birth": {
+    "notChosen": "Non choisie",
+    "choose": "Choisis ta date de naissance",
+    "month": "Mois",
+    "day": "Jour",
+    "year": "Année",
+    "scrollHint": "Fais défiler ou touche pour choisir",
+    "done": "OK"
+  },
+  "zone": {
+    "search": "Rechercher une ville ou un décalage GMT",
+    "close": "Fermer les fuseaux horaires",
+    "show": "Afficher les fuseaux horaires",
+    "list": "Fuseaux horaires",
+    "noMatch": "Aucun fuseau horaire ne correspond à « {{query}} »."
+  },
+  "connect": {
+    "button": "Connecter Health Connect",
+    "open": "Ouvrir Health Connect",
+    "notNow": "Pas maintenant",
+    "unavailable": "Health Connect n’est pas disponible sur ce téléphone.",
+    "updateRequired": "Health Connect a besoin d’une mise à jour. Ouvre-le, mets-le à jour, puis reviens.",
+    "openFailed": "Impossible d’ouvrir Health Connect. Réessaie.",
+    "waitingTitle": "En attente de Health Connect",
+    "waitingBody": "Choisis ce que Pulse peut lire dans la fenêtre de Health Connect. Tu reviens ici quand tu as terminé.",
+    "refusedTitle": "Autoriser Health Connect",
+    "refusedBody": "Pulse a besoin au minimum de la fréquence cardiaque et du sommeil. Autorise toutes les permissions, y compris l’accès aux données plus anciennes.",
+    "title": "Ce que Pulse lit",
+    "intro": "Depuis Health Connect, conservé sur ce téléphone. La première importation lit les 180 derniers jours.",
+    "introSample": "Depuis Health Connect, conservé sur ce téléphone. La première importation lit les 180 derniers jours. Tes données d’exemple sont effacées dès que tu te connectes.",
+    "readSteps": "Pas, distance et séances",
+    "readHeart": "Fréquence cardiaque et HRV",
+    "readSleep": "Sommeil et ses phases",
+    "readBreathing": "Respiration, oxygène et température",
+    "readFood": "Alimentation et eau que tu notes dans Fitbit",
+    "readBody": "Poids, masse grasse et VO2 max"
+  },
+  "importing": {
+    "stopped": "L’importation s’est arrêtée",
+    "titleSample": "Création de tes données d’exemple",
+    "title": "Importation de tes données",
+    "bodySample": "Six mois de journées d’une personne fictive, calculés sur ce téléphone.",
+    "body": "Jusqu’à 180 jours depuis Health Connect, calculés sur ce téléphone. La première importation prend quelques minutes."
+  },
+  "background": {
+    "titleOn": "La synchronisation en arrière-plan est activée",
+    "title": "Garde Pulse à jour",
+    "bodyOn": "Pulse se synchronise quand il est fermé. Modifie-le dans Réglages › Notifications et arrière-plan.",
+    "bodyBattery": "Encore une étape : dans Batterie, choisis Autoriser l’activité en arrière-plan ou Sans restriction. Sinon, beaucoup de téléphones mettent Pulse en pause en arrière-plan.",
+    "body": "Synchronise quand Pulse est fermé. Beaucoup de téléphones demandent aussi d’autoriser Pulse à s’exécuter en arrière-plan ; le bouton ouvre ce réglage.",
+    "openBattery": "Ouvrir les réglages de batterie",
+    "turnOn": "Activer la synchronisation en arrière-plan"
+  }
+}

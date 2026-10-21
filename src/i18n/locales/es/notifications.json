@@ -1,0 +1,41 @@
+{
+  "recovery": { "title": "Tu Recovery está listo", "body": "{{percent}}%: {{band}}" },
+  "cantSync": {
+    "title": "Pulse no puede sincronizar",
+    "body": "Health Connect no se sincroniza desde hace {{gap}}. Abre Pulse para sincronizar."
+  },
+  "since": {
+    "hours_one": "{{count}} hora",
+    "hours_many": "{{count}} de horas",
+    "hours_other": "{{count}} horas",
+    "days_one": "{{count}} día",
+    "days_many": "{{count}} de días",
+    "days_other": "{{count}} días"
+  },
+  "checkIn": { "title": "Registra tu día", "body": "¿Cómo te fue hoy? Tómate un minuto para tu registro." },
+  "strainTarget": {
+    "title": "Strain Target alcanzado",
+    "inside": "El Strain del día de {{strain}} está dentro del objetivo de hoy de {{range}}.",
+    "past": "El Strain del día de {{strain}} superó el objetivo de hoy de {{range}}. Prioriza dormir bien esta noche para recuperarte."
+  },
+  "monitor": {
+    "illnessTitle": "Tu cuerpo podría estar combatiendo algo",
+    "illnessBody": "Varios signos vitales se alejaron de tu rango normal a la vez, un patrón que suele aparecer antes de sentirse mal. Considera un día más tranquilo.",
+    "title_one": "{{count}} signo vital fuera de tu rango normal",
+    "title_many": "{{count}} de signos vitales fuera de tu rango normal",
+    "title_other": "{{count}} signos vitales fuera de tu rango normal",
+    "body_one": "{{names}} está fuera de tu rango habitual. Puede ser una señal temprana de enfermedad o de mucho esfuerzo.",
+    "body_many": "{{names}} están fuera de tu rango habitual. Puede ser una señal temprana de enfermedad o de mucho esfuerzo.",
+    "body_other": "{{names}} están fuera de tu rango habitual. Puede ser una señal temprana de enfermedad o de mucho esfuerzo.",
+    "oneVital": "Un signo vital",
+    "namesAnd": "{{list}} y {{last}}"
+  },
+  "report": {
+    "title": "Tu informe semanal está listo",
+    "recovery": "Recovery promedio de {{value}}%",
+    "strain": "Strain del día {{value}}",
+    "withParts": "{{range}}: {{parts}}.",
+    "empty": "Ya está tu semana del {{range}}."
+  },
+  "windDown": { "title": "A descansar", "body": "A la cama a las {{time}} para cubrir tu Sleep Need de esta noche." }
+}

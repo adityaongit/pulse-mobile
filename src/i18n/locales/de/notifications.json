@@ -1,0 +1,37 @@
+{
+  "recovery": { "title": "Recovery bereit", "body": "{{percent}}%: {{band}}" },
+  "cantSync": {
+    "title": "Pulse kann nicht synchronisieren",
+    "body": "Health Connect hat seit {{gap}} nicht synchronisiert. Öffne Pulse, um zu synchronisieren."
+  },
+  "since": {
+    "hours_one": "{{count}} Stunde",
+    "hours_other": "{{count}} Stunden",
+    "days_one": "{{count}} Tag",
+    "days_other": "{{count}} Tage"
+  },
+  "checkIn": { "title": "Check-in", "body": "Wie war dein Tag? Nimm dir eine Minute für deinen Check-in." },
+  "strainTarget": {
+    "title": "Strain Target erreicht",
+    "inside": "Der Day Strain {{strain}} liegt im heutigen Ziel von {{range}}.",
+    "past": "Der Day Strain {{strain}} liegt über dem heutigen Ziel von {{range}}. Schlaf heute Nacht gut, um dich zu erholen."
+  },
+  "monitor": {
+    "illnessTitle": "Dein Körper kämpft vielleicht gegen etwas",
+    "illnessBody": "Mehrere Vitalwerte haben sich gleichzeitig von deinem Normalbereich entfernt, ein Muster, das oft vor einem Krankheitsgefühl auftritt. Überlege, es heute ruhiger anzugehen.",
+    "title_one": "{{count}} Vitalwert außerhalb deines Normalbereichs",
+    "title_other": "{{count}} Vitalwerte außerhalb deines Normalbereichs",
+    "body_one": "{{names}} liegt außerhalb deines üblichen Bereichs. Das kann ein frühes Zeichen für eine Krankheit oder hohe Belastung sein.",
+    "body_other": "{{names}} liegen außerhalb deines üblichen Bereichs. Das kann ein frühes Zeichen für eine Krankheit oder hohe Belastung sein.",
+    "oneVital": "Ein Vitalwert",
+    "namesAnd": "{{list}} und {{last}}"
+  },
+  "report": {
+    "title": "Wochenbericht bereit",
+    "recovery": "Recovery im Schnitt {{value}}%",
+    "strain": "Day Strain {{value}}",
+    "withParts": "{{range}}: {{parts}}.",
+    "empty": "Deine Woche vom {{range}} ist da."
+  },
+  "windDown": { "title": "Runterkommen", "body": "Geh um {{time}} ins Bett, um den heutigen Sleep Need zu decken." }
+}

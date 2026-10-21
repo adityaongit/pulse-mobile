@@ -1,0 +1,37 @@
+{
+  "calibrating": {
+    "short": "Calibrando",
+    "long": "Calibrando",
+    "longNights_one": "Calibrando: falta {{count}} noite",
+    "longNights_many": "Calibrando: faltam {{count}} de noites",
+    "longNights_other": "Calibrando: faltam {{count}} noites"
+  },
+  "noHrvLastNight": {
+    "short": "Sem HRV ontem à noite",
+    "long": "Sem HRV no sono da noite passada"
+  },
+  "awaitingSleepSync": {
+    "short": "Aguardando o sono",
+    "long": "Aguardando o sono da noite passada sincronizar"
+  },
+  "insufficientHrData": {
+    "short": "Dados insuficientes",
+    "long": "Dados de frequência cardíaca insuficientes"
+  },
+  "bandNotWorn": {
+    "short": "Sem uso",
+    "long": "Sem dados: pulseira não usada"
+  },
+  "noData": {
+    "short": "--",
+    "long": "Sem dados"
+  },
+  "tag": {
+    "provisionalLabel": "Provisório",
+    "provisionalExplain": "Baseado em um histórico curto enquanto suas referências se formam. Fica mais firme conforme chegam mais dias.",
+    "staleBaselineLabel": "Referência desatualizada",
+    "staleBaselineExplain": "Faltam 14 noites ou mais na sua referência. As pontuações se firmam conforme novas noites chegam.",
+    "updatedLabel": "Atualizado",
+    "updatedExplain": "Atualizado depois que uma sincronização tardia trouxe dados."
+  }
+}

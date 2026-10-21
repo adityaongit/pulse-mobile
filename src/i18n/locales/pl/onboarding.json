@@ -1,0 +1,96 @@
+{
+  "welcome": {
+    "title": "Twój Fitbit, oceniany każdego ranka",
+    "subtitle": "Sen, Recovery i Strain z Health Connect, obliczane na tym telefonie.",
+    "exploreSample": "Wypróbuj na danych przykładowych",
+    "private": "Zostaje na tym telefonie. Bez konta, bez serwera.",
+    "sampleFailed": "Nie udało się utworzyć danych przykładowych. Spróbuj ponownie."
+  },
+  "progress": {
+    "buildingSample": "Tworzenie danych przykładowych",
+    "importing": "Import z Health Connect"
+  },
+  "profile": {
+    "title": "Dwie rzeczy, których Health Connect nie udostępnia",
+    "intro": "Pulse porównuje Twoje tętno z osobami w Twoim wieku, używając wybranych przez Ciebie zakresów referencyjnych. Możesz je później zmienić w Ustawieniach.",
+    "saveContinue": "Zapisz i kontynuuj",
+    "saving": "Zapisywanie…"
+  },
+  "form": {
+    "name": "Imię",
+    "nameHint": "Pokazywane na ekranie głównym i w Ustawieniach. Zostaje na tym telefonie.",
+    "namePlaceholder": "Twoje imię",
+    "birthDate": "Data urodzenia",
+    "birthDateHint": "Do stref tętna, Sleep Need i Pulse Age.",
+    "rangesLabel": "Zakresy referencyjne",
+    "male": "Mężczyzna",
+    "female": "Kobieta",
+    "chooseOne": "Wybierz jedną opcję",
+    "rangesHint": "Strain, cele snu, VO2 max i Pulse Age używają tabel referencyjnych dla mężczyzn i kobiet. Wybierz tę, która jest bliższa Twojemu ciału dziś; przy długotrwałej terapii hormonalnej zwykle jest to ta zgodna z Twoimi hormonami.",
+    "timeZone": "Strefa czasowa",
+    "timeZoneHint": "Gdzie mieszkasz. Twoje dni zaczynają się tu o północy.",
+    "change": "Zmień",
+    "changeTimeZone": "Zmień strefę czasową",
+    "height": "Wzrost",
+    "heightHint": "Dodaje beztłuszczową masę ciała do Pulse Age.",
+    "heightFeet": "Wzrost, stopy",
+    "heightInches": "Wzrost, cale",
+    "heightCm": "Wzrost w cm",
+    "maxHr": "Maksymalne tętno",
+    "maxHrHint": "Zostaw puste, aby oszacować je na podstawie wieku.",
+    "maxHrBpm": "Maksymalne tętno w bpm"
+  },
+  "birth": {
+    "notChosen": "Nie wybrano",
+    "choose": "Wybierz datę urodzenia",
+    "month": "Miesiąc",
+    "day": "Dzień",
+    "year": "Rok",
+    "scrollHint": "Przewiń lub dotknij, aby wybrać",
+    "done": "Gotowe"
+  },
+  "zone": {
+    "search": "Szukaj miasta lub przesunięcia GMT",
+    "close": "Zamknij strefy czasowe",
+    "show": "Pokaż strefy czasowe",
+    "list": "Strefy czasowe",
+    "noMatch": "Żadna strefa czasowa nie pasuje do „{{query}}”."
+  },
+  "connect": {
+    "button": "Połącz z Health Connect",
+    "open": "Otwórz Health Connect",
+    "notNow": "Nie teraz",
+    "unavailable": "Health Connect nie jest dostępny na tym telefonie.",
+    "updateRequired": "Health Connect wymaga aktualizacji. Otwórz go, zaktualizuj i wróć.",
+    "openFailed": "Nie udało się otworzyć Health Connect. Spróbuj ponownie.",
+    "waitingTitle": "Czekam na Health Connect",
+    "waitingBody": "Wybierz w oknie Health Connect, co Pulse może odczytywać. Wrócisz tu, gdy skończysz.",
+    "refusedTitle": "Zezwól w Health Connect",
+    "refusedBody": "Pulse potrzebuje co najmniej tętna i snu. Zezwól na wszystkie uprawnienia, w tym dostęp do starszych danych.",
+    "title": "Co czyta Pulse",
+    "intro": "Z Health Connect, zapisywane na tym telefonie. Pierwszy import czyta ostatnie 180 dni.",
+    "introSample": "Z Health Connect, zapisywane na tym telefonie. Pierwszy import czyta ostatnie 180 dni. Dane przykładowe zostaną usunięte po połączeniu.",
+    "readSteps": "Kroki, dystans i treningi",
+    "readHeart": "Tętno i HRV",
+    "readSleep": "Sen i jego fazy",
+    "readBreathing": "Oddech, tlen i temperatura",
+    "readFood": "Jedzenie i woda zapisywane w Fitbit",
+    "readBody": "Waga, tkanka tłuszczowa i VO2 max"
+  },
+  "importing": {
+    "stopped": "Import został zatrzymany",
+    "titleSample": "Tworzenie danych przykładowych",
+    "title": "Importowanie Twoich danych",
+    "bodySample": "Pół roku dni przykładowej osoby, ocenianych na tym telefonie.",
+    "body": "Do 180 dni z Health Connect, ocenianych na tym telefonie. Pierwszy import trwa kilka minut."
+  },
+  "background": {
+    "titleOn": "Synchronizacja w tle jest włączona",
+    "title": "Aktualizuj Pulse na bieżąco",
+    "bodyOn": "Pulse synchronizuje się, gdy jest zamknięty. Zmienisz to w Ustawienia › Powiadomienia i tło.",
+    "bodyBattery": "Jeszcze jeden krok: w sekcji Bateria wybierz Zezwalaj na aktywność w tle lub Bez ograniczeń. W przeciwnym razie wiele telefonów wstrzymuje Pulse w tle.",
+    "body": "Synchronizuj, gdy Pulse jest zamknięty. Wiele telefonów wymaga też zezwolenia Pulse na działanie w tle; przycisk otwiera to ustawienie.",
+    "openBattery": "Otwórz ustawienia baterii",
+    "turnOn": "Włącz synchronizację w tle"
+  }
+}

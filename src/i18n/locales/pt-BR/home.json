@@ -1,0 +1,178 @@
+{
+  "title": "Início",
+  "sync": {
+    "progress": "Sincronizando · {{percent}}%",
+    "syncing": "Sincronizando…"
+  },
+  "noBand": {
+    "title": "Ainda sem dados da pulseira",
+    "short": "Ainda sem dados da pulseira",
+    "scored": "Sleep, Recovery e Strain são calculados a partir da frequência cardíaca do seu Fitbit, que o celular não consegue medir.",
+    "phoneShows": "Até o seu Fitbit sincronizar, o Início mostra o que o celular conta: passos, distância, calorias e minutos ativos.",
+    "plannerNeeds": "O Planejador de sono precisa de 7 noites para aprender seu horário de acordar."
+  },
+  "vital": {
+    "resp": "Frequência respiratória",
+    "spo2": "Oxigênio no sangue",
+    "restingHr": "Frequência cardíaca em repouso",
+    "hrv": "Variabilidade da frequência cardíaca",
+    "skinTempDev": "Temperatura da pele"
+  },
+  "section": {
+    "myDay": "Meu dia",
+    "myDashboard": "Meu painel",
+    "myJournal": "Meu diário",
+    "tonight": "Sono de hoje à noite",
+    "energyBank": "Energy Bank",
+    "strainRecovery": "Strain e Recovery",
+    "weekReview": "Sua semana em resumo",
+    "fromPhone": "Do seu celular",
+    "vsAverage": "vs. méd. de 30 dias",
+    "vsAverageFull": "vs. média de 30 dias"
+  },
+  "activities": {
+    "today": "Atividades de hoje",
+    "other": "Atividades",
+    "all": "Todas as atividades",
+    "add": "Adicionar atividade",
+    "emptyToday": "Ainda sem atividades hoje. Os treinos aparecem depois que o Fitbit os sincroniza.",
+    "emptyDay": "Sem atividades neste dia."
+  },
+  "add": {
+    "today": "Adicionar a hoje",
+    "day": "Adicionar a {{day}}",
+    "completeJournal": "Complete seu diário"
+  },
+  "tonight": {
+    "openPlanner": "Abrir Planejador de sono",
+    "recommendedBedtime": "Hora de dormir\nrecomendada",
+    "typicalWake": "Hora de acordar\ntípica",
+    "sleepGoal": "Meta de sono",
+    "goalShare": "{{label}}, {{percent}} por cento da necessidade",
+    "need": "Necessidade esta noite: <t>{{time}}</t>"
+  },
+  "journal": {
+    "open": "Abrir Diário",
+    "checkedIn": "{{day}}: check-in feito",
+    "noCheckIn": "{{day}}: sem check-in",
+    "insights": "Insights de hábitos"
+  },
+  "monitor": {
+    "title": "Health Monitor",
+    "noReadings": "Sem leituras",
+    "withinRange": "Dentro da faixa",
+    "outOfRange": "Fora da faixa",
+    "ofMetrics": "{{n}} de {{total}} métricas",
+    "view": "Ver Health Monitor"
+  },
+  "alert": {
+    "illnessTitle": "Seu corpo pode estar combatendo algo",
+    "flaggedTitle_one": "{{count}} sinal vital fora da sua faixa normal",
+    "flaggedTitle_many": "{{count}} de sinais vitais fora da sua faixa normal",
+    "flaggedTitle_other": "{{count}} sinais vitais fora da sua faixa normal",
+    "illnessBody": "Vários sinais vitais saíram juntos da sua faixa normal, um padrão que muitas vezes vem antes de se sentir mal. Considere um dia mais leve.",
+    "flaggedBody_one": "{{names}} está fora da sua faixa habitual. Pode ser um sinal precoce de doença ou de esforço intenso.",
+    "flaggedBody_many": "{{names}} estão fora da sua faixa habitual. Pode ser um sinal precoce de doença ou de esforço intenso.",
+    "flaggedBody_other": "{{names}} estão fora da sua faixa habitual. Pode ser um sinal precoce de doença ou de esforço intenso.",
+    "someVitals": "Alguns sinais vitais",
+    "namesAnd": "{{rest}} e {{last}}"
+  },
+  "stress": {
+    "title": "Stress Monitor",
+    "notWorn": "Não usada",
+    "noneScored": "Ainda sem estresse calculado",
+    "today": "Hoje",
+    "thisDay": "Este dia",
+    "dayAverage": "Média do dia",
+    "lastUpdated": "Atualizado por último <t>{{time}}</t>"
+  },
+  "energy": {
+    "label": "Energia",
+    "wokeAt": "Acordou às <t>{{time}}</t> com <t>{{level}}%</t>",
+    "charged": "Carregou",
+    "drained": "Descarregou",
+    "drainAt": "{{label}} às <t>{{time}}</t> · <t>{{amount}}</t>"
+  },
+  "heartRate": {
+    "title": "Frequência cardíaca",
+    "none": "Ainda sem frequência cardíaca",
+    "demoNone": "Os dados de exemplo ainda não têm leituras.",
+    "notSynced": "Nada sincronizado do Health Connect ainda.",
+    "lastMinutes": "Últimos {{minutes}} min",
+    "live": "Frequência cardíaca ao vivo {{bpm}} batimentos por minuto",
+    "reconnecting": "Reconectando. Última leitura ao vivo {{bpm}} batimentos por minuto",
+    "latest": "Frequência cardíaca {{bpm}} batimentos por minuto",
+    "unknown": "desconhecida"
+  },
+  "insights": {
+    "label": "Insights",
+    "position": "{{n}} de {{total}}",
+    "dismiss": "Dispensar este insight (faltam {{left}})",
+    "keepLight": "Mantenha o Strain leve",
+    "roomForMore": "Espaço para mais Strain",
+    "optimal": "Chegando ao Strain ideal",
+    "pastTarget": "Acima da sua meta",
+    "recoveryGreen": "Pronto para o Strain",
+    "recoveryYellow": "Um dia estável",
+    "recoveryRed": "Hora de recuperar",
+    "lastNight": "Sono da noite passada"
+  },
+  "outlook": {
+    "titleReview": "Seu dia em resumo",
+    "titleOutlook": "Sua previsão do dia",
+    "band": {
+      "green": "verde",
+      "yellow": "amarela",
+      "red": "vermelha"
+    },
+    "recovery": "Sua Recovery é {{value}}%, {{band}}.",
+    "strainTarget": "O Strain Target de hoje é {{target}}.",
+    "slept": "Você dormiu {{asleep}} dos {{need}} de que precisava.",
+    "strainIs": "O Strain do dia é {{value}}.",
+    "strainIsTarget": "O Strain do dia é {{value}} para uma meta de {{target}}.",
+    "strainIsActs_one": "O Strain do dia é {{value}}, com {{count}} atividade.",
+    "strainIsActs_many": "O Strain do dia é {{value}}, com {{count}} de atividades.",
+    "strainIsActs_other": "O Strain do dia é {{value}}, com {{count}} atividades.",
+    "strainIsTargetActs_one": "O Strain do dia é {{value}} para uma meta de {{target}}, com {{count}} atividade.",
+    "strainIsTargetActs_many": "O Strain do dia é {{value}} para uma meta de {{target}}, com {{count}} de atividades.",
+    "strainIsTargetActs_other": "O Strain do dia é {{value}} para uma meta de {{target}}, com {{count}} atividades.",
+    "strainWas": "O Strain do dia foi {{value}}.",
+    "strainWasTarget": "O Strain do dia foi {{value}} para uma meta de {{target}}.",
+    "strainWasActs_one": "O Strain do dia foi {{value}}, com {{count}} atividade.",
+    "strainWasActs_many": "O Strain do dia foi {{value}}, com {{count}} de atividades.",
+    "strainWasActs_other": "O Strain do dia foi {{value}}, com {{count}} atividades.",
+    "strainWasTargetActs_one": "O Strain do dia foi {{value}} para uma meta de {{target}}, com {{count}} atividade.",
+    "strainWasTargetActs_many": "O Strain do dia foi {{value}} para uma meta de {{target}}, com {{count}} de atividades.",
+    "strainWasTargetActs_other": "O Strain do dia foi {{value}} para uma meta de {{target}}, com {{count}} atividades.",
+    "recoveryIs": "A Recovery é {{value}}%.",
+    "recoveryWas": "A Recovery foi {{value}}%.",
+    "highStress": "Você passou {{duration}} em estresse alto."
+  },
+  "edit": {
+    "customizeLabel": "Personalizar Meu painel",
+    "customize": "Personalizar",
+    "pageTitle": "Personalizar painel",
+    "success": "Pronto",
+    "saved": "Suas preferências foram salvas.",
+    "saveFailed": "Não foi possível salvar seu painel. Tente de novo.",
+    "saving": "Salvando…",
+    "myDashboard": "Meu painel",
+    "addAtLeastOne": "Adicione pelo menos uma métrica para salvar.",
+    "addTo": "Adicionar ao Meu painel",
+    "searchPlaceholder": "Buscar métricas…",
+    "searchLabel": "Buscar métricas",
+    "add": "Adicionar {{label}}",
+    "addNoData": "Adicionar {{label}}, ainda sem dados",
+    "noDataYet": "Ainda sem dados",
+    "noMatch": "Nenhuma métrica corresponde a “{{query}}”.",
+    "allOnHome": "Todas as métricas estão no Início.",
+    "remove": "Remover {{label}}",
+    "reorder": "Reordenar {{label}}, posição {{position}} de {{total}}",
+    "reorderHint": "Arraste, ou deslize para cima ou para baixo, para mover",
+    "moveUp": "Mover para cima",
+    "moveDown": "Mover para baixo",
+    "moved": "{{label}} movido para a posição {{position}} de {{total}}",
+    "removed": "{{label}} removido do Início",
+    "added": "{{label}} adicionado na posição {{position}}"
+  }
+}

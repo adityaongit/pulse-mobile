@@ -11,7 +11,11 @@ const GLOSSARY = [
   "Sleep Debt", "Sleep Need", "Sleep Consistency", "Training Load", "Stress Monitor", "Health Monitor", "Energy Bank",
   "Healthspan", "Pace of Aging", "Coach", "HRV", "RHR", "VO2 max", "SpO2",
 ];
-const UNITS = /^(bpm|ms|rpm|km|mi|kcal|min|h|kg|lb)*$/;
+const UNIT_WORDS = new Set(["bpm", "ms", "rpm", "km", "mi", "kcal", "min", "kg", "lb"]);
+/** Cognates and names (Fitness, Total, REM) are the same in two languages; a sentence of four words is not. */
+const SENTENCE = 4;
+/** Keys whose English uses a glossary word in another sense ("Coach" the verb; the training-status words (Recovery, Strained); "Recovery time" is a duration, stripped below), so the translation rightly drops it. */
+const GLOSSARY_EXEMPT = (key: string) => key === "guidance.warmingBody" || /^(trainingStatus|trainingInfo|trainingEffect|statusWord)\./.test(key);
 const PLURAL = /_(zero|one|two|few|many|other)$/;
 
 type Flat = Map<string, string>;
@@ -30,7 +34,8 @@ const load = (lng: string, ns: string): Flat | null => {
 /** "x_one", "x_other" → "x"; other keys as they are. */
 const base = (k: string) => k.replace(PLURAL, "");
 const tokens = (s: string) => [...s.matchAll(/\{\{\s*(\w+)\s*\}\}|<\/?\w+\s*\/?>/g)].map((m) => m[0].replace(/\s/g, "")).sort();
-const stripGlossary = (s: string) => GLOSSARY.reduce((r, g) => r.split(g).join(""), s).replace(/[^\p{L}]/gu, "");
+/** The words of a value once placeholders, tags and glossary terms are gone. */
+const words = (s: string) => GLOSSARY.reduce((r, g) => r.split(g).join(" "), s.replace(/\{\{[^}]*\}\}|<[^>]*>/g, " ")).split(/[^\p{L}]+/u).filter((w) => w.length > 1 && !UNIT_WORDS.has(w));
 const others = LANGUAGES.map((l) => l.code as string).filter((c) => c !== "en");
 
 describe("English", () => {
@@ -69,8 +74,8 @@ describe.each(others)("%s", (lng) => {
     it(`${ns}: nothing empty, English left over or glossary dropped`, () => {
       for (const [key, v] of tr) {
         expect(v.trim(), key).not.toBe("");
-        if (v === enValue(key)) expect(stripGlossary(v), `${key} is still English`).toMatch(UNITS);
-        for (const g of GLOSSARY) if (enValue(key).includes(g)) expect(v, `${key} lost "${g}"`).toContain(g);
+        if (v === enValue(key)) expect(words(v).length, `${key} is still English`).toBeLessThan(SENTENCE);
+        for (const g of GLOSSARY) if (!GLOSSARY_EXEMPT(key) && enValue(key).replace(/Recovery time/gi, "").includes(g)) expect(v, `${key} lost "${g}"`).toContain(g);
       }
     });
   }

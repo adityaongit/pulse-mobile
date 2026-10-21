@@ -1,0 +1,116 @@
+{
+  "title": "Sen",
+  "band": {
+    "optimal": "optymalny",
+    "sufficient": "wystarczający",
+    "poor": "słaby"
+  },
+  "status": {
+    "poor": "Słaby",
+    "sufficient": "Wystarczający",
+    "optimal": "Optymalny"
+  },
+  "stat": {
+    "hours": "Godziny vs. potrzeba",
+    "consistency": "Sleep Consistency",
+    "efficiency": "Wydajność snu",
+    "restorative": "Sen regeneracyjny",
+    "sleepStress": "Stres we śnie",
+    "timeInBed": "Czas w łóżku",
+    "wakeEvents": "Wybudzenia",
+    "resp": "Częstość oddechów",
+    "debt": "Sleep Debt"
+  },
+  "stage": {
+    "awake": "Czuwanie",
+    "rem": "REM",
+    "light": "Płytki",
+    "deep": "Głęboki"
+  },
+  "insight": {
+    "laterBedtime_one": "Twój sen był {{band}}. Regularność to najłatwiejszy zysk: pora snu była o {{count}} minutę późniejsza niż zwykle.",
+    "laterBedtime_few": "Twój sen był {{band}}. Regularność to najłatwiejszy zysk: pora snu była o {{count}} minuty późniejsza niż zwykle.",
+    "laterBedtime_many": "Twój sen był {{band}}. Regularność to najłatwiejszy zysk: pora snu była o {{count}} minut późniejsza niż zwykle.",
+    "laterBedtime_other": "Twój sen był {{band}}. Regularność to najłatwiejszy zysk: pora snu była o {{count}} minuty późniejsza niż zwykle.",
+    "earlierBedtime_one": "Twój sen był {{band}}. Regularność to najłatwiejszy zysk: pora snu była o {{count}} minutę wcześniejsza niż zwykle.",
+    "earlierBedtime_few": "Twój sen był {{band}}. Regularność to najłatwiejszy zysk: pora snu była o {{count}} minuty wcześniejsza niż zwykle.",
+    "earlierBedtime_many": "Twój sen był {{band}}. Regularność to najłatwiejszy zysk: pora snu była o {{count}} minut wcześniejsza niż zwykle.",
+    "earlierBedtime_other": "Twój sen był {{band}}. Regularność to najłatwiejszy zysk: pora snu była o {{count}} minuty wcześniejsza niż zwykle.",
+    "steadier": "Twój sen był {{band}}. Bardziej stałe godziny snu i budzenia poprawiłyby Twoją regularność.",
+    "lessSleep_one": "Twój sen był {{band}}. Sen był o {{count}} minutę krótszy, niż potrzebujesz; pomoże wcześniejsza noc.",
+    "lessSleep_few": "Twój sen był {{band}}. Sen był o {{count}} minuty krótszy, niż potrzebujesz; pomoże wcześniejsza noc.",
+    "lessSleep_many": "Twój sen był {{band}}. Sen był o {{count}} minut krótszy, niż potrzebujesz; pomoże wcześniejsza noc.",
+    "lessSleep_other": "Twój sen był {{band}}. Sen był o {{count}} minuty krótszy, niż potrzebujesz; pomoże wcześniejsza noc.",
+    "onTrack": "Twój sen był {{band}}. Rytm był zwykły, a sen bliski Twojej potrzebie.",
+    "explore": "Poznaj wnioski o swoim śnie"
+  },
+  "cards": {
+    "lastNight": "Sen z ostatniej nocy",
+    "vsPrior30": "vs. poprzednie 30 dni",
+    "hoursVsNeeded": "Godziny vs. potrzeba",
+    "consistency": "Sleep Consistency",
+    "efficiency": "Wydajność snu",
+    "tonight": "Dzisiejszy sen"
+  },
+  "need": {
+    "hoursOfSleep": "Godziny snu",
+    "sleepNeeded": "Sleep Need",
+    "calibrating": "Twoja potrzeba ustabilizuje się po 7 nocach. Do tego czasu: {{need}}.",
+    "healthyMinimum": "Zdrowe minimum",
+    "recentStrain": "Ostatni Strain",
+    "sleepDebt": "Sleep Debt",
+    "naps": "Drzemki",
+    "priorAverage": "Średnia z poprzednich 30 nocy {{value}}%"
+  },
+  "consistency": {
+    "optimal": "Optymalna pora snu i budzenia",
+    "aria": "Pory snu i budzenia z ostatnich pięciu nocy",
+    "ariaLast": "Pory snu i budzenia z ostatnich pięciu nocy, ostatnia noc od {{bed}} do {{wake}}"
+  },
+  "efficiency": {
+    "asleep": "Sen",
+    "awake": "Czuwanie",
+    "wakeEvents": "Wybudzenia"
+  },
+  "planner": {
+    "calibrating": "Planer snu potrzebuje 7 nocy, aby poznać Twoją porę budzenia.",
+    "shareOfNeed": "{{pct}}% potrzeby",
+    "typicalWake": "Typowa pobudka",
+    "weekdayWake": "Pora budzenia w tygodniu",
+    "weekendWake": "Pora budzenia w weekend",
+    "needTonight": "Potrzeba na dziś: <n>{{value}}</n>",
+    "plan": {
+      "peak": "Szczyt",
+      "perform": "Forma",
+      "getBy": "Minimum"
+    }
+  },
+  "weekly": {
+    "sleep": "Sleep Performance",
+    "hours": "Godziny vs. potrzeba (godziny)",
+    "hoursNeed": "Godziny vs. potrzeba (%)",
+    "restorative": "Sen regeneracyjny",
+    "consistency": "Sleep Consistency",
+    "timeInBed": "Czas w łóżku",
+    "efficiency": "Wydajność snu"
+  },
+  "skeleton": {
+    "healthyMinimum": "Zdrowe minimum",
+    "recentStrain": "Ostatni Strain",
+    "sleepDebt": "Sleep Debt"
+  },
+  "nap": {
+    "title": "Drzemka",
+    "notFound": "Nie znaleziono tej strony.",
+    "when": "{{day}} {{start}} do {{end}}",
+    "activity": "Aktywność",
+    "activityStrain": "Strain aktywności",
+    "duration": "Czas trwania",
+    "keyStats": "Kluczowe statystyki",
+    "vs30": "vs. średnia z 30 dni",
+    "avgHr": "Śr. tętno",
+    "maxHr": "Maks. tętno",
+    "calories": "Kalorie",
+    "hrr": "Spadek tętna po wysiłku"
+  }
+}

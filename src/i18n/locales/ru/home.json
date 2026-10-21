@@ -1,0 +1,184 @@
+{
+  "title": "Главная",
+  "sync": {
+    "progress": "Синхронизация · {{percent}}%",
+    "syncing": "Синхронизирую…"
+  },
+  "noBand": {
+    "title": "Данных с браслета пока нет",
+    "short": "Данных с браслета пока нет",
+    "scored": "Sleep, Recovery и Strain оцениваются по пульсу с твоего Fitbit, который телефон измерить не может.",
+    "phoneShows": "Пока твой Fitbit не синхронизировался, Главная показывает то, что считает телефон: шаги, дистанцию, калории и активные минуты.",
+    "plannerNeeds": "Планировщику сна нужно 7 ночей, чтобы узнать время твоего пробуждения."
+  },
+  "vital": {
+    "resp": "Частота дыхания",
+    "spo2": "Кислород в крови",
+    "restingHr": "Пульс покоя",
+    "hrv": "Вариабельность пульса",
+    "skinTempDev": "Температура кожи"
+  },
+  "section": {
+    "myDay": "Мой день",
+    "myDashboard": "Мои показатели",
+    "myJournal": "Мой дневник",
+    "tonight": "Сон на эту ночь",
+    "energyBank": "Energy Bank",
+    "strainRecovery": "Strain и recovery",
+    "weekReview": "Твоя неделя в итогах",
+    "fromPhone": "С твоего телефона",
+    "vsAverage": "к средн. за 30 дн.",
+    "vsAverageFull": "к среднему за 30 дней"
+  },
+  "activities": {
+    "today": "Активности за сегодня",
+    "other": "Активности",
+    "all": "Все активности",
+    "add": "Добавить активность",
+    "emptyToday": "Сегодня активностей пока нет. Тренировки появляются после синхронизации с Fitbit.",
+    "emptyDay": "В этот день нет активностей."
+  },
+  "add": {
+    "today": "Добавить за сегодня",
+    "day": "Добавить за {{day}}",
+    "completeJournal": "Заполни дневник"
+  },
+  "tonight": {
+    "openPlanner": "Открыть планировщик сна",
+    "recommendedBedtime": "Рекомендуемое\nвремя сна",
+    "typicalWake": "Обычный\nподъём",
+    "sleepGoal": "Цель по сну",
+    "goalShare": "{{label}}, {{percent}} процентов от потребности",
+    "need": "Нужно этой ночью: <t>{{time}}</t>"
+  },
+  "journal": {
+    "open": "Открыть дневник",
+    "checkedIn": "{{day}}: отмечено",
+    "noCheckIn": "{{day}}: без отметки",
+    "insights": "Выводы о привычках"
+  },
+  "monitor": {
+    "title": "Health Monitor",
+    "noReadings": "Нет показаний",
+    "withinRange": "В норме",
+    "outOfRange": "Вне нормы",
+    "ofMetrics": "{{n}} из {{total}} показателей",
+    "view": "Открыть Health Monitor"
+  },
+  "alert": {
+    "illnessTitle": "Возможно, твой организм с чем-то борется",
+    "flaggedTitle_one": "{{count}} показатель вне твоей нормы",
+    "flaggedTitle_few": "{{count}} показателя вне твоей нормы",
+    "flaggedTitle_many": "{{count}} показателей вне твоей нормы",
+    "flaggedTitle_other": "{{count}} показателя вне твоей нормы",
+    "illnessBody": "Несколько жизненных показателей вместе ушли от твоей нормы: такая картина часто предшествует недомоганию. Подумай о более лёгком дне.",
+    "flaggedBody_one": "{{names}} вне твоего обычного диапазона. Это может быть ранним признаком болезни или сильной нагрузки.",
+    "flaggedBody_few": "{{names}} вне твоего обычного диапазона. Это может быть ранним признаком болезни или сильной нагрузки.",
+    "flaggedBody_many": "{{names}} вне твоего обычного диапазона. Это может быть ранним признаком болезни или сильной нагрузки.",
+    "flaggedBody_other": "{{names}} вне твоего обычного диапазона. Это может быть ранним признаком болезни или сильной нагрузки.",
+    "someVitals": "Некоторые показатели",
+    "namesAnd": "{{rest}} и {{last}}"
+  },
+  "stress": {
+    "title": "Stress Monitor",
+    "notWorn": "Не надето",
+    "noneScored": "Стресс пока не оценён",
+    "today": "Сегодня",
+    "thisDay": "Этот день",
+    "dayAverage": "Среднее за день",
+    "lastUpdated": "Обновлено <t>{{time}}</t>"
+  },
+  "energy": {
+    "label": "Энергия",
+    "wokeAt": "Проснулся в <t>{{time}}</t> с <t>{{level}}%</t>",
+    "charged": "Заряд",
+    "drained": "Расход",
+    "drainAt": "{{label}} в <t>{{time}}</t> · <t>{{amount}}</t>"
+  },
+  "heartRate": {
+    "title": "Пульс",
+    "none": "Пульса пока нет",
+    "demoNone": "В демо-данных пока нет показаний.",
+    "notSynced": "Из Health Connect пока ничего не синхронизировано.",
+    "lastMinutes": "Последние {{minutes}} min",
+    "live": "Пульс вживую {{bpm}} ударов в минуту",
+    "reconnecting": "Переподключаюсь. Последнее показание вживую {{bpm}} ударов в минуту",
+    "latest": "Пульс {{bpm}} ударов в минуту",
+    "unknown": "неизвестно"
+  },
+  "insights": {
+    "label": "Выводы",
+    "position": "{{n}} из {{total}}",
+    "dismiss": "Скрыть этот вывод (осталось {{left}})",
+    "keepLight": "Держи Strain лёгким",
+    "roomForMore": "Есть запас для Strain",
+    "optimal": "Выход на оптимальный Strain",
+    "pastTarget": "Выше твоей цели",
+    "recoveryGreen": "Готов к Strain",
+    "recoveryYellow": "Ровный день",
+    "recoveryRed": "Время восстановиться",
+    "lastNight": "Сон прошлой ночи"
+  },
+  "outlook": {
+    "titleReview": "Итоги твоего дня",
+    "titleOutlook": "Прогноз на день",
+    "band": {
+      "green": "зелёный",
+      "yellow": "жёлтый",
+      "red": "красный"
+    },
+    "recovery": "Твой Recovery {{value}}%, {{band}}.",
+    "strainTarget": "Strain Target на сегодня: {{target}}.",
+    "slept": "Сон: {{asleep}} из нужных {{need}}.",
+    "strainIs": "Strain дня {{value}}.",
+    "strainIsTarget": "Strain дня {{value}} при цели {{target}}.",
+    "strainIsActs_one": "Strain дня {{value}}, с {{count}} активностью.",
+    "strainIsActs_few": "Strain дня {{value}}, с {{count}} активностями.",
+    "strainIsActs_many": "Strain дня {{value}}, с {{count}} активностями.",
+    "strainIsActs_other": "Strain дня {{value}}, с {{count}} активности.",
+    "strainIsTargetActs_one": "Strain дня {{value}} при цели {{target}}, с {{count}} активностью.",
+    "strainIsTargetActs_few": "Strain дня {{value}} при цели {{target}}, с {{count}} активностями.",
+    "strainIsTargetActs_many": "Strain дня {{value}} при цели {{target}}, с {{count}} активностями.",
+    "strainIsTargetActs_other": "Strain дня {{value}} при цели {{target}}, с {{count}} активности.",
+    "strainWas": "Strain дня был {{value}}.",
+    "strainWasTarget": "Strain дня был {{value}} при цели {{target}}.",
+    "strainWasActs_one": "Strain дня был {{value}}, с {{count}} активностью.",
+    "strainWasActs_few": "Strain дня был {{value}}, с {{count}} активностями.",
+    "strainWasActs_many": "Strain дня был {{value}}, с {{count}} активностями.",
+    "strainWasActs_other": "Strain дня был {{value}}, с {{count}} активности.",
+    "strainWasTargetActs_one": "Strain дня был {{value}} при цели {{target}}, с {{count}} активностью.",
+    "strainWasTargetActs_few": "Strain дня был {{value}} при цели {{target}}, с {{count}} активностями.",
+    "strainWasTargetActs_many": "Strain дня был {{value}} при цели {{target}}, с {{count}} активностями.",
+    "strainWasTargetActs_other": "Strain дня был {{value}} при цели {{target}}, с {{count}} активности.",
+    "recoveryIs": "Recovery {{value}}%.",
+    "recoveryWas": "Recovery был {{value}}%.",
+    "highStress": "Высокий стресс: {{duration}}."
+  },
+  "edit": {
+    "customizeLabel": "Настроить Мои показатели",
+    "customize": "Настроить",
+    "pageTitle": "Настройка показателей",
+    "success": "Готово",
+    "saved": "Твои настройки сохранены.",
+    "saveFailed": "Не удалось сохранить твои показатели. Попробуй ещё раз.",
+    "saving": "Сохраняю…",
+    "myDashboard": "Мои показатели",
+    "addAtLeastOne": "Добавь хотя бы один показатель, чтобы сохранить.",
+    "addTo": "Добавить в Мои показатели",
+    "searchPlaceholder": "Поиск показателей…",
+    "searchLabel": "Поиск показателей",
+    "add": "Добавить {{label}}",
+    "addNoData": "Добавить {{label}}, данных пока нет",
+    "noDataYet": "Данных пока нет",
+    "noMatch": "Ни один показатель не подходит под «{{query}}».",
+    "allOnHome": "Все показатели уже на Главной.",
+    "remove": "Убрать {{label}}",
+    "reorder": "Переместить {{label}}, позиция {{position}} из {{total}}",
+    "reorderHint": "Перетащи или проведи вверх или вниз, чтобы переместить",
+    "moveUp": "Вверх",
+    "moveDown": "Вниз",
+    "moved": "{{label}} перемещён на позицию {{position}} из {{total}}",
+    "removed": "{{label}} убран с Главной",
+    "added": "{{label}} добавлен на позицию {{position}}"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "calibrating": {
+    "short": "Kalibracja",
+    "long": "Kalibracja",
+    "longNights_one": "Kalibracja: została {{count}} noc",
+    "longNights_few": "Kalibracja: zostały {{count}} noce",
+    "longNights_many": "Kalibracja: zostało {{count}} nocy",
+    "longNights_other": "Kalibracja: zostało {{count}} nocy"
+  },
+  "noHrvLastNight": {
+    "short": "Brak HRV z nocy",
+    "long": "Brak HRV w ostatnim śnie"
+  },
+  "awaitingSleepSync": {
+    "short": "Czekam na sen",
+    "long": "Czekam na synchronizację ostatniego snu"
+  },
+  "insufficientHrData": {
+    "short": "Za mało danych",
+    "long": "Za mało danych o tętnie"
+  },
+  "bandNotWorn": {
+    "short": "Nie noszono",
+    "long": "Brak danych: opaska nie była noszona"
+  },
+  "noData": {
+    "short": "--",
+    "long": "Brak danych"
+  },
+  "tag": {
+    "provisionalLabel": "Wstępne",
+    "provisionalExplain": "Oparte na krótkiej historii, gdy uzupełniają się Twoje wartości bazowe. Z kolejnymi dniami będzie dokładniejsze.",
+    "staleBaselineLabel": "Nieaktualna baza",
+    "staleBaselineExplain": "W Twojej bazie brakuje 14 nocy lub więcej. Wyniki staną się dokładniejsze z nowymi nocami.",
+    "updatedLabel": "Zaktualizowano",
+    "updatedExplain": "Zaktualizowano po późnej synchronizacji, która dodała dane."
+  }
+}

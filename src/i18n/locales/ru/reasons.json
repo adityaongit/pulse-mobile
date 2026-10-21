@@ -1,0 +1,38 @@
+{
+  "calibrating": {
+    "short": "Калибровка",
+    "long": "Калибровка",
+    "longNights_one": "Калибровка: осталась {{count}} ночь",
+    "longNights_few": "Калибровка: осталось {{count}} ночи",
+    "longNights_many": "Калибровка: осталось {{count}} ночей",
+    "longNights_other": "Калибровка: осталось {{count}} ночи"
+  },
+  "noHrvLastNight": {
+    "short": "Нет HRV за ночь",
+    "long": "Нет HRV в сне прошлой ночи"
+  },
+  "awaitingSleepSync": {
+    "short": "Ждём сон",
+    "long": "Ждём синхронизации сна прошлой ночи"
+  },
+  "insufficientHrData": {
+    "short": "Мало данных",
+    "long": "Мало данных о пульсе"
+  },
+  "bandNotWorn": {
+    "short": "Не надет",
+    "long": "Нет данных: браслет не надет"
+  },
+  "noData": {
+    "short": "--",
+    "long": "Нет данных"
+  },
+  "tag": {
+    "provisionalLabel": "Предварительно",
+    "provisionalExplain": "Основано на короткой истории, пока заполняются твои базовые значения. С новыми днями оценка станет точнее.",
+    "staleBaselineLabel": "База устарела",
+    "staleBaselineExplain": "В твоей базе не хватает 14 ночей или больше. Оценки станут точнее с новыми ночами.",
+    "updatedLabel": "Обновлено",
+    "updatedExplain": "Обновлено после поздней синхронизации."
+  }
+}

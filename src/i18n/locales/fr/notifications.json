@@ -1,0 +1,41 @@
+{
+  "recovery": { "title": "Recovery prête", "body": "{{percent}}% : {{band}}" },
+  "cantSync": {
+    "title": "Pulse ne peut pas synchroniser",
+    "body": "Health Connect n’a pas synchronisé depuis {{gap}}. Ouvre Pulse pour synchroniser."
+  },
+  "since": {
+    "hours_one": "{{count}} heure",
+    "hours_many": "{{count}} d’heures",
+    "hours_other": "{{count}} heures",
+    "days_one": "{{count}} jour",
+    "days_many": "{{count}} de jours",
+    "days_other": "{{count}} jours"
+  },
+  "checkIn": { "title": "Check-in", "body": "Comment s’est passée ta journée ? Prends une minute pour ton check-in." },
+  "strainTarget": {
+    "title": "Strain Target atteinte",
+    "inside": "Ton Strain du jour ({{strain}}) est dans la cible : {{range}}.",
+    "past": "Ton Strain du jour ({{strain}}) dépasse la cible : {{range}}. Privilégie le sommeil ce soir pour récupérer."
+  },
+  "monitor": {
+    "illnessTitle": "Ton corps lutte peut-être contre quelque chose",
+    "illnessBody": "Plusieurs constantes se sont écartées ensemble de ta plage habituelle, un schéma qui précède souvent un coup de fatigue. Pense à une journée plus tranquille.",
+    "title_one": "{{count}} constante hors de ta plage habituelle",
+    "title_many": "{{count}} de constantes hors de ta plage habituelle",
+    "title_other": "{{count}} constantes hors de ta plage habituelle",
+    "body_one": "{{names}} est hors de ta plage habituelle. Cela peut être un signe précoce de maladie ou d’effort intense.",
+    "body_many": "{{names}} sont hors de ta plage habituelle. Cela peut être un signe précoce de maladie ou d’effort intense.",
+    "body_other": "{{names}} sont hors de ta plage habituelle. Cela peut être un signe précoce de maladie ou d’effort intense.",
+    "oneVital": "Une constante",
+    "namesAnd": "{{list}} et {{last}}"
+  },
+  "report": {
+    "title": "Bilan hebdo prêt",
+    "recovery": "Recovery moyenne de {{value}}%",
+    "strain": "Strain du jour {{value}}",
+    "withParts": "{{range}} : {{parts}}.",
+    "empty": "Ta semaine du {{range}} est arrivée."
+  },
+  "windDown": { "title": "Détente", "body": "Au lit avant {{time}} pour couvrir ton Sleep Need de ce soir." }
+}

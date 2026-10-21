@@ -1,0 +1,59 @@
+{
+  "title": "Recovery",
+  "loadError": "Impossible de charger cet écran.",
+  "legendPeriod": "30 derniers jours",
+  "legendSkeleton": "Aujourd’hui vs 30 derniers jours",
+  "exploreInsights": "Explore tes analyses de Recovery",
+  "weeklyTitle": {
+    "recovery": "Recovery",
+    "hrv": "Variabilité de la fréquence cardiaque",
+    "rhr": "Fréquence cardiaque au repos",
+    "resp": "Fréquence respiratoire",
+    "sleep": "Sleep Performance"
+  },
+  "behaviors": {
+    "title": "Analyse des comportements",
+    "body": "Certains de tes comportements d’hier ont peut-être influencé ton score de Recovery d’aujourd’hui.",
+    "spokenUp": "{{label}}, associé à une Recovery plus élevée",
+    "spokenDown": "{{label}}, associé à une Recovery plus basse",
+    "spokenNeutral": "{{label}}, aucun effet net"
+  },
+  "subject": {
+    "hrv": "HRV",
+    "rhr": "Fréquence cardiaque au repos",
+    "resp": "Fréquence respiratoire",
+    "sleep": "Sommeil",
+    "skin": "Température cutanée"
+  },
+  "driver": {
+    "strongSleep": "Excellente nuit de sommeil",
+    "weakSleep": "Sommeil en dessous d’une bonne nuit",
+    "typicalSleep": "Nuit de sommeil habituelle",
+    "skinWarmer": "Température cutanée plus chaude que d’habitude",
+    "skinCooler": "Température cutanée plus fraîche que d’habitude",
+    "hrvBelow": "HRV sous ta référence",
+    "atBaseline": "{{subject}} : à ta référence",
+    "slightlyAbove": "{{subject}} : légèrement au-dessus de ta référence",
+    "slightlyBelow": "{{subject}} : légèrement sous ta référence",
+    "above": "{{subject}} : au-dessus de ta référence",
+    "below": "{{subject}} : sous ta référence"
+  },
+  "phrase": {
+    "hrvGood": "ta HRV est au-dessus de ta référence",
+    "hrvBad": "ta HRV est sous ta référence",
+    "rhrGood": "ta fréquence cardiaque au repos est plus basse que d’habitude",
+    "rhrBad": "ta fréquence cardiaque au repos est plus haute que d’habitude",
+    "respGood": "ta fréquence respiratoire est stable",
+    "respBad": "ta fréquence respiratoire est en hausse",
+    "sleepGood": "tu as bien dormi",
+    "sleepBad": "ton sommeil a été insuffisant",
+    "skinGood": "ta température cutanée est normale",
+    "skinBad": "ta température cutanée s’est écartée de la normale"
+  },
+  "insight": {
+    "lifted": "{{phrase}}, ce qui a fait monter la Recovery aujourd’hui.",
+    "heldBack": "{{phrase}}, ce qui a freiné la Recovery aujourd’hui.",
+    "mixed": "{{good}}, mais {{bad}}. Ensemble, ils ont façonné la Recovery d’aujourd’hui.",
+    "steady": "Tes signaux restent proches de ta référence, donc ta Recovery est proche de ton niveau habituel."
+  }
+}

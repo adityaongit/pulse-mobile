@@ -1,0 +1,37 @@
+{
+  "calibrating": {
+    "short": "Calibrage",
+    "long": "Calibrage",
+    "longNights_one": "Calibrage : {{count}} nuit restante",
+    "longNights_many": "Calibrage : {{count}} de nuits restantes",
+    "longNights_other": "Calibrage : {{count}} nuits restantes"
+  },
+  "noHrvLastNight": {
+    "short": "Pas de HRV cette nuit",
+    "long": "Pas de HRV dans ton sommeil de cette nuit"
+  },
+  "awaitingSleepSync": {
+    "short": "En attente du sommeil",
+    "long": "En attente de la synchro du sommeil de cette nuit"
+  },
+  "insufficientHrData": {
+    "short": "Données insuffisantes",
+    "long": "Pas assez de données de fréquence cardiaque"
+  },
+  "bandNotWorn": {
+    "short": "Non porté",
+    "long": "Aucune donnée : bracelet non porté"
+  },
+  "noData": {
+    "short": "--",
+    "long": "Aucune donnée"
+  },
+  "tag": {
+    "provisionalLabel": "Provisoire",
+    "provisionalExplain": "Basé sur un court historique, le temps que tes références se construisent. Il se précise au fil des jours.",
+    "staleBaselineLabel": "Référence périmée",
+    "staleBaselineExplain": "Il manque 14 nuits ou plus à ta référence. Les scores se précisent à mesure que de nouvelles nuits arrivent.",
+    "updatedLabel": "Mis à jour",
+    "updatedExplain": "Mis à jour après l’arrivée tardive de données lors d’une synchro."
+  }
+}

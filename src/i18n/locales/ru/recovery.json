@@ -1,0 +1,59 @@
+{
+  "title": "Recovery",
+  "loadError": "Не удалось загрузить экран.",
+  "legendPeriod": "последние 30 дней",
+  "legendSkeleton": "Сегодня и последние 30 дней",
+  "exploreInsights": "Изучи выводы о Recovery",
+  "weeklyTitle": {
+    "recovery": "Recovery",
+    "hrv": "Вариабельность пульса",
+    "rhr": "Пульс покоя",
+    "resp": "Частота дыхания",
+    "sleep": "Sleep Performance"
+  },
+  "behaviors": {
+    "title": "Влияние привычек",
+    "body": "Некоторые вчерашние привычки могли повлиять на твой Recovery сегодня.",
+    "spokenUp": "{{label}}: Recovery был выше",
+    "spokenDown": "{{label}}: Recovery был ниже",
+    "spokenNeutral": "{{label}}: явного влияния нет"
+  },
+  "subject": {
+    "hrv": "HRV",
+    "rhr": "Пульс покоя",
+    "resp": "Частота дыхания",
+    "sleep": "Сон",
+    "skin": "Температура кожи"
+  },
+  "driver": {
+    "strongSleep": "Крепкий сон",
+    "weakSleep": "Сон хуже хорошей ночи",
+    "typicalSleep": "Обычная ночь сна",
+    "skinWarmer": "Кожа теплее обычного",
+    "skinCooler": "Кожа прохладнее обычного",
+    "hrvBelow": "HRV ниже базы",
+    "atBaseline": "{{subject}}: на уровне базы",
+    "slightlyAbove": "{{subject}}: чуть выше базы",
+    "slightlyBelow": "{{subject}}: чуть ниже базы",
+    "above": "{{subject}}: выше базы",
+    "below": "{{subject}}: ниже базы"
+  },
+  "phrase": {
+    "hrvGood": "твой HRV выше базы",
+    "hrvBad": "твой HRV ниже базы",
+    "rhrGood": "пульс покоя ниже обычного",
+    "rhrBad": "пульс покоя выше обычного",
+    "respGood": "дыхание ровное",
+    "respBad": "дыхание участилось",
+    "sleepGood": "сон был хорошим",
+    "sleepBad": "сна не хватило",
+    "skinGood": "температура кожи в норме",
+    "skinBad": "температура кожи отклонилась от нормы"
+  },
+  "insight": {
+    "lifted": "{{phrase}}, и это подняло Recovery сегодня.",
+    "heldBack": "{{phrase}}, и это сдержало Recovery сегодня.",
+    "mixed": "{{good}}, но {{bad}}. Вместе это определило сегодняшний Recovery.",
+    "steady": "Твои показатели близки к базе, поэтому Recovery около обычного уровня."
+  }
+}

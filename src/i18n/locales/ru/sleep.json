@@ -1,0 +1,116 @@
+{
+  "title": "Сон",
+  "band": {
+    "optimal": "оптимальным",
+    "sufficient": "достаточным",
+    "poor": "плохим"
+  },
+  "status": {
+    "poor": "Плохо",
+    "sufficient": "Достаточно",
+    "optimal": "Оптимально"
+  },
+  "stat": {
+    "hours": "Часы к норме",
+    "consistency": "Sleep Consistency",
+    "efficiency": "Эффективность сна",
+    "restorative": "Восстанавливающий сон",
+    "sleepStress": "Стресс во сне",
+    "timeInBed": "Время в постели",
+    "wakeEvents": "Пробуждения",
+    "resp": "Частота дыхания",
+    "debt": "Sleep Debt"
+  },
+  "stage": {
+    "awake": "Бодрствование",
+    "rem": "REM",
+    "light": "Лёгкий",
+    "deep": "Глубокий"
+  },
+  "insight": {
+    "laterBedtime_one": "Твой сон был {{band}}. Режим — самый простой выигрыш: ты лёг на {{count}} минуту позже обычного.",
+    "laterBedtime_few": "Твой сон был {{band}}. Режим — самый простой выигрыш: ты лёг на {{count}} минуты позже обычного.",
+    "laterBedtime_many": "Твой сон был {{band}}. Режим — самый простой выигрыш: ты лёг на {{count}} минут позже обычного.",
+    "laterBedtime_other": "Твой сон был {{band}}. Режим — самый простой выигрыш: ты лёг на {{count}} минуты позже обычного.",
+    "earlierBedtime_one": "Твой сон был {{band}}. Режим — самый простой выигрыш: ты лёг на {{count}} минуту раньше обычного.",
+    "earlierBedtime_few": "Твой сон был {{band}}. Режим — самый простой выигрыш: ты лёг на {{count}} минуты раньше обычного.",
+    "earlierBedtime_many": "Твой сон был {{band}}. Режим — самый простой выигрыш: ты лёг на {{count}} минут раньше обычного.",
+    "earlierBedtime_other": "Твой сон был {{band}}. Режим — самый простой выигрыш: ты лёг на {{count}} минуты раньше обычного.",
+    "steadier": "Твой сон был {{band}}. Более ровное время отбоя и подъёма поднимет твой Sleep Consistency.",
+    "lessSleep_one": "Твой сон был {{band}}. Ты спал на {{count}} минуту меньше нормы, ранний отбой поможет.",
+    "lessSleep_few": "Твой сон был {{band}}. Ты спал на {{count}} минуты меньше нормы, ранний отбой поможет.",
+    "lessSleep_many": "Твой сон был {{band}}. Ты спал на {{count}} минут меньше нормы, ранний отбой поможет.",
+    "lessSleep_other": "Твой сон был {{band}}. Ты спал на {{count}} минуты меньше нормы, ранний отбой поможет.",
+    "onTrack": "Твой сон был {{band}}. Ты держался обычного графика и спал почти по норме.",
+    "explore": "Изучи выводы о сне"
+  },
+  "cards": {
+    "lastNight": "Сон прошлой ночи",
+    "vsPrior30": "к предыдущим 30 дням",
+    "hoursVsNeeded": "Часы к норме",
+    "consistency": "Sleep Consistency",
+    "efficiency": "Эффективность сна",
+    "tonight": "Сон этой ночью"
+  },
+  "need": {
+    "hoursOfSleep": "Часы сна",
+    "sleepNeeded": "Sleep Need",
+    "calibrating": "Норма определится через 7 ночей. До тех пор используем {{need}}.",
+    "healthyMinimum": "Здоровый минимум",
+    "recentStrain": "Недавний Strain",
+    "sleepDebt": "Sleep Debt",
+    "naps": "Дневной сон",
+    "priorAverage": "Среднее за предыдущие 30 ночей {{value}}%"
+  },
+  "consistency": {
+    "optimal": "Оптимальное время отбоя и подъёма",
+    "aria": "Время отбоя и подъёма за последние пять ночей",
+    "ariaLast": "Время отбоя и подъёма за последние пять ночей, прошлой ночью с {{bed}} до {{wake}}"
+  },
+  "efficiency": {
+    "asleep": "Сон",
+    "awake": "Бодрствование",
+    "wakeEvents": "Пробуждения"
+  },
+  "planner": {
+    "calibrating": "Планировщику сна нужно 7 ночей, чтобы узнать твоё время подъёма.",
+    "shareOfNeed": "{{pct}}% от нормы",
+    "typicalWake": "Обычный подъём",
+    "weekdayWake": "Подъём в будни",
+    "weekendWake": "Подъём в выходные",
+    "needTonight": "Нужно сегодня: <n>{{value}}</n>",
+    "plan": {
+      "peak": "Пик",
+      "perform": "Форма",
+      "getBy": "Минимум"
+    }
+  },
+  "weekly": {
+    "sleep": "Sleep Performance",
+    "hours": "Часы к норме (часы)",
+    "hoursNeed": "Часы к норме (%)",
+    "restorative": "Восстанавливающий сон",
+    "consistency": "Sleep Consistency",
+    "timeInBed": "Время в постели",
+    "efficiency": "Эффективность сна"
+  },
+  "skeleton": {
+    "healthyMinimum": "Здоровый минимум",
+    "recentStrain": "Недавний Strain",
+    "sleepDebt": "Sleep Debt"
+  },
+  "nap": {
+    "title": "Дневной сон",
+    "notFound": "Страница не найдена.",
+    "when": "{{day}} {{start}} – {{end}}",
+    "activity": "Активность",
+    "activityStrain": "Strain активности",
+    "duration": "Длительность",
+    "keyStats": "Ключевые показатели",
+    "vs30": "к среднему за 30 дней",
+    "avgHr": "Ср. пульс",
+    "maxHr": "Макс. пульс",
+    "calories": "Калории",
+    "hrr": "Восстановление пульса"
+  }
+}

@@ -1,0 +1,113 @@
+{
+  "title": "Sueño",
+  "band": {
+    "optimal": "óptimo",
+    "sufficient": "suficiente",
+    "poor": "deficiente"
+  },
+  "status": {
+    "poor": "Deficiente",
+    "sufficient": "Suficiente",
+    "optimal": "Óptimo"
+  },
+  "stat": {
+    "hours": "Horas vs. necesarias",
+    "consistency": "Sleep Consistency",
+    "efficiency": "Eficiencia del sueño",
+    "restorative": "Sueño reparador",
+    "sleepStress": "Estrés durante el sueño",
+    "timeInBed": "Tiempo en cama",
+    "wakeEvents": "Despertares",
+    "resp": "Frecuencia respiratoria",
+    "debt": "Sleep Debt"
+  },
+  "stage": {
+    "awake": "Despierto",
+    "rem": "REM",
+    "light": "Ligero",
+    "deep": "Profundo"
+  },
+  "insight": {
+    "laterBedtime_one": "Tu sueño fue {{band}}. La constancia es lo más fácil de mejorar: te acostaste {{count}} minuto más tarde de lo habitual.",
+    "laterBedtime_many": "Tu sueño fue {{band}}. La constancia es lo más fácil de mejorar: te acostaste {{count}} de minutos más tarde de lo habitual.",
+    "laterBedtime_other": "Tu sueño fue {{band}}. La constancia es lo más fácil de mejorar: te acostaste {{count}} minutos más tarde de lo habitual.",
+    "earlierBedtime_one": "Tu sueño fue {{band}}. La constancia es lo más fácil de mejorar: te acostaste {{count}} minuto más temprano de lo habitual.",
+    "earlierBedtime_many": "Tu sueño fue {{band}}. La constancia es lo más fácil de mejorar: te acostaste {{count}} de minutos más temprano de lo habitual.",
+    "earlierBedtime_other": "Tu sueño fue {{band}}. La constancia es lo más fácil de mejorar: te acostaste {{count}} minutos más temprano de lo habitual.",
+    "steadier": "Tu sueño fue {{band}}. Mantener una hora de acostarte y de despertar más regular mejoraría tu constancia.",
+    "lessSleep_one": "Tu sueño fue {{band}}. Dormiste {{count}} minuto menos de lo que necesitabas; acostarte antes ayuda.",
+    "lessSleep_many": "Tu sueño fue {{band}}. Dormiste {{count}} de minutos menos de lo que necesitabas; acostarte antes ayuda.",
+    "lessSleep_other": "Tu sueño fue {{band}}. Dormiste {{count}} minutos menos de lo que necesitabas; acostarte antes ayuda.",
+    "onTrack": "Tu sueño fue {{band}}. Mantuviste tu horario habitual y dormiste cerca de lo que necesitas.",
+    "explore": "Explora tus datos de sueño"
+  },
+  "cards": {
+    "lastNight": "Sueño de anoche",
+    "vsPrior30": "vs. 30 días previos",
+    "hoursVsNeeded": "Horas vs. necesarias",
+    "consistency": "Sleep Consistency",
+    "efficiency": "Eficiencia del sueño",
+    "tonight": "Sueño de esta noche"
+  },
+  "need": {
+    "hoursOfSleep": "Horas de sueño",
+    "sleepNeeded": "Sleep Need",
+    "calibrating": "Tu necesidad se ajusta tras 7 noches. Mientras tanto se usa {{need}}.",
+    "healthyMinimum": "Mínimo saludable",
+    "recentStrain": "Strain reciente",
+    "sleepDebt": "Sleep Debt",
+    "naps": "Siestas",
+    "priorAverage": "Promedio de las 30 noches previas {{value}}%"
+  },
+  "consistency": {
+    "optimal": "Hora óptima de acostarte y despertar",
+    "aria": "Horas de acostarte y despertar de las últimas cinco noches",
+    "ariaLast": "Horas de acostarte y despertar de las últimas cinco noches, anoche de {{bed}} a {{wake}}"
+  },
+  "efficiency": {
+    "asleep": "Dormido",
+    "awake": "Despierto",
+    "wakeEvents": "Despertares"
+  },
+  "planner": {
+    "calibrating": "El planificador de sueño necesita 7 noches para aprender tu hora de despertar.",
+    "shareOfNeed": "{{pct}}% de lo necesario",
+    "typicalWake": "Despertar típico",
+    "weekdayWake": "Hora de despertar entre semana",
+    "weekendWake": "Hora de despertar en fin de semana",
+    "needTonight": "Necesitas esta noche: <n>{{value}}</n>",
+    "plan": {
+      "peak": "Máximo",
+      "perform": "Rendir",
+      "getBy": "Salir del paso"
+    }
+  },
+  "weekly": {
+    "sleep": "Sleep Performance",
+    "hours": "Horas vs. necesarias (horas)",
+    "hoursNeed": "Horas vs. necesarias (%)",
+    "restorative": "Sueño reparador",
+    "consistency": "Sleep Consistency",
+    "timeInBed": "Tiempo en cama",
+    "efficiency": "Eficiencia del sueño"
+  },
+  "skeleton": {
+    "healthyMinimum": "Mínimo saludable",
+    "recentStrain": "Strain reciente",
+    "sleepDebt": "Sleep Debt"
+  },
+  "nap": {
+    "title": "Siesta",
+    "notFound": "No se encontró esta página.",
+    "when": "{{day}} de {{start}} a {{end}}",
+    "activity": "Actividad",
+    "activityStrain": "Strain de la actividad",
+    "duration": "Duración",
+    "keyStats": "Estadísticas clave",
+    "vs30": "vs. promedio de 30 días",
+    "avgHr": "FC prom.",
+    "maxHr": "FC máx.",
+    "calories": "Calorías",
+    "hrr": "Recuperación de la frecuencia cardíaca"
+  }
+}

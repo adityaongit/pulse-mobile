@@ -1,0 +1,113 @@
+{
+  "title": "Sommeil",
+  "band": {
+    "optimal": "optimal",
+    "sufficient": "suffisant",
+    "poor": "insuffisant"
+  },
+  "status": {
+    "poor": "Insuffisant",
+    "sufficient": "Suffisant",
+    "optimal": "Optimal"
+  },
+  "stat": {
+    "hours": "Heures vs besoin",
+    "consistency": "Sleep Consistency",
+    "efficiency": "Efficacité du sommeil",
+    "restorative": "Sommeil réparateur",
+    "sleepStress": "Stress pendant le sommeil",
+    "timeInBed": "Temps au lit",
+    "wakeEvents": "Réveils",
+    "resp": "Fréquence respiratoire",
+    "debt": "Sleep Debt"
+  },
+  "stage": {
+    "awake": "Éveil",
+    "rem": "REM",
+    "light": "Léger",
+    "deep": "Profond"
+  },
+  "insight": {
+    "laterBedtime_one": "Ton sommeil était {{band}}. La régularité est le gain le plus facile : tu t’es couché {{count}} minute plus tard que d’habitude.",
+    "laterBedtime_many": "Ton sommeil était {{band}}. La régularité est le gain le plus facile : tu t’es couché {{count}} de minutes plus tard que d’habitude.",
+    "laterBedtime_other": "Ton sommeil était {{band}}. La régularité est le gain le plus facile : tu t’es couché {{count}} minutes plus tard que d’habitude.",
+    "earlierBedtime_one": "Ton sommeil était {{band}}. La régularité est le gain le plus facile : tu t’es couché {{count}} minute plus tôt que d’habitude.",
+    "earlierBedtime_many": "Ton sommeil était {{band}}. La régularité est le gain le plus facile : tu t’es couché {{count}} de minutes plus tôt que d’habitude.",
+    "earlierBedtime_other": "Ton sommeil était {{band}}. La régularité est le gain le plus facile : tu t’es couché {{count}} minutes plus tôt que d’habitude.",
+    "steadier": "Ton sommeil était {{band}}. Garder des heures de coucher et de lever plus stables améliorerait ta régularité.",
+    "lessSleep_one": "Ton sommeil était {{band}}. Tu as dormi {{count}} minute de moins que ton besoin ; une nuit plus tôt aide.",
+    "lessSleep_many": "Ton sommeil était {{band}}. Tu as dormi {{count}} de minutes de moins que ton besoin ; une nuit plus tôt aide.",
+    "lessSleep_other": "Ton sommeil était {{band}}. Tu as dormi {{count}} minutes de moins que ton besoin ; une nuit plus tôt aide.",
+    "onTrack": "Ton sommeil était {{band}}. Tu as gardé ton rythme habituel et dormi presque autant que ton besoin.",
+    "explore": "Explore tes analyses de sommeil"
+  },
+  "cards": {
+    "lastNight": "Sommeil de cette nuit",
+    "vsPrior30": "vs 30 jours précédents",
+    "hoursVsNeeded": "Heures vs besoin",
+    "consistency": "Sleep Consistency",
+    "efficiency": "Efficacité du sommeil",
+    "tonight": "Sommeil de ce soir"
+  },
+  "need": {
+    "hoursOfSleep": "Heures de sommeil",
+    "sleepNeeded": "Sleep Need",
+    "calibrating": "Ton besoin se stabilise après 7 nuits. D’ici là, on utilise {{need}}.",
+    "healthyMinimum": "Minimum sain",
+    "recentStrain": "Strain récent",
+    "sleepDebt": "Sleep Debt",
+    "naps": "Siestes",
+    "priorAverage": "Moyenne des 30 nuits précédentes : {{value}}%"
+  },
+  "consistency": {
+    "optimal": "Heure de coucher/lever optimale",
+    "aria": "Heures de coucher et de lever des cinq dernières nuits",
+    "ariaLast": "Heures de coucher et de lever des cinq dernières nuits, cette nuit de {{bed}} à {{wake}}"
+  },
+  "efficiency": {
+    "asleep": "Endormi",
+    "awake": "Éveillé",
+    "wakeEvents": "Réveils"
+  },
+  "planner": {
+    "calibrating": "Le Sleep Planner a besoin de 7 nuits pour apprendre ton heure de réveil.",
+    "shareOfNeed": "{{pct}}% du besoin",
+    "typicalWake": "Réveil habituel",
+    "weekdayWake": "Réveil en semaine",
+    "weekendWake": "Réveil le week-end",
+    "needTonight": "Besoin ce soir : <n>{{value}}</n>",
+    "plan": {
+      "peak": "Pic",
+      "perform": "Performance",
+      "getBy": "Tenir"
+    }
+  },
+  "weekly": {
+    "sleep": "Sleep Performance",
+    "hours": "Heures vs besoin (heures)",
+    "hoursNeed": "Heures vs besoin (%)",
+    "restorative": "Sommeil réparateur",
+    "consistency": "Sleep Consistency",
+    "timeInBed": "Temps au lit",
+    "efficiency": "Efficacité du sommeil"
+  },
+  "skeleton": {
+    "healthyMinimum": "Minimum sain",
+    "recentStrain": "Strain récent",
+    "sleepDebt": "Sleep Debt"
+  },
+  "nap": {
+    "title": "Sieste",
+    "notFound": "Cette page est introuvable.",
+    "when": "{{day}} de {{start}} à {{end}}",
+    "activity": "Activité",
+    "activityStrain": "Strain de l’activité",
+    "duration": "Durée",
+    "keyStats": "Statistiques clés",
+    "vs30": "vs moyenne sur 30 jours",
+    "avgHr": "FC moy.",
+    "maxHr": "FC max.",
+    "calories": "Calories brûlées",
+    "hrr": "Récupération de la fréquence cardiaque"
+  }
+}

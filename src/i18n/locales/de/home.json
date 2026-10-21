@@ -1,0 +1,172 @@
+{
+  "title": "Start",
+  "sync": {
+    "progress": "Synchronisiert · {{percent}}%",
+    "syncing": "Synchronisiert…"
+  },
+  "noBand": {
+    "title": "Noch keine Banddaten",
+    "short": "Noch keine Banddaten",
+    "scored": "Schlaf, Recovery und Strain werden aus der Herzfrequenz deines Fitbit bewertet, die dein Handy nicht messen kann.",
+    "phoneShows": "Bis dein Fitbit synchronisiert, zeigt der Start, was dein Handy zählt: Schritte, Distanz, Kalorien und aktive Minuten.",
+    "plannerNeeds": "Der Schlafplaner braucht 7 Nächte, um deine Aufwachzeit zu lernen."
+  },
+  "vital": {
+    "resp": "Atemfrequenz",
+    "spo2": "Blutsauerstoff",
+    "restingHr": "Ruheherzfrequenz",
+    "hrv": "Herzfrequenzvariabilität",
+    "skinTempDev": "Hauttemperatur"
+  },
+  "section": {
+    "myDay": "Mein Tag",
+    "myDashboard": "Mein Dashboard",
+    "myJournal": "Mein Journal",
+    "tonight": "Schlaf heute Nacht",
+    "energyBank": "Energy Bank",
+    "strainRecovery": "Strain & Recovery",
+    "weekReview": "Deine Woche im Rückblick",
+    "fromPhone": "Von deinem Handy",
+    "vsAverage": "vs. 30-Tage-Ø",
+    "vsAverageFull": "vs. 30-Tage-Durchschnitt"
+  },
+  "activities": {
+    "today": "Aktivitäten heute",
+    "other": "Aktivitäten",
+    "all": "Alle Aktivitäten",
+    "add": "Aktivität hinzufügen",
+    "emptyToday": "Heute noch keine Aktivitäten. Workouts erscheinen, nachdem Fitbit sie synchronisiert hat.",
+    "emptyDay": "Keine Aktivitäten an diesem Tag."
+  },
+  "add": {
+    "today": "Zu heute hinzufügen",
+    "day": "Zu {{day}} hinzufügen",
+    "completeJournal": "Journal abschließen"
+  },
+  "tonight": {
+    "openPlanner": "Schlafplaner öffnen",
+    "recommendedBedtime": "Empfohlene\nSchlafenszeit",
+    "typicalWake": "Übliches\nAufwachen",
+    "sleepGoal": "Schlafziel",
+    "goalShare": "{{label}}, {{percent}} Prozent des Bedarfs",
+    "need": "Bedarf heute Nacht: <t>{{time}}</t>"
+  },
+  "journal": {
+    "open": "Journal öffnen",
+    "checkedIn": "{{day}}: eingecheckt",
+    "noCheckIn": "{{day}}: kein Check-in",
+    "insights": "Einblicke in Gewohnheiten"
+  },
+  "monitor": {
+    "title": "Health Monitor",
+    "noReadings": "Keine Messwerte",
+    "withinRange": "Im Bereich",
+    "outOfRange": "Außerhalb des Bereichs",
+    "ofMetrics": "{{n}} von {{total}} Werten",
+    "view": "Health Monitor ansehen"
+  },
+  "alert": {
+    "illnessTitle": "Dein Körper kämpft vielleicht gegen etwas",
+    "flaggedTitle_one": "{{count}} Vitalwert außerhalb deines Normalbereichs",
+    "flaggedTitle_other": "{{count}} Vitalwerte außerhalb deines Normalbereichs",
+    "illnessBody": "Mehrere Vitalwerte haben sich gemeinsam von deinem Normalbereich entfernt, ein Muster, das oft vor einem Unwohlsein auftritt. Überlege dir einen ruhigeren Tag.",
+    "flaggedBody_one": "{{names}} liegt außerhalb deines üblichen Bereichs. Das kann ein frühes Zeichen für Krankheit oder starke Belastung sein.",
+    "flaggedBody_other": "{{names}} liegen außerhalb deines üblichen Bereichs. Das kann ein frühes Zeichen für Krankheit oder starke Belastung sein.",
+    "someVitals": "Einige Vitalwerte",
+    "namesAnd": "{{rest}} und {{last}}"
+  },
+  "stress": {
+    "title": "Stress Monitor",
+    "notWorn": "Nicht getragen",
+    "noneScored": "Noch kein Stress bewertet",
+    "today": "Heute",
+    "thisDay": "Dieser Tag",
+    "dayAverage": "Tagesdurchschnitt",
+    "lastUpdated": "Zuletzt aktualisiert <t>{{time}}</t>"
+  },
+  "energy": {
+    "label": "Energie",
+    "wokeAt": "Um <t>{{time}}</t> mit <t>{{level}}%</t> aufgewacht",
+    "charged": "Aufgeladen",
+    "drained": "Verbraucht",
+    "drainAt": "{{label}} um <t>{{time}}</t> · <t>{{amount}}</t>"
+  },
+  "heartRate": {
+    "title": "Herzfrequenz",
+    "none": "Noch keine Herzfrequenz",
+    "demoNone": "Die Beispieldaten haben noch keine Messwerte.",
+    "notSynced": "Noch nichts aus Health Connect synchronisiert.",
+    "lastMinutes": "Letzte {{minutes}} min",
+    "live": "Live-Herzfrequenz {{bpm}} Schläge pro Minute",
+    "reconnecting": "Verbindet neu. Letzter Live-Messwert {{bpm}} Schläge pro Minute",
+    "latest": "Herzfrequenz {{bpm}} Schläge pro Minute",
+    "unknown": "unbekannt"
+  },
+  "insights": {
+    "label": "Einblicke",
+    "position": "{{n}} von {{total}}",
+    "dismiss": "Diesen Einblick ausblenden (noch {{left}})",
+    "keepLight": "Strain niedrig halten",
+    "roomForMore": "Platz für mehr Strain",
+    "optimal": "Optimaler Strain in Reichweite",
+    "pastTarget": "Über deinem Ziel",
+    "recoveryGreen": "Bereit für Strain",
+    "recoveryYellow": "Ein gleichmäßiger Tag",
+    "recoveryRed": "Zeit zur Erholung",
+    "lastNight": "Schlaf der letzten Nacht"
+  },
+  "outlook": {
+    "titleReview": "Dein Tag im Rückblick",
+    "titleOutlook": "Dein Tagesausblick",
+    "band": {
+      "green": "grün",
+      "yellow": "gelb",
+      "red": "rot"
+    },
+    "recovery": "Deine Recovery liegt bei {{value}}%, {{band}}.",
+    "strainTarget": "Das heutige Strain Target ist {{target}}.",
+    "slept": "Du hast {{asleep}} von den benötigten {{need}} geschlafen.",
+    "strainIs": "Der Tages-Strain liegt bei {{value}}.",
+    "strainIsTarget": "Der Tages-Strain liegt bei {{value}} bei einem Ziel von {{target}}.",
+    "strainIsActs_one": "Der Tages-Strain liegt bei {{value}}, mit {{count}} Aktivität.",
+    "strainIsActs_other": "Der Tages-Strain liegt bei {{value}}, mit {{count}} Aktivitäten.",
+    "strainIsTargetActs_one": "Der Tages-Strain liegt bei {{value}} bei einem Ziel von {{target}}, mit {{count}} Aktivität.",
+    "strainIsTargetActs_other": "Der Tages-Strain liegt bei {{value}} bei einem Ziel von {{target}}, mit {{count}} Aktivitäten.",
+    "strainWas": "Der Tages-Strain lag bei {{value}}.",
+    "strainWasTarget": "Der Tages-Strain lag bei {{value}} bei einem Ziel von {{target}}.",
+    "strainWasActs_one": "Der Tages-Strain lag bei {{value}}, mit {{count}} Aktivität.",
+    "strainWasActs_other": "Der Tages-Strain lag bei {{value}}, mit {{count}} Aktivitäten.",
+    "strainWasTargetActs_one": "Der Tages-Strain lag bei {{value}} bei einem Ziel von {{target}}, mit {{count}} Aktivität.",
+    "strainWasTargetActs_other": "Der Tages-Strain lag bei {{value}} bei einem Ziel von {{target}}, mit {{count}} Aktivitäten.",
+    "recoveryIs": "Die Recovery liegt bei {{value}}%.",
+    "recoveryWas": "Die Recovery lag bei {{value}}%.",
+    "highStress": "Du hast {{duration}} unter hohem Stress verbracht."
+  },
+  "edit": {
+    "customizeLabel": "Mein Dashboard anpassen",
+    "customize": "Anpassen",
+    "pageTitle": "Dashboard anpassen",
+    "success": "Geschafft",
+    "saved": "Deine Einstellungen wurden gespeichert.",
+    "saveFailed": "Dein Dashboard konnte nicht gespeichert werden. Versuch es noch einmal.",
+    "saving": "Wird gespeichert…",
+    "myDashboard": "Mein Dashboard",
+    "addAtLeastOne": "Füge mindestens einen Wert zum Speichern hinzu.",
+    "addTo": "Zu Mein Dashboard hinzufügen",
+    "searchPlaceholder": "Werte suchen…",
+    "searchLabel": "Werte suchen",
+    "add": "{{label}} hinzufügen",
+    "addNoData": "{{label}} hinzufügen, noch keine Daten",
+    "noDataYet": "Noch keine Daten",
+    "noMatch": "Kein Wert passt zu „{{query}}“.",
+    "allOnHome": "Jeder Wert ist auf dem Start.",
+    "remove": "{{label}} entfernen",
+    "reorder": "{{label}} neu anordnen, Position {{position}} von {{total}}",
+    "reorderHint": "Zum Verschieben ziehen oder nach oben oder unten wischen",
+    "moveUp": "Nach oben",
+    "moveDown": "Nach unten",
+    "moved": "{{label}} auf Position {{position}} von {{total}} verschoben",
+    "removed": "{{label}} vom Start entfernt",
+    "added": "{{label}} auf Position {{position}} hinzugefügt"
+  }
+}

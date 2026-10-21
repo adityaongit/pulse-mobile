@@ -1,0 +1,36 @@
+{
+  "calibrating": {
+    "short": "Kalibrierung",
+    "long": "Kalibrierung",
+    "longNights_one": "Kalibrierung: noch {{count}} Nacht",
+    "longNights_other": "Kalibrierung: noch {{count}} Nächte"
+  },
+  "noHrvLastNight": {
+    "short": "Kein HRV letzte Nacht",
+    "long": "Kein HRV im Schlaf der letzten Nacht"
+  },
+  "awaitingSleepSync": {
+    "short": "Warte auf Schlaf",
+    "long": "Warte auf die Synchronisierung des Schlafs der letzten Nacht"
+  },
+  "insufficientHrData": {
+    "short": "Zu wenig Daten",
+    "long": "Nicht genug Herzfrequenzdaten"
+  },
+  "bandNotWorn": {
+    "short": "Nicht getragen",
+    "long": "Keine Daten: Band nicht getragen"
+  },
+  "noData": {
+    "short": "--",
+    "long": "Keine Daten"
+  },
+  "tag": {
+    "provisionalLabel": "Vorläufig",
+    "provisionalExplain": "Basiert auf einem kurzen Verlauf, während sich deine Baselines aufbauen. Mit jedem weiteren Tag wird es genauer.",
+    "staleBaselineLabel": "Baseline veraltet",
+    "staleBaselineExplain": "Für deine Baseline fehlen 14 oder mehr Nächte. Die Scores werden mit neuen Nächten genauer.",
+    "updatedLabel": "Aktualisiert",
+    "updatedExplain": "Aktualisiert, nachdem eine verspätete Synchronisierung Daten ergänzt hat."
+  }
+}

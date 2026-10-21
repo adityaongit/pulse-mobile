@@ -1,0 +1,59 @@
+{
+  "title": "Recovery",
+  "loadError": "Nie udało się załadować tego ekranu.",
+  "legendPeriod": "ostatnie 30 dni",
+  "legendSkeleton": "Dziś vs. ostatnie 30 dni",
+  "exploreInsights": "Poznaj swoje wnioski o regeneracji",
+  "weeklyTitle": {
+    "recovery": "Recovery",
+    "hrv": "Zmienność rytmu serca",
+    "rhr": "Tętno spoczynkowe",
+    "resp": "Częstość oddechów",
+    "sleep": "Sleep Performance"
+  },
+  "behaviors": {
+    "title": "Wpływ zachowań",
+    "body": "Niektóre Twoje wczorajsze zachowania mogły wpłynąć na dzisiejszy wynik Recovery.",
+    "spokenUp": "{{label}}, wiązało się z wyższym Recovery",
+    "spokenDown": "{{label}}, wiązało się z niższym Recovery",
+    "spokenNeutral": "{{label}}, brak wyraźnego wpływu"
+  },
+  "subject": {
+    "hrv": "HRV",
+    "rhr": "Tętno spoczynkowe",
+    "resp": "Częstość oddechów",
+    "sleep": "Sen",
+    "skin": "Temperatura skóry"
+  },
+  "driver": {
+    "strongSleep": "Mocna noc snu",
+    "weakSleep": "Sen poniżej dobrej nocy",
+    "typicalSleep": "Typowa noc snu",
+    "skinWarmer": "Temperatura skóry wyższa niż zwykle",
+    "skinCooler": "Temperatura skóry niższa niż zwykle",
+    "hrvBelow": "HRV poniżej bazy",
+    "atBaseline": "{{subject}}: na poziomie bazy",
+    "slightlyAbove": "{{subject}}: nieco powyżej bazy",
+    "slightlyBelow": "{{subject}}: nieco poniżej bazy",
+    "above": "{{subject}}: powyżej bazy",
+    "below": "{{subject}}: poniżej bazy"
+  },
+  "phrase": {
+    "hrvGood": "Twoje HRV jest powyżej bazy",
+    "hrvBad": "Twoje HRV jest poniżej bazy",
+    "rhrGood": "Twoje tętno spoczynkowe jest niższe niż zwykle",
+    "rhrBad": "Twoje tętno spoczynkowe jest wyższe niż zwykle",
+    "respGood": "Twoja częstość oddechów jest stabilna",
+    "respBad": "Twoja częstość oddechów wzrosła",
+    "sleepGood": "Twój sen był dobry",
+    "sleepBad": "Twój sen był za krótki",
+    "skinGood": "Twoja temperatura skóry jest w normie",
+    "skinBad": "Twoja temperatura skóry odeszła od normy"
+  },
+  "insight": {
+    "lifted": "{{phrase}}, co podniosło dziś Recovery.",
+    "heldBack": "{{phrase}}, co obniżyło dziś Recovery.",
+    "mixed": "{{good}}, ale {{bad}}. Razem ukształtowały dzisiejsze Recovery.",
+    "steady": "Twoje sygnały są blisko bazy, więc Recovery jest blisko Twojego zwykłego poziomu."
+  }
+}

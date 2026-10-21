@@ -1,0 +1,106 @@
+{
+  "actions": {
+    "save": "Zapisz",
+    "cancel": "Anuluj",
+    "back": "Wstecz",
+    "tryAgain": "Spróbuj ponownie",
+    "checkIn": "Check-in",
+    "close": "Zamknij",
+    "later": "Później",
+    "update": "Aktualizuj"
+  },
+  "loading": "Ładowanie…",
+  "today": "Dziś",
+  "yesterday": "Wczoraj",
+  "phrase": {
+    "today": "dziś",
+    "yesterday": "wczoraj",
+    "on": "dnia {{date}}"
+  },
+  "duration": {
+    "minutes_one": "{{count}} minuta",
+    "minutes_few": "{{count}} minuty",
+    "minutes_many": "{{count}} minut",
+    "minutes_other": "{{count}} minuty",
+    "hours_one": "{{count}} godzina",
+    "hours_few": "{{count}} godziny",
+    "hours_many": "{{count}} godzin",
+    "hours_other": "{{count}} godziny",
+    "hoursMinutes": "{{hours}} {{minutes}}"
+  },
+  "ago": {
+    "justNow": "przed chwilą",
+    "minutes_one": "{{count}} minutę temu",
+    "minutes_few": "{{count}} minuty temu",
+    "minutes_many": "{{count}} minut temu",
+    "minutes_other": "{{count}} minuty temu",
+    "hours_one": "{{count}} godzinę temu",
+    "hours_few": "{{count}} godziny temu",
+    "hours_many": "{{count}} godzin temu",
+    "hours_other": "{{count}} godziny temu",
+    "days_one": "{{count}} dzień temu",
+    "days_few": "{{count}} dni temu",
+    "days_many": "{{count}} dni temu",
+    "days_other": "{{count}} dnia temu"
+  },
+  "agoShort": {
+    "now": "Teraz",
+    "minutes": "{{count}} min",
+    "hours": "{{count}} h",
+    "days": "{{count}} d"
+  },
+  "unitWords": {
+    "percent": "procent",
+    "ms": "milisekundy",
+    "bpm": "uderzeń na minutę",
+    "rpm": "oddechów na minutę",
+    "celsius": "stopni Celsjusza",
+    "fahrenheit": "stopni Fahrenheita",
+    "kcal": "kalorii",
+    "mlKgMin": "mililitrów na kilogram na minutę",
+    "times": "razy",
+    "min": "minut",
+    "h": "godzin",
+    "km": "kilometrów",
+    "perKm": "na kilometr",
+    "mi": "mil",
+    "perMi": "na milę",
+    "kg": "kilogramów",
+    "lb": "funtów",
+    "m": "metrów",
+    "ft": "stóp",
+    "cm": "centymetrów",
+    "in": "cali",
+    "ml": "mililitrów",
+    "flOz": "uncji płynu"
+  },
+  "spoken": {
+    "minus": "minus",
+    "noData": "brak danych",
+    "unavailable": "{{label}} niedostępne: {{why}}",
+    "provisional": " wstępnie,",
+    "soFar": " do tej pory",
+    "target": ", cel od {{from}} do {{to}} procent",
+    "band": ", {{band}}",
+    "dialStrain": "{{label}}{{provisional}} {{value}}{{soFar}}{{target}}",
+    "dialValue": "{{label}}{{provisional}} {{value}}{{band}}",
+    "stat": "{{label}} {{value}}",
+    "statVsAverage": "{{label}} {{value}}, {{relation}} Twojej wartości: {{averageLabel}} {{average}}{{tone}}",
+    "above": "powyżej",
+    "below": "poniżej",
+    "inLineWith": "zgodnie z",
+    "average30": "średnia z 30 dni",
+    "toneGood": ", dobrze",
+    "toneBad": ", gorzej niż zwykle"
+  },
+  "band": {
+    "green": "Zielony",
+    "yellow": "Żółty",
+    "red": "Czerwony"
+  },
+  "stressLevel": {
+    "low": "Niski",
+    "medium": "Średni",
+    "high": "Wysoki"
+  }
+}
