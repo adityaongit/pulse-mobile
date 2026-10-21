@@ -86,7 +86,9 @@ function Shell({ variant, title, info, action, aside, icon, href, fill, classNam
     <View className="mb-3 min-h-6 flex-row items-center justify-between gap-2">
       <View className="shrink flex-row items-center gap-2">
         {!!icon && <View className="size-5 items-center justify-center">{icon}</View>}
-        <Text accessibilityRole="header" className="shrink text-xs font-bold uppercase leading-4 tracking-[0.1em]">
+        {/* One line, as the reference app's card titles: a title too long for a narrow card (Health Monitor beside Stress
+            Monitor) shrinks slightly rather than wrapping, so cards side by side keep matching headers. */}
+        <Text accessibilityRole="header" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8} className="shrink text-xs font-bold uppercase leading-4 tracking-[0.1em]">
           {title}
         </Text>
       </View>
