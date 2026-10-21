@@ -5,10 +5,30 @@ import "intl-pluralrules";
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import enCommon from "./locales/en/common.json";
+import enReasons from "./locales/en/reasons.json";
+import enMetrics from "./locales/en/metrics.json";
+import enHome from "./locales/en/home.json";
+import enSleep from "./locales/en/sleep.json";
+import enRecovery from "./locales/en/recovery.json";
+import enStrain from "./locales/en/strain.json";
+import enHealth from "./locales/en/health.json";
+import enJournal from "./locales/en/journal.json";
+import enTrends from "./locales/en/trends.json";
+import enNutrition from "./locales/en/nutrition.json";
+import enGoals from "./locales/en/goals.json";
+import enReports from "./locales/en/reports.json";
+import enCoach from "./locales/en/coach.json";
+import enSettings from "./locales/en/settings.json";
+import enOnboarding from "./locales/en/onboarding.json";
+import enMore from "./locales/en/more.json";
+import enHowItWorks from "./locales/en/howItWorks.json";
+import enNotifications from "./locales/en/notifications.json";
+import enErrors from "./locales/en/errors.json";
+import enUi from "./locales/en/ui.json";
 
-export const NAMESPACES = ["common"] as const;
+export const NAMESPACES = ["common", "reasons", "metrics", "home", "sleep", "recovery", "strain", "health", "journal", "trends", "nutrition", "goals", "reports", "coach", "settings", "onboarding", "more", "howItWorks", "notifications", "errors", "ui"] as const;
 
-const resources = { en: { common: enCommon } } as const;
+const resources = { en: { common: enCommon, reasons: enReasons, metrics: enMetrics, home: enHome, sleep: enSleep, recovery: enRecovery, strain: enStrain, health: enHealth, journal: enJournal, trends: enTrends, nutrition: enNutrition, goals: enGoals, reports: enReports, coach: enCoach, settings: enSettings, onboarding: enOnboarding, more: enMore, howItWorks: enHowItWorks, notifications: enNotifications, errors: enErrors, ui: enUi } } as const;
 
 /** Each language by its own name. Add a code here with its folder under locales/. */
 export const LANGUAGES = [
