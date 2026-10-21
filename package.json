@@ -17,6 +17,7 @@
     "date-fns": "4.4.0",
     "expo": "~57.0.27",
     "expo-background-task": "~57.0.21",
+    "expo-battery": "~57.0.3",
     "expo-blur": "~57.0.3",
     "expo-build-properties": "~57.0.22",
     "expo-constants": "~57.0.21",

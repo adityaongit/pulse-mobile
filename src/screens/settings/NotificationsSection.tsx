@@ -6,6 +6,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { AppState, Linking, View } from "react-native";
 import { DateTimePicker } from "@expo/ui/community/datetime-picker";
+import { isBatteryOptimizationEnabledAsync } from "expo-battery";
 import { applyBedtime } from "@/background/alerts";
 import { DEEP_LINK, formatTime, parseTime, recoveryBody } from "@/background/decide";
 import { readLog, type RunLogEntry } from "@/background/log";
@@ -84,15 +85,24 @@ function BackgroundCard({ s, timeZone }: { s: Prefs; timeZone: string }) {
   const [registered, setRegistered] = useState<boolean | null>(null);
   const [available, setAvailable] = useState(true);
   const [background, setBackground] = useState<boolean | null>(null);
+  // Whether Android's battery optimisation leaves Pulse alone; null while unknown.
+  const [unrestricted, setUnrestricted] = useState<boolean | null>(null);
   const [busy, setBusy] = useState(false);
 
   const refresh = useCallback(
     () =>
-      Promise.all([readLog(), isBackgroundSyncRegistered(), backgroundSyncAvailable(), hc ? permissionState().catch(() => null) : null]).then(([l, r, a, p]) => {
+      Promise.all([
+        readLog(),
+        isBackgroundSyncRegistered(),
+        backgroundSyncAvailable(),
+        hc ? permissionState().catch(() => null) : null,
+        isBatteryOptimizationEnabledAsync().then((on) => !on, () => null),
+      ]).then(([l, r, a, p, u]) => {
         setLog(l);
         setRegistered(r);
         setAvailable(a);
         setBackground(p ? p.background : null);
+        setUnrestricted(u);
       }),
     [hc],
   );
@@ -150,6 +160,24 @@ function BackgroundCard({ s, timeZone }: { s: Prefs; timeZone: string }) {
               <Text className={HINT}>Health Connect only answers a closed app with this permission.</Text>
             </View>
             {background === false ? <SmallButton solid label="Allow" accessibilityLabel="Allow background access" onPress={() => void allow()} /> : <Text className={ROW_VALUE}>{access}</Text>}
+          </View>
+          {/* Phone makers' battery managers (OnePlus, Samsung, Xiaomi) freeze an app a few seconds into its background
+              run unless it may run in the background; the sync then stalls for minutes. Their switch is under the
+              app's own settings, so the button opens those. */}
+          <View className={cn(ROW, ROW_RULE)}>
+            <View className="min-w-0 flex-1">
+              <Text className={ROW_LABEL}>Battery</Text>
+              <Text className={HINT}>
+                {unrestricted
+                  ? "Pulse may run in the background, so a sync finishes."
+                  : "Many phones pause Pulse a few seconds into a background sync, which then stalls. Under Battery, choose Allow background activity or Unrestricted."}
+              </Text>
+            </View>
+            {unrestricted === false ? (
+              <SmallButton solid label="Open" accessibilityLabel="Open Pulse's battery settings" onPress={() => void Linking.openSettings()} />
+            ) : (
+              <Text className={ROW_VALUE}>{unrestricted ? "Unrestricted" : " "}</Text>
+            )}
           </View>
         </>
       )}
