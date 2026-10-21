@@ -2,13 +2,15 @@
 // `ThemePicker` and AppSettings.tsx. The theme is system, light or dark, kept on the device (AsyncStorage `pulse.theme`, applied
 // at launch by src/state/app.ts boot). The notification toggles live in Settings › Notifications & background
 // (NotificationsSection.tsx); this section links there.
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { colorScheme } from "nativewind";
 import { Bell, Monitor, Moon, Sun } from "lucide-react-native";
 import { saveTheme, type AppPrefs, type Theme } from "@/actions/preferences";
 import { displayPrefs, type UnitSystem } from "@/lib/units";
-import { setDisplay, useApp } from "@/state/app";
+import { LANGUAGES, REVIEWED, type LanguageChoice } from "@/i18n/config";
+import { readChoice } from "@/i18n/language";
+import { setDisplay, setLanguage, useApp } from "@/state/app";
 import { LinkList } from "@/ui/shells/LinkList";
 import { SectionShell } from "@/ui/shells/SectionShell";
 import { APP_VERSION } from "@/queries/settings";
@@ -34,6 +36,29 @@ const HOURS = [
   { value: "12", label: "12-hour", detail: "10:05 PM" },
 ] as const satisfies readonly SelectOption<"24" | "12">[];
 
+const LANGUAGE_OPTIONS = [
+  { value: "auto", label: "Phone’s language" },
+  ...LANGUAGES.map((l) => ({ value: l.code, label: REVIEWED.has(l.code) ? l.name : `${l.name} · Beta` })),
+] as const satisfies readonly SelectOption<LanguageChoice>[];
+
+/** The language (kept on the device): the phone's, or one of Pulse's. Every screen redraws in it at once. */
+function LanguageRow() {
+  const [choice, setChoice] = useState<LanguageChoice>("auto");
+  useEffect(() => void readChoice().then(setChoice), []);
+  return (
+    <SelectRow
+      rule
+      label="Language"
+      value={choice}
+      options={LANGUAGE_OPTIONS}
+      onChange={(v) => {
+        setChoice(v);
+        void setLanguage(v);
+      }}
+    />
+  );
+}
+
 /**
  * The theme (kept on the device), the units and the clock (kept in the profile; every screen redraws in them at once,
  * src/lib/units.ts), each a row whose choices open in a dropdown.
@@ -55,6 +80,7 @@ function DisplayRows({ initialTheme }: { initialTheme: Theme }) {
       />
       <SelectRow rule label="Units" value={display.units} options={UNITS} onChange={(units) => void setDisplay({ ...display, units })} />
       <SelectRow rule label="Clock" value={String(display.hours) as "24" | "12"} options={HOURS} onChange={(h) => void setDisplay({ ...display, hours: h === "12" ? 12 : 24 })} />
+      <LanguageRow />
     </View>
   );
 }

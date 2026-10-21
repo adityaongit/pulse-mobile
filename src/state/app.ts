@@ -47,6 +47,10 @@ export type AppInfo = {
 
 const SOURCE_KEY = "pulse.source";
 const OWN_PROFILE_KEY = "pulse.ownProfile";
+import { initI18n, type LanguageChoice } from "@/i18n/config";
+import { localeFor, readChoice, resolveChoice, saveChoice } from "@/i18n/language";
+import { setLocale } from "@/lib/locale";
+
 export const THEME_KEY = "pulse.theme";
 const EMPTY_SYNC: SyncState = { lastSyncTs: null, firstDay: null, lastError: null };
 /** Coming back to the foreground after this long away re-imports (Health Connect gets new nights while the app sleeps). */
@@ -175,6 +179,7 @@ export async function boot(applyTheme: (theme: string) => void): Promise<void> {
   if (booted) return;
   booted = true;
   try {
+    await applyLanguage(await readChoice());
     const st = await openStore();
     // The background task reuses this connection when it fires while the app is up; the task registration and the
     // check-in reminder are made to match the saved settings.
@@ -253,6 +258,20 @@ export async function setDisplay(display: DisplayPrefs): Promise<void> {
   const p = { ...profile, display };
   await store.setProfile(p);
   patch({ profile: p });
+  dataChanged();
+}
+
+/** Starts i18next and the formatters' locale in what `choice` means (the phone's language for "auto"). */
+async function applyLanguage(choice: LanguageChoice): Promise<void> {
+  const language = resolveChoice(choice);
+  initI18n(language);
+  setLocale(localeFor(language));
+}
+
+/** Sets the language (Settings › App), kept on the device. No rescore: scores are numbers; every cached view model is rebuilt. */
+export async function setLanguage(choice: LanguageChoice): Promise<void> {
+  await saveChoice(choice);
+  await applyLanguage(choice);
   dataChanged();
 }
 

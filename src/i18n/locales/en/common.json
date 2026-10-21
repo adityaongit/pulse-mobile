@@ -1,0 +1,11 @@
+{
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "back": "Back",
+    "tryAgain": "Try again"
+  },
+  "loading": "Loading…",
+  "today": "Today",
+  "yesterday": "Yesterday"
+}

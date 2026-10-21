@@ -1,13 +1,13 @@
 // The few helpers the queries need from Pulse's src/lib/{format,bands,url,extraMetrics,dashboard}.ts and
 // src/lib/log.ts, copied here so src/queries depends on nothing outside src/core, src/lib/time and src/lib/reasons
 // (the UI's own port of those libs is written separately). Keep each function identical to the web's.
+import { getLocale, onLocaleChange } from "@/lib/locale";
 import { acwrBand, type AcwrBand } from "@/core/scoring/readiness";
 
 // ── format.ts ───────────────────────────────────────────────────────────────
 
-export const LOCALE = "en-US";
 const MINUS = "−";
-const grouped = new Intl.NumberFormat(LOCALE, { maximumFractionDigits: 0 });
+let grouped = new Intl.NumberFormat(getLocale(), { maximumFractionDigits: 0 });
 const minus = (s: string) => s.replace("-", MINUS);
 const fixed = (v: number, d: number) => {
   const s = v.toFixed(d);
@@ -47,11 +47,15 @@ export const FORMATS = {
 export type FormatKey = keyof typeof FORMATS;
 
 const dates = new Map<string, Intl.DateTimeFormat>();
-/** A calendar day ("2026-09-28", or a month "2026-09") in LOCALE, read and formatted in UTC so the runtime's zone never shifts it. */
+onLocaleChange(() => {
+  dates.clear();
+  grouped = new Intl.NumberFormat(getLocale(), { maximumFractionDigits: 0 });
+});
+/** A calendar day ("2026-09-28", or a month "2026-09") in the app locale, read and formatted in UTC so the runtime's zone never shifts it. */
 export function formatDay(day: string, opts: Intl.DateTimeFormatOptions) {
   const key = JSON.stringify(opts);
   let f = dates.get(key);
-  if (!f) dates.set(key, (f = new Intl.DateTimeFormat(LOCALE, { ...opts, timeZone: "UTC" })));
+  if (!f) dates.set(key, (f = new Intl.DateTimeFormat(getLocale(), { ...opts, timeZone: "UTC" })));
   return f.format(new Date(`${day.length === 7 ? `${day}-01` : day}T00:00:00Z`));
 }
 

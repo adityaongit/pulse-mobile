@@ -886,3 +886,7 @@ flowchart TD
   S1 --> P[stage 2 from the saved resume point]
   P --> K[save the next resume point]
 ```
+
+## Languages: i18next, bundled, one choice in AsyncStorage
+
+Pulse uses `i18next` + `react-i18next` with every language bundled and `initAsync: false`, so the first screen never waits. The language choice is in AsyncStorage (`pulse.language`), not the profile, because onboarding and the headless background task need it before a profile exists. `expo-localization`'s config plugin lists `supportedLocales`, which puts Pulse in Android's per-app language setting; `getLocales()` then returns that language and "Phone's language" follows it. Formatters read `src/lib/locale.ts` and rebuild their cached `Intl` objects when it changes.

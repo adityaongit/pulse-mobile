@@ -3,6 +3,9 @@
 // with no UI) finds the task before anything renders. The task opens the store, checks the setting, the source and
 // its access (Health Connect's background read permission), runs the shared runSync, and logs the outcome (log.ts).
 // Copied from halo's src/background/task.ts without the Google source.
+import { initI18n } from "@/i18n/config";
+import { localeFor, resolveLanguage } from "@/i18n/language";
+import { setLocale } from "@/lib/locale";
 import { applyDisplay } from "@/state/display";
 import * as BackgroundTask from "expo-background-task";
 import * as TaskManager from "expo-task-manager";
@@ -22,6 +25,10 @@ export const MIN_INTERVAL_MIN = 15;
 export async function runBackgroundTask(): Promise<BackgroundTask.BackgroundTaskResult> {
   const t0 = Date.now();
   try {
+    // Headless: no React tree, so the notifications it posts read the language the person chose.
+    const language = await resolveLanguage();
+    initI18n(language);
+    setLocale(localeFor(language));
     const settings = await readSettings();
     const store = await backgroundStore();
     const [profile, source] = await Promise.all([store.getProfile(), readSource()]);

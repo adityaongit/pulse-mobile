@@ -108,7 +108,7 @@
           "microphonePermission": false
         }
       ],
-      "expo-localization"
+      ["expo-localization", { "supportedLocales": { "android": ["en", "de", "fr", "es", "pt-BR", "ru", "pl"] } }]
     ],
     "experiments": {
       "typedRoutes": true,

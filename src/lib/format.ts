@@ -1,4 +1,5 @@
 import type { DeltaDir, Tone } from "./bands";
+import { getLocale, onLocaleChange } from "./locale";
 import { displayPrefs, feetInches, quantity } from "./units";
 
 // Number, date and spoken-label formatting (spec §3.3, §6). Formatters are referenced by key so a
@@ -9,15 +10,10 @@ export const AGE_LABEL = "Pulse Age";
 export const MISSING = "--";
 const MINUS = "−";
 
-/**
- * The one locale every Intl formatter uses (spec §6). The copy is English only, so the locale is fixed rather than
- * read from Accept-Language: server and client then render the same strings (no hydration mismatch).
- */
-export const LOCALE = "en-US";
 /** Joins a number to its unit or word so the pair never wraps apart: `10${NBSP}MB`. */
 export const NBSP = " ";
 
-const grouped = new Intl.NumberFormat(LOCALE, { maximumFractionDigits: 0 });
+let grouped = new Intl.NumberFormat(getLocale(), { maximumFractionDigits: 0 });
 const minus = (s: string) => s.replace("-", MINUS);
 // "-0.0" collapses to "0.0"; the hyphen becomes a real minus sign.
 const fixed = (v: number, d: number) => {
@@ -68,14 +64,18 @@ export const isSymbolUnit = (unit: string) => unit === "%" || unit === "x";
 // --- Dates and clock times ---
 
 const dates = new Map<string, Intl.DateTimeFormat>();
+onLocaleChange(() => {
+  dates.clear();
+  grouped = new Intl.NumberFormat(getLocale(), { maximumFractionDigits: 0 });
+});
 /**
- * A calendar day ("2026-09-28", or a month "2026-09") through Intl.DateTimeFormat in LOCALE: formatDay(day, DAY.short)
+ * A calendar day ("2026-09-28", or a month "2026-09") through Intl.DateTimeFormat in the app locale: formatDay(day, DAY.short)
  * → "Mon, Sep 28". Read and formatted in UTC, so the runtime's zone never shifts the day.
  */
 export function formatDay(day: string, opts: Intl.DateTimeFormatOptions) {
   const key = JSON.stringify(opts);
   let f = dates.get(key);
-  if (!f) dates.set(key, (f = new Intl.DateTimeFormat(LOCALE, { ...opts, timeZone: "UTC" })));
+  if (!f) dates.set(key, (f = new Intl.DateTimeFormat(getLocale(), { ...opts, timeZone: "UTC" })));
   return f.format(new Date(`${day.length === 7 ? `${day}-01` : day}T00:00:00Z`));
 }
 
