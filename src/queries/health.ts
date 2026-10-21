@@ -1,5 +1,7 @@
 // Health hub and its four detail screens (spec §7.6–7.10). Ported from Pulse's src/server/queries/health.ts.
+import { i18n } from "@/i18n/config";
 import { inUnits, quantity, shownValue } from "@/lib/units";
+import { metricLabel } from "@/lib/metricLabels";
 import { fitnessLevel } from "@/core/algorithms/fitnessLevel";
 import { HEALTHSPAN_TERM_COUNT, healthspanConfig, type HealthspanContribution } from "@/core/algorithms/healthspan";
 import { minuteMeanHr } from "@/core/algorithms/stress";
@@ -111,89 +113,145 @@ async function latestHr(ctx: QueryCtx) {
 const HS_META: Record<string, Omit<HealthspanContributor, "metric" | "target" | "years" | "caption" | "key">> = {
   sleepHours: {
     group: "sleep",
-    label: "Hours of sleep",
+    get label() {
+      return i18n.t("health:hsLabel.sleepHours");
+    },
     unit: "h",
     domain: [4, 10],
     higherIsBetter: true,
-    explanation: "Both short and long sleep are linked to higher mortality. Around 7.5 to 9 hours a night carries the lowest risk; 7 hours costs about half a year, 6 hours or less about 2.",
-    source: "Population mortality studies",
+    get explanation() {
+      return i18n.t("health:hsText.sleepHours");
+    },
+    get source() {
+      return i18n.t("health:hs.source");
+    },
   },
   sri: {
     group: "sleep",
-    label: "Sleep consistency",
+    get label() {
+      return i18n.t("health:hsLabel.sri");
+    },
     unit: "%",
     domain: [0, 100],
     higherIsBetter: true,
-    explanation: "Being asleep at the same times each day is linked to a longer life, on top of how long you sleep. The reference is a consistency of 70: below it costs years quickly, above it takes a little off. The same Sleep consistency as on the Sleep screen, averaged over the window.",
-    source: "Population mortality studies",
+    get explanation() {
+      return i18n.t("health:hsText.sri");
+    },
+    get source() {
+      return i18n.t("health:hs.source");
+    },
   },
   zone13: {
     group: "strain",
-    label: "Moderate activity",
+    get label() {
+      return i18n.t("health:hsLabel.zone13");
+    },
     unit: "min",
     domain: [0, 300],
     higherIsBetter: true,
-    explanation: "Moderate activity is linked to steeply lower mortality, with the reference at 150 minutes a week and the benefit levelling off well past it. Counted by Pulse from your heart rate in Zones 2 and 3 (60 to 80% of max heart rate), as a weekly average of the 28 days.",
-    source: "Population mortality studies",
+    get explanation() {
+      return i18n.t("health:hsText.zone13");
+    },
+    get source() {
+      return i18n.t("health:hs.source");
+    },
   },
   zone45: {
     group: "strain",
-    label: "Heart rate zones 4-5",
+    get label() {
+      return i18n.t("health:hsLabel.zone45");
+    },
     unit: "min",
     domain: [0, 150],
     higherIsBetter: true,
-    explanation: "Vigorous activity adds benefit on top of moderate activity. The reference is 10 minutes a week; a little more helps, and the benefit levels off quickly. Counted from your heart rate in Zones 4 and 5.",
-    source: "Population mortality studies",
+    get explanation() {
+      return i18n.t("health:hsText.zone45");
+    },
+    get source() {
+      return i18n.t("health:hs.source");
+    },
   },
   strength: {
     group: "strain",
-    label: "Strength activity time",
+    get label() {
+      return i18n.t("health:hsLabel.strength");
+    },
     unit: "min",
     domain: [0, 150],
     higherIsBetter: true,
-    explanation: "Muscle-strengthening work (strength training, weights, calisthenics or HIIT) is linked to lower mortality. The reference is 10 minutes a week, and the benefit levels off past about 40.",
-    source: "Population mortality studies",
+    get explanation() {
+      return i18n.t("health:hsText.strength");
+    },
+    get source() {
+      return i18n.t("health:hs.source");
+    },
   },
   steps: {
     group: "strain",
-    label: "Daily steps",
-    unit: "steps",
+    get label() {
+      return i18n.t("health:hsLabel.steps");
+    },
+    get unit() {
+      return i18n.t("health:hs.unitSteps");
+    },
     domain: [0, 15000],
     higherIsBetter: true,
-    explanation: "More daily steps go with lower mortality. The reference is 8,000 a day (6,000 from 60), and credit stops at 10,000 (8,000 from 60). Days without heart rate or steps are left out, so a band left on the charger isn't read as a lazy day.",
-    source: "Population mortality studies",
+    get explanation() {
+      return i18n.t("health:hsText.steps");
+    },
+    get source() {
+      return i18n.t("health:hs.source");
+    },
   },
   vo2max: {
     group: "fitness",
-    label: "VO2 max",
+    get label() {
+      return i18n.t("health:hsLabel.vo2max");
+    },
     unit: "ml/kg/min",
     domain: [15, 70],
     higherIsBetter: true,
-    explanation: "Higher cardiorespiratory fitness is one of the strongest predictors of a longer life. The reference comes from a table for your age and sex; each ml/kg/min above it takes about 0.4 years off, each below adds about as much. From Fitbit's VO2 max readings.",
-    source: "Population mortality studies",
+    get explanation() {
+      return i18n.t("health:hsText.vo2max");
+    },
+    get source() {
+      return i18n.t("health:hs.source");
+    },
   },
   restingHr: {
     group: "fitness",
-    label: "Resting heart rate",
+    get label() {
+      return i18n.t("health:hsLabel.restingHr");
+    },
     unit: "bpm",
     domain: [40, 90],
     higherIsBetter: false,
-    explanation: "A higher resting heart rate is linked to higher mortality. The reference comes from a table for your age and sex; each 10 bpm above it adds about 1.2 years.",
-    source: "Population mortality studies",
+    get explanation() {
+      return i18n.t("health:hsText.restingHr");
+    },
+    get source() {
+      return i18n.t("health:hs.source");
+    },
   },
   leanMass: {
     group: "fitness",
-    label: "Lean body mass",
+    get label() {
+      return i18n.t("health:hsLabel.leanMass");
+    },
     unit: "%",
     domain: [50, 95],
     higherIsBetter: true,
-    explanation: "The share of your weight that isn't fat. The reference is 100 less the typical body fat for your age and sex. Falling short of it costs years, faster the further you are; from 35, beating it takes a little off, more so with age. From your body fat readings.",
-    source: "Population mortality studies",
+    get explanation() {
+      return i18n.t("health:hsText.leanMass");
+    },
+    get source() {
+      return i18n.t("health:hs.source");
+    },
   },
 };
 const HS_ORDER = ["sleepHours", "sri", "zone13", "zone45", "strength", "steps", "vo2max", "restingHr", "leanMass"];
 
-const VO2_CAPTION = { run: "Measured", daily: "Fitbit estimate", estimate: "Estimated from resting heart rate and activity" } as const;
+const VO2_CAPTION = { run: "vo2Run", daily: "vo2Daily", estimate: "vo2Estimate" } as const;
 
 /** Healthspan `/health/healthspan` for the ISO week containing `day` (spec §7.7). Updated weekly. */
 export async function getHealthspan(day: string, ctx: QueryCtx): Promise<HealthspanVM> {
@@ -225,11 +283,11 @@ export async function getHealthspan(day: string, ctx: QueryCtx): Promise<Healths
     const target = c ? display(c.reference) : 0;
     const caption =
       key === "vo2max" && hs?.reason === null && hs.vo2maxSource
-        ? VO2_CAPTION[hs.vo2maxSource]
+        ? i18n.t(`health:hs.${VO2_CAPTION[hs.vo2maxSource]}`)
         : key === "leanMass"
           ? c
             ? leanCaption(c, body, hs?.reason === null ? hs.age : 0)
-            : "Needs body fat (a smart scale, or Journal › Log › Body fat), or your weight with your height in Profile. Left out of Pulse Age."
+            : i18n.t("health:hs.leanNeeds")
           : undefined;
     const domain: [number, number] = key === "leanMass" && c ? [target - 25, target + 10] : meta.domain;
     return {
@@ -266,48 +324,43 @@ export async function getHealthspan(day: string, ctx: QueryCtx): Promise<Healths
 
 /** Lean body mass's caption: the body composition behind the % (lean and fat mass in the person's units; FFMI and FMI are kg/m² by definition). */
 function leanCaption(c: HealthspanContribution, b: HealthspanBody | null | undefined, age: number) {
-  const parts = [`${(100 - c.value).toFixed(1)}% body fat`];
+  const parts = [i18n.t("health:hs.leanBodyFat", { pct: (100 - c.value).toFixed(1) })];
   const kg = quantity("kg");
-  if (b?.leanKg != null && b.fatKg != null) parts.push(`${kg.value(b.leanKg).toFixed(1)} ${kg.unit} lean, ${kg.value(b.fatKg).toFixed(1)} ${kg.unit} fat`);
-  if (b?.ffmi != null && b.fmi != null) parts.push(`FFMI ${b.ffmi.toFixed(1)}, FMI ${b.fmi.toFixed(1)} kg/m²`);
-  const note = c.estimated
-    ? " Body fat estimated from your BMI."
-    : "";
-  return `${parts.join(" · ")}.${note}`;
+  if (b?.leanKg != null && b.fatKg != null) parts.push(i18n.t("health:hs.leanMass", { lean: kg.value(b.leanKg).toFixed(1), fat: kg.value(b.fatKg).toFixed(1), unit: kg.unit }));
+  if (b?.ffmi != null && b.fmi != null) parts.push(i18n.t("health:hs.leanIndex", { ffmi: b.ffmi.toFixed(1), fmi: b.fmi.toFixed(1) }));
+  return i18n.t(c.estimated ? "health:hs.leanCaptionEstimated" : "health:hs.leanCaption", { parts: parts.join(" · ") });
 }
 type HealthspanBody = Extract<NonNullable<DayRow["healthspan"]>, { reason: null }>["bodyComposition"];
 
 /** `termsUsed`: how many of Pulse Age's 9 inputs it rests on (absent on rows stored before scoring version 10). */
 function healthspanInsight(pace: number | null, deltaYears: number, cs: HealthspanContribution[], termsUsed: number | undefined) {
-  const title =
+  const title = i18n.t(
     pace == null
       ? deltaYears < -1
-        ? "Younger than your age"
+        ? "health:insight.younger"
         : deltaYears > 1
-          ? "Older than your age"
-          : "Close to your age"
+          ? "health:insight.older"
+          : "health:insight.close"
       : pace < 0.9
-        ? "Aging slower"
+        ? "health:insight.slower"
         : pace > 1.1
-          ? "Aging faster"
-          : "Steady and healthy";
+          ? "health:insight.faster"
+          : "health:insight.steady",
+  );
   const best = [...cs].sort((a, b) => a.years - b.years)[0];
   const worst = [...cs].sort((a, b) => b.years - a.years)[0];
-  const label = (c: HealthspanContribution) => HS_META[c.key].label.toLowerCase();
+  // Mid-sentence the English label is lower case; other languages keep it as written (German nouns stay capitalised).
+  const label = (c: HealthspanContribution) => (i18n.language.startsWith("en") ? HS_META[c.key].label.toLowerCase() : HS_META[c.key].label);
   const parts = [
     pace == null
-      ? `Pace of Aging shows once ${healthspanConfig.paceMinDays} of the last 30 days have data.`
-      : `Your Pace of Aging is ${pace.toFixed(1)}x: your Pulse Age over your age.`,
+      ? i18n.t("health:insight.paceNone", { days: healthspanConfig.paceMinDays })
+      : i18n.t("health:insight.paceIs", { pace: pace.toFixed(1) }),
   ];
-  if (best && best.years < 0) parts.push(`Your biggest boost is ${label(best)}, worth ${Math.abs(best.years).toFixed(1)} years.`);
-  if (worst && worst.years > 0) parts.push(`${HS_META[worst.key].label} adds the most, ${worst.years.toFixed(1)} years.`);
+  if (best && best.years < 0) parts.push(i18n.t("health:insight.boost", { label: label(best), years: Math.abs(best.years).toFixed(1) }));
+  if (worst && worst.years > 0) parts.push(i18n.t("health:insight.adds", { label: HS_META[worst.key].label, years: worst.years.toFixed(1) }));
   // Say how much of Pulse Age is measured; the engine scales the inputs present to stand for all nine.
   if (termsUsed != null)
-    parts.push(
-      termsUsed < HEALTHSPAN_TERM_COUNT
-        ? `Based on ${termsUsed} of ${HEALTHSPAN_TERM_COUNT} inputs; the ones present are scaled up to stand for all ${HEALTHSPAN_TERM_COUNT}.`
-        : `Based on all ${HEALTHSPAN_TERM_COUNT} inputs.`,
-    );
+    parts.push(i18n.t(termsUsed < HEALTHSPAN_TERM_COUNT ? "health:insight.termsSome" : "health:insight.termsAll", { used: termsUsed, total: HEALTHSPAN_TERM_COUNT }));
   return { title, body: parts.join(" ") };
 }
 
@@ -352,17 +405,17 @@ export async function getMonitor(day: string, ctx: QueryCtx, preloaded?: Map<str
       // Ranges always show one decimal, so a whole-number reading never looks equal to its bound.
       const lo = num(range.low, 1, v.signed);
       const hi = num(range.high, 1, v.signed);
-      if (v.key === "spo2" && status === "low" && value < 95) chip = { tone: "warning", text: "Below 95%" };
-      else if (status === "in_range") chip = { tone: "optimal", text: v.key === "spo2" ? `Within ${lo} - 100` : `Within ${lo} - ${hi}` };
-      else if (status === "high") chip = { tone: "warning", text: `Elevated, above ${hi}` };
-      else if (status === "low") chip = { tone: "warning", text: `Low, below ${lo}` };
+      if (v.key === "spo2" && status === "low" && value < 95) chip = { tone: "warning", text: i18n.t("health:vital.below95") };
+      else if (status === "in_range") chip = { tone: "optimal", text: i18n.t("health:vital.within", { lo, hi: v.key === "spo2" ? "100" : hi }) };
+      else if (status === "high") chip = { tone: "warning", text: i18n.t("health:vital.elevated", { hi }) };
+      else if (status === "low") chip = { tone: "warning", text: i18n.t("health:vital.low", { lo }) };
     }
     const reason = v.key === "skinTempDev" && row?.metrics?.nightlyTempC != null ? "calibrating" : vitalReason(row, isToday, v.key === "hrv");
     const tags = hm && hm.reason === null && hm.stale.includes(v.key === "restingHr" ? "rhr" : v.key === "skinTempDev" ? "skinTemp" : v.key) ? (["stale_baseline"] as const) : [];
     return {
       key: v.key,
-      label: v.key === "skinTempDev" ? "Skin temp" : VITAL_LABEL[v.key],
-      short: v.short,
+      label: v.key === "skinTempDev" ? i18n.t("health:vital.skinTemp") : VITAL_LABEL[v.key],
+      short: v.key === "resp" ? i18n.t("health:hub.shortResp") : v.key === "skinTempDev" ? i18n.t("health:hub.shortTemp") : v.short,
       unit: q.unit,
       metric: finite(value) ? ok(value, false, [...tags]) : none(reason),
       range,
@@ -400,24 +453,26 @@ type EcgCopy = Pick<EcgReading, "label" | "tone" | "explanation">;
  * Google's Electrocardiogram.ResultClassification in the Google Health app's words. Only AFib takes a colour, and
  * a warning one, not red; every inconclusive state stays neutral. Unknown or unspecified codes read as "No result".
  */
+/** A result's copy: the tone is fixed, the text resolves when read (a getter), in the language then in use. */
+const ecgCopy = (key: "normal" | "afib" | "inconclusive" | "inconclusiveHigh" | "inconclusiveLow" | "unreadable" | "notAnalyzed" | "noResult", tone: EcgReading["tone"]): EcgCopy => ({
+  tone,
+  get label() {
+    return i18n.t(`health:ecgLabel.${key}`);
+  },
+  get explanation() {
+    return i18n.t(`health:ecgText.${key}`);
+  },
+});
 export const ECG_RESULT: Record<string, EcgCopy> = {
-  NORMAL_SINUS_RHYTHM: { label: "Normal sinus rhythm", tone: "optimal", explanation: "Your heart rhythm appears normal and shows no signs of AFib." },
-  ATRIAL_FIBRILLATION: {
-    label: "Atrial fibrillation",
-    tone: "warning",
-    explanation: "This reading shows signs of atrial fibrillation (AFib), an irregular heart rhythm. Share it with your doctor.",
-  },
-  INCONCLUSIVE: { label: "Inconclusive", tone: "neutral", explanation: "This reading couldn’t be classified, often because of movement, a weak signal or another rhythm." },
-  INCONCLUSIVE_HIGH_HEART_RATE: {
-    label: "Inconclusive: high heart rate",
-    tone: "neutral",
-    explanation: "Your heart rate was over 120 bpm, too high to check your rhythm. Rest for a few minutes and try again.",
-  },
-  INCONCLUSIVE_LOW_HEART_RATE: { label: "Inconclusive: low heart rate", tone: "neutral", explanation: "Your heart rate was under 50 bpm, too low to check your rhythm." },
-  UNREADABLE: { label: "Poor recording", tone: "neutral", explanation: "The signal was too noisy to read. Try again sitting still with your arm resting on a table." },
-  NOT_ANALYZED: { label: "Not analyzed", tone: "neutral", explanation: "This recording was saved but not classified, so it has no rhythm result." },
+  NORMAL_SINUS_RHYTHM: ecgCopy("normal", "optimal"),
+  ATRIAL_FIBRILLATION: ecgCopy("afib", "warning"),
+  INCONCLUSIVE: ecgCopy("inconclusive", "neutral"),
+  INCONCLUSIVE_HIGH_HEART_RATE: ecgCopy("inconclusiveHigh", "neutral"),
+  INCONCLUSIVE_LOW_HEART_RATE: ecgCopy("inconclusiveLow", "neutral"),
+  UNREADABLE: ecgCopy("unreadable", "neutral"),
+  NOT_ANALYZED: ecgCopy("notAnalyzed", "neutral"),
 };
-export const NO_RESULT: EcgCopy = { label: "No result", tone: "neutral", explanation: "No rhythm result came with this recording." };
+export const NO_RESULT: EcgCopy = ecgCopy("noResult", "neutral");
 
 /**
  * Heart-rhythm records up to `day`, newest first. Only the Google Health API carries them (src/google/sync.ts writes
@@ -437,10 +492,10 @@ async function heartRhythm(ctx: QueryCtx, day: string): Promise<HeartRhythm> {
 }
 
 const MEASUREMENTS = [
-  { key: "weight", label: "Weight", unit: "kg", format: "decimal1", col: "weightKg", always: true },
-  { key: "body_fat", label: "Body fat", unit: "%", format: "decimal1", col: "bodyFatPct", always: true },
-  { key: "glucose", label: "Blood glucose", unit: "mg/dL", format: "int", col: "glucose", always: false },
-  { key: "core_temp", label: "Core temperature", unit: "°C", format: "decimal1", col: "core_temp", always: false },
+  { key: "weight", unit: "kg", format: "decimal1", col: "weightKg", always: true },
+  { key: "body_fat", unit: "%", format: "decimal1", col: "bodyFatPct", always: true },
+  { key: "glucose", unit: "mg/dL", format: "int", col: "glucose", always: false },
+  { key: "core_temp", unit: "°C", format: "decimal1", col: "core_temp", always: false },
 ] as const;
 
 /** Every reading of each measurement, newest first: a Metrics column, or a daily-values key. */
@@ -469,7 +524,7 @@ async function measurements(ctx: QueryCtx, day: string, today: string): Promise<
     const { mean, sd } = meanSd(prior);
     out.push({
       key: m.key,
-      label: m.label,
+      label: metricLabel(m.key),
       unit: u.unit,
       format: m.format,
       metric: latest ? ok(u.value(latest.value)) : none("no_data"),
@@ -529,13 +584,13 @@ export async function getStress(day: string, ctx: QueryCtx): Promise<StressVM> {
 function stressInsight(st: NonNullable<DayRow["stress"]>, tz: string) {
   const total = st.lowMin + st.mediumMin + st.highMin;
   const top = st.lowMin >= st.mediumMin && st.lowMin >= st.highMin ? "low" : st.mediumMin >= st.highMin ? "medium" : "high";
-  const lead = `Most of your time was in ${top} stress.`;
+  const lead = i18n.t(top === "low" ? "health:stressInsight.leadLow" : top === "medium" ? "health:stressInsight.leadMedium" : "health:stressInsight.leadHigh");
   if (!total) return null;
   if (st.longestHigh && st.longestHigh.minutes >= 10) {
     const at = clock(ms(st.longestHigh.start), tz);
-    return `${lead} Your longest high-stress stretch started at ${at} and lasted ${st.longestHigh.minutes} minutes.`;
+    return `${lead} ${i18n.t("health:stressInsight.longest", { at, count: st.longestHigh.minutes })}`;
   }
-  return `${lead} You had no long stretch of high stress.`;
+  return `${lead} ${i18n.t("health:stressInsight.none")}`;
 }
 
 // ── Fitness ─────────────────────────────────────────────────────────────────

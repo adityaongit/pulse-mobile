@@ -2,6 +2,7 @@
 // src/app/(app)/health/fitness/LoadChart.tsx: Recharts' ComposedChart as Skia marks on the kit's chart frame.
 import { useMemo, useState } from "react";
 import { View } from "react-native";
+import { useTranslation } from "react-i18next";
 import { Path } from "@/ui/charts/path";
 import { DAY, formatDay, formatValue } from "@/lib/format";
 import type { FitnessVM } from "@/queries/types";
@@ -14,7 +15,6 @@ import { useTheme } from "@/ui/theme";
 import { cn } from "@/ui/cn";
 import { BAR_CORNERS } from "@/ui/radius";
 
-const LABELS = { ctl: "Fitness", atl: "Fatigue", tsb: "Form" } as const;
 const HEIGHT = 220;
 const AXIS_H = 30;
 const MAX_BAR = 4;
@@ -23,11 +23,13 @@ const finite = (v: number | null): v is number => v !== null;
 
 export function LoadChart({ load }: { load: FitnessVM["load"] }) {
   const { c } = useTheme();
+  const { t } = useTranslation("health");
+  const LABELS = { ctl: t("fitness.ctl"), atl: t("fitness.atl"), tsb: t("fitness.tsb") } as const;
   const [x, setX] = useState<number | null>(null);
   const last = [...load].reverse().find((p) => p.ctl !== null);
   const summary = last
-    ? `Training load over 90 days: fitness ${formatValue("int", last.ctl)}, fatigue ${formatValue("int", last.atl)}, form ${formatValue("signedInt", last.tsb)} today.`
-    : "No training load data yet.";
+    ? t("fitness.chartSummary", { ctl: formatValue("int", last.ctl), atl: formatValue("int", last.atl), tsb: formatValue("signedInt", last.tsb) })
+    : t("fitness.chartEmpty");
   // The y axis: zero is always in, then the data, then round ticks (Recharts' auto domain with tickCount 4).
   const ticks = useMemo(() => {
     const all = load.flatMap((p) => [p.ctl, p.atl, p.tsb]).filter(finite);

@@ -1,6 +1,7 @@
 // What Pulse Mobile's screens show that halo's view models dropped, ported from Pulse Mobile's earlier queries
 // (pulse's src/server/queries) onto halo's common.ts and Store: Recovery's "today vs. the last 30 days" rows and its
 // Behavior Insights chips, the Sleep page's Restorative Sleep row and Sleep Efficiency card, and a nap's own page.
+import { i18n } from "@/i18n/config";
 import { journalImpact, journalImpactConfig, type ImpactLabel } from "@/core/algorithms/journalImpact";
 import { addDays, localMinutes } from "@/lib/time";
 import { trendHref } from "@/lib/url";
@@ -12,12 +13,6 @@ import type { KeyStat, Metric, SleepVM } from "./types";
 // ── Recovery ────────────────────────────────────────────────────────────────
 
 export type BehaviorKey = "sleep86" | "strain7" | "earlyWorkout" | "consistentWake";
-const BEHAVIOR_LABEL: Record<BehaviorKey, string> = {
-  sleep86: "86%+ Sleep Performance",
-  strain7: "33%+ Strain",
-  earlyWorkout: "Early Workout",
-  consistentWake: "Consistent Wake Time",
-};
 /** A behaviour of the day before, toned by its next-day Recovery effect over journal impact's window. */
 export type BehaviorChip = { key: BehaviorKey; label: string; effect: "up" | "down" | "neutral" };
 const EFFECT: Record<ImpactLabel, BehaviorChip["effect"]> = { positive: "up", negative: "down", no_clear_effect: "neutral", not_enough_data: "neutral" };
@@ -90,9 +85,9 @@ function behaviors(rows: Map<string, DayRow>, exs: ExerciseRow[], day: string, t
     }),
     day,
   );
-  return (Object.keys(BEHAVIOR_LABEL) as BehaviorKey[])
+  return (["sleep86", "strain7", "earlyWorkout", "consistentWake"] as const satisfies readonly BehaviorKey[])
     .filter((k) => yesterday.holds[k])
-    .map((key) => ({ key, label: BEHAVIOR_LABEL[key], effect: EFFECT[impact.find((t) => t.tag === key)?.effects.recovery.label ?? "not_enough_data"] }));
+    .map((key) => ({ key, label: i18n.t(`health:behavior.${key}`), effect: EFFECT[impact.find((t) => t.tag === key)?.effects.recovery.label ?? "not_enough_data"] }));
 }
 
 // ── Sleep ───────────────────────────────────────────────────────────────────
@@ -145,10 +140,10 @@ export async function getSleepExtras(day: string, ctx: QueryCtx, stages: SleepVM
 
 type Stage = "awake" | "rem" | "light" | "deep";
 const STAGE_ROWS: { stage: Stage; label: string; typical: [number, number] }[] = [
-  { stage: "awake", label: "Awake", typical: [5, 10] },
-  { stage: "rem", label: "REM", typical: [20, 25] },
-  { stage: "light", label: "Light", typical: [45, 55] },
-  { stage: "deep", label: "Deep", typical: [13, 23] },
+  { stage: "awake", typical: [5, 10], get label() { return i18n.t("health:stage.awake"); } },
+  { stage: "rem", typical: [20, 25], get label() { return i18n.t("health:stage.rem"); } },
+  { stage: "light", typical: [45, 55], get label() { return i18n.t("health:stage.light"); } },
+  { stage: "deep", typical: [13, 23], get label() { return i18n.t("health:stage.deep"); } },
 ];
 
 export type NapVM = { id: string; day: string; start: number; end: number; hours: SleepVM["hours"]; stages: SleepVM["stages"]; hr: SleepVM["nightHr"] };

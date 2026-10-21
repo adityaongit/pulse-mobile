@@ -1,8 +1,9 @@
 // The Health screens' info-card copy, from pulse's pages, reworded for the Pulse engine. The web's <p> is a <Text> styled as
-// the info card's body (the same as src/screens/_lib/info.tsx's, which does not export it).
+// the info card's body (the same as src/screens/_lib/info.tsx's, which does not export it). Each card is an object of
+// getters, so the text resolves when the card opens, in the language then in use.
 import type { ReactNode } from "react";
 import { View } from "react-native";
-import { AGE_LABEL } from "@/lib/format";
+import { i18n } from "@/i18n/config";
 import { Text } from "@/ui/Text";
 import type { InfoContent } from "@/ui/shells/InfoButton";
 
@@ -11,70 +12,73 @@ function P({ children }: { children: ReactNode }) {
 }
 
 export const MONITOR_INFO: InfoContent = {
-  title: "About Health Monitor",
-  body: (
-    <P>
-      Health Monitor compares last night’s vitals with your personal normal range: the average of your last 30 nights plus or minus one standard
-      deviation. Blood oxygen also flags anything below 95%. A change in several vitals at once can be an early sign of illness. Pulse is not a medical device; if you
-      feel unwell, talk to a doctor.
-    </P>
-  ),
+  get title() {
+    return i18n.t("health:info.monitorTitle");
+  },
+  get body() {
+    return <P>{i18n.t("health:info.monitorBody")}</P>;
+  },
 };
 
 const LEVELS = [
-  { swatch: "bg-stress-low", text: "Low, 0 - 29: you might be feeling calm, relaxed or sleepy." },
-  { swatch: "bg-stress-medium", text: "Medium, 30 - 59: neutral, alert or mildly activated." },
-  { swatch: "bg-stress-high", text: "High, 60 - 100: excited, stressed or highly activated." },
-];
+  { swatch: "bg-stress-low", key: "info.stressLow" },
+  { swatch: "bg-stress-medium", key: "info.stressMedium" },
+  { swatch: "bg-stress-high", key: "info.stressHigh" },
+] as const;
 
 export const STRESS_INFO: InfoContent = {
-  title: "About Stress Monitor",
-  body: (
-    <>
-      <P>Stress Monitor scores how activated your body is, from 0 to 100, every 6 minutes: your heart rate against your awake heart rate over the last 30 days, and at night your HRV against its 30-day baseline.</P>
-      <View className="gap-2">
-        {LEVELS.map((l) => (
-          <View key={l.swatch} className="flex-row items-start gap-3">
-            <View accessibilityElementsHidden className={`mt-1.5 size-2.5 shrink-0 rounded-sm ${l.swatch}`} />
-            <View className="flex-1">
-              <P>{l.text}</P>
+  get title() {
+    return i18n.t("health:info.stressTitle");
+  },
+  get body() {
+    return (
+      <>
+        <P>{i18n.t("health:info.stressIntro")}</P>
+        <View className="gap-2">
+          {LEVELS.map((l) => (
+            <View key={l.swatch} className="flex-row items-start gap-3">
+              <View accessibilityElementsHidden className={`mt-1.5 size-2.5 shrink-0 rounded-sm ${l.swatch}`} />
+              <View className="flex-1">
+                <P>{i18n.t(`health:${l.key}`)}</P>
+              </View>
             </View>
-          </View>
-        ))}
-      </View>
-      <P>Workouts and exercise are left out, so a run never counts as stress. Stress is provisional until your data spans 30 days.</P>
-    </>
-  ),
+          ))}
+        </View>
+        <P>{i18n.t("health:info.stressNote")}</P>
+      </>
+    );
+  },
 };
 
 export const FITNESS_INFO: InfoContent = {
-  title: "About Fitness",
-  body: (
-    <P>
-      VO2 max is the most oxygen your body can use during hard exercise. Pulse ranks it against people of your age and sex from the FRIEND registry.
-      Training load divides your fatigue (about a week of workout load) by your fitness (about three weeks); above 1.4 is a spike.
-    </P>
-  ),
+  get title() {
+    return i18n.t("health:info.fitnessTitle");
+  },
+  get body() {
+    return <P>{i18n.t("health:info.fitnessBody")}</P>;
+  },
 };
 
 export const HEALTHSPAN_INFO: InfoContent = {
-  title: "About Healthspan",
-  body: (
-    <P>
-      {AGE_LABEL} estimates how old your body behaves, from nine habits and vitals over the 28 days ending each Sunday. Pace of Aging is your
-      {AGE_LABEL} divided by your age: 1.0x means your body behaves its age, below 1.0x younger, above 1.0x older. Both are estimates for personal insight, not a
-      medical assessment.
-    </P>
-  ),
+  get title() {
+    return i18n.t("health:info.healthspanTitle");
+  },
+  get body() {
+    return <P>{i18n.t("health:info.healthspanBody")}</P>;
+  },
 };
 
 export const HEART_RATE_INFO: InfoContent = {
-  title: "About heart rate",
-  body: (
-    <>
-      <P>Your band records heart rate through the day. The Google Health app shares it with Health Connect, and Pulse reads it from there.</P>
-      <P>While this screen is open on today, Pulse checks for new readings every minute. A reading usually arrives one to three minutes after your band takes it, so the newest one is never quite now.</P>
-      <P>The chart shows each minute’s average. Minutes without a reading, when the band was off or not syncing, stay blank.</P>
-    </>
-  ),
+  get title() {
+    return i18n.t("health:info.hrTitle");
+  },
+  get body() {
+    return (
+      <>
+        <P>{i18n.t("health:info.hrBody1")}</P>
+        <P>{i18n.t("health:info.hrBody2")}</P>
+        <P>{i18n.t("health:info.hrBody3")}</P>
+      </>
+    );
+  },
 };

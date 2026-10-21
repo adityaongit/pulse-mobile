@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef, useSyncExternalStore, type ReactNode } from
 import { AppState, StyleSheet, View, type GestureResponderEvent, type ViewStyle } from "react-native";
 import Svg, { Circle, ClipPath, Defs, G, LinearGradient, Mask, Path, RadialGradient, Rect, Stop } from "react-native-svg";
 import { useIsFocused } from "expo-router";
+import { useTranslation } from "react-i18next";
 import Animated, { cancelAnimation, Easing, Keyframe, useAnimatedStyle, useReducedMotion, useSharedValue, withRepeat, withSequence, withTiming, type SharedValue } from "react-native-reanimated";
 import { scheduleOnUI } from "react-native-worklets";
 import { AGE_LABEL, formatValue } from "@/lib/format";
@@ -509,6 +510,7 @@ const enter = (delay: number) => new Keyframe({ 0: { opacity: 0, transform: [{ t
 export function AgeOrb({ age, deltaYears, provisional = false, size: sizeProp, reason, compact = false }: AgeOrbProps) {
   // Never wider than the page column: the 300 px orb would cross the 16 px gutters on a 320 px phone.
   const size = Math.min(sizeProp ?? (compact ? 108 : 300), useNarrow().width - 32);
+  const { t } = useTranslation("health");
   const { c } = useTheme();
   const reduced = useReducedMotion();
 
@@ -519,9 +521,12 @@ export function AgeOrb({ age, deltaYears, provisional = false, size: sizeProp, r
   const same = d !== null && delta !== null && formatValue("decimal1", Math.abs(delta)) === "0.0";
   const r = reasonCopy(reason);
 
+  const ageText = has ? formatValue("decimal1", age) : "";
   const label = has
-    ? `${AGE_LABEL} ${formatValue("decimal1", age)}, ${same ? "same as your age" : `${d!.text} than your age`}${provisional ? ", provisional" : ""}`
-    : `${AGE_LABEL} unavailable. ${r.long}`;
+    ? same
+      ? t(provisional ? "orb.ariaSameProvisional" : "orb.ariaSame", { age: ageText })
+      : t(provisional ? "orb.ariaDeltaProvisional" : "orb.ariaDelta", { age: ageText, delta: d!.text })
+    : t("orb.ariaUnavailable", { reason: r.long });
 
   // The web's `motion-safe:` entry: with reduced motion the text just appears.
   const entering = (delay: number) => (compact || reduced ? undefined : enter(delay));

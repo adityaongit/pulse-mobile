@@ -3,6 +3,8 @@
 // Health hub `/health` (spec §7.6): today's values; each card links to its detail screen. Ported from pulse
 // src/app/(app)/health/page.tsx and loading.tsx (the skeleton shows while the query runs).
 import { View } from "react-native";
+import { useTranslation } from "react-i18next";
+import { i18n } from "@/i18n/config";
 import { Activity, Check, Droplet, Heart, Thermometer, TriangleAlert, Wind, type LucideIcon } from "lucide-react-native";
 import type { ChipTone } from "@/lib/bands";
 import { formatValue, hmm } from "@/lib/format";
@@ -14,6 +16,7 @@ import { cn } from "@/ui/cn";
 import { Icon } from "@/ui/Icon";
 import { CAPTION, LABEL, StatusChip, ValueUnit } from "@/ui/metrics/primitives";
 import { TickScale, TickScaleSkeleton } from "@/ui/metrics/TickScale";
+import { cardInfo } from "@/ui/shells/cardInfo";
 import { MetricState } from "@/ui/shells/MetricState";
 import { PageShell } from "@/ui/shells/PageShell";
 import { SectionShell } from "@/ui/shells/SectionShell";
@@ -25,7 +28,7 @@ import { CardButton } from "./CardButton";
 import { ErrorView } from "./ErrorView";
 import { categoryTone, categoryWord, ordinal } from "./format";
 import { LastReading } from "./LastReading";
-import { FAST, SLOW } from "./pace";
+import { Fast, Slow } from "./pace";
 import { HrvStatusCard } from "./HrvStatusCard";
 import { INSET_ROW } from "@/ui/Card";
 
@@ -33,13 +36,10 @@ const TILE = "font-numeric text-4xl leading-10 font-bold tracking-[-0.01em]";
 const EMPTY = "text-[15px] leading-[22px] text-foreground-secondary";
 
 const VITAL_ICON: Record<VitalKey, LucideIcon> = { resp: Wind, spo2: Droplet, restingHr: Heart, hrv: Activity, skinTempDev: Thermometer };
-const VITAL_ORDER: { key: VitalKey; short: string }[] = [
-  { key: "resp", short: "Resp" },
-  { key: "restingHr", short: "RHR" },
-  { key: "hrv", short: "HRV" },
-  { key: "skinTempDev", short: "Temp" },
-];
-const ACWR_WORD: Record<ChipTone, string> = { optimal: "Optimal", warning: "Pushing", alert: "High risk", neutral: "Detraining" };
+const VITAL_ORDER: VitalKey[] = ["resp", "restingHr", "hrv", "skinTempDev"];
+/** The tile's short name; RHR and HRV are glossary terms and stay as they are. */
+const shortOf = (key: VitalKey) => (key === "resp" ? i18n.t("health:hub.shortResp") : key === "skinTempDev" ? i18n.t("health:hub.shortTemp") : key === "restingHr" ? "RHR" : "HRV");
+const ACWR_KEY: Record<ChipTone, "optimal" | "pushing" | "highRisk" | "detraining"> = { optimal: "optimal", warning: "pushing", alert: "highRisk", neutral: "detraining" };
 
 const skeleton = <Skeleton className="h-16 w-full" />;
 const Chip = () => <Skeleton className="h-6 w-24 rounded-md" />;
@@ -47,8 +47,8 @@ const Chip = () => <Skeleton className="h-6 w-24 rounded-md" />;
 /** "Slower vs. last week" / "Faster vs. last week" / "No change vs. last week" (spec §6), from the week-on-week pace change. */
 function paceChip(delta: number | null) {
   if (delta === null) return null;
-  if (Math.abs(delta) < 0.05) return { tone: "neutral" as const, dir: "flat" as const, text: "No change vs. last week" };
-  return delta < 0 ? { tone: "optimal" as const, dir: "down" as const, text: "Slower vs. last week" } : { tone: "warning" as const, dir: "up" as const, text: "Faster vs. last week" };
+  if (Math.abs(delta) < 0.05) return { tone: "neutral" as const, dir: "flat" as const, text: i18n.t("health:pace.noChange") };
+  return delta < 0 ? { tone: "optimal" as const, dir: "down" as const, text: i18n.t("health:pace.slower") } : { tone: "warning" as const, dir: "up" as const, text: i18n.t("health:pace.faster") };
 }
 
 /**
@@ -56,13 +56,14 @@ function paceChip(delta: number | null) {
  * (the ruler and its week-on-week chip) ending in GO TO HEALTHSPAN.
  */
 function AgeBlock({ m }: { m: HealthHubVM["healthspan"] }) {
+  const { t } = useTranslation("health");
   return (
     <MetricState
       metric={m}
       skeleton={skeleton}
       renderReason={() => (
         <SectionShell variant="card" title="Healthspan" href="/health/healthspan">
-          <Text className={EMPTY}>Pulse Age needs at least 5 of its 9 inputs over the 4 weeks before a Monday.</Text>
+          <Text className={EMPTY}>{t("hub.noHealthspan")}</Text>
         </SectionShell>
       )}
     >
@@ -93,12 +94,12 @@ function AgeBlock({ m }: { m: HealthHubVM["healthspan"] }) {
                   max={3}
                   format="decimal1"
                   unit="x"
-                  describe={v.pace === null ? undefined : v.pace < 1 ? "younger than your age" : v.pace > 1 ? "older than your age" : "aging at the normal rate"}
+                  describe={v.pace === null ? undefined : v.pace < 1 ? t("pace.younger") : v.pace > 1 ? t("pace.older") : t("pace.normal")}
                   ends={["−1.0x", "1.0x", "3.0x"]}
-                  leading={SLOW}
-                  trailing={FAST}
+                  leading={<Slow />}
+                  trailing={<Fast />}
                 />
-                <CardButton href="/health/healthspan">Go to Healthspan</CardButton>
+                <CardButton href="/health/healthspan">{t("hub.goHealthspan")}</CardButton>
               </View>
             </SectionShell>
           </View>
@@ -109,12 +110,14 @@ function AgeBlock({ m }: { m: HealthHubVM["healthspan"] }) {
 }
 
 function Monitor({ m }: { m: HealthHubVM["monitor"] }) {
+  const { t } = useTranslation("health");
   const readings = (v?: NonNullable<HealthHubVM["monitor"]["value"]>) => (
     <View className="flex-row">
-      {VITAL_ORDER.map(({ key, short }, i) => {
+      {VITAL_ORDER.map((key, i) => {
+        const short = shortOf(key);
         const status = v?.vitals.find((x) => x.key === key)?.status ?? "no_data";
         const ok = status === "in_range";
-        const label = `${short}: ${status === "no_data" ? "no reading" : ok ? "within range" : "out of range"}`;
+        const label = t("hub.vitalAria", { short, state: status === "no_data" ? t("hub.noReading") : ok ? t("hub.inRange") : t("hub.outRange") });
         return (
           <View key={key} accessible accessibilityLabel={label} className={cn("min-w-0 flex-1 items-center gap-2 px-1", i > 0 && "border-l border-border")}>
             <Icon icon={VITAL_ICON[key]} size={24} tone="muted-foreground" strokeWidth={1.75} />
@@ -142,7 +145,7 @@ function Monitor({ m }: { m: HealthHubVM["monitor"] }) {
       renderReason={() => (
         <View className="gap-3">
           {readings()}
-          <Text className={EMPTY}>No readings from last night</Text>
+          <Text className={EMPTY}>{t("hub.noReadingsLastNight")}</Text>
         </View>
       )}
     >
@@ -155,9 +158,7 @@ function Monitor({ m }: { m: HealthHubVM["monitor"] }) {
               <View className={cn("size-5 shrink-0 items-center justify-center rounded-sm", all ? "bg-optimal" : "bg-warning")}>
                 {all ? <Icon icon={Check} size={14} tone="background" strokeWidth={3} /> : <Icon icon={TriangleAlert} size={12} tone="primary-foreground" strokeWidth={2.5} />}
               </View>
-              <Text className="text-[15px] leading-[22px] tabular-nums">
-                {v.inRange}/{v.total} within range
-              </Text>
+              <Text className="text-[15px] leading-[22px] tabular-nums">{t("hub.rangeCount", { inRange: v.inRange, total: v.total })}</Text>
             </View>
           </View>
         );
@@ -167,8 +168,9 @@ function Monitor({ m }: { m: HealthHubVM["monitor"] }) {
 }
 
 function Stress({ m }: { m: HealthHubVM["stress"] }) {
+  const { t } = useTranslation("health");
   return (
-    <MetricState metric={m} skeleton={skeleton} renderReason={() => <Text className={EMPTY}>No stress scored yet today</Text>}>
+    <MetricState metric={m} skeleton={skeleton} renderReason={() => <Text className={EMPTY}>{t("hub.noStress")}</Text>}>
       {(v, meta) => {
         const typical = v.typicalHighMin;
         const dir = typical === null ? null : v.highMin < typical - 1 ? "down" : v.highMin > typical + 1 ? "up" : "flat";
@@ -178,11 +180,11 @@ function Stress({ m }: { m: HealthHubVM["stress"] }) {
           <View className="flex-row items-end gap-4">
             {/* shrink: the web's auto column, which gives way (its label and chip wrap) before it pushes past the card. */}
             <View className="shrink gap-2">
-              <Text className={LABEL}>Today’s high stress</Text>
-              <ValueUnit value={hmm(v.highMin)} unit="hrs" className={TILE} />
+              <Text className={LABEL}>{t("hub.highStress")}</Text>
+              <ValueUnit value={hmm(v.highMin)} unit={t("hub.hrs")} className={TILE} />
               {dir && (
                 <StatusChip tone={tone} delta={dir}>
-                  vs. typical {v.weekday}
+                  {t("hub.vsTypical", { weekday: v.weekday })}
                 </StatusChip>
               )}
             </View>
@@ -197,20 +199,21 @@ function Stress({ m }: { m: HealthHubVM["stress"] }) {
 }
 
 function Fitness({ m }: { m: HealthHubVM["fitness"] }) {
+  const { t } = useTranslation("health");
   return (
-    <MetricState metric={m} skeleton={skeleton} renderReason={() => <Text className={EMPTY}>No VO2 max yet. Fitbit estimates it from runs and resting heart rate.</Text>}>
+    <MetricState metric={m} skeleton={skeleton} renderReason={() => <Text className={EMPTY}>{t("fitness.noVo2")}</Text>}>
       {(v) => (
         <View className="flex-row items-start justify-between gap-4">
           <View className="min-w-0 shrink gap-1">
             <ValueUnit value={formatValue("decimal1", v.vo2max)} unit="ml/kg/min" className={TILE} />
             <Text className={cn(LABEL, categoryTone(v.category))}>{categoryWord(v.category)}</Text>
-            <Text className={CAPTION}>{ordinal(v.percentile)} percentile for your age</Text>
+            <Text className={CAPTION}>{t("hub.percentileForAge", { ordinal: ordinal(v.percentile) })}</Text>
           </View>
           {v.acwr !== null && v.acwrTone && (
             <View className="shrink-0 items-end gap-1">
               <Text className={LABEL}>Training load</Text>
               <Text className="font-numeric text-xl font-bold leading-6 tabular-nums">{formatValue("decimal2", v.acwr)}</Text>
-              <StatusChip tone={v.acwrTone} className="self-end">{ACWR_WORD[v.acwrTone]}</StatusChip>
+              <StatusChip tone={v.acwrTone} className="self-end">{t(`load.${ACWR_KEY[v.acwrTone]}`)}</StatusChip>
             </View>
           )}
         </View>
@@ -220,7 +223,8 @@ function Fitness({ m }: { m: HealthHubVM["fitness"] }) {
 }
 
 function HeartRate({ hr, now }: { hr: HealthHubVM["heartRate"]; now: number }) {
-  if (!hr) return <Text className={EMPTY}>No heart-rate readings yet. They show here once your band syncs.</Text>;
+  const { t } = useTranslation("health");
+  if (!hr) return <Text className={EMPTY}>{t("hub.noHr")}</Text>;
   return (
     <View className="gap-1">
       <ValueUnit value={String(hr.bpm)} unit="bpm" className={TILE} />
@@ -232,26 +236,28 @@ function HeartRate({ hr, now }: { hr: HealthHubVM["heartRate"]; now: number }) {
   );
 }
 
-const FOOTNOTE = "Estimates for personal insight, not medical advice.";
-
 /** The way to Nutrition (spec §7.22): static, so the hub's query stays as it is. */
-const NUTRITION_CARD = (
-  <SectionShell variant="card" title="Nutrition" info={false} href="/nutrition">
-    <Text className={CAPTION}>Today’s food against your calorie and protein targets. Log a meal from a photo, a few words or its numbers.</Text>
-  </SectionShell>
-);
+function NutritionCard() {
+  const { t } = useTranslation("health");
+  return (
+    <SectionShell variant="card" title={t("title.nutrition")} info={false} href="/nutrition">
+      <Text className={CAPTION}>{t("hub.nutritionBody")}</Text>
+    </SectionShell>
+  );
+}
 
 /** The Health tab's query and key; Home prefetches them. */
 export const healthQuery = async (ctx: QueryCtx) => ({ vm: await getHealthHub(ctx), now: ctx.now * 1000 });
 export const HEALTH_KEY = ["health"] as const;
 
 export function HealthScreen() {
+  const { t } = useTranslation("health");
   // `now` is the query's clock (epoch ms): "2 minutes ago" is as of the load.
   const { data, error, reload } = useScreen(healthQuery, HEALTH_KEY);
   if (!data) return error ? <ErrorView retry={reload} /> : <HealthLoading />;
   const { vm, now } = data;
   return (
-    <PageShell title="Health">
+    <PageShell title={t("title.health")}>
       {/* The reference app's order (health-01, 02, 04): Stress Monitor, the age block, then Health Monitor; Pulse's
           Fitness and Heart rate follow. */}
       <View className="gap-3">
@@ -263,28 +269,29 @@ export function HealthScreen() {
           <Monitor m={vm.monitor} />
         </SectionShell>
         <HrvStatusCard />
-        <SectionShell variant="card" title="Fitness" href="/health/fitness">
+        <SectionShell variant="card" title={t("title.fitness")} info={cardInfo("Fitness")} href="/health/fitness">
           <Fitness m={vm.fitness} />
         </SectionShell>
-        <SectionShell variant="card" title="Heart rate" href="/health/heart-rate">
+        <SectionShell variant="card" title={t("title.heartRate")} info={cardInfo("Heart rate")} href="/health/heart-rate">
           <HeartRate hr={vm.heartRate} now={now} />
         </SectionShell>
-        {NUTRITION_CARD}
+        <NutritionCard />
       </View>
-      <Text className={cn(CAPTION, "text-center")}>{FOOTNOTE}</Text>
+      <Text className={cn(CAPTION, "text-center")}>{t("hub.footnote")}</Text>
     </PageShell>
   );
 }
 
 /** Health hub loading (spec §7.6, §5.19, R42): Stress Monitor, the orb and the Pace of Aging card, then the linked cards, each body laid out as the real one with its static labels; then the footnote. */
 function HealthLoading() {
+  const { t } = useTranslation("health");
   return (
-    <PageShell loading title="Health">
+    <PageShell loading title={t("title.health")}>
       <View className="gap-3">
         <SectionShell variant="card" title="Stress Monitor" info={false} href="/health/stress">
           <View accessibilityElementsHidden className="flex-row items-end gap-4">
             <View className="gap-2">
-              <Text className={LABEL}>Today’s high stress</Text>
+              <Text className={LABEL}>{t("hub.highStress")}</Text>
               <SkeletonText lh={40} fs={36} className="w-[75px]" />
               <Chip />
             </View>
@@ -323,7 +330,7 @@ function HealthLoading() {
             </View>
           </View>
         </SectionShell>
-        <SectionShell variant="card" title="Fitness" href="/health/fitness">
+        <SectionShell variant="card" title={t("title.fitness")} info={cardInfo("Fitness")} href="/health/fitness">
           <View accessibilityElementsHidden className="flex-row items-start justify-between gap-4">
             <View className="gap-1">
               <SkeletonText lh={40} fs={36} className="w-[75px]" />
@@ -337,15 +344,15 @@ function HealthLoading() {
             </View>
           </View>
         </SectionShell>
-        <SectionShell variant="card" title="Heart rate" href="/health/heart-rate">
+        <SectionShell variant="card" title={t("title.heartRate")} info={cardInfo("Heart rate")} href="/health/heart-rate">
           <View accessibilityElementsHidden className="gap-1">
             <SkeletonText lh={40} fs={36} className="w-[75px]" />
             <SkeletonText lh={16} fs={12} className="w-28" />
           </View>
         </SectionShell>
-        {NUTRITION_CARD}
+        <NutritionCard />
       </View>
-      <Text className={cn(CAPTION, "text-center")}>{FOOTNOTE}</Text>
+      <Text className={cn(CAPTION, "text-center")}>{t("hub.footnote")}</Text>
     </PageShell>
   );
 }

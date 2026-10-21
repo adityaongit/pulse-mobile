@@ -5,6 +5,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { View } from "react-native";
 import { useFocusEffect } from "expo-router";
+import { useTranslation } from "react-i18next";
+import { i18n } from "@/i18n/config";
 import { dayLabel, MISSING } from "@/lib/format";
 import { getHeartRate } from "@/queries/health";
 import type { HeartRateVM } from "@/queries/types";
@@ -14,6 +16,7 @@ import { ZoneBars, ZoneBarsSkeleton } from "@/ui/charts/ZoneBars";
 import { cn } from "@/ui/cn";
 import { CAPTION, LABEL, ValueUnit } from "@/ui/metrics/primitives";
 import { DetailShell } from "@/ui/shells/DetailShell";
+import { cardInfo } from "@/ui/shells/cardInfo";
 import { SectionShell } from "@/ui/shells/SectionShell";
 import { SkeletonText } from "@/ui/Skeleton";
 import { Text } from "@/ui/Text";
@@ -49,13 +52,14 @@ const mean = (xs: number[]) => xs.reduce((a, b) => a + b, 0) / xs.length;
 
 /** The latest reading (today) or the day's average (a past day), over the day's range, average and resting HR. */
 function HeartRateHero({ v, now }: { v: HeartRateVM; now: number }) {
+  const { t } = useTranslation("health");
   const bpms = v.points.flatMap((p) => (p.v === null ? [] : [p.v]));
   const avg = bpms.length ? Math.round(mean(bpms)) : null;
   const big = v.isToday ? (v.latest?.bpm ?? null) : avg;
   const stats = [
-    { label: "Range", value: bpms.length ? `${Math.min(...bpms)}–${Math.max(...bpms)}` : MISSING, spoken: bpms.length ? `${Math.min(...bpms)} to ${Math.max(...bpms)}` : "no readings" },
-    ...(v.isToday ? [{ label: "Average", value: avg === null ? MISSING : String(avg), spoken: avg === null ? "no readings" : String(avg) }] : []),
-    { label: "Resting", value: v.restingHr === null ? MISSING : String(v.restingHr), spoken: v.restingHr === null ? "not yet" : String(v.restingHr) },
+    { id: "range", label: t("heartRate.range"), value: bpms.length ? `${Math.min(...bpms)}–${Math.max(...bpms)}` : MISSING, spoken: bpms.length ? `${Math.min(...bpms)} to ${Math.max(...bpms)}` : t("heartRate.noReadings") },
+    ...(v.isToday ? [{ id: "average", label: t("heartRate.average"), value: avg === null ? MISSING : String(avg), spoken: avg === null ? t("heartRate.noReadings") : String(avg) }] : []),
+    { id: "resting", label: t("heartRate.resting"), value: v.restingHr === null ? MISSING : String(v.restingHr), spoken: v.restingHr === null ? t("heartRate.notYet") : String(v.restingHr) },
   ];
   return (
     <View className="w-full max-w-[360px] items-center gap-2 py-4">
@@ -64,14 +68,14 @@ function HeartRateHero({ v, now }: { v: HeartRateVM; now: number }) {
         v.latest ? (
           <LastReading t={v.latest.t} now={now} />
         ) : (
-          <Text className={CAPTION}>No readings yet today</Text>
+          <Text className={CAPTION}>{t("heartRate.noneToday")}</Text>
         )
       ) : (
-        <Text className={CAPTION}>{avg === null ? "No readings on this day" : "Day average"}</Text>
+        <Text className={CAPTION}>{avg === null ? t("heartRate.noneDay") : t("heartRate.dayAverage")}</Text>
       )}
       <View className="mt-4 w-full flex-row gap-3">
         {stats.map((s) => (
-          <View key={s.label} accessible accessibilityLabel={`${s.label}: ${s.spoken}${/\d/.test(s.spoken) ? " beats per minute" : ""}`} className="flex-1 items-center">
+          <View key={s.id} accessible accessibilityLabel={t(/\d/.test(s.spoken) ? "heartRate.statAriaBpm" : "heartRate.statAria", { label: s.label, spoken: s.spoken })} className="flex-1 items-center">
             <Text accessibilityElementsHidden className="font-numeric text-xl font-bold leading-6 tabular-nums">
               {s.value}
             </Text>
@@ -86,6 +90,7 @@ function HeartRateHero({ v, now }: { v: HeartRateVM; now: number }) {
 }
 
 export function HeartRateScreen() {
+  const { t } = useTranslation("health");
   const { data, error, reload } = useDayScreen("heartRate", getHeartRate);
   const now = useLiveDay(data?.vm.isToday ?? false, reload);
   const vm = data?.vm;
@@ -107,8 +112,8 @@ export function HeartRateScreen() {
   const { d, today } = data;
   return (
     <DetailShell
-      title="Heart rate"
-      bodySkeleton={BODY_SKELETON}
+      title={t("title.heartRate")}
+      bodySkeleton={bodySkeleton()}
       dateSwitcher={{ mode: "day" }}
       info={HEART_RATE_INFO}
       hero={
@@ -117,63 +122,64 @@ export function HeartRateScreen() {
         </LiveHeartRateHero>
       }
       primary={
-        <SectionShell variant="card" title={vm.isToday ? "Today" : dayLabel(d, today)} info={{ title: "Daily heart rate", body: "Heartbeats per minute across the selected day. Gaps mean no heart rate reading was available." }}>
+        <SectionShell variant="card" title={vm.isToday ? t("today", { ns: "common" }) : dayLabel(d, today)} info={{ title: t("heartRate.chartInfoTitle"), body: t("heartRate.chartInfoBody") }}>
           <IntradayHrChart data={series} zoned />
         </SectionShell>
       }
       secondary={[
-        <SectionShell key="zones" variant="card" title="Time in zones">
-          <ZoneBars variant="rows" data={zoneBars(vm.zones)} note={vm.zoneNote} emptyCopy={vm.isToday ? "No heart-rate zones yet today." : "No heart-rate zones on this day."} />
+        <SectionShell key="zones" variant="card" title={t("title.timeInZones")} info={cardInfo("Time in zones")}>
+          <ZoneBars variant="rows" data={zoneBars(vm.zones)} note={vm.zoneNote} emptyCopy={vm.isToday ? t("heartRate.zonesEmptyToday") : t("heartRate.zonesEmptyDay")} />
         </SectionShell>,
       ]}
     />
   );
 }
 
-const LOADING_PRIMARY = (
-  <SectionShell variant="card" title="Today">
+const loadingPrimary = () => (
+  <SectionShell variant="card" title={i18n.t("common:today")}>
     <IntradayHrChartSkeleton />
   </SectionShell>
 );
 
-const LOADING_SECONDARY = [
-  <SectionShell key="zones" variant="card" title="Time in zones">
+const loadingSecondary = () => [
+  <SectionShell key="zones" variant="card" title={i18n.t("health:title.timeInZones")} info={cardInfo("Time in zones")}>
     <ZoneBarsSkeleton variant="rows" />
   </SectionShell>,
 ];
 
 /** Below the fold while a cold push slides in: the loading state's first sections. */
-const BODY_SKELETON = (
+const bodySkeleton = () => (
   <>
-    {LOADING_PRIMARY}
-    <View className="gap-3">{LOADING_SECONDARY.slice(0, 2)}</View>
+    {loadingPrimary()}
+    <View className="gap-3">{loadingSecondary().slice(0, 2)}</View>
   </>
 );
 
 /** Heart rate loading: the date row, the reading with its three stats, the day's chart, then time in zones. */
 function HeartRateLoading() {
+  const { t } = useTranslation("health");
   return (
     <DetailShell
       loading
-      title="Heart rate"
+      title={t("title.heartRate")}
       dateSwitcher={{ mode: "day" }}
       hero={
         <View accessibilityElementsHidden className="w-full max-w-[360px] items-center gap-2 py-4">
           <SkeletonText lh={64} fs={64} className="w-[100px]" />
           <SkeletonText className="w-28" />
           <View className="mt-4 w-full flex-row gap-3">
-            {["Range", "Average", "Resting"].map((w) => (
+            {(["range", "average", "resting"] as const).map((w) => (
               <View key={w} className="flex-1 items-center">
                 <SkeletonText lh={24} fs={20} className="w-[42px]" />
-                <Text className={cn(LABEL, "mt-1 text-muted-foreground")}>{w}</Text>
+                <Text className={cn(LABEL, "mt-1 text-muted-foreground")}>{t(`heartRate.${w}`)}</Text>
               </View>
             ))}
           </View>
         </View>
       }
-      primary={LOADING_PRIMARY}
-      bodySkeleton={BODY_SKELETON}
-      secondary={LOADING_SECONDARY}
+      primary={loadingPrimary()}
+      bodySkeleton={bodySkeleton()}
+      secondary={loadingSecondary()}
     />
   );
 }

@@ -4,6 +4,7 @@
 import { useState, type ReactNode } from "react";
 import { View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
+import { useTranslation } from "react-i18next";
 import Animated, { FadeIn, FadeOut, LinearTransition, useAnimatedStyle, useReducedMotion, withTiming } from "react-native-reanimated";
 import { ChevronDown, CircleGauge, Dumbbell, Footprints, Heart, Moon, Timer } from "lucide-react-native";
 import { formatValue, isSymbolUnit, NBSP, type FormatKey } from "@/lib/format";
@@ -73,6 +74,7 @@ function Chevron({ open }: { open: boolean }) {
 
 export function ContributorCard({ title, items }: { title: string; items: HealthspanContributor[] }) {
   const { contributor } = useLocalSearchParams<{ contributor?: string }>();
+  const { t } = useTranslation("health");
   const [open, setOpen] = useState<string[]>(contributor ? [contributor] : []);
   const toggle = (key: string) => {
     haptic.toggle(!open.includes(key));
@@ -82,7 +84,7 @@ export function ContributorCard({ title, items }: { title: string; items: Health
     <SectionShell
       variant="card"
       title={title}
-      info={{ title: `${title} and Pulse Age`, body: "Each factor's bar marks your average over the 28 days up to the latest Sunday, from poor to good for your age. The years beside it are what that factor adds to or takes off Pulse Age." }}
+      info={{ title: t("contributor.infoTitle", { title }), body: t("contributor.infoBody") }}
       fill
     >
       <View>
@@ -118,11 +120,11 @@ export function ContributorCard({ title, items }: { title: string; items: Health
                       <Text className="text-[15px] leading-[22px] text-foreground-secondary">{factorCopy(c.label, c.years).body}</Text>
                     </View>
                   )}
-                  <Text className="text-[15px] leading-[22px] text-foreground-secondary">Target for your age: {show(c.target)}</Text>
+                  <Text className="text-[15px] leading-[22px] text-foreground-secondary">{t("contributor.target", { value: show(c.target) })}</Text>
                   {!!c.caption && c.metric.value !== null && <Text className={CAPTION}>{c.caption}</Text>}
                   <Text className="text-[15px] leading-[22px]">{c.explanation}</Text>
-                  <Text className={CAPTION}>Source: {c.source}.</Text>
-                  {!!HS_TREND[c.key] && <TextLink href={trendHref(HS_TREND[c.key])}>View trend</TextLink>}
+                  <Text className={CAPTION}>{t("contributor.source", { source: c.source })}</Text>
+                  {!!HS_TREND[c.key] && <TextLink href={trendHref(HS_TREND[c.key])}>{t("contributor.viewTrend")}</TextLink>}
                 </Animated.View>
               )}
             </Animated.View>

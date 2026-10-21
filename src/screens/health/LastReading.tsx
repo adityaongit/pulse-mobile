@@ -4,6 +4,7 @@
 import { useEffect } from "react";
 import { View } from "react-native";
 import Animated, { Easing, useAnimatedStyle, useReducedMotion, useSharedValue, withRepeat, withSequence, withTiming } from "react-native-reanimated";
+import { useTranslation } from "react-i18next";
 import { ago } from "@/lib/format";
 import { CAPTION } from "@/ui/metrics/primitives";
 import { cn } from "@/ui/cn";
@@ -27,6 +28,7 @@ function Ping() {
 /** `now` is epoch ms from the screen's last load (or last live pull): rendering never reads the clock. */
 export function LastReading({ t, now, className }: { t: number; now: number; className?: string }) {
   const fresh = now - t < LIVE_MS;
+  const { t: tr } = useTranslation("health");
   return (
     <View className={cn("flex-row items-center gap-1.5", className)}>
       {fresh && (
@@ -35,7 +37,7 @@ export function LastReading({ t, now, className }: { t: number; now: number; cla
           <View className="size-2 rounded-full bg-strain" />
         </View>
       )}
-      <Text className={cn(CAPTION, "tabular-nums")} accessibilityLabel={`${fresh ? "Live, " : ""}${ago(t, now)}`}>
+      <Text className={cn(CAPTION, "tabular-nums")} accessibilityLabel={fresh ? tr("live.reading", { ago: ago(t, now) }) : ago(t, now)}>
         {ago(t, now)}
       </Text>
     </View>

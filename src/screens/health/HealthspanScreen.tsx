@@ -1,6 +1,8 @@
 // Healthspan `/health/healthspan?d=` (spec §7.7): the ISO week containing `d`. Ported from pulse
 // src/app/(app)/health/healthspan/page.tsx and loading.tsx (the skeleton shows while the query runs).
 import { View } from "react-native";
+import { useTranslation } from "react-i18next";
+import { i18n } from "@/i18n/config";
 import { AGE_LABEL, formatValue, MISSING } from "@/lib/format";
 import { getHealthspan } from "@/queries/health";
 import type { HealthspanVM } from "@/queries/types";
@@ -10,6 +12,7 @@ import { ContributorRowSkeleton } from "@/ui/metrics/ContributorRow";
 import { InsightCard, InsightCardSkeleton } from "@/ui/metrics/InsightCard";
 import { CAPTION } from "@/ui/metrics/primitives";
 import { TickScale, TickScaleSkeleton } from "@/ui/metrics/TickScale";
+import { cardInfo } from "@/ui/shells/cardInfo";
 import { DetailShell } from "@/ui/shells/DetailShell";
 import { EmptyState } from "@/ui/shells/EmptyState";
 import { SectionShell } from "@/ui/shells/SectionShell";
@@ -22,10 +25,11 @@ import { useDayScreen } from "./day";
 import { ErrorView } from "./ErrorView";
 import { FirstAge } from "./FirstAge";
 import { HEALTHSPAN_INFO } from "./info";
-import { FAST, SLOW } from "./pace";
+import { Fast, Slow } from "./pace";
 
 /** The one glow in the app (spec §2.6, docs/design/orb.md): the Pulse Age orb. `compact`: the collapsed header's 108 px orb. */
 function Orb({ vm, compact }: { vm: HealthspanVM; compact?: boolean }) {
+  const { t } = useTranslation("health");
   const r = vm.result.value;
   if (compact)
     // Hangs 8 px below the stats' centre line, about 30 px past the band, as in [latest-healthspan-collapsed-2].
@@ -37,13 +41,14 @@ function Orb({ vm, compact }: { vm: HealthspanVM; compact?: boolean }) {
   return (
     <View className="items-center gap-3">
       <AgeOrb age={r?.pulseAge ?? null} deltaYears={r?.deltaYears ?? null} provisional={vm.result.provisional} reason={vm.result.reason} size={300} />
-      <Text className={cn(CAPTION, "text-center tabular-nums")}>{r ? `Your age: ${formatValue("decimal1", vm.age)}` : "Pulse Age needs at least 5 of its 9 inputs over the 4 weeks before a Monday."}</Text>
-      {r && vm.result.provisional && <Text className={cn(CAPTION, "text-center")}>Pulse Age firms up as more of its inputs come in.</Text>}
+      <Text className={cn(CAPTION, "text-center tabular-nums")}>{r ? t("healthspan.yourAge", { age: formatValue("decimal1", vm.age) }) : t("healthspan.needsInputs")}</Text>
+      {r && vm.result.provisional && <Text className={cn(CAPTION, "text-center")}>{t("healthspan.firmsUp")}</Text>}
     </View>
   );
 }
 
 export function HealthspanScreen() {
+  const { t } = useTranslation("health");
   const { data, error, reload } = useDayScreen("healthspan", getHealthspan);
   if (!data) return error ? <ErrorView detail retry={reload} /> : <HealthspanLoading />;
   const { vm } = data;
@@ -58,17 +63,17 @@ export function HealthspanScreen() {
   const stats = {
     left: {
       value: r ? formatValue("decimal1", Math.abs(r.deltaYears)) : MISSING,
-      label: older ? "Years older" : "Years younger",
+      label: older ? t("healthspan.yearsOlder") : t("healthspan.yearsYounger"),
       tone: r ? (older ? "warning" : "optimal") : undefined,
     },
-    right: { value: r && r.pace !== null ? `${formatValue("decimal1", r.pace)}x` : MISSING, label: "Pace of aging" },
+    right: { value: r && r.pace !== null ? `${formatValue("decimal1", r.pace)}x` : MISSING, label: t("healthspan.paceStat") },
   } as const;
 
   return (
     <DetailShell
       title="Healthspan"
-      bodySkeleton={BODY_SKELETON}
-      subtitle={n > 0 ? `Next update in ${n} ${n === 1 ? "day" : "days"}` : undefined}
+      bodySkeleton={bodySkeleton()}
+      subtitle={n > 0 ? t("healthspan.nextUpdate", { count: n }) : undefined}
       dateSwitcher={{ mode: "week" }}
       info={HEALTHSPAN_INFO}
       ground="healthspan"
@@ -89,20 +94,20 @@ export function HealthspanScreen() {
               max={3}
               format="decimal1"
               unit="x"
-              describe={r && r.pace !== null ? (r.pace < 1 ? "younger than your age" : r.pace > 1 ? "older than your age" : "aging at the normal rate") : undefined}
+              describe={r && r.pace !== null ? (r.pace < 1 ? t("pace.younger") : r.pace > 1 ? t("pace.older") : t("pace.normal")) : undefined}
               ends={["−1.0x", "1.0x", "3.0x"]}
-              leading={SLOW}
-              trailing={FAST}
+              leading={<Slow />}
+              trailing={<Fast />}
             />
             <Text className={cn(CAPTION, "mt-3")}>
-              {r?.paceProvisional ? "Pace of Aging uses a 6-month window. It firms up as history builds." : "Compares your last 30 days with your 6-month Pulse Age."}
+              {r?.paceProvisional ? t("healthspan.paceProvisional") : t("healthspan.paceNormal")}
             </Text>
           </SectionShell>
         )
       }
       insight={vm.insight ? <InsightCard title={vm.insight.title} body={vm.insight.body} /> : undefined}
       primary={
-        <SectionShell variant="card" title={`${AGE_LABEL} history`}>
+        <SectionShell variant="card" title={t("title.ageHistory")} info={cardInfo("Pulse Age history")}>
           {hasHistory ? (
             <TrendChart
               label={AGE_LABEL}
@@ -111,17 +116,17 @@ export function HealthspanScreen() {
               colorBy="single"
               level
               fixedRange="6m"
-              reference={{ y: vm.age, label: "Your age" }}
+              reference={{ y: vm.age, label: t("healthspan.yourAgeRef") }}
             />
           ) : (
-            <EmptyState body="History builds one week at a time." />
+            <EmptyState body={t("healthspan.historyEmpty")} />
           )}
         </SectionShell>
       }
       secondary={[
-        <ContributorCard key="sleep" title="Sleep" items={group("sleep")} />,
-        <ContributorCard key="strain" title="Strain" items={group("strain")} />,
-        <ContributorCard key="fitness" title="Fitness" items={group("fitness")} />,
+        <ContributorCard key="sleep" title={t("group.sleep")} items={group("sleep")} />,
+        <ContributorCard key="strain" title={t("group.strain")} items={group("strain")} />,
+        <ContributorCard key="fitness" title={t("group.fitness")} items={group("fitness")} />,
       ]}
     />
   );
@@ -142,21 +147,23 @@ function Contributors({ title, n }: { title: string; n: number }) {
   );
 }
 
-const LOADING_PRIMARY = (
-  <SectionShell variant="card" title={`${AGE_LABEL} history`}>
+const loadingPrimary = () => (
+  <SectionShell variant="card" title={i18n.t("health:title.ageHistory")} info={cardInfo("Pulse Age history")}>
     <TrendChartSkeleton />
   </SectionShell>
 );
 
-const LOADING_SECONDARY = [
-  <Contributors key="sleep" title="Sleep" n={2} />, <Contributors key="strain" title="Strain" n={4} />, <Contributors key="fitness" title="Fitness" n={3} />,
+const loadingSecondary = () => [
+  <Contributors key="sleep" title={i18n.t("health:group.sleep")} n={2} />,
+  <Contributors key="strain" title={i18n.t("health:group.strain")} n={4} />,
+  <Contributors key="fitness" title={i18n.t("health:group.fitness")} n={3} />,
 ];
 
 /** Below the fold while a cold push slides in: the loading state's first sections. */
-const BODY_SKELETON = (
+const bodySkeleton = () => (
   <>
-    {LOADING_PRIMARY}
-    <View className="gap-3">{LOADING_SECONDARY.slice(0, 2)}</View>
+    {loadingPrimary()}
+    <View className="gap-3">{loadingSecondary().slice(0, 2)}</View>
   </>
 );
 
@@ -190,9 +197,9 @@ function HealthspanLoading() {
         </SectionShell>
       }
       insight={<InsightCardSkeleton title />}
-      primary={LOADING_PRIMARY}
-      bodySkeleton={BODY_SKELETON}
-      secondary={LOADING_SECONDARY}
+      primary={loadingPrimary()}
+      bodySkeleton={bodySkeleton()}
+      secondary={loadingSecondary()}
     />
   );
 }

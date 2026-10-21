@@ -4,6 +4,8 @@
 import type { ReactNode } from "react";
 import { View } from "react-native";
 import { RoundedRect } from "@shopify/react-native-skia";
+import { useTranslation } from "react-i18next";
+import { i18n } from "@/i18n/config";
 import { formatValue } from "@/lib/format";
 import { todayOf } from "@/queries/common";
 import { getHrvStatus, type HrvStatusVM } from "@/queries/training";
@@ -24,22 +26,21 @@ function P({ children }: { children: ReactNode }) {
   return <Text className="text-[15px] leading-[22px] text-foreground-body">{children}</Text>;
 }
 
+// Getters: the card's text resolves when it opens, in the language then in use.
 export const HRV_STATUS_INFO: InfoContent = {
-  title: "HRV Status",
-  body: (
-    <>
-      <P>
-        Your average overnight HRV over the last 7 nights, against your usual range, in the manner of Garmin’s HRV Status. Your usual range comes from the 60
-        nights before that, on a log scale, and needs 21 nights to form.
-      </P>
-      <P>
-        Balanced: the 7-day average sits in your usual range. Unbalanced: above it, or a little below. Low: well below it, often a sign of strain, illness or poor
-        sleep. A single night doesn’t move it much; a trend over days does.
-      </P>
-      <P>Garmin also shows Poor when your usual range is low for your age; Pulse leaves that out until it has a published age norm to compare with.</P>
-      {SOURCE_NOTE}
-    </>
-  ),
+  get title() {
+    return i18n.t("health:hrv.infoTitle");
+  },
+  get body() {
+    return (
+      <>
+        <P>{i18n.t("health:hrv.info1")}</P>
+        <P>{i18n.t("health:hrv.info2")}</P>
+        <P>{i18n.t("health:hrv.info3")}</P>
+        {SOURCE_NOTE}
+      </>
+    );
+  },
 };
 
 const H = 72;
@@ -47,6 +48,7 @@ const TONE_COLOR = { optimal: "optimal", warning: "warning", alert: "recovery-re
 
 /** The last 28 nights as bars against the usual range (a soft band) and the Low line; the last 7 in the status colour. */
 function Nights({ vm }: { vm: HrvStatusVM }) {
+  const { t } = useTranslation("health");
   const { c } = useTheme();
   const values = vm.nights.flatMap((p) => (p.v == null ? [] : [p.v]));
   const lo = Math.min(vm.lowLine, ...values) * 0.9;
@@ -54,7 +56,7 @@ function Nights({ vm }: { vm: HrvStatusVM }) {
   const y = (v: number) => H - ((v - lo) / Math.max(1e-6, hi - lo)) * H;
   const ink = c[TONE_COLOR[vm.tone]];
   return (
-    <ChartFigure summary={`Last 4 weeks of nightly HRV against your usual range of ${Math.round(vm.band.low)} to ${Math.round(vm.band.high)} milliseconds`} height={H}>
+    <ChartFigure summary={t("hrv.nights", { low: Math.round(vm.band.low), high: Math.round(vm.band.high) })} height={H}>
       {({ width }) => {
         const n = vm.nights.length;
         const step = width / Math.max(1, n);
@@ -77,13 +79,14 @@ const skeleton = <Skeleton className="h-48 w-full rounded-lg" />;
 
 /** HRV Status for day `d` (none: today). */
 export function HrvStatusCard({ d }: { d?: string }) {
+  const { t } = useTranslation("health");
   const m = useScreen((ctx) => getHrvStatus(d ?? todayOf(ctx), ctx), ["hrv-status", d ?? null]).data;
   return (
-    <SectionShell variant="card" title="HRV Status" info={HRV_STATUS_INFO}>
+    <SectionShell variant="card" title={t("title.hrvStatus")} info={HRV_STATUS_INFO}>
       <MetricState
         metric={m}
         skeleton={skeleton}
-        renderReason={(r, meta) => <ReasonPlaceholder reason={r} nightsLeft={meta.nightsLeft} size="md" copy={r === "calibrating" ? "HRV Status needs 21 nights of HRV to learn your usual range." : undefined} />}
+        renderReason={(r, meta) => <ReasonPlaceholder reason={r} nightsLeft={meta.nightsLeft} size="md" copy={r === "calibrating" ? t("hrv.calibrating") : undefined} />}
       >
         {(v) => (
           <View className="gap-3">
@@ -92,18 +95,18 @@ export function HrvStatusCard({ d }: { d?: string }) {
                 value={formatValue("int", v.weekAverage)}
                 unit="ms"
                 band={v.status}
-                caption="7-day average"
-                spoken={`HRV Status ${v.status}, 7-day average ${Math.round(v.weekAverage)} milliseconds`}
+                caption={t("hrv.avg7")}
+                spoken={t("hrv.spoken", { status: v.status, avg: Math.round(v.weekAverage) })}
               />
               <Text className={LINE}>{v.line}</Text>
             </View>
             <Divided>
-              <StatRow label="Last night" value={formatValue("int", v.lastNight)} unit="ms" spoken={v.lastNight == null ? "No HRV last night" : `Last night ${Math.round(v.lastNight)} milliseconds`} />
+              <StatRow label={t("hrv.lastNight")} value={formatValue("int", v.lastNight)} unit="ms" spoken={v.lastNight == null ? t("hrv.noHrv") : t("hrv.lastNightAria", { value: Math.round(v.lastNight) })} />
               <StatRow
-                label="Usual range"
+                label={t("hrv.usualRange")}
                 value={`${formatValue("int", v.band.low)}–${formatValue("int", v.band.high)}`}
                 unit="ms"
-                spoken={`Usual range ${Math.round(v.band.low)} to ${Math.round(v.band.high)} milliseconds`}
+                spoken={t("hrv.usualRangeAria", { low: Math.round(v.band.low), high: Math.round(v.band.high) })}
               />
             </Divided>
             <Nights vm={v} />

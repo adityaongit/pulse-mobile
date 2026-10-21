@@ -2,6 +2,8 @@
 import type { ReactNode } from "react";
 import { View } from "react-native";
 import { Activity, Droplet, Heart, Thermometer, Wind, type LucideIcon } from "lucide-react-native";
+import { useTranslation } from "react-i18next";
+import { metricLabel } from "@/lib/metricLabels";
 import type { FormatKey } from "@/lib/format";
 import type { Vital, VitalKey } from "@/queries/types";
 import { Icon } from "@/ui/Icon";
@@ -13,7 +15,6 @@ const GLYPH: Record<VitalKey, LucideIcon> = { resp: Wind, spo2: Droplet, resting
 // A tile's icon: 20 px, stroke 1.5, muted (the web's `[&_svg]:stroke-[1.5]`).
 const ICON = (k: VitalKey): ReactNode => <Icon icon={GLYPH[k]} size={20} tone="muted-foreground" strokeWidth={1.5} />;
 const FORMAT: Record<VitalKey, FormatKey> = { resp: "decimal1", spo2: "int", restingHr: "int", hrv: "int", skinTempDev: "signed1" };
-const NOTE = "Your range is your average ± 1 SD over the last 30 nights; skin temp is the change from your baseline.";
 
 /** Rows of two tiles (four vitals since SpO2 left: no wide last tile). */
 function Grid({ tiles }: { tiles: ReactNode[] }) {
@@ -35,6 +36,7 @@ function Grid({ tiles }: { tiles: ReactNode[] }) {
 }
 
 export function VitalTiles({ vitals, day, today }: { vitals: Vital[]; day: string; today: string }) {
+  const { t } = useTranslation("health");
   return (
     <>
       <Grid
@@ -53,23 +55,24 @@ export function VitalTiles({ vitals, day, today }: { vitals: Vital[]; day: strin
           />
         ))}
       />
-      <Text className="mt-3 text-xs font-medium leading-4 text-muted-foreground">{NOTE}</Text>
+      <Text className="mt-3 text-xs font-medium leading-4 text-muted-foreground">{t("vitals.note")}</Text>
     </>
   );
 }
 
-const SKELETON_LABEL: [VitalKey, string][] = [
-  ["resp", "Respiratory rate"],
+const skeletonLabel = (): [VitalKey, string][] => [
+  ["resp", metricLabel("resp")],
   ["restingHr", "RHR"],
   ["hrv", "HRV"],
-  ["skinTempDev", "Skin temperature"],
+  ["skinTempDev", metricLabel("skin")],
 ];
 
 export function VitalTilesSkeleton() {
+  const { t } = useTranslation("health");
   return (
     <>
-      <Grid tiles={SKELETON_LABEL.map(([k, l]) => <KeyStatRowSkeleton key={k} variant="tile" label={l} icon={ICON(k)} />)} />
-      <Text className="mt-3 text-xs font-medium leading-4 text-muted-foreground">{NOTE}</Text>
+      <Grid tiles={skeletonLabel().map(([k, l]) => <KeyStatRowSkeleton key={k} variant="tile" label={l} icon={ICON(k)} />)} />
+      <Text className="mt-3 text-xs font-medium leading-4 text-muted-foreground">{t("vitals.note")}</Text>
     </>
   );
 }

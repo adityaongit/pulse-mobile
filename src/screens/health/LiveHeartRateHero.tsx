@@ -5,6 +5,8 @@
 // Live readings are display-only; the chart and zones below stay Health Connect's.
 import type { ReactNode } from "react";
 import { View } from "react-native";
+import { useTranslation } from "react-i18next";
+import { i18n } from "@/i18n/config";
 import { MISSING } from "@/lib/format";
 import { useLiveBle, useLiveBleControl } from "@/state/liveBle";
 import { BeatingHeart, GoLiveButton, LivePill, LiveTrace, StopLiveButton } from "@/ui/metrics/LiveHeartRate";
@@ -17,12 +19,13 @@ export const GO_LIVE_HREF = "/settings?s=live&go=1";
 
 /** "HRV 42 ms · RMSSD, last minute", "HRV: measuring…" while too few clean beats, or null without RR. */
 function rmssdLine(rmssd: number | null, rrCount: number): string | null {
-  if (rmssd !== null) return `HRV ${Math.round(rmssd)} ms · RMSSD, last minute`;
-  return rrCount ? "HRV: measuring…" : null;
+  if (rmssd !== null) return i18n.t("health:live.rmssd", { rmssd: Math.round(rmssd) });
+  return rrCount ? i18n.t("health:live.measuring") : null;
 }
 
 /** The live section. It reads the per-beat data itself, so only it re-renders with each flush (≤ 4 a second). */
 function LiveHero() {
+  const { t } = useTranslation("health");
   const live = useLiveBle();
   const lost = live.status !== "live";
   const bpm = live.bpm;
@@ -31,7 +34,7 @@ function LiveHero() {
     <View className="w-full max-w-[360px] items-center gap-3 py-4">
       <View
         accessible
-        accessibilityLabel={`${lost ? "Reconnecting. Last live reading" : "Live heart rate"} ${bpm ?? "unknown"} beats per minute${live.device?.name ? ` from ${live.device.name}` : ""}`}
+        accessibilityLabel={t(`live.${lost ? "ariaLost" : "ariaLive"}${live.device?.name ? "From" : ""}`, { bpm: bpm ?? t("live.unknown"), device: live.device?.name })}
         className="flex-row items-center gap-3"
       >
         <BeatingHeart bpm={bpm ?? 60} live={!lost} size={30} />
@@ -43,7 +46,7 @@ function LiveHero() {
         />
       </View>
       <LivePill name={live.device?.name ?? null} lost={lost} className="self-center" />
-      {live.contact === false && <Text className="text-[13px] font-medium leading-[18px] text-recovery-red-text">No skin contact: wear the band snug.</Text>}
+      {live.contact === false && <Text className="text-[13px] font-medium leading-[18px] text-recovery-red-text">{t("live.noContact")}</Text>}
       <LiveTrace history={live.history} />
       {!!hrv && <Text className={CAPTION}>{hrv}</Text>}
       <StopLiveButton onPress={() => void live.disconnect()} className="mt-1" />
