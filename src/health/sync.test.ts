@@ -145,6 +145,44 @@ describe("syncHealthConnect re-import", () => {
     expect(again.counts.full).toBeUndefined();
   });
 
+  it("leaves days out of stage 1 when a sync brings the same samples again, and puts back a day whose samples changed", async () => {
+    const store = await staleStore();
+    await syncHealthConnect(store, { timeZone: TZ, now: NOW, historyDays: 5 });
+    expect((await store.takeIntradayDirty()).length).toBeGreaterThan(0);
+
+    // Health Connect reports a change (another record, written again), so the window is read; its samples are the same.
+    const { getChanges } = await import("react-native-health-connect");
+    const changed = { nextChangesToken: "tok2", upsertionChanges: [{ record: { startTime: "2026-10-07T00:00:00Z" } }], deletionChanges: [], hasMore: false, changesTokenExpired: false };
+    vi.mocked(getChanges).mockResolvedValue(changed as never);
+    await syncHealthConnect(store, { timeZone: TZ, now: NOW, historyDays: 5 });
+    expect(await store.takeIntradayDirty()).toEqual([]);
+
+    const data = fixture();
+    data.Steps.push({ metadata: { id: "b-late", dataOrigin: FITBIT, device: { type: 6 } }, startTime: "2026-10-07T11:00:00Z", endTime: "2026-10-07T11:01:00Z", count: 90 } as never);
+    hc.readAll.mockImplementation(startTimeRead(data));
+    await syncHealthConnect(store, { timeZone: TZ, now: NOW, historyDays: 5 });
+    expect(await store.takeIntradayDirty()).toEqual(["2026-10-07"]);
+  });
+
+  it("reads nothing when Health Connect reports no change since the last sync on the same day", async () => {
+    const { getChanges } = await import("react-native-health-connect");
+    vi.mocked(getChanges).mockResolvedValue({ nextChangesToken: "tok", upsertionChanges: [], deletionChanges: [], hasMore: false, changesTokenExpired: false } as never);
+    const store = await staleStore();
+    await syncHealthConnect(store, { timeZone: TZ, now: NOW, historyDays: 5 });
+    hc.readAll.mockClear();
+    const later = new Date(NOW.getTime() + 15 * 60_000);
+    const r = await syncHealthConnect(store, { timeZone: TZ, now: later, historyDays: 5 });
+    expect(r.unchanged).toBe(true);
+    expect(hc.readAll).not.toHaveBeenCalled();
+    expect((await store.getSyncState()).lastSyncTs).toBe(later.getTime() / 1000);
+
+    // A deletion is a change: the window is read again.
+    vi.mocked(getChanges).mockResolvedValue({ nextChangesToken: "tok3", upsertionChanges: [], deletionChanges: [{ recordId: "x" }], hasMore: false, changesTokenExpired: false } as never);
+    const again = await syncHealthConnect(store, { timeZone: TZ, now: later, historyDays: 5 });
+    expect(again.unchanged).toBeUndefined();
+    expect(hc.readAll).toHaveBeenCalled();
+  });
+
   it("re-imports under a new policy: all apps brings the other app's day back, still the largest source per day", async () => {
     const store = await staleStore();
     await syncHealthConnect(store, { timeZone: TZ, now: NOW, historyDays: 5 });

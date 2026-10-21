@@ -100,6 +100,8 @@ export type SyncResult = {
   counts: Record<string, number>;
   /** Hints, never errors: "history_permission_missing", "permission_missing:<Type>", "no_fitbit_records". */
   warnings: string[];
+  /** Health Connect had nothing new since the last sync, so nothing was read: the last sync's read-time warnings stand. */
+  unchanged?: true;
 };
 
 // Health Connect's changes feed: a token per sync, so the next sync learns about every record written since — including
@@ -134,10 +136,14 @@ const recordStart = (r: { time?: string; startTime?: string }): number | null =>
   return Number.isFinite(ms) ? Math.floor(ms / 1000) : null;
 };
 
-/** The earliest instant among records written since `token` (null when nothing changed), or "expired". */
-async function earliestChangeSince(token: string): Promise<{ earliest: number | null } | "expired"> {
+/**
+ * What Health Connect changed since `token`: the earliest instant among records written (null when none), whether any
+ * record was deleted, and the token after them; or "expired".
+ */
+async function changesSince(token: string): Promise<{ earliest: number | null; deleted: boolean; token: string } | "expired"> {
   let tok = token;
   let earliest: number | null = null;
+  let deleted = false;
   for (let page = 0; page < MAX_CHANGE_PAGES; page++) {
     const res = await getChanges({ changesToken: tok });
     if (res.changesTokenExpired) return "expired";
@@ -145,8 +151,9 @@ async function earliestChangeSince(token: string): Promise<{ earliest: number | 
       const t = recordStart(c.record as { time?: string; startTime?: string });
       if (t !== null && (earliest === null || t < earliest)) earliest = t;
     }
+    if (res.deletionChanges.length) deleted = true;
     tok = res.nextChangesToken;
-    if (!res.hasMore) return { earliest };
+    if (!res.hasMore) return { earliest, deleted, token: tok };
   }
   return "expired";
 }
@@ -219,7 +226,15 @@ export async function syncHealthConnect(store: Store, opts: SyncOptions): Promis
       fromDay = historyFrom;
       counts.full = 1;
     } else {
-      const changed = await earliestChangeSince(token).catch(() => "expired" as const);
+      const changed = await changesSince(token).catch(() => "expired" as const);
+      // Nothing written to Health Connect or deleted from it since the last sync, on the same day: the re-read would
+      // bring back exactly what is stored, so it is skipped (most background runs).
+      if (changed !== "expired" && changed.earliest === null && !changed.deleted && localDay(state.lastSyncTs, tz) === today) {
+        await store.setSyncState({ lastSyncTs: nowTs, lastError: null });
+        await AsyncStorage.setItem(TOKEN_KEY, changed.token).catch(() => {});
+        progress("done", 1, 1);
+        return { from: today, to: today, counts: { unchanged: 1 }, warnings, unchanged: true };
+      }
       fromDay = localDay(state.lastSyncTs - RESYNC_DAYS * 86_400, tz);
       if (changed === "expired") {
         fromDay = historyFrom;
@@ -335,6 +350,8 @@ export async function syncHealthConnect(store: Store, opts: SyncOptions): Promis
       }
       const clip = { startTs: dayStart, endTs: dayEnd };
       let touched = false;
+      // Samples that were new or changed: only then does stage 1 redo the day (a sync re-reads the last days each time).
+      let changed = false;
       let hr: HrSample[] = [];
       let minutes: StepsMinute[] = [];
       /** The day's largest source's steps per minute, for the derived activity minutes. */
@@ -344,7 +361,7 @@ export async function syncHealthConnect(store: Store, opts: SyncOptions): Promis
         spill.HeartRate = hrRecords.filter((r) => ts(r.endTime) > nextMidnight);
         hr = await sliced(mapHrSteps(hrRecords, clip));
         if (hr.length) {
-          await store.putHr(hr);
+          changed = (await store.putHr(hr)) || changed;
           hrCount += hr.length;
           touched = true;
         }
@@ -354,7 +371,7 @@ export async function syncHealthConnect(store: Store, opts: SyncOptions): Promis
         spill.Steps = records.filter((r) => ts(r.endTime) > nextMidnight);
         minutes = mapSteps(records, clip);
         if (minutes.length) {
-          await store.putSteps(minutes);
+          changed = (await store.putSteps(minutes)) || changed;
           stepCount += minutes.length;
           touched = true;
           for (const [d, v] of await sliced(stepsPerDaySteps(records, tz, clip))) stepsByDay.set(d, (stepsByDay.get(d) ?? 0) + v);
@@ -375,7 +392,7 @@ export async function syncHealthConnect(store: Store, opts: SyncOptions): Promis
         });
         for (const v of extras) derived.push({ day, ...v });
       }
-      if (touched) dirty.push(day);
+      if (changed) dirty.push(day);
       done++;
       await slice();
     }
@@ -399,8 +416,15 @@ export async function syncHealthConnect(store: Store, opts: SyncOptions): Promis
     // Every HRV sample (the Pulse engine labels them by sleep stage); their days rerun stage 1.
     const hrv = mapHrv(input.HeartRateVariabilityRmssd ?? []);
     if (hrv.length) {
-      await store.putHrv(hrv);
-      for (const s of hrv) dirty.push(localDay(s.ts, tz));
+      // Per local day, so only the days with new or changed samples go back to stage 1.
+      const byDay = new Map<string, typeof hrv>();
+      for (const s of hrv) {
+        const d = localDay(s.ts, tz);
+        const list = byDay.get(d);
+        if (list) list.push(s);
+        else byDay.set(d, [s]);
+      }
+      for (const [d, xs] of byDay) if (await store.putHrv(xs)) dirty.push(d);
     }
     counts.hrv = hrv.length;
     if (sessions.length) await store.upsertSessions(sessions, segments);

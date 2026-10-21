@@ -46,7 +46,7 @@ it("an incremental run writes what a full replay writes", async () => {
   expect(lastRun.stage2From > first).toBe(true);
   expect(lastRun.stage2From <= recent[0]).toBe(true);
 
-  dropCheckpoint(full);
+  await dropCheckpoint(full);
   await change(full, recent);
   await run(full);
   expect(lastRun.stage2From).toBe(first);
@@ -57,4 +57,29 @@ it("an incremental run writes what a full replay writes", async () => {
   await change(inc, [addDays(TODAY, -60)]);
   await run(inc);
   expect(lastRun.stage2From).toBe(first);
+}, 60_000);
+
+it("replays every day when the stored checkpoint is unreadable or from another build's fold", async () => {
+  const store = new MemoryStore();
+  await seedDemo(store, { today: TODAY, timeZone: TZ, now: NOW });
+  await run(store);
+  const first = lastRun.stage2From;
+  const recent = [addDays(TODAY, -2)];
+
+  const cp = JSON.parse((await store.getCheckpoint())!) as { fold: Record<string, unknown> };
+  delete cp.fold.hrvB;
+  await store.putCheckpoint(JSON.stringify(cp));
+  await change(store, recent);
+  await run(store);
+  expect(lastRun.stage2From).toBe(first);
+
+  await store.putCheckpoint("{not json");
+  await change(store, recent);
+  await run(store);
+  expect(lastRun.stage2From).toBe(first);
+
+  // And resumes again from the checkpoint that full run kept.
+  await change(store, recent);
+  await run(store);
+  expect(lastRun.stage2From > first).toBe(true);
 }, 60_000);

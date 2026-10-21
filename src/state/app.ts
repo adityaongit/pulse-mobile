@@ -150,7 +150,7 @@ function run(): Promise<void> {
       if (r.warnings.length) console.log("[sync]", r.warnings.join("; "));
       if (!r.ran) console.log("[run] skipped:", r.skipped);
       const sync = await store.getSyncState();
-      patch({ status: "ready", progress: null, sync, warnings: r.ran ? r.warnings : state.warnings, onboarded: true });
+      patch({ status: "ready", progress: null, sync, warnings: r.ran && !r.unchanged ? r.warnings : state.warnings, onboarded: true });
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e);
       console.warn("[run]", message);

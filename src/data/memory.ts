@@ -19,12 +19,17 @@ class Samples {
   private sorted: { ts: number; v: number }[] | null = null;
   private compacted = new Set<number>();
 
+  /** True when a sample was new or had another value. */
   put(xs: { ts: number; v: number }[]) {
+    let changed = false;
     for (const x of xs) {
+      if (this.byTs.get(x.ts) === x.v) continue;
+      changed = true;
       this.byTs.set(x.ts, x.v);
       this.compacted.delete(bucketOf(x.ts));
     }
-    this.sorted = null;
+    if (changed) this.sorted = null;
+    return changed;
   }
 
   private all() {
@@ -137,13 +142,13 @@ export class MemoryStore implements Store {
     for (const r of rows) this.exercises.set(r.id, copy(r));
   }
   async putHr(samples: HrSample[]) {
-    this.hr.put(samples.map((s) => ({ ts: s.ts, v: s.bpm })));
+    return this.hr.put(samples.map((s) => ({ ts: s.ts, v: s.bpm })));
   }
   async putHrv(samples: HrvSample[]) {
-    this.hrv.put(samples.map((s) => ({ ts: s.ts, v: s.ms })));
+    return this.hrv.put(samples.map((s) => ({ ts: s.ts, v: s.ms })));
   }
   async putSteps(minutes: StepsMinute[]) {
-    this.steps.put(minutes);
+    return this.steps.put(minutes);
   }
   async upsertDailyValues(rows: DailyValue[]) {
     for (const r of rows) this.values.set(key2(r.day, r.key), copy(r));
@@ -166,6 +171,7 @@ export class MemoryStore implements Store {
     for (const [id, r] of this.records) if (inRange(r.day, range)) this.records.delete(id);
     for (const [id, r] of this.logged) if (r.source === "health_connect" && inRange(r.day, range)) this.logged.delete(id);
     for (const [d] of this.scores) if (inRange(d, range)) this.scores.delete(d);
+    this.checkpoint = null;
     for (const k of [...this.series.keys()]) if (inRange(k.split("\u0000")[0], range)) this.series.delete(k);
     this.hr.drop(fromTs, toTs);
     this.steps.drop(fromTs, toTs);
@@ -300,6 +306,14 @@ export class MemoryStore implements Store {
     this.activityCost = copy(data);
   }
 
+  private checkpoint: string | null = null;
+  async getCheckpoint() {
+    return this.checkpoint;
+  }
+  async putCheckpoint(json: string | null) {
+    this.checkpoint = json;
+  }
+
   private chats = new Map<string, { title: string; messages: unknown[]; updatedAt: number }>();
   async coachChats(limit: number, before?: { updatedAt: number; id: string }) {
     const after = (c: { id: string; updatedAt: number }) => !before || c.updatedAt < before.updatedAt || (c.updatedAt === before.updatedAt && c.id < before.id);
@@ -337,6 +351,7 @@ export class MemoryStore implements Store {
     this.sync = { lastSyncTs: null, firstDay: null, lastError: null };
     for (const m of [this.metrics, this.sessions, this.segments, this.exercises, this.values, this.journal, this.scores, this.series, this.reports]) m.clear();
     this.activityCost = null;
+    this.checkpoint = null;
     this.tags.clear();
     this.logged.clear();
     this.records.clear();

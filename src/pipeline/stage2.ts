@@ -57,7 +57,7 @@ export async function stage2(store: Store, data: Data, opts: PipelineOptions, on
   Object.assign(inputs, { stillHr, hrSeries });
 
   // Pulse: start from the fold kept by the last run when no earlier day's inputs changed (checkpoint.ts).
-  const cp = resume(store, data, inputs, journal, opts, rerun);
+  const cp = await resume(store, data, inputs, journal, opts, rerun);
   const start = cp.start;
   const f = cp.fold ?? newFold();
   let kept: Fold | null = null;
@@ -194,7 +194,7 @@ export async function stage2(store: Store, data: Data, opts: PipelineOptions, on
     reportRows.push({ period, data: buildReport(period, f.reportRows, impactsAsOf.get(asOf) ?? storedImpact.get(asOf)?.impacts ?? []) });
   }
   await store.putReports(reportRows);
-  if (kept) cp.keep(kept);
+  if (kept) await cp.keep(kept);
   return days[start];
 }
 

@@ -31,6 +31,8 @@ export type RunSyncResult = {
   skipped?: string;
   /** Sync hints (permission_missing:<Type>, …), never errors. */
   warnings: string[];
+  /** Health Connect had nothing new, so nothing was read (scoring still ran): the last read's warnings stand. */
+  unchanged?: true;
 };
 
 /** How long the app waits for a background run before giving up and using what is on disk. */
@@ -80,16 +82,18 @@ async function run(store: Store, profile: Profile, source: Source, opts: RunSync
   if (!lock.taken && opts.waitIfLocked && (await waitForLock(opts.owner, WAIT_FOR_TASK_MS))) lock = await takeLock(opts.owner);
   if (!lock.taken) return { ran: false, skipped: `${lock.holder === "app" ? "the app" : "the background task"} is syncing`, warnings: [] };
   const warnings: string[] = [];
+  let unchanged = false;
   try {
     if (source === "health_connect") {
       const r = await timed(`sync-health-connect (${opts.owner})`, () => syncHealthConnect(store, { timeZone: opts.timeZone, onProgress: opts.onProgress }));
       warnings.push(...(r.warnings ?? []));
+      unchanged = !!r.unchanged;
     }
     await timed(`pipeline (${opts.owner})`, () => runPipeline(store, profile, { today: localDay(Date.now() / 1000, opts.timeZone), onProgress: opts.onProgress }));
     // After scoring, so the day that just aged out was scored from its raw samples. A failure here costs space, not
     // data: the sync itself has succeeded, and the next run tries again.
     await timed(`maintenance (${opts.owner})`, () => maintainStorage(store, Date.now() / 1000)).catch((e) => console.warn("[maintenance]", e instanceof Error ? e.message : String(e)));
-    return { ran: true, warnings };
+    return { ran: true, warnings, ...(unchanged && { unchanged: true as const }) };
   } finally {
     await releaseLock(opts.owner);
     await notifyAfterRun(store, opts.timeZone);

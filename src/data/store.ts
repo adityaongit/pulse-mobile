@@ -19,11 +19,14 @@ export interface Store {
   upsertMetrics(rows: Metrics[]): Promise<void>;
   upsertSessions(rows: Session[], segments: Segment[]): Promise<void>;
   upsertExercises(rows: Exercise[]): Promise<void>;
-  /** Samples are keyed by ts; re-imports overwrite. */
-  putHr(samples: HrSample[]): Promise<void>;
-  putSteps(minutes: StepsMinute[]): Promise<void>;
+  /**
+   * Samples are keyed by ts; re-imports overwrite. Each put says whether any sample was new or had another value, so a
+   * sync that brings the same samples again leaves its days out of stage 1.
+   */
+  putHr(samples: HrSample[]): Promise<boolean>;
+  putSteps(minutes: StepsMinute[]): Promise<boolean>;
   /** HRV samples, keyed by ts like heart rate; re-imports overwrite. */
-  putHrv(samples: HrvSample[]): Promise<void>;
+  putHrv(samples: HrvSample[]): Promise<boolean>;
   upsertDailyValues(rows: DailyValue[]): Promise<void>;
   setJournal(entry: JournalEntry): Promise<void>;
   deleteJournal(day: string, tag: string): Promise<void>;
@@ -99,6 +102,11 @@ export interface Store {
   // by stage 2, null before its first run.
   getActivityCost(): Promise<ActivityCostResult | null>;
   putActivityCost(data: ActivityCostResult): Promise<void>;
+
+  // Stage 2's resume point (src/pipeline/checkpoint.ts owns its JSON): one row, null when there is none. Kept in the
+  // database so a background run, or the first run after a launch, starts near the end instead of replaying every day.
+  getCheckpoint(): Promise<string | null>;
+  putCheckpoint(json: string | null): Promise<void>;
 
   // Coach chats (halo's coach.db, here in the one store). `messages` is the AI SDK's UIMessage[] as stored; the
   // coach (src/coach/storage.ts) owns its shape. clearAll leaves them, as halo's separate file did.

@@ -49,6 +49,7 @@ create table if not exists daily_scores (
 create table if not exists intraday_series (day text not null, kind text not null, data text not null, primary key (day, kind));
 create table if not exists reports (period text primary key, data text not null);
 create table if not exists activity_cost (id integer primary key check (id = 1), data text not null);
+create table if not exists pipeline_checkpoint (id integer primary key check (id = 1), data text not null);
 create table if not exists journal_tags (
   tag text primary key, label text not null, is_default integer not null default 0, hidden integer not null default 0,
   position integer not null default 0, seq integer not null
@@ -337,18 +338,22 @@ class SqliteStore implements Store {
   }
 
   async putHr(samples: HrSample[]) {
-    await this.putSamples("hr_days", samples.map((s) => ({ ts: s.ts, v: s.bpm })));
+    return this.putSamples("hr_days", samples.map((s) => ({ ts: s.ts, v: s.bpm })));
   }
   async putSteps(minutes: StepsMinute[]) {
-    await this.putSamples("steps_days", minutes);
+    return this.putSamples("steps_days", minutes);
   }
   async putHrv(samples: HrvSample[]) {
-    await this.putSamples("hrv_days", samples.map((s) => ({ ts: s.ts, v: s.ms })));
+    return this.putSamples("hrv_days", samples.map((s) => ({ ts: s.ts, v: s.ms })));
   }
 
-  /** Merges samples into their UTC-day buckets, replacing by ts, in one transaction. */
+  /**
+   * Merges samples into their UTC-day buckets, replacing by ts, in one transaction. A bucket whose samples are all
+   * already there with the same values is left as it is. True when any bucket changed.
+   */
   private async putSamples(table: SampleTable, samples: { ts: number; v: number }[]) {
-    if (!samples.length) return;
+    if (!samples.length) return false;
+    let changed = false;
     const byBucket = new Map<number, { ts: number; v: number }[]>();
     for (const s of samples) {
       const b = bucketOf(s.ts);
@@ -369,6 +374,8 @@ class SqliteStore implements Store {
         // A day of 1 Hz heart rate is tens of thousands of entries to parse, merge, sort and print: let a frame in
         // between (src/lib/yield.ts).
         await slice();
+        if (xs.every((s) => merged.get(s.ts) === s.v)) continue;
+        changed = true;
         for (const s of xs) merged.set(s.ts, s.v);
         const sorted = [...merged].sort((a, z) => a[0] - z[0]);
         await slice();
@@ -377,6 +384,7 @@ class SqliteStore implements Store {
         ]);
       }
     });
+    return changed;
   }
 
   async upsertDailyValues(rows: DailyValue[]) {
@@ -402,6 +410,8 @@ class SqliteStore implements Store {
       await db.runAsync("delete from health_records where day >= ? and day <= ?", days);
       await db.runAsync("delete from logged_entries where source = 'health_connect' and day >= ? and day <= ?", days);
       await db.runAsync("delete from daily_scores where day >= ? and day <= ?", days);
+      // The rows it vouches for are going.
+      await db.runAsync("delete from pipeline_checkpoint");
       await db.runAsync("delete from intraday_series where day >= ? and day <= ?", days);
       if (toTs > fromTs) for (const table of ["hr_days", "steps_days", "hrv_days"] as const) await this.dropSamples(db, table, fromTs, toTs);
     });
@@ -701,6 +711,14 @@ class SqliteStore implements Store {
     await this.tx((db) => db.runAsync("insert or replace into activity_cost (id, data) values (1, ?)", [JSON.stringify(data)]));
   }
 
+  async getCheckpoint() {
+    return (await this.db.getFirstAsync<{ data: string }>("select data from pipeline_checkpoint where id = 1"))?.data ?? null;
+  }
+  async putCheckpoint(json: string | null) {
+    if (json === null) await this.db.runAsync("delete from pipeline_checkpoint");
+    else await this.db.runAsync("insert or replace into pipeline_checkpoint (id, data) values (1, ?)", [json]);
+  }
+
   async coachChats(limit: number, before?: { updatedAt: number; id: string }) {
     const rows = before
       ? await this.db.getAllAsync<{ id: string; title: string; updated_at: number }>(
@@ -745,7 +763,7 @@ type SampleTable = "hr_days" | "steps_days" | "hrv_days";
 
 const TABLES = [
   "profile", "sync_state", "daily_metrics", "sleep_sessions", "sleep_segments", "exercises", "hr_days", "steps_days", "hrv_days", "daily_values",
-  "journal_entries", "intraday_dirty", "daily_scores", "intraday_series", "reports", "activity_cost",
+  "journal_entries", "intraday_dirty", "daily_scores", "intraday_series", "reports", "activity_cost", "pipeline_checkpoint",
   "journal_tags", "logged_entries", "health_records",
 ];
 
