@@ -4,31 +4,10 @@
 import "intl-pluralrules";
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
-import enCommon from "./locales/en/common.json";
-import enReasons from "./locales/en/reasons.json";
-import enMetrics from "./locales/en/metrics.json";
-import enHome from "./locales/en/home.json";
-import enSleep from "./locales/en/sleep.json";
-import enRecovery from "./locales/en/recovery.json";
-import enStrain from "./locales/en/strain.json";
-import enHealth from "./locales/en/health.json";
-import enJournal from "./locales/en/journal.json";
-import enTrends from "./locales/en/trends.json";
-import enNutrition from "./locales/en/nutrition.json";
-import enGoals from "./locales/en/goals.json";
-import enReports from "./locales/en/reports.json";
-import enCoach from "./locales/en/coach.json";
-import enSettings from "./locales/en/settings.json";
-import enOnboarding from "./locales/en/onboarding.json";
-import enMore from "./locales/en/more.json";
-import enHowItWorks from "./locales/en/howItWorks.json";
-import enNotifications from "./locales/en/notifications.json";
-import enErrors from "./locales/en/errors.json";
-import enUi from "./locales/en/ui.json";
+import { resources } from "./resources";
 
 export const NAMESPACES = ["common", "reasons", "metrics", "home", "sleep", "recovery", "strain", "health", "journal", "trends", "nutrition", "goals", "reports", "coach", "settings", "onboarding", "more", "howItWorks", "notifications", "errors", "ui"] as const;
 
-const resources = { en: { common: enCommon, reasons: enReasons, metrics: enMetrics, home: enHome, sleep: enSleep, recovery: enRecovery, strain: enStrain, health: enHealth, journal: enJournal, trends: enTrends, nutrition: enNutrition, goals: enGoals, reports: enReports, coach: enCoach, settings: enSettings, onboarding: enOnboarding, more: enMore, howItWorks: enHowItWorks, notifications: enNotifications, errors: enErrors, ui: enUi } } as const;
 
 /** Each language by its own name. Add a code here with its folder under locales/. */
 export const LANGUAGES = [
@@ -40,7 +19,20 @@ export const LANGUAGES = [
   { code: "ru", name: "Русский" },
   { code: "pl", name: "Polski" },
 ] as const;
-export type LanguageCode = (typeof LANGUAGES)[number]["code"];
+/** A development-only language: English wrapped and padded by 40%, so a string that was not moved into keys stays plain and a layout that cannot take longer words overflows. */
+export const PSEUDO = "en-XA";
+export type LanguageCode = (typeof LANGUAGES)[number]["code"] | typeof PSEUDO;
+export const showPseudo = typeof __DEV__ !== "undefined" && __DEV__;
+
+const ACCENTED: Record<string, string> = { a: "å", b: "ƀ", c: "ç", d: "ð", e: "é", f: "ƒ", g: "ĝ", h: "ĥ", i: "î", j: "ĵ", k: "ķ", l: "ļ", n: "ñ", o: "ö", p: "þ", r: "ŕ", s: "š", t: "ţ", u: "û", w: "ŵ", y: "ý", z: "ž" };
+/** "Sleep" → "[Šļééþ ·]": accents on the letters, 40% longer (tags and already-filled values pass through as text). */
+export function pseudo(text: string): string {
+  const out = text.replace(/[a-z]/gi, (c) => {
+    const a = ACCENTED[c.toLowerCase()] ?? c;
+    return c === c.toUpperCase() ? a.toUpperCase() : a;
+  }).replace(/\s+/g, " ");
+  return `[${out}${" ·".repeat(Math.ceil(text.length * 0.2))}]`;
+}
 
 /** Languages a native speaker has signed off; the others show "Beta" in the picker. A sign-off adds its code here. */
 export const REVIEWED = new Set<string>(["en"]);
@@ -68,7 +60,11 @@ export function initI18n(language: LanguageCode = "en"): void {
     if (i18n.language !== language) void i18n.changeLanguage(language);
     return;
   }
-  void i18n.use(initReactI18next).init({
+  void i18n
+    .use({ type: "postProcessor", name: "pseudo", process: (value: string) => (i18n.language === PSEUDO ? pseudo(value) : value) })
+    .use(initReactI18next)
+    .init({
+    postProcess: ["pseudo"],
     resources,
     lng: language,
     fallbackLng: "en",

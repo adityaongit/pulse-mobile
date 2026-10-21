@@ -2,13 +2,13 @@
 // before a profile exists (onboarding) and in the headless background task.
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getLocales } from "expo-localization";
-import { LANGUAGES, matchLanguage, type LanguageChoice, type LanguageCode } from "./config";
+import { LANGUAGES, PSEUDO, matchLanguage, showPseudo, type LanguageChoice, type LanguageCode } from "./config";
 
 export const LANGUAGE_KEY = "pulse.language";
 
 export async function readChoice(): Promise<LanguageChoice> {
   const v = await AsyncStorage.getItem(LANGUAGE_KEY).catch(() => null);
-  return LANGUAGES.some((l) => l.code === v) ? (v as LanguageCode) : "auto";
+  return LANGUAGES.some((l) => l.code === v) || (showPseudo && v === PSEUDO) ? (v as LanguageCode) : "auto";
 }
 
 export const saveChoice = (choice: LanguageChoice) => AsyncStorage.setItem(LANGUAGE_KEY, choice).catch(() => undefined);

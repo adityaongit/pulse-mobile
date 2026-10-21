@@ -3,7 +3,7 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { LANGUAGES, NAMESPACES, matchLanguage } from "./config";
+import { LANGUAGES, NAMESPACES, matchLanguage, pseudo } from "./config";
 
 const ROOT = join(__dirname, "locales");
 const GLOSSARY = [
@@ -90,4 +90,11 @@ describe("matchLanguage", () => {
     [["ja-JP"], "en"],
     [[], "en"],
   ])("%j → %s", (tags, want) => expect(matchLanguage(tags)).toBe(want));
+});
+
+describe("pseudo", () => {
+  it("wraps, accents and pads", () => {
+    expect(pseudo("Sleep")).toMatch(/^\[Šļééþ.*\]$/);
+    expect(pseudo("Hello").length).toBeGreaterThan("Hello".length + 2);
+  });
 });

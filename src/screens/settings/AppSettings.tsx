@@ -9,7 +9,7 @@ import { colorScheme } from "nativewind";
 import { Bell, Monitor, Moon, Sun } from "lucide-react-native";
 import { saveTheme, type AppPrefs, type Theme } from "@/actions/preferences";
 import { displayPrefs, type UnitSystem } from "@/lib/units";
-import { i18n, LANGUAGES, REVIEWED, type LanguageChoice } from "@/i18n/config";
+import { i18n, LANGUAGES, PSEUDO, REVIEWED, showPseudo, type LanguageChoice } from "@/i18n/config";
 import { readChoice } from "@/i18n/language";
 import { setDisplay, setLanguage, useApp } from "@/state/app";
 import { LinkList } from "@/ui/shells/LinkList";
@@ -41,6 +41,8 @@ const hours = (): SelectOption<"24" | "12">[] => [
 const languageOptions = (): SelectOption<LanguageChoice>[] => [
   { value: "auto", label: i18n.t("settings:app.languagePhone") },
   ...LANGUAGES.map((l) => ({ value: l.code, label: REVIEWED.has(l.code) ? l.name : i18n.t("settings:app.languageBeta", { name: l.name }) })),
+  // Development builds only: English wrapped and padded, to find copy that is not in keys and layouts that overflow.
+  ...(showPseudo ? [{ value: PSEUDO, label: "Pseudo (dev)" } as const] : []),
 ];
 
 /** The language (kept on the device): the phone's, or one of Pulse's. Every screen redraws in it at once. */
