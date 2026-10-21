@@ -1,4 +1,3 @@
-import { i18n } from "@/i18n/config";
 import { useTranslation } from "react-i18next";
 import { haptic } from "../haptics";
 import { useEffect, useRef, useState } from "react";

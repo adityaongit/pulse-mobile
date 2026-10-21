@@ -17,6 +17,9 @@ import { seedDemo } from "@/data/seed";
 import type { Store } from "@/data/store";
 import type { Profile, SyncState } from "@/data/types";
 import { askPermissions, availability, permissionState, type Availability, type PermissionState } from "@/health/connect";
+import { initI18n, type LanguageChoice } from "@/i18n/config";
+import { localeFor, readChoice, resolveChoice, saveChoice } from "@/i18n/language";
+import { setLocale } from "@/lib/locale";
 import { forgetChanges } from "@/health/sync";
 import { localDay } from "@/lib/time";
 import type { DisplayPrefs } from "@/lib/units";
@@ -48,9 +51,6 @@ export type AppInfo = {
 
 const SOURCE_KEY = "pulse.source";
 const OWN_PROFILE_KEY = "pulse.ownProfile";
-import { initI18n, type LanguageChoice } from "@/i18n/config";
-import { localeFor, readChoice, resolveChoice, saveChoice } from "@/i18n/language";
-import { setLocale } from "@/lib/locale";
 
 export const THEME_KEY = "pulse.theme";
 const EMPTY_SYNC: SyncState = { lastSyncTs: null, firstDay: null, lastError: null };

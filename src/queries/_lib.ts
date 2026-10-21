@@ -3,7 +3,7 @@
 // (the UI's own port of those libs is written separately). Keep each function identical to the web's.
 import { getLocale, onLocaleChange } from "@/lib/locale";
 import { i18n } from "@/i18n/config";
-import { type LabelKey, groupLabel, labelRecord, withLabel } from "@/lib/metricLabels";
+import { type LabelKey, labelRecord, withLabel } from "@/lib/metricLabels";
 import { acwrBand, type AcwrBand } from "@/core/scoring/readiness";
 
 // ── format.ts ───────────────────────────────────────────────────────────────

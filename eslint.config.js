@@ -4,10 +4,10 @@ const expoConfig = require("eslint-config-expo/flat");
 
 module.exports = defineConfig([expoConfig, { ignores: ["dist/*", ".expo/*", ".claude/*"] },
   {
-    // Copy goes through i18n keys (docs/i18n.md). A warning until step 3 of docs/i18n-plan.md makes it an error.
+    // Copy goes through i18n keys (docs/i18n.md). Units and glossary names may stay literal.
     files: ["app/**/*.{ts,tsx}", "src/screens/**/*.{ts,tsx}", "src/ui/**/*.{ts,tsx}"],
-    ignores: ["**/*.test.*"],
+    ignores: ["**/*.test.*", "src/ui/kit/**", "src/ui/fixtures/**"],
     plugins: { i18next },
-    rules: { "i18next/no-literal-string": ["warn", { mode: "jsx-text-only" }] },
+    rules: { "i18next/no-literal-string": ["error", { mode: "jsx-text-only", words: { exclude: ["^[0-9\\s.,:;!?+\\-/%•·…()#*=<>|\\u00a0\\u2212]+$", "h", "min", "ms", "bpm", "rpm", "km", "mi", "kcal", "kg", "lb", "Pulse", "Pulse AB"] } }] },
   },
 ]);
