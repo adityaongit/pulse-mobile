@@ -3,6 +3,7 @@
 // Files, AirDrop, Drive, mail. The web's Backup card was never in the page; there is nothing else to export or restore here.
 import { useState } from "react";
 import { View } from "react-native";
+import { useTranslation } from "react-i18next";
 import { Download } from "lucide-react-native";
 import { type ExportFormat, type ExportKind, shareExport } from "@/actions/export";
 import { DAY, FORMATS, formatDay } from "@/lib/format";
@@ -20,17 +21,16 @@ import { BODY } from "../settings/controls";
 import { toast } from "@/ui/Toast";
 import { useScreen } from "../useScreen";
 
-const grouped = new Intl.NumberFormat("en");
-
 /** A button that opens the share sheet with one export. */
 function DownloadLink({ kind, format, busy, setBusy }: { kind: ExportKind; format: ExportFormat; busy: string | null; setBusy: (id: string | null) => void }) {
+  const { t } = useTranslation("more");
   const id = `${kind}-${format}`;
   return (
     <Button
       variant="secondary"
       className="flex-1"
       disabled={busy !== null}
-      accessibilityLabel={`${kind} ${format.toUpperCase()}`}
+      accessibilityLabel={t("data.exportLabel", { kind, format: format.toUpperCase() })}
       onPress={async () => {
         haptic.tap();
         setBusy(id);
@@ -40,7 +40,7 @@ function DownloadLink({ kind, format, busy, setBusy }: { kind: ExportKind; forma
       }}
     >
       <Icon icon={Download} size={20} tone="secondary-foreground" />
-      <Text className="text-[13px] font-bold uppercase tracking-[0.1em] text-secondary-foreground">{busy === id ? "Preparing…" : format.toUpperCase()}</Text>
+      <Text className="text-[13px] font-bold uppercase tracking-[0.1em] text-secondary-foreground">{busy === id ? t("data.preparing") : format.toUpperCase()}</Text>
     </Button>
   );
 }
@@ -53,28 +53,32 @@ const buttons = (
   </View>
 );
 
-const LOADING_PRIMARY = (
+function LoadingPrimary() {
+  const { t } = useTranslation("more");
+  return (
   <View accessibilityElementsHidden className="w-full gap-3">
-    <SectionShell variant="card" title="Daily scores" aside={count}>
+    <SectionShell variant="card" title={t("data.dailyScores")} info={false} aside={count}>
       <SkeletonText lh={22} fs={15} className="w-full" />
       <SkeletonText lh={22} fs={15} className="w-full" />
       <SkeletonText lh={22} fs={15} className="w-3/4" />
       {buttons}
     </SectionShell>
-    <SectionShell variant="card" title="Journal" aside={count}>
-      <Text className={BODY}>Every check-in answer, hidden behaviours included. The JSON also lists your behaviours.</Text>
+    <SectionShell variant="card" title={t("data.journal")} info={false} aside={count}>
+      <Text className={BODY}>{t("data.journalBody")}</Text>
       {buttons}
     </SectionShell>
   </View>
-);
+  );
+}
 
 function Loading() {
+  const { t } = useTranslation("more");
   return (
     <DetailShell
       loading
-      title="Your data"
-      primary={LOADING_PRIMARY}
-      bodySkeleton={LOADING_PRIMARY}
+      title={t("data.title")}
+      primary={<LoadingPrimary />}
+      bodySkeleton={<LoadingPrimary />}
     />
   );
 }
@@ -83,23 +87,23 @@ function Loading() {
 const BYTES_PER_MB = 1_000_000;
 
 export function YourDataScreen() {
+  const { t } = useTranslation("more");
   const { data } = useScreen(async (ctx) => ({ vm: await getYourData(ctx) }), ["yourData"]);
   const [busy, setBusy] = useState<string | null>(null);
   if (!data) return <Loading />;
   const { vm } = data;
-  const since = vm.first ? ` since ${formatDay(vm.first, DAY.full)}` : "";
   const link = (kind: ExportKind, format: ExportFormat) => <DownloadLink kind={kind} format={format} busy={busy} setBusy={setBusy} />;
 
   return (
     <View className="flex-1">
       <DetailShell
-        title="Your data"
-        bodySkeleton={LOADING_PRIMARY}
+        title={t("data.title")}
+        bodySkeleton={<LoadingPrimary />}
         primary={
           <View className="w-full gap-3">
-            <SectionShell variant="card" title="Daily scores" aside={<Text className={`${CAPTION} tabular-nums`}>{grouped.format(vm.days)}&nbsp;days</Text>}>
+            <SectionShell variant="card" title={t("data.dailyScores")} info={false} aside={<Text className={`${CAPTION} tabular-nums`}>{t("data.days", { count: vm.days, formatted: FORMATS.grouped(vm.days) })}</Text>}>
               <Text className={BODY}>
-                One row per day{since}: Recovery, Strain, sleep performance, hours and consistency, heart rate variability, resting heart rate, respiratory rate, stress and steps.
+                {vm.first ? t("data.dailyBodySince", { date: formatDay(vm.first, DAY.full) }) : t("data.dailyBody")}
               </Text>
               <View className="mt-4 flex-row gap-2">
                 {link("daily", "csv")}
@@ -107,8 +111,8 @@ export function YourDataScreen() {
               </View>
             </SectionShell>
 
-            <SectionShell variant="card" title="Journal" aside={<Text className={`${CAPTION} tabular-nums`}>{grouped.format(vm.answers)}&nbsp;answers</Text>}>
-              <Text className={BODY}>Every check-in answer, hidden behaviours included. The JSON also lists your behaviours.</Text>
+            <SectionShell variant="card" title={t("data.journal")} info={false} aside={<Text className={`${CAPTION} tabular-nums`}>{t("data.answers", { count: vm.answers, formatted: FORMATS.grouped(vm.answers) })}</Text>}>
+              <Text className={BODY}>{t("data.journalBody")}</Text>
               <View className="mt-4 flex-row gap-2">
                 {link("journal", "csv")}
                 {link("journal", "json")}
@@ -117,8 +121,8 @@ export function YourDataScreen() {
 
             <Text className={CAPTION}>
               {vm.storageBytes === null
-                ? "Exports hold only what Pulse stored on this phone."
-                : `Pulse keeps ${FORMATS.decimal1(vm.storageBytes / BYTES_PER_MB)} MB on this phone. Exports hold only what it stored.`}
+                ? t("data.storageNone")
+                : t("data.storage", { mb: FORMATS.decimal1(vm.storageBytes / BYTES_PER_MB) })}
             </Text>
           </View>
         }

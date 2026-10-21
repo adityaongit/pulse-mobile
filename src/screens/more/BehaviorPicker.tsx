@@ -4,8 +4,11 @@
 // Nothing is written until the host saves `selected`. (The Journal's pencil sheet over the check-in is the Journal stream's.)
 import { useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
+import { useTranslation } from "react-i18next";
 import { Check, Search } from "lucide-react-native";
 import { saveBehaviors } from "@/actions/journal";
+import { i18n } from "@/i18n/config";
+import { MAX_TAGS } from "@/queries/journal";
 import { actionCtx, dataChanged } from "@/state/app";
 import { behavior, BEHAVIOR_CATEGORIES, BEHAVIORS, type BehaviorCategory, questionOf } from "@/lib/behaviors";
 import type { BehavioursVM } from "@/queries/types";
@@ -32,16 +35,17 @@ const itemsOf = (tags: BehavioursVM["tags"]): Item[] => [
 export const shownOf = (tags: BehavioursVM["tags"]) => new Set(tags.filter((t) => !t.hidden).map((t) => t.tag));
 
 export function BehaviorPicker({ tags, initial, selected, onChange }: { tags: BehavioursVM["tags"]; initial: Set<string>; selected: Set<string>; onChange: (next: Set<string>) => void }) {
+  const { t } = useTranslation("more");
   const { c } = useTheme();
   const [query, setQuery] = useState("");
   const [tab, setTab] = useState<Tab>("all");
   const items = itemsOf(tags);
-  const tabs: { key: Tab; label: string }[] = [{ key: "all", label: "All" }, ...BEHAVIOR_CATEGORIES, ...(items.some((i) => i.category === "custom") ? [{ key: "custom" as const, label: "Yours" }] : [])];
+  const tabs: { key: Tab; label: string }[] = [{ key: "all", label: t("behaviours.tabAll") }, ...BEHAVIOR_CATEGORIES, ...(items.some((i) => i.category === "custom") ? [{ key: "custom" as const, label: t("behaviours.tabYours") }] : [])];
   const q = query.trim().toLowerCase();
   const shown = items.filter((i) => (tab === "all" || i.category === tab) && (!q || i.label.toLowerCase().includes(q) || i.question.toLowerCase().includes(q)));
   const groups = [
-    { key: "selected", title: "Selected", rows: shown.filter((i) => initial.has(i.key)) },
-    { key: "not-selected", title: "Not selected", rows: shown.filter((i) => !initial.has(i.key)) },
+    { key: "selected", title: t("behaviours.selected"), rows: shown.filter((i) => initial.has(i.key)) },
+    { key: "not-selected", title: t("behaviours.notSelected"), rows: shown.filter((i) => !initial.has(i.key)) },
   ];
   const toggle = (key: string, on: boolean) => {
     const next = new Set(selected);
@@ -54,8 +58,8 @@ export function BehaviorPicker({ tags, initial, selected, onChange }: { tags: Be
     <View>
       <TextField
         variant="search"
-        accessibilityLabel="Search for behaviours"
-        placeholder="Search for behaviours"
+        accessibilityLabel={t("behaviours.search")}
+        placeholder={t("behaviours.search")}
         returnKeyType="search"
         autoCapitalize="none"
         value={query}
@@ -94,7 +98,7 @@ export function BehaviorPicker({ tags, initial, selected, onChange }: { tags: Be
         <Gradient from={alpha(c["background-mid"], 0)} to={c["background-mid"]} />
       </View>
       </View>
-      {shown.length === 0 && <Text className="py-8 text-center text-[15px] leading-[22px] text-foreground-secondary">No behaviours match “{query.trim()}”.</Text>}
+      {shown.length === 0 && <Text className="py-8 text-center text-[15px] leading-[22px] text-foreground-secondary">{t("behaviours.noMatch", { query: query.trim() })}</Text>}
       {groups.map(
         (g) =>
           g.rows.length > 0 && (
@@ -137,5 +141,5 @@ export function BehaviorPicker({ tags, initial, selected, onChange }: { tags: Be
 export async function saveSelection(selected: Set<string>): Promise<string | null> {
   const r = await saveBehaviors(actionCtx(), { tags: [...selected] }).catch(() => ({ ok: false as const, error: "network" }));
   if (r.ok) dataChanged();
-  return r.ok ? null : r.error.startsWith("Too many") ? "That’s more behaviours than Pulse can track. Choose fewer." : "Couldn’t save. Check your connection and try again.";
+  return r.ok ? null : r.error === i18n.t("errors:journal.tooManyBehaviours", { count: MAX_TAGS }) ? i18n.t("more:behaviours.tooMany") : i18n.t("more:behaviours.saveFailed");
 }
