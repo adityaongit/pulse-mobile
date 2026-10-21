@@ -1,0 +1,15 @@
+diff --git a/android/src/main/java/expo/modules/backgroundtask/BackgroundTaskScheduler.kt b/android/src/main/java/expo/modules/backgroundtask/BackgroundTaskScheduler.kt
+index 74c5719139a2dd00300e36af02c9b2b685bf9519..13f7b060a6b43c59a1f8a632c060728f79a3b842 100644
+--- a/android/src/main/java/expo/modules/backgroundtask/BackgroundTaskScheduler.kt
++++ b/android/src/main/java/expo/modules/backgroundtask/BackgroundTaskScheduler.kt
+@@ -105,7 +105,9 @@ object BackgroundTaskScheduler {
+       .putString("appScopeKey", appScopeKey)
+       .build()
+     val constraints = Constraints.Builder()
+-      .setRequiredNetworkType(NetworkType.CONNECTED)
++      // Pulse: its task reads Health Connect on the phone and never needs the network. Requiring it let Android stop
++      // the job whenever the frozen app lost network access, every few seconds, and restart it.
++      .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
+       .build()
+ 
+     // Get Work manager
