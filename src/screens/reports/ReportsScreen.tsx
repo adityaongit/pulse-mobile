@@ -3,6 +3,8 @@
 // are grouped by year. `?view=` and `?all=` live in the route's params, so Back and a link keep them.
 import { useMemo } from "react";
 import { View } from "react-native";
+import { useTranslation } from "react-i18next";
+import { i18n } from "@/i18n/config";
 import { router, useLocalSearchParams } from "expo-router";
 import { DAY, formatDay, formatValue, rangeLabel } from "@/lib/format";
 import { getReportArchive, type ReportArchiveVM, type ReportListItem } from "@/queries/reports";
@@ -19,10 +21,12 @@ import { Press } from "@/ui/Press";
 
 /** The period's average Recovery as the reference app's 22 px ring and its value. */
 function Aside({ r }: { r: ReportListItem }) {
+  const { t } = useTranslation("reports");
+  const value = formatValue("int", r.recovery);
   return (
     <View className="shrink-0 flex-row items-center gap-2">
       <MiniRing variant="recovery" value={r.recovery} />
-      <Text accessibilityLabel={`Average Recovery ${formatValue("int", r.recovery)}${r.recovery !== null ? " percent" : ""}`} className="w-9 text-right font-numeric text-[15px] font-bold leading-5 tabular-nums">
+      <Text accessibilityLabel={r.recovery !== null ? t("archive.avgRecoveryValue", { value }) : t("archive.avgRecoveryNone", { value })} className="w-9 text-right font-numeric text-[15px] font-bold leading-5 tabular-nums">
         {formatValue("int", r.recovery)}
         {r.recovery !== null && "%"}
       </Text>
@@ -47,8 +51,8 @@ function groupRows(items: ReportListItem[], key: (r: ReportListItem) => string, 
   return groups;
 }
 
-const weekRow = (r: ReportListItem): LinkListRow => ({ label: rangeLabel(r.start, r.end), href: `/reports/${r.period}`, aside: <Aside r={r} />, description: r.partial ? "Partial week" : undefined });
-const monthRow = (r: ReportListItem): LinkListRow => ({ label: formatDay(r.start, { month: "long" }), href: `/reports/${r.period}`, aside: <Aside r={r} />, description: r.partial ? "Partial month" : undefined });
+const weekRow = (r: ReportListItem): LinkListRow => ({ label: rangeLabel(r.start, r.end), href: `/reports/${r.period}`, aside: <Aside r={r} />, description: r.partial ? i18n.t("reports:archive.partialWeek") : undefined });
+const monthRow = (r: ReportListItem): LinkListRow => ({ label: formatDay(r.start, { month: "long" }), href: `/reports/${r.period}`, aside: <Aside r={r} />, description: r.partial ? i18n.t("reports:archive.partialMonth") : undefined });
 
 /** A first week can exist before any month has data, and vice versa: fall back to the kind that has rows. */
 const viewOf = (vm: ReportArchiveVM | undefined, q?: string): View_ => (vm && ((q === "months" && vm.months.length) || !vm.weeks.length) ? "months" : "weeks");
@@ -59,30 +63,31 @@ function groupsOf(vm: ReportArchiveVM, view: View_) {
 }
 
 export default function ReportsScreen() {
+  const { t } = useTranslation("reports");
   const { view: q, all: allParam } = useLocalSearchParams<{ view?: string; all?: string }>();
   const { data: vm, error, reload } = useScreen(getReportArchive, ["reports"]);
   const view = viewOf(vm, q);
   const groups = useMemo(() => (vm ? groupsOf(vm, view) : []), [vm, view]);
-  if (error && !vm) return <LoadError title="Reports" reload={reload} />;
+  if (error && !vm) return <LoadError title={t("title")} reload={reload} />;
   if (!vm) return <Loading />;
 
   const empty = !vm.weeks.length && !vm.months.length;
   const shown = view === "weeks" && allParam !== "1" ? groups.slice(0, RECENT_MONTHS) : groups;
   return (
     <DetailShell
-      title="Reports"
+      title={t("title")}
       bodySkeleton={LOADING_PRIMARY}
       primary={
         empty ? (
-          <EmptyState body="No reports yet. Your first weekly report appears once a week has data." />
+          <EmptyState body={t("archive.empty")} />
         ) : (
           // One 640 px column like More and Settings: two columns of uneven month groups left holes.
           <View className={MORE_COLUMN}>
             <Segmented
-              label="Report period"
+              label={t("reportPeriod")}
               fill
               value={view}
-              options={[{ value: "weeks", label: "Weekly" }, { value: "months", label: "Monthly" }]}
+              options={[{ value: "weeks", label: t("weekly") }, { value: "months", label: t("monthly") }]}
               onChange={(v) => router.setParams({ view: v === "weeks" ? "" : "months", all: "" })}
               textClassName="text-[13px] font-bold uppercase tracking-[0.1em]"
             />
@@ -91,7 +96,7 @@ export default function ReportsScreen() {
             ))}
             {shown.length < groups.length && (
               <Press activeBg="bg-fill-faint" accessibilityRole="button" onPress={() => (haptic.tap(), router.setParams({ all: "1" }))} className="mx-auto h-11 items-center justify-center rounded-full px-5">
-                <Text className="text-xs font-bold uppercase tracking-[0.1em] text-foreground-body">Show earlier weeks</Text>
+                <Text className="text-xs font-bold uppercase tracking-[0.1em] text-foreground-body">{t("archive.showEarlier")}</Text>
               </Press>
             )}
           </View>
@@ -113,10 +118,11 @@ const LOADING_PRIMARY = (
 
 /** Reports archive: the view switch and two month groups at their final size (spec §5.19). */
 function Loading() {
+  const { t } = useTranslation("reports");
   return (
     <DetailShell
       loading
-      title="Reports"
+      title={t("title")}
       primary={LOADING_PRIMARY}
       bodySkeleton={LOADING_PRIMARY}
     />

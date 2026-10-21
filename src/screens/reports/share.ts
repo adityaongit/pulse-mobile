@@ -1,6 +1,7 @@
 // A report as plain text for the share sheet (React Native's Share API; no PDF without expo-print): the period, the
 // headline averages against the period before, sleep against need, activity, the biggest changes and the focus
 // points. After noop's shareable trends report (ui/TrendsReport.kt), as text. Pure, so it is tested without React.
+import { i18n } from "@/i18n/config";
 import { DAY, formatDay, formatValue, hmm, rangeLabel, type FormatKey } from "@/lib/format";
 import type { KeyStat } from "@/queries/types";
 import type { ReportPageVM } from "@/queries/reports";
@@ -42,7 +43,9 @@ export function statLine(s: KeyStat, suffix = ""): string | null {
   return `${s.label} ${value}${change}`;
 }
 
-const SUFFIX: Record<string, string> = { slept: " a night", zone13: " a week", zone45: " a week", strength: " a week", steps: " a day" };
+const SUFFIX_KEY = { slept: "aNight", zone13: "aWeek", zone45: "aWeek", strength: "aWeek", steps: "aDay" } as const;
+/** The unit's own words after a value (" a night"), or "" for a stat with none. */
+const suffixOf = (key: string) => (key in SUFFIX_KEY ? ` ${i18n.t(`reports:share.${SUFFIX_KEY[key as keyof typeof SUFFIX_KEY]}`)}` : "");
 
 /** The report's period as a title line: "Sep 21 - Sep 27, 2026" or "September 2026". */
 export const periodText = (vm: Pick<ReportPageVM, "kind" | "start" | "end">) =>
@@ -50,34 +53,34 @@ export const periodText = (vm: Pick<ReportPageVM, "kind" | "start" | "end">) =>
 
 /** The whole report as text, sections separated by a blank line. */
 export function reportShareText(vm: ReportPageVM): string {
-  const word = vm.kind === "week" ? "week" : "month";
+  const period = i18n.t(vm.kind === "week" ? "reports:lastWeek" : "reports:lastMonth");
   const p = vm.performance;
   const bullets = (lines: (string | null)[]) => lines.filter((l): l is string => l !== null).map((l) => `• ${l}`);
   const section = (title: string, lines: string[]) => (lines.length ? [title, ...lines].join("\n") : null);
   const nights = p.sleep.find((s) => s.key === "nightsMet");
 
   const parts = [
-    [`Pulse · ${vm.kind === "week" ? "Weekly" : "Monthly"} performance assessment`, `${periodText(vm)}${vm.partial ? " (so far)" : ""}`].join("\n"),
+    [i18n.t(vm.kind === "week" ? "reports:share.headerWeek" : "reports:share.headerMonth"), vm.partial ? i18n.t("reports:share.periodSoFar", { period: periodText(vm) }) : periodText(vm)].join("\n"),
     section(
-      `Averages vs last ${word}`,
+      i18n.t("reports:share.averagesVs", { period }),
       bullets(vm.averages.filter((s) => HEADLINE.includes(s.key)).map((s) => statLine(s))),
     ),
     section(
-      "Sleep",
+      i18n.t("reports:share.sleep"),
       bullets(
         p.sleep.map((s) => {
           if (s.key === "nightsMet") return nights?.metric.value == null ? null : `${s.label} ${nights.metric.value} ${s.unit ?? ""}`.trimEnd();
-          const line = statLine(s, SUFFIX[s.key] ?? "");
+          const line = statLine(s, suffixOf(s.key));
           return line && s.key === "slept" && s.caption ? `${line} · ${s.caption.toLowerCase()}` : line;
         }),
       ),
     ),
     section(
-      "Activity",
-      bullets(p.activity.map((s) => statLine(s, SUFFIX[s.key] ?? ""))),
+      i18n.t("reports:share.activity"),
+      bullets(p.activity.map((s) => statLine(s, suffixOf(s.key)))),
     ),
-    section("Biggest changes", [...p.improved.map((c) => `↑ ${c.label} ${c.text}`), ...p.declined.map((c) => `↓ ${c.label} ${c.text}`)]),
-    section("Focus", bullets(p.focus)),
+    section(i18n.t("reports:share.changes"), [...p.improved.map((c) => `↑ ${c.label} ${c.text}`), ...p.declined.map((c) => `↓ ${c.label} ${c.text}`)]),
+    section(i18n.t("reports:share.focus"), bullets(p.focus)),
   ];
   return parts.filter((x): x is string => x !== null).join("\n\n");
 }
