@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { ChevronDown, Moon, Target, type LucideIcon } from "lucide-react-native";
 import { isDefaultPlan, parsePlanTarget, withPlanEnabled, withPlanTarget } from "@/core/algorithms/weeklyPlan";
+import { i18n } from "@/i18n/config";
 import { GOAL_KEYS, GOAL_META, type GoalKey } from "@/queries/goals";
 import { PLAN_KEYS, PLAN_META, type PlanKey } from "@/queries/weeklyPlan";
 import { STAT_ICON } from "@/screens/_lib/view";
@@ -212,7 +213,7 @@ function WeeklyTargets() {
                       return;
                     }
                     const r = parsePlanTarget(k, t);
-                    d.type(k, t, r.error);
+                    d.type(k, t, r.error && i18n.t(`errors:goals.${r.error.code}`, r.error.params));
                     if (r.value !== null) void update((p) => withPlanEnabled(withPlanTarget(p, k, r.value!), k, true));
                   }}
                   onBlur={() => d.blur(k)}

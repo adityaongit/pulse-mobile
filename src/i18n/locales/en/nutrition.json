@@ -183,5 +183,17 @@
     "providerTitle": "The estimate failed",
     "providerBodyPhoto": "{{provider}} couldn’t make the estimate. Try again, or enter the food yourself. If it keeps failing, check that your model reads photos.",
     "providerBodyText": "{{provider}} couldn’t make the estimate. Try again, or enter the food yourself."
+  },
+  "basis": {
+    "proteinWeight": "{{perKg}} g per kg at {{kg}} kg",
+    "proteinHeight": "{{perKg}} g per kg of a healthy weight for {{cm}} cm ({{kg}} kg). Log your weight to use yours.",
+    "proteinDefault": "A typical adult target. Log your weight for yours: {{perKg}} g per kg.",
+    "kcalBurn_one": "What you burned a day, on average, over {{count}} day",
+    "kcalBurn_other": "What you burned a day, on average, over {{count}} days",
+    "kcalDefault": "The usual food-label reference, until Pulse has a few days of your calories burned",
+    "own": "Your target",
+    "fat": "{{pct}}% of your {{kcal}} kcal",
+    "carbs": "The calories left after protein and fat",
+    "between": "Between {{low}} and {{high}} {{unit}}"
   }
 }

@@ -7,7 +7,8 @@
 //    3 days of it; else the 2,000 kcal food labels use;
 //  - fat: 30 % of the calories (inside the 20-35 % the dietary guidelines give);
 //  - carbs: the calories left after protein and fat.
-// Pure TypeScript, so the tests run in node.
+// No React or database, so the tests run in node. The "basis" sentences and errors are translated here (nutrition, errors).
+import { i18n } from "@/i18n/config";
 
 export const TARGET_KEYS = ["kcal", "protein", "carbs", "fat"] as const;
 export type TargetKey = (typeof TARGET_KEYS)[number];
@@ -43,13 +44,13 @@ const kg1 = (v: number) => (Math.round(v * 10) / 10).toFixed(1);
 /** The protein suggestion: 1.6 g per kg of the latest weight, else of a healthy weight for the height, else 100 g. */
 export function proteinTarget(weightKg: number | null, heightCm: number | null): Target {
   if (weightKg !== null && Number.isFinite(weightKg) && weightKg >= 20 && weightKg <= 300) {
-    return { value: Math.round(weightKg * PROTEIN_G_PER_KG), custom: false, basis: `${PROTEIN_G_PER_KG} g per kg at ${kg1(weightKg)} kg` };
+    return { value: Math.round(weightKg * PROTEIN_G_PER_KG), custom: false, basis: i18n.t("nutrition:basis.proteinWeight", { perKg: PROTEIN_G_PER_KG, kg: kg1(weightKg) }) };
   }
   if (heightCm !== null && Number.isFinite(heightCm) && heightCm >= 100 && heightCm <= 250) {
     const kg = REFERENCE_BMI * (heightCm / 100) ** 2;
-    return { value: Math.round(kg * PROTEIN_G_PER_KG), custom: false, basis: `${PROTEIN_G_PER_KG} g per kg of a healthy weight for ${Math.round(heightCm)} cm (${Math.round(kg)} kg). Log your weight to use yours.` };
+    return { value: Math.round(kg * PROTEIN_G_PER_KG), custom: false, basis: i18n.t("nutrition:basis.proteinHeight", { perKg: PROTEIN_G_PER_KG, cm: Math.round(heightCm), kg: Math.round(kg) }) };
   }
-  return { value: DEFAULT_PROTEIN_G, custom: false, basis: `A typical adult target. Log your weight for yours: ${PROTEIN_G_PER_KG} g per kg.` };
+  return { value: DEFAULT_PROTEIN_G, custom: false, basis: i18n.t("nutrition:basis.proteinDefault", { perKg: PROTEIN_G_PER_KG }) };
 }
 
 /** Plausible days of total calories burned (a day the band was barely worn reads far lower). */
@@ -61,19 +62,19 @@ export function calorieTarget(burned: (number | null | undefined)[]): Target {
   if (days.length >= MIN_BURN_DAYS) {
     const mean = days.reduce((a, b) => a + b, 0) / days.length;
     const value = Math.min(5000, Math.max(1200, Math.round(mean / 50) * 50));
-    return { value, custom: false, basis: `What you burned a day, on average, over ${days.length} days` };
+    return { value, custom: false, basis: i18n.t("nutrition:basis.kcalBurn", { count: days.length }) };
   }
-  return { value: DEFAULT_KCAL, custom: false, basis: "The usual food-label reference, until Pulse has a few days of your calories burned" };
+  return { value: DEFAULT_KCAL, custom: false, basis: i18n.t("nutrition:basis.kcalDefault") };
 }
 
 /** Every target: the person's own where set, else the suggestions (fat and carbs follow the calories and protein). */
 export function resolveTargets(custom: CustomTargets, input: { weightKg: number | null; heightCm: number | null; burned: (number | null | undefined)[] }): Targets {
-  const own = (k: TargetKey): Target | null => (custom[k] !== null ? { value: custom[k], custom: true, basis: "Your target" } : null);
+  const own = (k: TargetKey): Target | null => (custom[k] !== null ? { value: custom[k], custom: true, basis: i18n.t("nutrition:basis.own") } : null);
   const kcal = own("kcal") ?? calorieTarget(input.burned);
   const protein = own("protein") ?? proteinTarget(input.weightKg, input.heightCm);
-  const fat = own("fat") ?? { value: Math.round((kcal.value * FAT_SHARE) / 9), custom: false, basis: `${Math.round(FAT_SHARE * 100)}% of your ${group(kcal.value)} kcal` };
+  const fat = own("fat") ?? { value: Math.round((kcal.value * FAT_SHARE) / 9), custom: false, basis: i18n.t("nutrition:basis.fat", { pct: Math.round(FAT_SHARE * 100), kcal: group(kcal.value) }) };
   const left = kcal.value - protein.value * 4 - fat.value * 9;
-  const carbs = own("carbs") ?? { value: Math.max(0, Math.round(left / 4)), custom: false, basis: "The calories left after protein and fat" };
+  const carbs = own("carbs") ?? { value: Math.max(0, Math.round(left / 4)), custom: false, basis: i18n.t("nutrition:basis.carbs") };
   return { kcal, protein, carbs, fat };
 }
 
@@ -84,9 +85,9 @@ export const progressOf = (value: number | null, target: number) => (value === n
 export function validateTarget(key: TargetKey, value: number | null): string | null {
   if (value === null) return null;
   const l = TARGET_LIMITS[key];
-  if (!Number.isFinite(value)) return "Enter a number";
-  if (!Number.isInteger(value)) return "Whole numbers only";
-  if (value < l.min || value > l.max) return `Between ${group(l.min)} and ${group(l.max)} ${l.unit}`;
+  if (!Number.isFinite(value)) return i18n.t("errors:goals.enterNumber");
+  if (!Number.isInteger(value)) return i18n.t("errors:goals.wholeOnly");
+  if (value < l.min || value > l.max) return i18n.t("nutrition:basis.between", { low: group(l.min), high: group(l.max), unit: l.unit });
   return null;
 }
 
@@ -95,7 +96,7 @@ export function parseTarget(key: TargetKey, text: string): { value: number | nul
   const t = text.trim().replace(/[,\s](?=\d{3}\b)/g, "");
   if (t === "") return { value: null, error: null };
   const n = /^\d+([.]\d+)?$/.test(t) ? Number(t) : NaN;
-  const error = Number.isNaN(n) ? "Enter a number" : validateTarget(key, n);
+  const error = Number.isNaN(n) ? i18n.t("errors:goals.enterNumber") : validateTarget(key, n);
   return { value: error ? null : n, error };
 }
 

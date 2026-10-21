@@ -189,5 +189,19 @@
     "providerTitle": "Szacowanie nie powiodło się",
     "providerBodyPhoto": "{{provider}} nie mógł wykonać szacunku. Spróbuj ponownie lub wpisz jedzenie ręcznie. Jeśli to się powtarza, sprawdź, czy Twój model czyta zdjęcia.",
     "providerBodyText": "{{provider}} nie mógł wykonać szacunku. Spróbuj ponownie lub wpisz jedzenie ręcznie."
+  },
+  "basis": {
+    "proteinWeight": "{{perKg}} g na kg przy {{kg}} kg",
+    "proteinHeight": "{{perKg}} g na kg zdrowej wagi dla wzrostu {{cm}} cm ({{kg}} kg). Zapisz swoją wagę, żeby użyć własnej.",
+    "proteinDefault": "Typowy cel dla dorosłego. Zapisz swoją wagę, żeby dostać swój: {{perKg}} g na kg.",
+    "kcalBurn_one": "To, co spalasz dziennie, średnio z {{count}} dnia",
+    "kcalBurn_few": "To, co spalasz dziennie, średnio z {{count}} dni",
+    "kcalBurn_many": "To, co spalasz dziennie, średnio z {{count}} dni",
+    "kcalBurn_other": "To, co spalasz dziennie, średnio z {{count}} dnia",
+    "kcalDefault": "Zwykła wartość z etykiet żywności, dopóki Pulse nie ma kilku dni Twoich spalonych kalorii",
+    "own": "Twój cel",
+    "fat": "{{pct}}% Twoich {{kcal}} kcal",
+    "carbs": "Kalorie pozostałe po białku i tłuszczu",
+    "between": "Od {{low}} do {{high}} {{unit}}"
   }
 }

@@ -39,13 +39,13 @@ describe("plan settings", () => {
 
   it("validates whole numbers inside each target's limits", () => {
     expect(validatePlanTarget("strength", 2)).toBeNull();
-    expect(validatePlanTarget("strength", 1.5)).toBe("Whole numbers only");
-    expect(validatePlanTarget("strength", 8)).toBe("Between 1 and 7");
-    expect(validatePlanTarget("steps", 500)).toBe("Between 1,000 and 30,000");
-    expect(validatePlanTarget("zone13", null)).toBe("Enter a number");
+    expect(validatePlanTarget("strength", 1.5)).toEqual({ code: "wholeOnly" });
+    expect(validatePlanTarget("strength", 8)).toEqual({ code: "between", params: { low: "1", high: "7" } });
+    expect(validatePlanTarget("steps", 500)).toEqual({ code: "between", params: { low: "1,000", high: "30,000" } });
+    expect(validatePlanTarget("zone13", null)).toEqual({ code: "enterNumber" });
     expect(parsePlanTarget("steps", " 8,500 ")).toEqual({ value: 8500, error: null });
-    expect(parsePlanTarget("steps", "")).toEqual({ value: null, error: "Enter a number" });
-    expect(parsePlanTarget("zone45", "abc").error).toBe("Enter a number");
+    expect(parsePlanTarget("steps", "")).toEqual({ value: null, error: { code: "enterNumber" } });
+    expect(parsePlanTarget("zone45", "abc").error).toEqual({ code: "enterNumber" });
   });
 
   it("edits one target or switch at a time; an invalid target is ignored", () => {

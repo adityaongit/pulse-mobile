@@ -9,7 +9,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useChat } from "@ai-sdk/react";
 import type { UIMessage } from "ai";
 import { Activity, ArrowUp, ChevronRight, Dumbbell, Moon, NotebookPen, Pencil, RefreshCw, RotateCcw, Share2, Square, type LucideIcon } from "lucide-react-native";
-import type { CoachSuggestion } from "@/core/algorithms/coachSuggestions";
+import type { CoachSuggestion as CoreSuggestion } from "@/core/algorithms/coachSuggestions";
 import { plainText } from "@/coach/chats";
 import { i18n } from "@/i18n/config";
 import { deviceTransport } from "@/coach/session";
@@ -27,6 +27,7 @@ import { push } from "@/ui/navigate";
 
 type Part = UIMessage["parts"][number];
 
+type CoachSuggestion = { key: CoreSuggestion["key"]; text: string };
 const SUGGESTION_ICONS: Record<CoachSuggestion["key"], LucideIcon> = { brief: Activity, recovery: Activity, training: Dumbbell, hrv: Activity, sleep: Moon, strain: Dumbbell, sync: RefreshCw };
 
 /** The tools with a progress line (`coach:running.<tool>`); any other tool reads the default. */

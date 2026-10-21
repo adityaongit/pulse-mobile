@@ -26,14 +26,14 @@ describe("readiness-based coaching", () => {
 describe("contextual questions", () => {
   it("keeps the brief and exactly four distinct questions", () => {
     const result = suggestionsFor(signals);
-    expect(result[0]).toEqual({ key: "brief", text: "Today's brief" });
+    expect(result[0]).toEqual({ key: "brief", code: "brief" });
     expect(result).toHaveLength(4);
     expect(new Set(result.map((s) => s.key)).size).toBe(4);
   });
   it("uses the prior HRV baseline and poor sleep without promising a multi-day decline", () => {
     const result = suggestionsFor({ ...signals, hrv: 50, asleepMinutes: 350 });
     expect(result.map((s) => s.key)).toEqual(["brief", "training", "hrv", "sleep"]);
-    expect(result.find((s) => s.key === "hrv")?.text).toContain("usual range");
+    expect(result.find((s) => s.key === "hrv")?.code).toBe("hrv");
   });
   it("uses the personal strain target before the generic fallback", () => {
     expect(suggestionsFor({ ...signals, strain: 10, targetHigh: 9 }).map((s) => s.key)).toContain("strain");

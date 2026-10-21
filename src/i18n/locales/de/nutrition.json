@@ -183,5 +183,17 @@
     "providerTitle": "Die Schätzung ist fehlgeschlagen",
     "providerBodyPhoto": "{{provider}} konnte die Schätzung nicht erstellen. Versuch es noch einmal oder gib das Essen selbst ein. Wenn es weiter scheitert, prüfe, ob dein Modell Fotos lesen kann.",
     "providerBodyText": "{{provider}} konnte die Schätzung nicht erstellen. Versuch es noch einmal oder gib das Essen selbst ein."
+  },
+  "basis": {
+    "proteinWeight": "{{perKg}} g pro kg bei {{kg}} kg",
+    "proteinHeight": "{{perKg}} g pro kg eines gesunden Gewichts für {{cm}} cm ({{kg}} kg). Trage dein Gewicht ein, um deins zu nutzen.",
+    "proteinDefault": "Ein typisches Ziel für Erwachsene. Trage dein Gewicht ein, um deins zu bekommen: {{perKg}} g pro kg.",
+    "kcalBurn_one": "Was du pro Tag im Schnitt verbrannt hast, über {{count}} Tag",
+    "kcalBurn_other": "Was du pro Tag im Schnitt verbrannt hast, über {{count}} Tage",
+    "kcalDefault": "Der übliche Referenzwert auf Lebensmitteletiketten, bis Pulse ein paar Tage deines Kalorienverbrauchs hat",
+    "own": "Dein Ziel",
+    "fat": "{{pct}}% deiner {{kcal}} kcal",
+    "carbs": "Die Kalorien, die nach Protein und Fett übrig bleiben",
+    "between": "Zwischen {{low}} und {{high}} {{unit}}"
   }
 }

@@ -3,7 +3,7 @@
 // pipeline's stage 2 rewrites on every run), and the VM shapes are the web's, verbatim. A phone addition rides along:
 // the Performance Assessment (`performance`, after WHOOP's), computed here from the stored days of the period and the
 // one before it, so the stored reports are unchanged.
-import { assessPeriod, periodBounds, previousPeriod, type AssessKey, type Assessment, type AssessmentDay, type Report } from "@/core/algorithms/reports";
+import { assessPeriod, periodBounds, previousPeriod, type AssessKey, type Assessment, type AssessmentDay, type FocusItem, type Report } from "@/core/algorithms/reports";
 import { PLAN_DEFAULTS, type PlanTargets } from "@/core/algorithms/weeklyPlan";
 import type { ReportRow } from "@/data/store";
 import { DEFAULT_JOURNAL_TAGS } from "@/data/seed";
@@ -43,6 +43,14 @@ const BALANCE = {
 } as const;
 
 /** Reports `/reports/[period]` (spec §7.13); null for a period with no data. `targets`: the Weekly Plan's. */
+/** Words for the core's focus codes (`reports:focus.<code>`); counted nouns are plural keys, resolved by the param's name. */
+const FOCUS_NOUNS = ["points", "sessions", "strengthSessions", "walks", "days"] as const;
+function focusText(f: FocusItem, kind: "week" | "month"): string {
+  const params: Record<string, string | number> = { period: i18n.t(kind === "week" ? "reports:lastWeek" : "reports:lastMonth") };
+  for (const [k, v] of Object.entries(f.params)) params[k] = (FOCUS_NOUNS as readonly string[]).includes(k) ? i18n.t(`reports:focus.noun.${k}` as "reports:focus.noun.points", { count: v as number }) : v;
+  return i18n.t(`reports:focus.${f.code}` as "reports:focus.steadyWeek", params);
+}
+
 export async function getReport(period: string, ctx: QueryCtx, targets: PlanTargets = PLAN_DEFAULTS.targets): Promise<ReportPageVM | null> {
   const all = await allReports(ctx);
   const r = readReport(all, period);
@@ -133,7 +141,7 @@ export async function getReport(period: string, ctx: QueryCtx, targets: PlanTarg
     ],
     trainingBalance: r.trainingBalance && tbStatus ? ok({ status: tbStatus, word: i18n.t(`reports:balance.${tbStatus}`), acwr: r.trainingBalance.acwr, line: i18n.t(`reports:balance.${r.trainingBalance.status as keyof typeof BALANCE}`) }) : none("no_data"),
     topImpacts: impacts,
-    performance: performanceOf(assessPeriod(...assessmentDays(both, exs, r.start, before.start), kind, targets), targets),
+    performance: performanceOf(assessPeriod(...assessmentDays(both, exs, r.start, before.start), kind, targets), targets, kind),
     bestWorst:
       r.best && r.worst && scored >= 2
         ? [
@@ -203,7 +211,7 @@ function assessmentDays(rows: Map<string, DayRow>, exs: Parameters<typeof planDa
 
 const valueMetric = (v: number | null): Metric<number> => (finite(v) ? ok(v) : none("no_data"));
 
-function performanceOf(a: Assessment, t: PlanTargets): PerformanceVM {
+function performanceOf(a: Assessment, t: PlanTargets, kind: "week" | "month"): PerformanceVM {
   const s = a.stats;
   const change = (st: Assessment["improved"][number], better: boolean): ReportChange => ({ key: st.key, label: CHANGE[st.key].label(), text: CHANGE[st.key].text(st.delta!), better });
   const vs = (key: AssessKey, label: string, unit: string | undefined, format: KeyStat["format"], caption?: string): KeyStat => ({
@@ -219,7 +227,7 @@ function performanceOf(a: Assessment, t: PlanTargets): PerformanceVM {
   const whole = (k: AssessKey) => [s[k].value, s[k].previous].every((v) => v === null || Math.abs(v - Math.round(v)) < 0.05);
   const { sleptMin, needMin, nightsMet, nights } = a.sleep;
   return {
-    focus: a.focus,
+    focus: a.focus.map((f) => focusText(f, kind)),
     improved: a.improved.map((x) => change(x, true)),
     declined: a.declined.map((x) => change(x, false)),
     sleep: [

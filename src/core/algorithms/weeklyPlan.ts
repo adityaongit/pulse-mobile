@@ -35,19 +35,22 @@ export const PLAN_LIMITS: Record<PlanKey, PlanLimit> = {
   sleepNeed: { min: 1, max: 7, unit: "nights" },
 };
 
+/** An error as a code the screen turns into words: `errors:goals.<code>` with these params. */
+export type PlanError = { code: "enterNumber" | "wholeOnly" | "between"; params?: { low: string; high: string } };
+
 const grouped = (v: number) => new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(v);
 
-/** Null when `value` is allowed for `key`, else why not ("Between 1 and 7"). Every target is a whole number. */
-export function validatePlanTarget(key: PlanKey, value: number | null): string | null {
+/** Null when `value` is allowed for `key`, else why not ("between 1 and 7"). Every target is a whole number. */
+export function validatePlanTarget(key: PlanKey, value: number | null): PlanError | null {
   const l = PLAN_LIMITS[key];
-  if (value === null || !Number.isFinite(value)) return "Enter a number";
-  if (!Number.isInteger(value)) return "Whole numbers only";
-  if (value < l.min || value > l.max) return `Between ${grouped(l.min)} and ${grouped(l.max)}`;
+  if (value === null || !Number.isFinite(value)) return { code: "enterNumber" };
+  if (!Number.isInteger(value)) return { code: "wholeOnly" };
+  if (value < l.min || value > l.max) return { code: "between", params: { low: grouped(l.min), high: grouped(l.max) } };
   return null;
 }
 
 /** A field's text → the target it means and the error to show, if any. */
-export function parsePlanTarget(key: PlanKey, text: string): { value: number | null; error: string | null } {
+export function parsePlanTarget(key: PlanKey, text: string): { value: number | null; error: PlanError | null } {
   const t = text.trim().replace(/,/g, "");
   const value = t === "" ? null : Number(t);
   const error = validatePlanTarget(key, value);

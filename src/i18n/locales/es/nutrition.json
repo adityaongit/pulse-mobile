@@ -186,5 +186,18 @@
     "providerTitle": "Falló la estimación",
     "providerBodyPhoto": "{{provider}} no pudo hacer la estimación. Inténtalo de nuevo o ingresa la comida tú mismo. Si sigue fallando, revisa que tu modelo lea fotos.",
     "providerBodyText": "{{provider}} no pudo hacer la estimación. Inténtalo de nuevo o ingresa la comida tú mismo."
+  },
+  "basis": {
+    "proteinWeight": "{{perKg}} g por kg con {{kg}} kg",
+    "proteinHeight": "{{perKg}} g por kg de un peso saludable para {{cm}} cm ({{kg}} kg). Registra tu peso para usar el tuyo.",
+    "proteinDefault": "Una meta típica para adultos. Registra tu peso para obtener la tuya: {{perKg}} g por kg.",
+    "kcalBurn_one": "Lo que quemaste al día, en promedio, en {{count}} día",
+    "kcalBurn_many": "Lo que quemaste al día, en promedio, en {{count}} días",
+    "kcalBurn_other": "Lo que quemaste al día, en promedio, en {{count}} días",
+    "kcalDefault": "La referencia habitual de las etiquetas de alimentos, hasta que Pulse tenga unos días de tus calorías quemadas",
+    "own": "Tu meta",
+    "fat": "{{pct}}% de tus {{kcal}} kcal",
+    "carbs": "Las calorías que quedan después de la proteína y la grasa",
+    "between": "Entre {{low}} y {{high}} {{unit}}"
   }
 }

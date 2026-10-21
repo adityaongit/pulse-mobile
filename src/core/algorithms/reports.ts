@@ -210,6 +210,9 @@ export interface AssessmentStat {
   move: number | null;
 }
 
+/** A line of advice as a code and its parameters: counts of things are numbers (`points`, `sessions`, `walks`, `days`). */
+export type FocusItem = { code: string; params: Record<string, number | string> };
+
 export interface Assessment {
   stats: Record<AssessKey, AssessmentStat>;
   /** Nights with a main sleep and a need: the averages and how many met the need. */
@@ -217,8 +220,8 @@ export interface Assessment {
   /** Up to 2 each, the largest first. */
   improved: AssessmentStat[];
   declined: AssessmentStat[];
-  /** 1–2 plain-language lines, most salient first. */
-  focus: string[];
+  /** 1–2 focus points, most salient first, as codes the queries turn into words (`reports:focus.<code>`). */
+  focus: FocusItem[];
   /** Days with any data, this period and the one before. */
   days: number;
   prevDays: number;
@@ -250,8 +253,7 @@ function valueOf(key: AssessKey, days: readonly AssessmentDay[]): { value: numbe
   }
 }
 
-// Plain-language pieces (no Intl.PluralRules on Hermes).
-const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
+// Plain-language pieces (no Intl.PluralRules on Hermes). Prose lives in the `reports` namespace: the core returns codes.
 const groupedInt = (v: number) => new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(Math.round(v));
 /** 50 → "50 min", 70 → "1 h 10 min". */
 export const minutesText = (m: number) => {
@@ -263,38 +265,36 @@ const hm = (m: number) => {
   const r = Math.max(0, Math.round(m));
   return `${Math.floor(r / 60)}:${String(r % 60).padStart(2, "0")}`;
 };
+const item = (code: string, params: FocusItem["params"] = {}): FocusItem => ({ code, params });
+const cap = (s: string) => s[0].toUpperCase() + s.slice(1);
 
-/** A drop worth a focus point, as one line with what to do about it. `d` is |delta| in the metric's units. */
-function declineLine(key: AssessKey, d: number, target: number | null): string {
-  const pts = plural(Math.round(d), "point");
+/** A drop worth a focus point, with what to do about it. `d` is |delta| in the metric's units. */
+function declineLine(key: AssessKey, d: number, target: number | null): FocusItem | null {
   switch (key) {
     case "recovery":
-      return `Your Recovery fell ${pts}; save hard sessions for green days and go easier on red ones.`;
     case "sleepPerf":
-      return `Your sleep performance dropped ${pts}; give yourself a full sleep window and protect it.`;
-    case "hrv":
-      return `Your HRV fell ${Math.round(d)} ms; lean on sleep, easy days and less late alcohol until it climbs back.`;
-    case "rhr":
-      return `Your resting heart rate rose ${Math.round(d)} bpm; that can mean fatigue, stress or a bug coming, so keep a few days easy.`;
-    case "slept":
-      return `You slept ${minutesText(d)} less a night; aim to get to bed ${minutesText(Math.ceil(d / 5) * 5)} earlier.`;
     case "consistency":
-      return `Your sleep consistency dropped ${pts}; aim for the same bedtime ±30 min, weekends included.`;
+      return item(`decline${cap(key)}`, { points: Math.round(d) });
+    case "hrv":
+      return item("declineHrv", { ms: Math.round(d) });
+    case "rhr":
+      return item("declineRhr", { bpm: Math.round(d) });
+    case "slept":
+      return item("declineSlept", { less: minutesText(d), earlier: minutesText(Math.ceil(d / 5) * 5) });
     case "zone13":
-      return `Your moderate minutes fell by ${Math.round(d)} a week; a couple of brisk 30-minute walks would win them back.`;
     case "zone45":
-      return `Your vigorous minutes fell by ${Math.round(d)} a week; one interval session would win them back.`;
+      return item(`decline${cap(key)}`, { min: Math.round(d) });
     case "strength":
-      return `You fit in fewer strength sessions; aim for ${plural(target ?? 2, "session")} a week.`;
+      return item("declineStrength", { sessions: target ?? 2 });
     case "steps":
-      return `Your steps fell by ${groupedInt(d)} a day; a 15-minute walk adds about 1,500.`;
+      return item("declineSteps", { steps: groupedInt(d) });
     case "strain":
-      return "";
+      return null;
   }
 }
 
 /** A shortfall to the plan's target (or the night's need) worth a focus point, and its size in spreads. */
-function gapOf(key: AssessKey, s: AssessmentStat, sleep: Assessment["sleep"], t: PlanTargets): { salience: number; line: string } | null {
+function gapOf(key: AssessKey, s: AssessmentStat, sleep: Assessment["sleep"], t: PlanTargets): { salience: number; item: FocusItem } | null {
   const v = s.value;
   if (v === null || s.n < assessConfig.minDays) return null;
   const gap = (target: number) => (target - v) / ASSESS[key].spread;
@@ -303,57 +303,40 @@ function gapOf(key: AssessKey, s: AssessmentStat, sleep: Assessment["sleep"], t:
       if (sleep.sleptMin === null || sleep.needMin === null || sleep.nights < assessConfig.minDays) return null;
       const short = sleep.needMin - sleep.sleptMin;
       if (short < assessConfig.sleepGapMin) return null;
-      return { salience: short / ASSESS.slept.spread, line: `You slept ${hm(sleep.sleptMin)} a night against a need of ${hm(sleep.needMin)}; going to bed ${minutesText(Math.ceil(short / 5) * 5)} earlier would close the gap.` };
+      return { salience: short / ASSESS.slept.spread, item: item("gapSlept", { slept: hm(sleep.sleptMin), need: hm(sleep.needMin), earlier: minutesText(Math.ceil(short / 5) * 5) }) };
     }
     case "consistency":
-      return { salience: gap(t.consistency), line: `Your sleep consistency averaged ${Math.round(v)}%; aim for the same bedtime and wake time, ±30 min, every day.` };
-    case "zone13": {
-      const walks = Math.max(1, Math.ceil((t.zone13 - v) / 30));
-      return { salience: gap(t.zone13), line: `You averaged ${Math.round(v)} moderate minutes a week against ${t.zone13}; add ${plural(walks, "brisk 30-minute walk")}.` };
-    }
+      return { salience: gap(t.consistency), item: item("gapConsistency", { value: Math.round(v) }) };
+    case "zone13":
+      return { salience: gap(t.zone13), item: item("gapZone13", { value: Math.round(v), target: t.zone13, walks: Math.max(1, Math.ceil((t.zone13 - v) / 30)) }) };
     case "zone45":
-      return { salience: gap(t.zone45), line: `You averaged ${Math.round(v)} vigorous minutes a week against ${t.zone45}; one interval session adds about 20.` };
+      return { salience: gap(t.zone45), item: item("gapZone45", { value: Math.round(v), target: t.zone45 }) };
     case "strength":
-      return { salience: gap(t.strength), line: `You averaged ${plural(Math.round(v * 10) / 10, "strength session")} a week against ${t.strength}; put the next one in your calendar.` };
+      return { salience: gap(t.strength), item: item("gapStrength", { strengthSessions: Math.round(v * 10) / 10, target: t.strength }) };
     case "steps":
-      return { salience: gap(t.steps), line: `Your steps averaged ${groupedInt(v)} a day against ${groupedInt(t.steps)}; a 15-minute walk adds about 1,500.` };
+      return { salience: gap(t.steps), item: item("gapSteps", { value: groupedInt(v), target: groupedInt(t.steps) }) };
     default:
       return null;
   }
 }
 
-/** How a rise reads in a sentence: "rose 6 ms", "rose 3 points". */
-function riseLine(s: AssessmentStat, word: string): string {
+/** A rise (or a small fall) from the period before, when nothing needs fixing: "rose 6 ms", "rose 3 points". */
+function riseLine(s: AssessmentStat): FocusItem {
   const d = Math.abs(s.delta ?? 0);
-  const up = (s.delta ?? 0) > 0;
-  const verb = up ? "rose" : "fell";
-  const by: Record<AssessKey, string> = {
-    recovery: plural(Math.round(d), "point"),
-    strain: plural(Math.round(d), "point"),
-    sleepPerf: plural(Math.round(d), "point"),
-    hrv: `${Math.round(d)} ms`,
-    rhr: `${Math.round(d)} bpm`,
-    slept: minutesText(d),
-    consistency: plural(Math.round(d), "point"),
-    zone13: `${Math.round(d)} min a week`,
-    zone45: `${Math.round(d)} min a week`,
-    strength: plural(Math.round(d * 10) / 10, "session") + " a week",
-    steps: `${groupedInt(d)} a day`,
+  const by: Record<AssessKey, FocusItem["params"]> = {
+    recovery: { points: Math.round(d) },
+    strain: { points: Math.round(d) },
+    sleepPerf: { points: Math.round(d) },
+    hrv: { value: Math.round(d) },
+    rhr: { value: Math.round(d) },
+    slept: { value: minutesText(d) },
+    consistency: { points: Math.round(d) },
+    zone13: { value: Math.round(d) },
+    zone45: { value: Math.round(d) },
+    strength: { sessions: Math.round(d * 10) / 10 },
+    steps: { value: groupedInt(d) },
   };
-  const name: Record<AssessKey, string> = {
-    recovery: "Your Recovery",
-    strain: "Your Strain",
-    sleepPerf: "Your sleep performance",
-    hrv: "Your HRV",
-    rhr: "Your resting heart rate",
-    slept: "Your sleep",
-    consistency: "Your sleep consistency",
-    zone13: "Your moderate minutes",
-    zone45: "Your vigorous minutes",
-    strength: "Your strength sessions",
-    steps: "Your steps",
-  };
-  return `${name[s.key]} ${verb} ${by[s.key]} from last ${word}; keep doing what you’re doing.`;
+  return item(`rise${cap(s.key)}${(s.delta ?? 0) > 0 ? "Up" : "Down"}`, by[s.key]);
 }
 
 /**
@@ -387,27 +370,27 @@ export function assessPeriod(cur: readonly AssessmentDay[], prev: readonly Asses
   const declined = moved.filter((s) => s.move! < 0).sort((a, b) => a.move! - b.move!);
 
   // Focus: per metric the larger of its drop and its gap to target, then the two most salient.
-  const candidates: { salience: number; line: string }[] = [];
+  const candidates: { salience: number; item: FocusItem }[] = [];
   for (const key of ASSESS_KEYS) {
     const s = stats[key];
-    const drop = s.move !== null && s.move <= -focusThreshold ? { salience: -s.move, line: declineLine(key, Math.abs(s.delta!), key === "strength" ? targets.strength : null) } : null;
+    const drop = s.move !== null && s.move <= -focusThreshold ? { salience: -s.move, item: declineLine(key, Math.abs(s.delta!), key === "strength" ? targets.strength : null) } : null;
     const gap = gapOf(key, s, sleep, targets);
     const best = [drop, gap && gap.salience >= focusThreshold ? gap : null].filter((x) => x !== null).sort((a, b) => b.salience - a.salience)[0];
-    if (best?.line) candidates.push(best);
+    if (best?.item) candidates.push({ salience: best.salience, item: best.item });
   }
   candidates.sort((a, b) => b.salience - a.salience);
 
   const days = cur.filter(hasAny).length;
   const prevDays = prev.filter(hasAny).length;
-  const focus: string[] = [];
+  const focus: FocusItem[] = [];
   // Too few days to call a trend: say so first, as noop's digest does (its #463), then still name a clear gap.
-  if (days > 0 && days < minDays) focus.push(`Only ${plural(days, "day")} into this ${word} so far: too early to call a trend.`);
-  focus.push(...candidates.map((c) => c.line));
+  if (days > 0 && days < minDays) focus.push(item(`early${cap(word)}`, { days }));
+  focus.push(...candidates.map((c) => c.item));
   if (!focus.length) {
     const top = improved.find((s) => s.move! >= focusThreshold);
-    if (top) focus.push(riseLine(top, word));
-    else if (days >= minDays && prevDays > 0 && prevDays < minDays) focus.push(`Last ${word} had only ${plural(prevDays, "day")} of data, so the changes are rough, not a trend.`);
-    else if (days > 0) focus.push(`A steady ${word}: nothing moved much from last ${word}.`);
+    if (top) focus.push(riseLine(top));
+    else if (days >= minDays && prevDays > 0 && prevDays < minDays) focus.push(item(`prevThin${cap(word)}`, { days: prevDays }));
+    else if (days > 0) focus.push(item(`steady${cap(word)}`));
   }
 
   return { stats, sleep, improved: improved.slice(0, 2), declined: declined.slice(0, 2), focus: focus.slice(0, 2), days, prevDays };
