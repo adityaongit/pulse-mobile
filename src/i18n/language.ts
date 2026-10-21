@@ -24,6 +24,8 @@ export async function resolveLanguage(): Promise<LanguageCode> {
 
 /** The Intl locale for a language: its tag, with the phone's region when the phone speaks the same language (`de` + AT). */
 export function localeFor(language: LanguageCode): string {
+  // ICU has its own en-XA pseudo-locale with odd date and number shapes; the pseudo-language only reshapes the copy.
+  if (language === PSEUDO) return "en-US";
   const base = language.split("-")[0];
   const same = getLocales().find((l) => l.languageCode === base && l.regionCode);
   return language.includes("-") ? language : same ? `${base}-${same.regionCode}` : language;
