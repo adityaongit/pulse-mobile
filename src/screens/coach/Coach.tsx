@@ -3,6 +3,7 @@
 // right, the coach's as Prose on the ground beside the Mark, tool results as kit cards, and the composer pinned over
 // the keyboard. Log tools are not ported: the phone's coach is read-only, as halo's.
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import { AccessibilityInfo, ScrollView, Share, TextInput, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useChat } from "@ai-sdk/react";
@@ -10,6 +11,7 @@ import type { UIMessage } from "ai";
 import { Activity, ArrowUp, ChevronRight, Dumbbell, Moon, NotebookPen, Pencil, RefreshCw, RotateCcw, Share2, Square, type LucideIcon } from "lucide-react-native";
 import type { CoachSuggestion } from "@/core/algorithms/coachSuggestions";
 import { plainText } from "@/coach/chats";
+import { i18n } from "@/i18n/config";
 import { deviceTransport } from "@/coach/session";
 import { Mark } from "@/ui/brand";
 import { cn } from "@/ui/cn";
@@ -27,30 +29,18 @@ type Part = UIMessage["parts"][number];
 
 const SUGGESTION_ICONS: Record<CoachSuggestion["key"], LucideIcon> = { brief: Activity, recovery: Activity, training: Dumbbell, hrv: Activity, sleep: Moon, strain: Dumbbell, sync: RefreshCw };
 
-/** One line while a tool runs, in the voice of the screen it reads. */
-const RUNNING: Record<string, string> = {
-  get_day: "Looking at your day…",
-  get_sleep: "Reading your sleep and bedtime plan…",
-  get_activity: "Checking workout intensity…",
-  get_trend: "Checking your trends…",
-  get_activities: "Looking at your workouts…",
-  get_journal_impacts: "Reading your journal…",
-  get_health: "Checking your Health Monitor…",
-  get_report: "Reading your report…",
-  get_profile: "Checking your profile…",
-};
+/** The tools with a progress line (`coach:running.<tool>`); any other tool reads the default. */
+const RUNNING = ["get_day", "get_sleep", "get_activity", "get_trend", "get_activities", "get_journal_impacts", "get_health", "get_report", "get_profile"];
 
-export const ERRORS: Record<string, string> = {
-  limit: "Slow down a little. Try again in a moment.",
-  key: "Your key stopped working. Add it again in Coach settings.",
-  profile: "Set up your profile first.",
-  provider: "Your provider refused the request (key, quota or billing). Check your account with them.",
-  network: "Couldn’t reach your provider. Check your connection and try again.",
-};
+const PROBLEMS = ["limit", "key", "profile", "provider", "network"] as const;
 /** The composer's least gap to the screen's bottom edge, and its gap above the keyboard. */
 const COMPOSER_GAP = 12;
 
-const errorText = (e: Error) => ERRORS[e.message.trim()] ?? "Couldn’t get an answer. Try again.";
+/** The sentence for a CoachProblem code (see transport.ts); anything else reads the default. */
+const errorText = (e: Error) => {
+  const code = PROBLEMS.find((p) => p === e.message.trim());
+  return code ? i18n.t(`coach:errors.${code}`) : i18n.t("coach:errors.default");
+};
 
 /** The Mark in the insight-gradient ring (the empty state's 48 px, the avatar's 24 px: one line of Prose). */
 export function CoachMark({ size }: { size: number }) {
@@ -76,12 +66,13 @@ function Caption({ live, children }: { live?: boolean; children: string }) {
 }
 
 function PartView({ part }: { part: Part }) {
+  const { t } = useTranslation("coach");
   if (part.type === "text") return part.text.trim() ? <Prose text={part.text} /> : null;
   if (!part.type.startsWith("tool-")) return null;
   const name = part.type.slice(5);
   const tool = part as Part & { state: string; output?: unknown };
-  if (tool.state === "output-error") return <Caption>Couldn’t read that part of your data.</Caption>;
-  if (tool.state !== "output-available") return <Caption live>{RUNNING[name] ?? "Looking at your data…"}</Caption>;
+  if (tool.state === "output-error") return <Caption>{t("chat.toolFailed")}</Caption>;
+  if (tool.state !== "output-available") return <Caption live>{RUNNING.includes(name) ? i18n.t(`coach:running.${name}` as "coach:running.get_day") : t("running.default")}</Caption>;
   return <Evidence name={name} output={tool.output} />;
 }
 
@@ -104,6 +95,7 @@ function Pill({ label, onPress, disabled, primary, icon }: { label: string; onPr
 }
 
 function UserMessage({ m, busy, onEdit }: { m: UIMessage; busy: boolean; onEdit: (text: string) => void }) {
+  const { t } = useTranslation("coach");
   const { c } = useTheme();
   const text = m.parts.map((p) => (p.type === "text" ? p.text : "")).join("");
   const [draft, setDraft] = useState<string | null>(null);
@@ -116,20 +108,20 @@ function UserMessage({ m, busy, onEdit }: { m: UIMessage; busy: boolean; onEdit:
           value={draft}
           onChangeText={setDraft}
           maxLength={2000}
-          accessibilityLabel="Edit your message"
+          accessibilityLabel={t("chat.editLabel")}
           cursorColor={c.coach}
           className="max-h-60 min-h-11 rounded-[20px] bg-secondary px-4 py-2.5 text-[16px] leading-6 text-foreground"
         />
         <View className="flex-row justify-end gap-2">
-          <Pill label="Cancel" onPress={() => setDraft(null)} />
+          <Pill label={t("actions.cancel", { ns: "common" })} onPress={() => setDraft(null)} />
           <Pill
-            label="Save and send"
+            label={t("chat.saveAndSend")}
             primary
             disabled={busy || !draft.trim()}
             onPress={() => {
-              const t = draft.trim();
+              const edited = draft.trim();
               setDraft(null);
-              if (t !== text.trim()) onEdit(t);
+              if (edited !== text.trim()) onEdit(edited);
             }}
           />
         </View>
@@ -137,7 +129,7 @@ function UserMessage({ m, busy, onEdit }: { m: UIMessage; busy: boolean; onEdit:
     );
   return (
     <View className="flex-row items-start justify-end gap-1 pl-6">
-      <IconAction label="Edit message" icon={Pencil} disabled={busy} onPress={() => setDraft(text)} />
+      <IconAction label={t("chat.editMessage")} icon={Pencil} disabled={busy} onPress={() => setDraft(text)} />
       <Text selectable className="shrink rounded-[20px] rounded-br-md bg-secondary px-4 py-2.5 text-[15px] leading-6 text-foreground">
         {text}
       </Text>
@@ -146,6 +138,7 @@ function UserMessage({ m, busy, onEdit }: { m: UIMessage; busy: boolean; onEdit:
 }
 
 function AssistantMessage({ m, done, onRegenerate }: { m: UIMessage; done: boolean; onRegenerate?: () => void }) {
+  const { t } = useTranslation("coach");
   const text = plainText(m);
   return (
     <View className="flex-row gap-2.5">
@@ -156,8 +149,8 @@ function AssistantMessage({ m, done, onRegenerate }: { m: UIMessage; done: boole
         ))}
         {done && (!!text || onRegenerate) && (
           <View className="-ml-2 flex-row">
-            {!!text && <IconAction label="Share answer" icon={Share2} onPress={() => void Share.share({ message: text }).catch(() => {})} />}
-            {onRegenerate && <IconAction label="Regenerate answer" icon={RotateCcw} onPress={onRegenerate} />}
+            {!!text && <IconAction label={t("chat.shareAnswer")} icon={Share2} onPress={() => void Share.share({ message: text }).catch(() => {})} />}
+            {onRegenerate && <IconAction label={t("chat.regenerate")} icon={RotateCcw} onPress={onRegenerate} />}
           </View>
         )}
       </View>
@@ -166,14 +159,15 @@ function AssistantMessage({ m, done, onRegenerate }: { m: UIMessage; done: boole
 }
 
 function Empty({ providerLabel, suggestions, today, onAsk }: { providerLabel: string; suggestions: CoachSuggestion[]; today: string; onAsk: (text: string) => void }) {
+  const { t } = useTranslation("coach");
   return (
     <View className="flex-1 items-center justify-center py-8">
       <CoachMark size={48} />
       <Text accessibilityRole="header" className="mt-5 text-center text-[22px] font-bold leading-7">
-        What would you like to know?
+        {t("chat.emptyTitle")}
       </Text>
       <Text className="mt-2 max-w-[360px] text-center text-[15px] leading-[22px] text-foreground-secondary">
-        The coach looks up your own Pulse numbers before it answers, using {providerLabel}. It’s not medical advice.
+        {t("chat.emptyBody", { provider: providerLabel })}
       </Text>
       <View className="mt-8 w-full gap-2">
         {suggestions.map((s) => (
@@ -186,7 +180,7 @@ function Empty({ providerLabel, suggestions, today, onAsk }: { providerLabel: st
       </View>
       <Press accessibilityRole="button" onPress={() => push(`/checkin?d=${today}`)} className="mt-3 h-10 flex-row items-center gap-2 rounded-full px-4">
         <Icon icon={NotebookPen} size={16} tone="foreground-secondary" />
-        <Text className="text-[14px] font-medium text-foreground-secondary">Check in for today</Text>
+        <Text className="text-[14px] font-medium text-foreground-secondary">{t("chat.checkIn")}</Text>
       </Press>
     </View>
   );
@@ -207,6 +201,7 @@ export type CoachProps = {
 };
 
 export function Coach({ id, initial, prefill, auto, providerLabel, suggestions, today, onSaved }: CoachProps) {
+  const { t } = useTranslation("coach");
   const { c } = useTheme();
   const bottom = Math.max(useSafeAreaInsets().bottom, COMPOSER_GAP);
   const { ref: keyboardRef, onLayout: measureKeyboard, inset: keyboardInset } = useKeyboardInset();
@@ -259,7 +254,7 @@ export function Coach({ id, initial, prefill, auto, providerLabel, suggestions, 
         {messages.length === 0 ? (
           <Empty providerLabel={providerLabel} suggestions={suggestions} today={today} onAsk={send} />
         ) : (
-          <View accessibilityLabel="Chat with Pulse’s coach" className="mt-2 gap-7">
+          <View accessibilityLabel={t("chat.chatLabel")} className="mt-2 gap-7">
             {messages.map((m, i) =>
               m.role === "user" ? (
                 <UserMessage key={m.id} m={m} busy={busy} onEdit={(text) => !busy && (setError(null), void sendMessage({ text, messageId: m.id }))} />
@@ -270,7 +265,7 @@ export function Coach({ id, initial, prefill, auto, providerLabel, suggestions, 
             {status === "submitted" && (
               <View className="flex-row gap-2.5">
                 <CoachMark size={24} />
-                <Caption live>Thinking…</Caption>
+                <Caption live>{t("chat.thinking")}</Caption>
               </View>
             )}
           </View>
@@ -278,7 +273,7 @@ export function Coach({ id, initial, prefill, auto, providerLabel, suggestions, 
         {!!error && (
           <View accessibilityRole="alert" className="mt-6 flex-row items-center gap-3 rounded-xl border border-recovery-red/25 bg-recovery-red/12 py-2 pl-4 pr-2">
             <Text className="flex-1 py-1 text-[14px] leading-5 text-foreground">{error}</Text>
-            <Pill label="Retry" disabled={busy} onPress={() => again()} icon={<Icon icon={RotateCcw} size={16} />} />
+            <Pill label={t("chat.retry")} disabled={busy} onPress={() => again()} icon={<Icon icon={RotateCcw} size={16} />} />
           </View>
         )}
       </ScrollView>
@@ -290,9 +285,9 @@ export function Coach({ id, initial, prefill, auto, providerLabel, suggestions, 
             onChangeText={setInput}
             multiline
             maxLength={2000}
-            placeholder="Message Coach"
+            placeholder={t("chat.placeholder")}
             placeholderTextColor={c["muted-foreground"]}
-            accessibilityLabel="Ask Coach"
+            accessibilityLabel={t("chat.askLabel")}
             submitBehavior="submit"
             returnKeyType="send"
             onSubmitEditing={() => send(input)}
@@ -300,11 +295,11 @@ export function Coach({ id, initial, prefill, auto, providerLabel, suggestions, 
             className="max-h-40 min-h-11 flex-1 py-2.5 pl-3.5 text-[16px] leading-6 text-foreground"
           />
           {busy ? (
-            <Press accessibilityRole="button" accessibilityLabel="Stop" onPress={() => void stop()} className="size-11 items-center justify-center rounded-full bg-secondary">
+            <Press accessibilityRole="button" accessibilityLabel={t("chat.stop")} onPress={() => void stop()} className="size-11 items-center justify-center rounded-full bg-secondary">
               <Icon icon={Square} size={14} />
             </Press>
           ) : (
-            <Press accessibilityRole="button" accessibilityLabel="Send" disabled={!input.trim()} onPress={() => send(input)} className={cn("size-11 items-center justify-center rounded-full bg-primary", !input.trim() && "opacity-40")}>
+            <Press accessibilityRole="button" accessibilityLabel={t("chat.send")} disabled={!input.trim()} onPress={() => send(input)} className={cn("size-11 items-center justify-center rounded-full bg-primary", !input.trim() && "opacity-40")}>
               <Icon icon={ArrowUp} size={20} tone="primary-foreground" strokeWidth={2.25} />
             </Press>
           )}

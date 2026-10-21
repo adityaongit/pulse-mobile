@@ -8,6 +8,7 @@ import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { createOpenAI } from "@ai-sdk/openai";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { createGateway, type LanguageModel } from "ai";
+import { i18n } from "@/i18n/config";
 
 export type ProviderId = "openai" | "anthropic" | "google" | "gateway" | "openrouter" | "custom";
 
@@ -64,7 +65,9 @@ export const PROVIDERS: Provider[] = [
   },
   {
     id: "custom",
-    label: "Your own server",
+    get label() {
+      return i18n.t("coach:provider.custom");
+    },
     model: "llama3.1:8b",
     custom: true,
     // No key, no Authorization header: a local Ollama takes none.
@@ -75,7 +78,7 @@ export const PROVIDERS: Provider[] = [
 export const providerOf = (id: string | null | undefined) => PROVIDERS.find((p) => p.id === id) ?? null;
 
 /** How the chat names the provider ("using Anthropic"). */
-export const providerLabel = (id: string | null) => providerOf(id)?.label ?? "your provider";
+export const providerLabel = (id: string | null) => providerOf(id)?.label ?? i18n.t("coach:providerFallback");
 
 /** What the person chose: the provider, the model, the key (none for a server that takes none), the server's URL. */
 export type ModelChoice = { provider: string; model: string; apiKey: string | null; baseUrl?: string | null };

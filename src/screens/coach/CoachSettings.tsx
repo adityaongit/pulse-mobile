@@ -2,7 +2,9 @@
 // via halo: Provider, Model and the key as ••••last4; Change, Remove key, Delete chats, Turn off; and About you, up to
 // 500 characters of the person's own notes for the coach. Without consent or a provider, the setup steps instead.
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { View } from "react-native";
+import { i18n } from "@/i18n/config";
 import { MAX_NOTES } from "@/coach/instructions";
 import { providerLabel, providerOf } from "@/coach/providers";
 import { useCoachSetup } from "@/coach/session";
@@ -16,7 +18,7 @@ import { ConfirmDialog, Field, HINT, ROW, ROW_LABEL, ROW_RULE, ROW_VALUE, SmallB
 import { cn } from "@/ui/cn";
 import { ConnectProvider, Consent } from "./CoachSetup";
 
-const failed = () => toast.error("Couldn’t save that on this phone. Try again.");
+const failed = () => toast.error(i18n.t("coach:settings.saveFailed"));
 
 function Row({ label, value, first }: { label: string; value: string; first?: boolean }) {
   return (
@@ -28,17 +30,18 @@ function Row({ label, value, first }: { label: string; value: string; first?: bo
 }
 
 function Notes({ saved }: { saved: string | null }) {
+  const { t } = useTranslation("coach");
   const [text, setText] = useState(saved ?? "");
   return (
-    <Field label="About you" hint="How you’d like the coach to talk and what it should know. It never changes the coach’s safety rules." optional>
+    <Field label={t("settings.aboutYou")} hint={t("settings.aboutHint")} optional>
       <TextField
-        accessibilityLabel="About you"
+        accessibilityLabel={t("settings.aboutYou")}
         value={text}
         onChangeText={setText}
         onBlur={() => text.trim() !== (saved ?? "") && void setInstructions(text).catch(failed)}
         multiline
         maxLength={MAX_NOTES}
-        placeholder="Short and direct. I lift four days a week and I'm training for a half marathon."
+        placeholder={t("settings.aboutPlaceholder")}
       />
     </Field>
   );
@@ -47,6 +50,7 @@ function Notes({ saved }: { saved: string | null }) {
 type Confirm = "key" | "chats" | "off" | null;
 
 export function CoachSettings() {
+  const { t } = useTranslation("coach");
   const setup = useCoachSetup();
   const [changing, setChanging] = useState(false);
   const [confirm, setConfirm] = useState<Confirm>(null);
@@ -67,10 +71,10 @@ export function CoachSettings() {
   };
   const DIALOG = {
     key: custom
-      ? { title: "Disconnect your server?", description: "The coach stops answering until you connect a provider again.", label: "Disconnect", go: () => run(removeProvider, "Server disconnected.") }
-      : { title: "Remove your key?", description: "The coach stops answering until you add a key again.", label: "Remove key", go: () => run(removeProvider, "Key removed.") },
-    chats: { title: "Delete every chat?", description: "Every chat on this phone is removed. This can’t be undone.", label: "Delete chats", go: () => run(deleteAllChats, "Chats deleted.") },
-    off: { title: "Turn off the coach?", description: "Your key is removed and the coach asks for consent again. Your chats stay until you delete them.", label: "Turn off", go: () => run(async () => (await removeProvider(), await setConsent(false)), "Coach turned off.") },
+      ? { title: t("settings.disconnectTitle"), description: t("settings.disconnectBody"), label: t("settings.disconnect"), go: () => run(removeProvider, t("settings.disconnected")) }
+      : { title: t("settings.removeKeyTitle"), description: t("settings.removeKeyBody"), label: t("settings.removeKey"), go: () => run(removeProvider, t("settings.keyRemoved")) },
+    chats: { title: t("settings.deleteChatsTitle"), description: t("settings.deleteChatsBody"), label: t("settings.deleteChats"), go: () => run(deleteAllChats, t("settings.chatsDeleted")) },
+    off: { title: t("settings.turnOffTitle"), description: t("settings.turnOffBody"), label: t("settings.turnOff"), go: () => run(async () => (await removeProvider(), await setConsent(false)), t("settings.turnedOff")) },
   } as const;
 
   const body =
@@ -79,34 +83,34 @@ export function CoachSettings() {
     ) : !setup.provider || changing ? (
       <View className="gap-4">
         <ConnectProvider current={setup} onSaved={() => setChanging(false)} />
-        {changing && <SmallButton label="Cancel" onPress={() => setChanging(false)} />}
+        {changing && <SmallButton label={t("settings.cancel")} onPress={() => setChanging(false)} />}
       </View>
     ) : (
       <View className="gap-6">
         <View className="gap-2">
-          <Text className={GROUP_LABEL}>Provider</Text>
+          <Text className={GROUP_LABEL}>{t("settings.provider")}</Text>
           <Card>
-            <Row first label="Provider" value={providerLabel(setup.provider)} />
-            <Row label="Model" value={setup.model ?? ""} />
-            {!!custom && <Row label="Server" value={setup.baseUrl ?? ""} />}
-            <Row label="API key" value={setup.last4 ? `••••${setup.last4}` : custom ? "None" : "Not saved"} />
+            <Row first label={t("settings.provider")} value={providerLabel(setup.provider)} />
+            <Row label={t("settings.model")} value={setup.model ?? ""} />
+            {!!custom && <Row label={t("settings.server")} value={setup.baseUrl ?? ""} />}
+            <Row label={t("settings.apiKey")} value={setup.last4 ? `••••${setup.last4}` : custom ? t("settings.none") : t("settings.notSaved")} />
           </Card>
           <View className="flex-row flex-wrap gap-2">
-            <SmallButton label="Change" onPress={() => setChanging(true)} />
-            <SmallButton label={custom ? "Disconnect" : "Remove key"} onPress={() => setConfirm("key")} />
+            <SmallButton label={t("settings.change")} onPress={() => setChanging(true)} />
+            <SmallButton label={custom ? t("settings.disconnect") : t("settings.removeKey")} onPress={() => setConfirm("key")} />
           </View>
         </View>
         <Notes key={setup.instructions ?? ""} saved={setup.instructions} />
         <View className="gap-2">
-          <Text className={GROUP_LABEL}>Workouts</Text>
-          <SwitchRow rule={false} label="Analyze each workout" hint="A one-line take from your provider as a workout opens. Off, the coach answers only when you tap." value={setup.autoAnalysis} onChange={(on) => void setAutoAnalysis(on).catch(failed)} />
+          <Text className={GROUP_LABEL}>{t("settings.workouts")}</Text>
+          <SwitchRow rule={false} label={t("settings.analyze")} hint={t("settings.analyzeHint")} value={setup.autoAnalysis} onChange={(on) => void setAutoAnalysis(on).catch(failed)} />
         </View>
         <View className="gap-2">
-          <Text className={GROUP_LABEL}>Chats</Text>
-          <Text className={HINT}>Saved on this phone, visible only to you.</Text>
+          <Text className={GROUP_LABEL}>{t("settings.chats")}</Text>
+          <Text className={HINT}>{t("settings.chatsHint")}</Text>
           <View className="flex-row flex-wrap gap-2">
-            <SmallButton label="Delete chats" onPress={() => setConfirm("chats")} />
-            <SmallButton label="Turn off" onPress={() => setConfirm("off")} />
+            <SmallButton label={t("settings.deleteChats")} onPress={() => setConfirm("chats")} />
+            <SmallButton label={t("settings.turnOff")} onPress={() => setConfirm("off")} />
           </View>
         </View>
       </View>
@@ -115,13 +119,13 @@ export function CoachSettings() {
   const d = confirm && DIALOG[confirm];
   return (
     <DetailShell
-      title="Coach settings"
+      title={t("settingsTitle")}
       backHref="/more"
       loading={setup === undefined}
       primary={
         <View>
           {body}
-          <ConfirmDialog open={!!d} title={d?.title ?? ""} description={d?.description ?? ""} confirmLabel={d?.label ?? ""} pendingLabel="Saving…" pending={pending} onCancel={() => setConfirm(null)} onConfirm={() => void d?.go()} />
+          <ConfirmDialog open={!!d} title={d?.title ?? ""} description={d?.description ?? ""} confirmLabel={d?.label ?? ""} pendingLabel={t("settings.saving")} pending={pending} onCancel={() => setConfirm(null)} onConfirm={() => void d?.go()} />
         </View>
       }
     />

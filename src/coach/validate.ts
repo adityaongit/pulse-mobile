@@ -1,6 +1,7 @@
 // Provider setup checks, ported from Pulse's saveProviderAction (src/server/actions/coach.ts): the form's rules, then
 // one tiny test request with the key, so a bad key, model id or empty account is never saved.
 import { generateText } from "ai";
+import { i18n } from "@/i18n/config";
 import { modelFor, providerOf, type Fetch } from "./providers";
 
 export type ProviderInput = { provider: string; model: string; apiKey: string; baseUrl?: string };
@@ -24,17 +25,18 @@ export function checkProvider(input: ProviderInput): Checked {
   const p = providerOf(input.provider);
   const model = input.model.trim();
   const apiKey = input.apiKey.trim();
-  if (!p) return { ok: false, error: "Pick a provider." };
-  if (!model) return { ok: false, error: "Enter a model." };
-  if (model.length > 120 || !/^[\w.:/@-]+$/.test(model)) return { ok: false, error: "That model id has characters no provider uses." };
+  if (!p) return { ok: false, error: i18n.t("coach:validate.pickProvider") };
+  if (!model) return { ok: false, error: i18n.t("coach:validate.enterModel") };
+  if (model.length > 120 || !/^[\w.:/@-]+$/.test(model)) return { ok: false, error: i18n.t("coach:validate.modelChars") };
   const baseUrl = p.custom ? serverUrl(input.baseUrl ?? "") : null;
-  if (p.custom && !baseUrl) return { ok: false, error: "Enter your server’s address, starting with http:// or https://." };
-  if (!apiKey && !p.custom) return { ok: false, error: "Paste your API key." };
-  if (apiKey && apiKey.length < 8) return { ok: false, error: "That key looks too short." };
-  if (apiKey.length > 500) return { ok: false, error: "That key looks too long." };
+  if (p.custom && !baseUrl) return { ok: false, error: i18n.t("coach:validate.serverAddress") };
+  if (!apiKey && !p.custom) return { ok: false, error: i18n.t("coach:validate.pasteKey") };
+  if (apiKey && apiKey.length < 8) return { ok: false, error: i18n.t("coach:validate.keyShort") };
+  if (apiKey.length > 500) return { ok: false, error: i18n.t("coach:validate.keyLong") };
   return { ok: true, provider: input.provider, model, apiKey: apiKey || null, baseUrl };
 }
 
+/** The English wording, for tests; the app shows `coach:validate.testFailed`. */
 export const TEST_FAILED = "That didn’t work: check the key and the model id, and that your account has credit.";
 
 /**
@@ -45,7 +47,7 @@ export async function testKey(input: ProviderInput, fetch?: Fetch, timeoutMs = 2
   const c = checkProvider(input);
   if (!c.ok) return c;
   const model = modelFor(c, fetch);
-  if (!model) return { ok: false, error: "Pick a provider." };
+  if (!model) return { ok: false, error: i18n.t("coach:validate.pickProvider") };
   const ctl = new AbortController();
   const timer = setTimeout(() => ctl.abort(new Error("timeout")), timeoutMs);
   try {
@@ -54,7 +56,7 @@ export async function testKey(input: ProviderInput, fetch?: Fetch, timeoutMs = 2
     return c;
   } catch (e) {
     console.warn(`[coach] key test failed for ${c.provider}: ${e instanceof Error ? e.name : "error"}`);
-    return { ok: false, error: TEST_FAILED };
+    return { ok: false, error: i18n.t("coach:validate.testFailed") };
   } finally {
     clearTimeout(timer);
   }

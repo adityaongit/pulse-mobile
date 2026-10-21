@@ -2,6 +2,7 @@
 // key (BYOK), then the chat. `?c=` opens a saved chat, `?q=` fills the composer without sending, `?brief=1` asks for
 // today's brief at once, `?send=1` asks `?q=` at once, `?n=` starts a fresh chat.
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { generateId, type UIMessage } from "ai";
@@ -36,17 +37,18 @@ function ChatSkeleton() {
 
 /** The header's right side: Chats (with the count), New chat once a chat is open, and Coach settings. */
 function BarActions({ chatCount, chatOpen, onNew }: { chatCount: number; chatOpen: boolean; onNew: () => void }) {
+  const { t } = useTranslation("coach");
   return (
     <View className="flex-row items-center">
-      <Button variant="ghost" size="icon-touch" haptic={false} onPress={() => push("/coach/chats")} accessibilityLabel={chatCount ? `Chats (${chatCount})` : "Chats"}>
+      <Button variant="ghost" size="icon-touch" haptic={false} onPress={() => push("/coach/chats")} accessibilityLabel={chatCount ? t("bar.chatsCount", { count: chatCount }) : t("bar.chats")}>
         <Icon icon={History} size={20} />
       </Button>
       {chatOpen && (
-        <Button variant="ghost" size="icon-touch" onPress={onNew} accessibilityLabel="New chat">
+        <Button variant="ghost" size="icon-touch" onPress={onNew} accessibilityLabel={t("bar.newChat")}>
           <Icon icon={SquarePen} size={20} />
         </Button>
       )}
-      <Button variant="ghost" size="icon-touch" haptic={false} onPress={() => push("/coach/settings")} accessibilityLabel="Coach settings">
+      <Button variant="ghost" size="icon-touch" haptic={false} onPress={() => push("/coach/settings")} accessibilityLabel={t("settingsTitle")}>
         <Icon icon={Settings2} size={20} />
       </Button>
     </View>
@@ -54,6 +56,7 @@ function BarActions({ chatCount, chatOpen, onNew }: { chatCount: number; chatOpe
 }
 
 export function CoachScreen() {
+  const { t } = useTranslation("coach");
   const setup = useCoachSetup();
   const chatCount = useChatCount();
   const params = useLocalSearchParams<{ c?: string; q?: string; brief?: string; send?: string; n?: string }>();
@@ -82,20 +85,20 @@ export function CoachScreen() {
   }, [loading, c]);
   const chat = loading ? undefined : shown;
 
-  if (setup === undefined) return <DetailShell title="Coach" loading primary={<ChatSkeleton />} />;
-  if (!setup.consent || !setup.provider) return <DetailShell title="Coach" primary={!setup.consent ? <Consent /> : <ConnectProvider current={setup} />} />;
+  if (setup === undefined) return <DetailShell title={t("title")} loading primary={<ChatSkeleton />} />;
+  if (!setup.consent || !setup.provider) return <DetailShell title={t("title")} primary={!setup.consent ? <Consent /> : <ConnectProvider current={setup} />} />;
 
   const newChat = () => router.setParams({ c: undefined, q: undefined, brief: undefined, send: undefined, n: generateId() });
   return (
     <View className="flex-1 bg-background">
-      <DetailHeader title="Coach" action={<BarActions chatCount={chatCount ?? 0} chatOpen={!!c} onNew={newChat} />} onHeight={setHeaderH} />
+      <DetailHeader title={t("title")} action={<BarActions chatCount={chatCount ?? 0} chatOpen={!!c} onNew={newChat} />} onHeight={setHeaderH} />
       <View className="flex-1" style={{ paddingTop: headerH }}>
         {chat && data ? (
           <Coach
             key={chat.id}
             id={chat.id}
             initial={chat.messages}
-            prefill={brief && !c ? "Today's brief" : (param(params.q) ?? "").slice(0, 500)}
+            prefill={brief && !c ? t("suggestions.brief") : (param(params.q) ?? "").slice(0, 500)}
             auto={(brief || sendNow) && !c}
             providerLabel={providerLabel(setup.provider)}
             suggestions={data.suggestions}

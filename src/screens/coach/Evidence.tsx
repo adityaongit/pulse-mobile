@@ -3,8 +3,10 @@
 // a "Based on" link to the screen it read.
 import type { ReactNode } from "react";
 import { View } from "react-native";
+import { useTranslation } from "react-i18next";
 import { ArrowUpRight } from "lucide-react-native";
 import type { CoachOutputs } from "@/coach/tools";
+import { i18n } from "@/i18n/config";
 import { normalizeReason, reasonCopy, type Metric } from "@/lib/reasons";
 import { cn } from "@/ui/cn";
 import { Card } from "@/ui/Card";
@@ -24,10 +26,11 @@ function metric(m: { value: number | null; reason?: string | null; provisional?:
   return { value: m.value, reason: m.value === null ? normalizeReason(m.reason) : null, provisional: m.provisional ?? false } as Metric<number>;
 }
 
-function BasedOn({ href, children }: { href: string; children: ReactNode }) {
+function BasedOn({ href, children }: { href: string; children: string }) {
+  const { t } = useTranslation("coach");
   return (
     <Press accessibilityRole="link" onPress={() => push(href)} className="min-h-10 flex-row items-center gap-1.5 self-start">
-      <Text className="text-xs leading-4 text-coach-text">Based on {children}</Text>
+      <Text className="text-xs leading-4 text-coach-text">{t("evidence.basedOn", { what: children })}</Text>
       <Icon icon={ArrowUpRight} size={14} tone="coach-text" />
     </Press>
   );
@@ -56,23 +59,23 @@ function Ring({ label, variant, m, unit }: { label: string; variant: MiniRingVar
 
 /** get_day: Recovery, Sleep and Strain, then up to three contributors with their points. */
 export function DayCard({ d }: { d: DayDigest }) {
+  const { t } = useTranslation("coach");
   const moved = d.recovery.contributors.filter((c) => c.points !== null && c.points !== 0).slice(0, 3);
   return (
     <Card className="p-2">
       <View className="flex-row gap-2">
-        <Ring label="Recovery" variant="recovery" m={d.recovery} unit="%" />
-        <Ring label="Sleep" variant="sleep" m={d.sleep.performance} unit="%" />
-        <Ring label="Strain" variant="strain" m={d.strain} />
+        <Ring label={t("evidence.ringRecovery")} variant="recovery" m={d.recovery} unit="%" />
+        <Ring label={t("evidence.ringSleep")} variant="sleep" m={d.sleep.performance} unit="%" />
+        <Ring label={t("evidence.ringStrain")} variant="strain" m={d.strain} />
       </View>
       {moved.length > 0 && (
         <View className="px-2 pb-1.5 pt-3">
-          <Text className="text-xs font-medium text-muted-foreground">What moved Recovery</Text>
+          <Text className="text-xs font-medium text-muted-foreground">{t("evidence.moved")}</Text>
           {moved.map((c, i) => (
             <View key={c.label} className={cn("flex-row items-center justify-between gap-3 py-1.5", i > 0 && "border-t border-border")}>
               <Text className="text-sm text-foreground-secondary">{c.label}</Text>
               <Text className={cn("font-numeric text-sm font-semibold", c.points! > 0 ? "text-recovery-green" : "text-recovery-red-text")}>
-                {c.points! > 0 ? "+" : "−"}
-                {Math.abs(c.points!)} pts
+                {t("evidence.points", { value: `${c.points! > 0 ? "+" : "−"}${Math.abs(c.points!)}` })}
               </Text>
             </View>
           ))}
@@ -83,13 +86,14 @@ export function DayCard({ d }: { d: DayDigest }) {
 }
 
 export function Evidence({ name, output }: { name: string; output: unknown }) {
+  const { t } = useTranslation("coach");
   if (!output || typeof output !== "object") return null;
   if (name === "get_day") {
     const d = output as DayDigest;
     return (
       <View className="gap-2">
         <DayCard d={d} />
-        <BasedOn href={`/recovery?d=${d.day}`}>Recovery, Sleep and Strain · {d.day}</BasedOn>
+        <BasedOn href={`/recovery?d=${d.day}`}>{t("evidence.dayTitle", { day: d.day })}</BasedOn>
       </View>
     );
   }
@@ -97,38 +101,36 @@ export function Evidence({ name, output }: { name: string; output: unknown }) {
     const d = output as CoachOutputs["get_trend"];
     return (
       <View className="gap-2">
-        <EvidenceCard title={`${d.metric} · ${d.start} to ${d.end}`}>
-          <KeyStatRow variant="row" label="Period average" metric={metric(d.average)} unit={d.unit ?? undefined} format="decimal1" direction="none" average={d.previous.average.value} averageLabel="Previous period" caption={`${d.observedDays} of ${d.calendarDays} days measured`} />
+        <EvidenceCard title={t("evidence.trendTitle", { metric: d.metric, start: d.start, end: d.end })}>
+          <KeyStatRow variant="row" label={t("evidence.periodAverage")} metric={metric(d.average)} unit={d.unit ?? undefined} format="decimal1" direction="none" average={d.previous.average.value} averageLabel={t("evidence.previousPeriod")} caption={t("evidence.daysMeasured", { observed: d.observedDays, calendar: d.calendarDays })} />
           <Sparkline values={d.points.map((p) => p.value)} className="mt-2 h-14" />
         </EvidenceCard>
-        <BasedOn href="/trends">
-          {d.metric} · {d.start} to {d.end}
-        </BasedOn>
+        <BasedOn href="/trends">{t("evidence.trendTitle", { metric: d.metric, start: d.start, end: d.end })}</BasedOn>
       </View>
     );
   }
   if (name === "get_sleep") {
     const d = output as CoachOutputs["get_sleep"];
     const debt = d.details.find((v) => v.key === "debt");
-    const time = (ms: number) => new Intl.DateTimeFormat("en", { timeZone: d.timeZone, hour: "numeric", minute: "2-digit" }).format(ms);
+    const time = (ms: number) => new Intl.DateTimeFormat(i18n.language, { timeZone: d.timeZone, hour: "numeric", minute: "2-digit" }).format(ms);
     const plan = d.planner.value;
     return (
       <View className="gap-2">
-        <EvidenceCard title={`Sleep · ${d.day}`}>
-          <KeyStatRow variant="row" label="Time asleep" metric={metric(d.asleepMinutes)} unit="min" format="int" direction="none" />
+        <EvidenceCard title={t("evidence.sleepTitle", { day: d.day })}>
+          <KeyStatRow variant="row" label={t("evidence.timeAsleep")} metric={metric(d.asleepMinutes)} unit="min" format="int" direction="none" />
           {d.summary
             .filter((v) => v.key === "efficiency" || v.key === "consistency")
             .map((v) => (
               <KeyStatRow key={v.key} variant="row" label={v.label} metric={metric(v)} unit={v.unit ?? undefined} format="int" average={v.baseline} direction="up" />
             ))}
-          {debt && <KeyStatRow variant="row" label="Sleep debt" metric={metric(debt)} unit="min" format="int" direction="down" />}
+          {debt && <KeyStatRow variant="row" label={t("evidence.sleepDebt")} metric={metric(debt)} unit="min" format="int" direction="down" />}
           {plan && (
             <Text className={cn(NOTE, "mt-2 text-foreground-secondary")}>
-              For {time(plan.wakeAt)} wake-up, {plan.plans.map((v) => `${v.label.toLowerCase()}: ${time(v.bedtimeAt)}`).join("; ")}. These are planned bedtimes.
+              {t("evidence.plan", { wake: time(plan.wakeAt), plans: plan.plans.map((v) => t("evidence.planItem", { label: v.label.toLowerCase(), time: time(v.bedtimeAt) })).join("; ") })}
             </Text>
           )}
         </EvidenceCard>
-        <BasedOn href={`/sleep?d=${d.day}`}>Sleep and bedtime planner · {d.day}</BasedOn>
+        <BasedOn href={`/sleep?d=${d.day}`}>{t("evidence.plannerTitle", { day: d.day })}</BasedOn>
       </View>
     );
   }
@@ -136,35 +138,31 @@ export function Evidence({ name, output }: { name: string; output: unknown }) {
     const d = output as CoachOutputs["get_activities"];
     return (
       <View className="gap-2">
-        <EvidenceCard title={`Workouts · ${d.start} to ${d.end}`}>
+        <EvidenceCard title={t("evidence.workoutsTitle", { start: d.start, end: d.end })}>
           {d.workouts.length ? (
-            d.workouts.slice(0, 5).map((v) => <KeyStatRow key={v.id} variant="row" label={v.name} metric={metric(v.strain)} unit="%" format="int" direction="none" caption={`${v.day} · ${v.minutes} min · Strain`} href={`/activity/${encodeURIComponent(v.id)}`} />)
+            d.workouts.slice(0, 5).map((v) => <KeyStatRow key={v.id} variant="row" label={v.name} metric={metric(v.strain)} unit="%" format="int" direction="none" caption={t("evidence.workoutCaption", { day: v.day, minutes: v.minutes })} href={`/activity/${encodeURIComponent(v.id)}`} />)
           ) : (
-            <Text className={NOTE}>No workouts recorded in this period.</Text>
+            <Text className={NOTE}>{t("evidence.noWorkouts")}</Text>
           )}
-          {d.total > 5 && <Text className={cn(NOTE, "mt-2 text-xs")}>Showing 5 of {d.total} recorded workouts.</Text>}
+          {d.total > 5 && <Text className={cn(NOTE, "mt-2 text-xs")}>{t("evidence.showing", { total: d.total })}</Text>}
         </EvidenceCard>
-        <BasedOn href="/activities">
-          Recorded workouts · {d.start} to {d.end}
-        </BasedOn>
+        <BasedOn href="/activities">{t("evidence.recordedTitle", { start: d.start, end: d.end })}</BasedOn>
       </View>
     );
   }
   if (name === "get_activity") {
     const a = (output as CoachOutputs["get_activity"]).workout;
-    if (!a) return <Text className={NOTE}>That workout is unavailable.</Text>;
+    if (!a) return <Text className={NOTE}>{t("evidence.unavailable")}</Text>;
     return (
       <View className="gap-2">
-        <EvidenceCard title={`${a.name} · ${a.day}`}>
-          <KeyStatRow variant="row" label="Activity strain" metric={metric(a.strain)} unit="%" format="int" direction="none" />
+        <EvidenceCard title={t("evidence.workoutTitle", { name: a.name, day: a.day })}>
+          <KeyStatRow variant="row" label={t("evidence.activityStrain")} metric={metric(a.strain)} unit="%" format="int" direction="none" />
           {a.stats.slice(0, 3).map((v) => (
             <KeyStatRow key={v.label} variant="row" label={v.label} metric={metric(v)} unit={v.unit ?? undefined} format="decimal1" average={v.baseline} direction="none" />
           ))}
           <ZoneBars variant="rows" data={zoneBars(a.zones)} note={a.zoneNote} />
         </EvidenceCard>
-        <BasedOn href={`/activity/${encodeURIComponent(a.id)}`}>
-          {a.name} · {a.day}
-        </BasedOn>
+        <BasedOn href={`/activity/${encodeURIComponent(a.id)}`}>{t("evidence.workoutTitle", { name: a.name, day: a.day })}</BasedOn>
       </View>
     );
   }
@@ -172,22 +170,21 @@ export function Evidence({ name, output }: { name: string; output: unknown }) {
     const d = output as CoachOutputs["get_journal_impacts"];
     return (
       <View className="gap-2">
-        <EvidenceCard title={`Habit associations · ${d.outcome}`}>
-          <Text className="text-xs leading-4 text-muted-foreground">Differences in next-day averages, not proof of cause.</Text>
+        <EvidenceCard title={t("evidence.habitsTitle", { outcome: d.outcome })}>
+          <Text className="text-xs leading-4 text-muted-foreground">{t("evidence.habitsNote")}</Text>
           {d.effects.slice(0, 3).map((v) => (
             <View key={v.behaviour}>
-              <KeyStatRow variant="row" label={v.behaviour} metric={metric({ value: v.delta })} unit={d.unit} format="signed1" direction="none" caption={`${v.yesDays} days with, ${v.noDays} without`} />
+              <KeyStatRow variant="row" label={v.behaviour} metric={metric({ value: v.delta })} unit={d.unit} format="signed1" direction="none" caption={t("evidence.withWithout", { yes: v.yesDays, no: v.noDays })} />
               {v.confidenceInterval && (
                 <Text className="pb-2 text-xs leading-4 text-muted-foreground">
-                  90% interval: {v.confidenceInterval.map((n) => n.toFixed(1)).join(" to ")} {d.unit}
-                  {v.effect === "none" ? ". No clear association." : "."}
+                  {t(v.effect === "none" ? "evidence.intervalNone" : "evidence.interval", { from: v.confidenceInterval[0].toFixed(1), to: v.confidenceInterval[1].toFixed(1), unit: d.unit })}
                 </Text>
               )}
             </View>
           ))}
-          {!d.effects.length && <Text className={cn(NOTE, "mt-2")}>Not enough check-ins to compare habits yet.</Text>}
+          {!d.effects.length && <Text className={cn(NOTE, "mt-2")}>{t("evidence.noHabits")}</Text>}
         </EvidenceCard>
-        <BasedOn href="/journal/insights">Behaviour insights</BasedOn>
+        <BasedOn href="/journal/insights">{t("evidence.insights")}</BasedOn>
       </View>
     );
   }
@@ -195,31 +192,29 @@ export function Evidence({ name, output }: { name: string; output: unknown }) {
     const d = output as CoachOutputs["get_health"];
     return (
       <View className="gap-2">
-        <EvidenceCard title={`Health Monitor · ${d.day}`}>
+        <EvidenceCard title={t("evidence.healthTitle", { day: d.day })}>
           {d.vitals.map((v) => (
             <KeyStatRow key={v.vital} variant="row" label={v.vital} metric={metric(v)} unit={v.unit} format="decimal1" direction="none" caption={String(v.status).replaceAll("_", " ")} />
           ))}
         </EvidenceCard>
-        <BasedOn href={`/health/monitor?d=${d.day}`}>Health Monitor · {d.day}</BasedOn>
+        <BasedOn href={`/health/monitor?d=${d.day}`}>{t("evidence.healthTitle", { day: d.day })}</BasedOn>
       </View>
     );
   }
   if (name === "get_report") {
     const d = output as CoachOutputs["get_report"];
-    if (!("scores" in d) || !d.scores) return <Text className={NOTE}>No report available yet.</Text>;
+    if (!("scores" in d) || !d.scores) return <Text className={NOTE}>{t("evidence.noReport")}</Text>;
     return (
       <View className="gap-2">
-        <EvidenceCard title={`Report · ${d.start} to ${d.end}${d.partial ? " · Partial" : ""}`}>
+        <EvidenceCard title={t(d.partial ? "evidence.reportPartial" : "evidence.reportTitle", { start: d.start, end: d.end })}>
           {d.scores.map((v) => (
             <KeyStatRow key={v.score} variant="row" label={v.score} metric={metric(v)} format="decimal1" direction="none" />
           ))}
         </EvidenceCard>
-        <BasedOn href={`/reports/${encodeURIComponent(d.period)}`}>
-          Report · {d.start} to {d.end}
-        </BasedOn>
+        <BasedOn href={`/reports/${encodeURIComponent(d.period)}`}>{t("evidence.reportTitle", { start: d.start, end: d.end })}</BasedOn>
       </View>
     );
   }
-  if (name === "get_profile") return <BasedOn href="/settings?s=profile">Your profile</BasedOn>;
+  if (name === "get_profile") return <BasedOn href="/settings?s=profile">{t("evidence.profile")}</BasedOn>;
   return null;
 }
