@@ -840,3 +840,49 @@ Sideloaded APKs get no store updates, so Pulse checks GitHub Releases itself (do
 person to confirm; an app cannot replace itself silently. `expo-device`'s `supportedCpuArchitectures` (Build.SUPPORTED_ABIS,
 preferred first) picks the APK. Over-the-air JS updates (`expo-updates`) were set aside: they send an install ID to
 Expo's servers on every launch, and code would arrive outside the signed APK.
+
+## Background sync that finishes
+
+`expo-background-task` schedules a WorkManager job with `NetworkType.CONNECTED` hard-coded. Pulse's task only reads
+Health Connect on the phone, but the requirement still applied: Android cuts network access for an app in the
+background, JobScheduler then sees the constraint fail, stops the job ("constraints" in `dumpsys jobscheduler`), and
+the system freezes the process with the run half done. WorkManager retried every few seconds, so a 9-second sync showed
+up in Settings as 72 to 127 seconds. `patches/expo-background-task@57.0.21.patch` sets `NetworkType.NOT_REQUIRED`.
+Expo ships its modules prebuilt (an AAR in the package's `local-maven-repo`), which ignores a patch to the Kotlin
+source, so `package.json`'s `expo.autolinking.android.buildFromSource` lists `expo-background-task` to compile it.
+A job registered before the patch keeps the old constraint until it runs once; WorkManager then queues the next run
+with the new one.
+
+That was half of it. Phone makers add their own app freezers on top of Android (OnePlus, Oppo and Realme's "Hans",
+and Samsung's and Xiaomi's equivalents). On the owner's OnePlus, Hans unfreezes Pulse when the job starts and freezes
+it again 3 to 5 seconds later, job or no job; the job is then stopped and retried, and the sync runs in 5-second
+pieces with long frozen gaps. The same full re-read took 22.7 s under OnePlus's "Allow background activity" and 75 s
+under its default "Smart mode", with a 52 s frozen gap. Stock Android (a Pixel) keeps a process unfrozen while its job
+runs. Android's own battery exemption is not enough: Hans keeps freezing an exempted app until its own switch is set.
+That switch also adds the app to Android's exemption list, so `expo-battery`'s `isBatteryOptimizationEnabledAsync()`
+reads it, and Settings › Notifications & background shows a Battery row: "Unrestricted", or a note and an Open button
+that opens Pulse's App info (`Linking.openSettings()`), where every maker puts the battery choice.
+
+Each run is also cheaper:
+
+- **Nothing new, nothing read.** When Health Connect's changes feed reports no record written or deleted since the
+  last sync, on the same day, the sync reads nothing.
+- **Unchanged samples, no stage 1.** Heart rate, steps and HRV writes say whether a sample was new or had another
+  value, and only those days are marked for stage 1.
+- **Stage 2 resumes from disk.** Stage 2's resume point (the fold as it stood 14 days from the end, with a key per day
+  of its inputs) is kept in the database (`pipeline_checkpoint`), so a background run, which starts in a fresh
+  runtime, no longer replays every day.
+
+Measured on the owner's phone (about 145 days of data): the sync on opening the app went from 17.6 s (4.8 s reading
+Health Connect, 12.8 s scoring) to about 2 s, and a background run with nothing new takes 1.4 s.
+
+```mermaid
+flowchart TD
+  J[WorkManager job, no network requirement] --> C{Health Connect changed since the last sync?}
+  C -->|no, same day| P
+  C -->|yes| R[read the window] --> D{samples new or changed?}
+  D -->|those days| S1[stage 1 for them]
+  D -->|none| P
+  S1 --> P[stage 2 from the saved resume point]
+  P --> K[save the next resume point]
+```
