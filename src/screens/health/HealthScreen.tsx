@@ -38,6 +38,7 @@ const VITAL_ORDER: { key: VitalKey; short: string }[] = [
   { key: "restingHr", short: "RHR" },
   { key: "hrv", short: "HRV" },
   { key: "skinTempDev", short: "Temp" },
+  { key: "bp", short: "BP" },
 ];
 const ACWR_WORD: Record<ChipTone, string> = { optimal: "Optimal", warning: "Pushing", alert: "High risk", neutral: "Detraining" };
 

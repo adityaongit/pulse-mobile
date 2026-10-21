@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { View } from "react-native";
 import { ChevronRight, Info, Stethoscope } from "lucide-react-native";
-import { Circle, Path } from "@shopify/react-native-skia";
+import { Circle, Group, Path } from "@shopify/react-native-skia";
 import type { BloodPressureCategory } from "@/core/scoring/bloodPressure";
 import { formatDay, DAY } from "@/lib/format";
 import type { BloodPressurePoint, BloodPressureSummary } from "@/queries/bloodPressure";
@@ -120,12 +120,12 @@ function TrendPlot({ history }: { history: BloodPressurePoint[] }) {
                 const cyDia = scaleY(p.diastolic);
                 const dotColor = CATEGORY_DOT[p.category];
                 return (
-                  <View key={p.day}>
+                  <Group key={p.day}>
                     <Circle cx={cx} cy={cySys} r={4} color={dotColor} />
                     <Circle cx={cx} cy={cySys} r={2} color="#ffffff" />
                     <Circle cx={cx} cy={cyDia} r={4} color="#3b82f6" />
                     <Circle cx={cx} cy={cyDia} r={2} color="#ffffff" />
-                  </View>
+                  </Group>
                 );
               })}
             </PlotCanvas>
