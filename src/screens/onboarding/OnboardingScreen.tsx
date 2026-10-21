@@ -3,9 +3,14 @@
 // profile step is pulse's src/app/onboarding/Onboarding.tsx on the AuthShell frame: birth date, sex and the time zone
 // (the device's, one tap to change); height and max HR wait for Settings. Where to start comes from the app state
 // (src/state/app.ts): a saved profile without a source opens on the connect step, an import in flight on its progress.
-import { useState } from "react";
-import { View } from "react-native";
+import { useEffect, useState } from "react";
+import { AppState, Linking, View } from "react-native";
+import { isBatteryOptimizationEnabledAsync } from "expo-battery";
 import { Lock } from "lucide-react-native";
+import { writeSettings } from "@/background/settings";
+import { syncRegistration } from "@/background/task";
+import { Button } from "@/ui/Button";
+import { Card } from "@/ui/Card";
 import { exploreSample, refresh, stepLabel, useApp, type Progress } from "@/state/app";
 import { haptic } from "@/ui/haptics";
 import { Icon } from "@/ui/Icon";
@@ -156,6 +161,49 @@ function Importing({ sample }: { sample: boolean }) {
           {sample ? "Half a year of a demo person’s days, scored on this phone." : "Up to 180 days from Health Connect, scored on this phone. The first import takes a few minutes."}
         </Text>
       </View>
+      {!sample && !error && <BackgroundOffer />}
     </Frame>
+  );
+}
+
+/**
+ * While the first import runs: background sync, and the phone's battery setting it needs. Phone makers' app freezers
+ * pause Pulse a few seconds into a background run unless it may run in the background (docs/learning.md, "Background
+ * sync that finishes"), and their switch is in the app's own settings, so the button opens those when it is not set.
+ */
+function BackgroundOffer() {
+  const [on, setOn] = useState(false);
+  const [unrestricted, setUnrestricted] = useState<boolean | null>(null);
+  useEffect(() => {
+    const check = () => void isBatteryOptimizationEnabledAsync().then((opt) => setUnrestricted(!opt), () => setUnrestricted(null));
+    check();
+    const sub = AppState.addEventListener("change", (st) => st === "active" && check());
+    return () => sub.remove();
+  }, []);
+
+  const turnOn = async () => {
+    await writeSettings({ backgroundSync: true });
+    await syncRegistration(true);
+    setOn(true);
+    if (unrestricted === false) await Linking.openSettings();
+  };
+
+  const done = on && unrestricted !== false;
+  return (
+    <Card className="mt-8 gap-3 p-4">
+      <Text className="text-[15px] font-semibold leading-5">{done ? "Background sync is on" : "Keep Pulse up to date"}</Text>
+      <Text className="text-[13px] leading-[18px] text-foreground-secondary">
+        {done
+          ? "Pulse syncs while it’s closed. Change it in Settings › Notifications & background."
+          : on
+            ? "One more step: under Battery, choose Allow background activity or Unrestricted. Many phones pause Pulse in the background otherwise."
+            : "Sync while Pulse is closed. Many phones also need Pulse allowed to run in the background; the button opens that setting."}
+      </Text>
+      {!done && (
+        <Button variant="outline" onPress={() => void (on ? Linking.openSettings() : turnOn())}>
+          {on ? "Open battery settings" : "Turn on background sync"}
+        </Button>
+      )}
+    </Card>
   );
 }

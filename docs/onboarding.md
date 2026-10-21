@@ -23,7 +23,7 @@ flowchart TD
   X -->|Not now| P
   X --> SH2["Health Connect's permission sheet"]
   SH2 -->|nothing granted| R
-  SH2 -->|granted| I["Importing your data: step and progress"]
+  SH2 -->|granted| I["Importing your data: step and progress<br/>Keep Pulse up to date: background sync and battery"]
   I -->|first run done| H["Tabs"]
   I -->|failed| E["The import stopped: Try again"]
   E --> I
@@ -42,6 +42,7 @@ flowchart TD
 | Sample data card | `src/ui/shells/SampleCard.tsx`, in `PageShell` | Top of every tab root while the source is the sample. "Connect your data" opens `/connect`. |
 | Leaving sample data | `app/connect.tsx`, `connectHealth` in `src/state/app.ts` | Health Connect's permissions first, so a refused sheet keeps the sample. Then the demo rows go, the person's own profile comes back (or the profile step follows), and the import starts. |
 | First import | `src/screens/onboarding/OnboardingScreen.tsx` `Importing` | The run's step ("Reading heart rate", "Scoring your days") and a progress bar, from the app state's `progress`. |
+| Background sync offer | `src/screens/onboarding/OnboardingScreen.tsx` `BackgroundOffer` | Under the first import's progress: "Turn on background sync" turns it on and, when Android's battery optimisation still applies to Pulse (`expo-battery`), opens Pulse's App info, where the phone's "Allow background activity" or "Unrestricted" choice is. Phone makers' app freezers otherwise pause each background run a few seconds in (docs/learning.md, "Background sync that finishes"). Back in Pulse it reads "Background sync is on". |
 | Pulse Age checklist | `src/screens/health/FirstAge.tsx` | Replaces Pace of Aging until the first Pulse Age: recorded days out of 20, the Sleep, Strain and Fitness measures that are ready, and height (opens the profile sheet). |
 | Log yesterday | `app/(tabs)/journal.tsx` | The first time the Journal opens on today with yesterday not checked in, the check-in sheet opens on yesterday. Once only (AsyncStorage `pulse.journal.yesterdayOffered`). |
 
