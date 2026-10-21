@@ -1,1 +1,59 @@
-{}
+{
+  "title": "Recovery",
+  "loadError": "Couldn’t load this screen.",
+  "legendPeriod": "last 30 days",
+  "legendSkeleton": "Today vs. last 30 days",
+  "exploreInsights": "Explore your recovery insights",
+  "weeklyTitle": {
+    "recovery": "Recovery",
+    "hrv": "Heart Rate Variability",
+    "rhr": "Resting Heart Rate",
+    "resp": "Respiratory Rate",
+    "sleep": "Sleep Performance"
+  },
+  "behaviors": {
+    "title": "Behavior insights",
+    "body": "Some of your behaviors from yesterday may have affected your Recovery score today.",
+    "spokenUp": "{{label}}, went with higher Recovery",
+    "spokenDown": "{{label}}, went with lower Recovery",
+    "spokenNeutral": "{{label}}, no clear effect"
+  },
+  "subject": {
+    "hrv": "HRV",
+    "rhr": "Resting heart rate",
+    "resp": "Respiratory rate",
+    "sleep": "Sleep",
+    "skin": "Skin temperature"
+  },
+  "driver": {
+    "strongSleep": "Strong night of sleep",
+    "weakSleep": "Sleep below a good night",
+    "typicalSleep": "Typical night of sleep",
+    "skinWarmer": "Skin temperature warmer than usual",
+    "skinCooler": "Skin temperature cooler than usual",
+    "hrvBelow": "HRV below baseline",
+    "atBaseline": "{{subject}} at baseline",
+    "slightlyAbove": "{{subject}} slightly above baseline",
+    "slightlyBelow": "{{subject}} slightly below baseline",
+    "above": "{{subject}} above baseline",
+    "below": "{{subject}} below baseline"
+  },
+  "phrase": {
+    "hrvGood": "your HRV is above your baseline",
+    "hrvBad": "your HRV is below your baseline",
+    "rhrGood": "your resting heart rate is lower than usual",
+    "rhrBad": "your resting heart rate is higher than usual",
+    "respGood": "your breathing rate is steady",
+    "respBad": "your breathing rate is up",
+    "sleepGood": "you slept well",
+    "sleepBad": "your sleep fell short",
+    "skinGood": "your skin temperature is normal",
+    "skinBad": "your skin temperature moved from your normal"
+  },
+  "insight": {
+    "lifted": "{{phrase}}, which lifted Recovery today.",
+    "heldBack": "{{phrase}}, which held Recovery back today.",
+    "mixed": "{{good}}, but {{bad}}. Together they shaped today’s Recovery.",
+    "steady": "Your signals sit close to your baseline, so Recovery is near your usual level."
+  }
+}

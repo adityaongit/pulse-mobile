@@ -1,6 +1,7 @@
 // Small pieces the Recovery, Strain and Activity screens share (src/screens/{recovery,strain,activity}).
 import { type ReactNode } from "react"
 import { View } from "react-native"
+import { useTranslation } from "react-i18next"
 import { CircleAlert } from "lucide-react-native"
 import { Card } from "@/ui/Card"
 import { InsightCardSkeleton } from "@/ui/metrics/InsightCard"
@@ -16,7 +17,8 @@ export { Divided }
 
 /** pulse's (app)/error.tsx: every screen's error view, with a retry that runs the query again. */
 export function ScreenError({ retry }: { retry: () => void }) {
-  return <DetailShell title="Pulse" primary={<View accessibilityRole="alert" className="pt-16"><EmptyState icon={CircleAlert} body="Couldn’t load this screen." action={{ label: "Try again", onClick: retry }} /></View>} />
+  const { t } = useTranslation("recovery")
+  return <DetailShell title="Pulse" primary={<View accessibilityRole="alert" className="pt-16"><EmptyState icon={CircleAlert} body={t("loadError")} action={{ label: t("actions.tryAgain", { ns: "common" }), onClick: retry }} /></View>} />
 }
 
 /** Recovery and Strain's loading shape (pulse's skeletons.tsx `DialDetail`): the dial, the notched summary card, the insight card, then the page's own cards. */

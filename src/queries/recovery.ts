@@ -1,4 +1,5 @@
 // Recovery `/recovery` (spec §7.2). Ported from Pulse's src/server/queries/recovery.ts.
+import { i18n } from "@/i18n/config";
 import { quantity } from "@/lib/units";
 import type { ChargeDriver } from "@/core/scoring/drivers";
 import { addDays } from "@/lib/time";
@@ -19,29 +20,29 @@ import {
 } from "./common";
 import type { Contributor, DriverItem, Metric, RecoveryVM } from "./types";
 
-const SUBJECT: Record<ChargeDriver["label"], string> = {
-  HEART_RATE_VARIABILITY: "HRV",
-  RESTING_HEART_RATE: "Resting heart rate",
-  RESPIRATORY_RATE: "Respiratory rate",
-  SLEEP_QUALITY: "Sleep",
-  SKIN_TEMPERATURE: "Skin temperature",
-};
+const SUBJECT_KEY = {
+  HEART_RATE_VARIABILITY: "hrv",
+  RESTING_HEART_RATE: "rhr",
+  RESPIRATORY_RATE: "resp",
+  SLEEP_QUALITY: "sleep",
+  SKIN_TEMPERATURE: "skin",
+} as const satisfies Record<ChargeDriver["label"], string>;
 
 /** "HRV above baseline", "Strong night of sleep", … from noop's verdicts. */
 export function driverLabel(d: ChargeDriver): string {
-  const s = SUBJECT[d.label];
+  const subject = i18n.t(`recovery:subject.${SUBJECT_KEY[d.label]}`);
   const v = d.verdict;
-  if (v === "STRONG_NIGHT_SUPPORTING") return "Strong night of sleep";
-  if (v === "BELOW_GOOD_NIGHT_LIMITING") return "Sleep below a good night";
-  if (v === "TYPICAL_NIGHT") return "Typical night of sleep";
-  if (v === "WARMER_THAN_BASELINE_LIMITING") return "Skin temperature warmer than usual";
-  if (v === "COOLER_THAN_BASELINE_LIMITING") return "Skin temperature cooler than usual";
-  if (v === "NEAR_BASELINE" || v === "AT_BASELINE") return `${s} at baseline`;
-  if (v === "HRV_SATURATION_LIMITING") return "HRV below baseline";
-  if (v.startsWith("SLIGHTLY_ABOVE")) return `${s} slightly above baseline`;
-  if (v.startsWith("SLIGHTLY_BELOW")) return `${s} slightly below baseline`;
-  if (v.startsWith("ABOVE")) return `${s} above baseline`;
-  return `${s} below baseline`;
+  if (v === "STRONG_NIGHT_SUPPORTING") return i18n.t("recovery:driver.strongSleep");
+  if (v === "BELOW_GOOD_NIGHT_LIMITING") return i18n.t("recovery:driver.weakSleep");
+  if (v === "TYPICAL_NIGHT") return i18n.t("recovery:driver.typicalSleep");
+  if (v === "WARMER_THAN_BASELINE_LIMITING") return i18n.t("recovery:driver.skinWarmer");
+  if (v === "COOLER_THAN_BASELINE_LIMITING") return i18n.t("recovery:driver.skinCooler");
+  if (v === "NEAR_BASELINE" || v === "AT_BASELINE") return i18n.t("recovery:driver.atBaseline", { subject });
+  if (v === "HRV_SATURATION_LIMITING") return i18n.t("recovery:driver.hrvBelow");
+  if (v.startsWith("SLIGHTLY_ABOVE")) return i18n.t("recovery:driver.slightlyAbove", { subject });
+  if (v.startsWith("SLIGHTLY_BELOW")) return i18n.t("recovery:driver.slightlyBelow", { subject });
+  if (v.startsWith("ABOVE")) return i18n.t("recovery:driver.above", { subject });
+  return i18n.t("recovery:driver.below", { subject });
 }
 
 const KEY_OF: Record<ChargeDriver["label"], Contributor["key"]> = {
@@ -116,7 +117,7 @@ export function contributors(row: DayRow | undefined, isToday: boolean, rows?: M
   return [
     {
       key: "hrv",
-      label: "Heart rate variability",
+      label: i18n.t("metrics:label.hrv"),
       unit: "ms",
       metric: metric("hrv", row?.metrics?.hrvMs, r?.value != null ? "no_data" : vitalReason(row, isToday, true)),
       baseline: base(b?.hrv, usable(b?.hrv)),
@@ -125,7 +126,7 @@ export function contributors(row: DayRow | undefined, isToday: boolean, rows?: M
     },
     {
       key: "rhr",
-      label: "Resting heart rate",
+      label: i18n.t("metrics:label.rhr"),
       unit: "bpm",
       metric: metric("rhr", row?.rhr, missing),
       baseline: base(b?.rhr, usable(b?.rhr)),
@@ -134,7 +135,7 @@ export function contributors(row: DayRow | undefined, isToday: boolean, rows?: M
     },
     {
       key: "resp",
-      label: "Respiratory rate",
+      label: i18n.t("metrics:label.resp"),
       unit: "rpm",
       metric: metric("resp", row?.metrics?.respBpm, missing),
       baseline: base(b?.resp, usable(b?.resp)),
@@ -143,7 +144,7 @@ export function contributors(row: DayRow | undefined, isToday: boolean, rows?: M
     },
     {
       key: "sleep",
-      label: "Sleep performance",
+      label: i18n.t("metrics:label.sleep"),
       unit: "%",
       metric: metric("sleep", inputs?.sleepPerf != null ? inputs.sleepPerf * 100 : null, missing),
       baseline: sleepBase(row, rows),
@@ -152,7 +153,7 @@ export function contributors(row: DayRow | undefined, isToday: boolean, rows?: M
     },
     {
       key: "skinTemp",
-      label: "Skin temperature",
+      label: i18n.t("metrics:label.skin"),
       unit: temp.unit,
       metric: metric("skinTemp", finite(inputs?.skinTempDev) ? temp.change(inputs.skinTempDev) : null, row?.metrics?.nightlyTempC != null ? "calibrating" : missing),
       baseline: tempSd ? { mean: 0, sd: temp.change(tempSd) } : null,
@@ -166,19 +167,13 @@ export function contributors(row: DayRow | undefined, isToday: boolean, rows?: M
 export function insightOf(drivers: ChargeDriver[]): string {
   const up = drivers.filter((d) => d.deltaPoints > 0).map((d) => d.label);
   const down = drivers.filter((d) => d.deltaPoints < 0).map((d) => d.label);
-  const phrase = (l: ChargeDriver["label"], good: boolean) =>
-    ({
-      HEART_RATE_VARIABILITY: good ? "your HRV is above your baseline" : "your HRV is below your baseline",
-      RESTING_HEART_RATE: good ? "your resting heart rate is lower than usual" : "your resting heart rate is higher than usual",
-      RESPIRATORY_RATE: good ? "your breathing rate is steady" : "your breathing rate is up",
-      SLEEP_QUALITY: good ? "you slept well" : "your sleep fell short",
-      SKIN_TEMPERATURE: good ? "your skin temperature is normal" : "your skin temperature moved from your normal",
-    })[l];
+  const KEY = { HEART_RATE_VARIABILITY: "hrv", RESTING_HEART_RATE: "rhr", RESPIRATORY_RATE: "resp", SLEEP_QUALITY: "sleep", SKIN_TEMPERATURE: "skin" } as const;
+  const phrase = (l: ChargeDriver["label"], good: boolean) => i18n.t(`recovery:phrase.${KEY[l]}${good ? "Good" : "Bad"}`);
   const cap = (s: string) => s[0].toUpperCase() + s.slice(1);
-  if (up.length && !down.length) return `${cap(phrase(up[0], true))}, which lifted Recovery today.`;
-  if (down.length && !up.length) return `${cap(phrase(down[0], false))}, which held Recovery back today.`;
-  if (up.length && down.length) return `${cap(phrase(up[0], true))}, but ${phrase(down[0], false)}. Together they shaped today’s Recovery.`;
-  return "Your signals sit close to your baseline, so Recovery is near your usual level.";
+  if (up.length && !down.length) return i18n.t("recovery:insight.lifted", { phrase: cap(phrase(up[0], true)) });
+  if (down.length && !up.length) return i18n.t("recovery:insight.heldBack", { phrase: cap(phrase(down[0], false)) });
+  if (up.length && down.length) return i18n.t("recovery:insight.mixed", { good: cap(phrase(up[0], true)), bad: phrase(down[0], false) });
+  return i18n.t("recovery:insight.steady");
 }
 
 /** Mean and SD of Sleep Performance over the 60 days before `row`; null without two nights. */
