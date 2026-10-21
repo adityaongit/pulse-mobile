@@ -44,6 +44,8 @@ export type DetailShellProps = {
   footer?: ReactNode;
   /** Pull to refresh (see ScreenScroll): wire it to "sync now". */
   onRefresh?: ScreenScrollProps["onRefresh"];
+  /** See ScreenScroll: false when the screen floats its own action at the foot. */
+  floatingAction?: boolean;
   /** What shows below the fold while a cold push slides in: the screen's own skeleton of its first sections (the same
    *  one its loading state draws). Without it, a skeleton per section in that section's chrome. */
   bodySkeleton?: ReactNode;
@@ -51,7 +53,7 @@ export type DetailShellProps = {
   loading?: boolean;
 };
 
-export function DetailShell({ title, subtitle, info, backHref, dateSwitcher, dismiss, align, titleIcon, action, ground, hero, stats, collapse, summary, notch, insight, primary, secondary, footer, bodySkeleton, loading, onRefresh }: DetailShellProps) {
+export function DetailShell({ title, subtitle, info, backHref, dateSwitcher, dismiss, align, titleIcon, action, ground, hero, stats, collapse, summary, notch, insight, primary, secondary, footer, bodySkeleton, loading, onRefresh, floatingAction }: DetailShellProps) {
   const insets = useSafeAreaInsets();
   const side = summary ?? (hero ? insight : null);
   const inHeader = dateSwitcher?.placement === "header";
@@ -74,7 +76,7 @@ export function DetailShell({ title, subtitle, info, backHref, dateSwitcher, dis
   const header = compact ? <CollapsingHeader {...headerProps} compact={compact} stats={stats} progress={progress} onHeight={setHeaderHeight} /> : <DetailHeader {...headerProps} onHeight={setHeaderHeight} />;
 
   return (
-    <ScreenScroll header={header} top={headerHeight} onScroll={onScroll} healthspan={ground === "healthspan"} onRefresh={onRefresh ?? shellSync?.syncNow}>
+    <ScreenScroll header={header} top={headerHeight} onScroll={onScroll} healthspan={ground === "healthspan"} floatingAction={floatingAction} onRefresh={onRefresh ?? shellSync?.syncNow}>
       {body && <View removeClippedSubviews className="w-full px-4 pt-2" accessibilityState={{ busy: !!loading }}>
         {loading && <Text accessibilityLiveRegion="polite" className="absolute h-px w-px opacity-0">{title.trim() ? `Loading ${title}…` : "Loading…"}</Text>}
         {dateSwitcher && !inHeader && (

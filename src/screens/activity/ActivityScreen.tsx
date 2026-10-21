@@ -77,6 +77,8 @@ export function ActivityScreen() {
         align="start"
         titleIcon={<Icon icon={ACTIVITY_ICON[vm.kind]} size={24} tone="foreground" strokeWidth={1.75} />}
         backHref={strainHref}
+        // The coach pill takes the foot of the screen, full width, in place of the round coach button.
+        floatingAction={!coach}
         action={<ActivityMenu strainHref={strainHref} settingsHref={HR_SETTINGS} />}
         hero={<Hero vm={vm} />}
         // the reference app draws the heart rate and the zone rows on the ground, not in cards [latest-activity-1].
@@ -209,8 +211,8 @@ function StatsSkeleton() {
     <View accessibilityElementsHidden className="flex-row flex-wrap gap-3">
       {(
         [
-          ["avgHr", "Average heart rate"],
-          ["maxHr", "Max heart rate"],
+          ["avgHr", "Avg HR"],
+          ["maxHr", "Max HR"],
           ["calories", "Calories"],
         ] as const
       ).map(([k, l]) => (

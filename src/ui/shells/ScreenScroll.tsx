@@ -57,6 +57,8 @@ export type ScreenScrollProps = {
   bottomPad?: number;
   /** The flat Healthspan ground instead of the gradient. */
   healthspan?: boolean;
+  /** False on a screen that floats its own action at the foot (a workout's coach pill): no check-in button there. */
+  floatingAction?: boolean;
   /** Pull to refresh: called when the user pulls down; the spinner stays until the promise settles. Wire it to "sync now". Without it the screen has no pull-to-refresh. */
   onRefresh?: () => void | Promise<unknown>;
   children: ReactNode;
@@ -68,10 +70,11 @@ export type ScreenScrollProps = {
  * it and its fade), the check-in button floating over the foot of a detail screen, the web's pull to sync, and the keyboard:
  * the scroll view ends at its top and brings the focused field into view.
  */
-export function ScreenScroll({ header, top, onScroll, bottomPad, healthspan, onRefresh, children }: ScreenScrollProps) {
+export function ScreenScroll({ header, top, onScroll, bottomPad, healthspan, floatingAction = true, onRefresh, children }: ScreenScrollProps) {
   const { c } = useTheme();
   const clearance = useBottomClearance();
-  const checkIn = showsCheckIn(usePathname());
+  const pathname = usePathname();
+  const checkIn = floatingAction && showsCheckIn(pathname);
   const { section } = useLocalSearchParams<{ section?: string }>();
   const scroll = useAnimatedRef<Animated.ScrollView>();
   const offset = useScrollViewOffset(scroll);

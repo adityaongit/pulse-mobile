@@ -1,6 +1,6 @@
 // activity-01's coach pill: "Analyzing…" while the coach reads the workout, then its one-line take; tapping opens the
-// coach and asks about this workout at once, so the full analysis follows without typing the question again. Pinned over the page's foot, clear of the round action. One request per
-// workout per app session (kept in memory, as the web keeps it in sessionStorage); a failure hides the pill. With
+// coach and asks about this workout at once, so the full analysis follows without typing the question again. Pinned over the page's foot, full width: the screen drops its round coach button while the pill shows. One request per
+// workout per app session (kept in memory, as the web keeps it in sessionStorage); after a failure the pill only offers the question, so the page keeps a way to the coach. With
 // Coach settings › Analyze each workout off, no request is made and the pill only offers the question. Ported from pulse
 // src/app/(app)/activity/[id]/CoachGlance.tsx.
 import { useEffect, useState } from "react"
@@ -56,20 +56,19 @@ export function CoachGlance({ id, question, auto }: { id: string; question: stri
     }
   }, [id, auto])
   const inset = useSafeAreaInsets().bottom
-  if (s.failed) return null
   return (
-    // The web's `sticky bottom-[max(safe-area + 12, 24)] mr-[68px]`: over the foot of the screen, left of the round action.
-    <View pointerEvents="box-none" className="absolute left-4" style={{ right: 16 + 68, bottom: Math.max(inset + 12, 24) }}>
+    // The web's `sticky bottom-[max(safe-area + 12, 24)]`: over the foot of the screen, full width (WHOOP's coach pill).
+    <View pointerEvents="box-none" className="absolute left-4 right-4" style={{ bottom: Math.max(inset + 12, 24) }}>
       <Press
         activeScale={0.98}
         accessibilityRole="link"
-        accessibilityLabel={s.text ? `Coach: ${s.text} Ask the coach about this workout.` : auto ? "Coach is analyzing this workout. Ask the coach about it." : ASK}
+        accessibilityLabel={s.text ? `Coach: ${s.text} Ask the coach about this workout.` : auto && !s.failed ? "Coach is analyzing this workout. Ask the coach about it." : ASK}
         onPress={() => push(`/coach?q=${encodeURIComponent(question)}&send=1`)}
       >
         <Glass radius={RADIUS["4xl"]} className="min-h-14 flex-row items-center gap-3 py-2 pl-2 pr-3">
           <CoachGlyph />
-          <Text accessibilityElementsHidden className={cn("min-w-0 flex-1 text-[15px] font-medium leading-5", s.text || !auto ? "text-foreground" : "animate-pulse text-foreground-secondary")} numberOfLines={s.text ? 2 : undefined}>
-            {s.text ?? (auto ? "Analyzing…" : ASK)}
+          <Text accessibilityElementsHidden className={cn("min-w-0 flex-1 text-[15px] font-medium leading-5", s.text || !auto || s.failed ? "text-foreground" : "animate-pulse text-foreground-secondary")} numberOfLines={s.text ? 2 : undefined}>
+            {s.text ?? (auto && !s.failed ? "Analyzing…" : ASK)}
           </Text>
           <Icon icon={ChevronUp} size={20} tone="foreground-secondary" strokeWidth={2} />
         </Glass>
