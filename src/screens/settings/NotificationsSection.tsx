@@ -140,7 +140,7 @@ function BackgroundCard({ s, timeZone }: { s: Prefs; timeZone: string }) {
         onChange={(v) => void toggle(v)}
         disabled={!hc}
       />
-      <Text className={HINT}>Android runs it roughly every 15 to 30 minutes when the phone allows. Battery Saver can pause it; Pulse syncs again when opened.</Text>
+      <Text className={HINT}>Android decides when it runs: every 15 minutes at best, often hours apart when you rarely open Pulse or Battery Saver is on. Pulse always syncs when you open it.</Text>
       {!available && <Text className="mt-2 text-[13px] font-medium leading-[18px] text-warning-text">Background tasks are restricted for Pulse on this phone.</Text>}
       {hc && (
         <>
