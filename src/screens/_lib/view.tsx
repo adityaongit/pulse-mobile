@@ -3,6 +3,7 @@
 // the kit draws stat icons (20 px, muted); the legend strip is React Native text.
 import type { ReactNode } from "react"
 import { View } from "react-native"
+import { Trans } from "react-i18next"
 import {
   Activity,
   ChartSpline,
@@ -78,7 +79,7 @@ export function TodayVsLegend({ period }: { period: string }) {
         <DeltaMark dir="down" tone="bad" />
       </View>
       <Text className="text-xs font-medium leading-4 text-foreground-secondary">
-        <Text className="text-xs font-semibold leading-4 text-foreground">Today</Text> vs. {period}
+        <Trans ns="ui" i18nKey="legend.todayVs" values={{ period }} components={{ b: <Text className="text-xs font-semibold leading-4 text-foreground" /> }} />
       </Text>
     </View>
   )

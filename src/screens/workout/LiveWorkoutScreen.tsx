@@ -401,7 +401,7 @@ function BandCard({ setup }: { setup: WorkoutSetup | undefined }) {
         <View accessible accessibilityLabel={live.bpm === null ? t("live.noHeartRate") : t("live.beatsPerMinute", { bpm: live.bpm })}>
           <Text className={cn(NUM, "text-[40px] leading-[44px] tabular-nums")} style={zone ? { color: zoneColor(c, zone) } : undefined}>
             {live.bpm === null ? MISSING : String(live.bpm)}
-            <Text className="font-sans text-[13px] font-semibold text-foreground-secondary"> bpm</Text>
+            <Text className="font-sans text-[13px] font-semibold text-foreground-secondary">{" bpm"}</Text>
           </Text>
         </View>
         <LivePill name={live.device?.name ?? null} lost={live.status !== "live"} />

@@ -17,6 +17,7 @@ import { Figtree_500Medium } from "@expo-google-fonts/figtree/500Medium";
 import { Figtree_600SemiBold } from "@expo-google-fonts/figtree/600SemiBold";
 import { Figtree_700Bold } from "@expo-google-fonts/figtree/700Bold";
 
+import { i18n } from "@/i18n/config";
 import { useNotificationDeepLinks, useTabLinks } from "@/background/links";
 import { Opening } from "@/screens/Opening";
 import { ScreenError } from "@/screens/ScreenError";
@@ -59,7 +60,7 @@ export default function RootLayout() {
     <>
       {bootError && !opened ? (
         <View className="flex-1 items-center justify-center bg-background p-6">
-          <Text className="text-destructive">Couldn’t open the database: {bootError}</Text>
+          <Text className="text-destructive">{i18n.t("ui:app.bootDatabase", { error: bootError })}</Text>
         </View>
       ) : (
         ready && (

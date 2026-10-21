@@ -8,6 +8,7 @@
 //
 // Then `guidance()` puts that together with Day Strain against today's Strain Target (the WHOOP-like half: push
 // toward the range, ease off once in it or past it) as the line the screen shows. Pure, for vitest.
+import { i18n } from "@/i18n/config";
 
 // ── Tuning (noop's values) ───────────────────────────────────────────────────
 export const CEILING_PCT_LOW_CHARGE = 0.6;
@@ -231,7 +232,7 @@ export type Guidance = { tone: GuidanceTone; title: string; body: string };
 
 /** Strain as a whole percent: "42%". */
 const pct = (x: number) => `${Math.round(x)}%`;
-const minutesWords = (m: number) => (m < 1.5 ? "about a minute" : `about ${Math.round(m)} minutes`);
+const t = (key: string, o?: Record<string, unknown>) => i18n.t(`ui:guidance.${key}` as never, o as never) as unknown as string;
 
 /**
  * What to do now. Day Strain against today's target decides first (past the range: ease off; in it: hold or ease off;
@@ -249,18 +250,19 @@ export function guidance(o: {
   const ceiling = Math.round(coach.band.ceilingBpm);
   const range = target ? `${Math.round(target[0])} - ${pct(target[1])}` : null;
 
-  if (target && strain >= target[1])
-    return { tone: "ease", title: "Ease off", body: `You’ve reached today’s target of ${range}. More strain from here adds load faster than benefit: cool down and stop.` };
-  if (coach.status === "stale") return { tone: "wait", title: "Waiting for heart rate", body: "No beats from the band for a few seconds. Keep it snug on your wrist." };
-  if (coach.status === "warmup") return { tone: "wait", title: "Warming up", body: `Coaching starts after the first minute. Today’s band is ${floor}–${ceiling} bpm.` };
+  if (target && strain >= target[1]) return { tone: "ease", title: t("easeTitle"), body: t("reachedBody", { range }) };
+  if (coach.status === "stale") return { tone: "wait", title: t("waitingTitle"), body: t("waitingBody") };
+  if (coach.status === "warmup") return { tone: "wait", title: t("warmingTitle"), body: t("warmingBody", { floor, ceiling }) };
 
   if (target && strain >= target[0]) {
-    if (coach.position === "above") return { tone: "ease", title: "In range: ease off", body: `You’re inside today’s target of ${range}. Bring your heart rate under ${ceiling} bpm to finish steady.` };
-    return { tone: "steady", title: "In your target range", body: `Day Strain ${pct(strain)} is inside today’s ${range}. You can stop here, or keep it easy.` };
+    if (coach.position === "above") return { tone: "ease", title: t("inRangeEaseTitle"), body: t("inRangeEaseBody", { range, ceiling }) };
+    return { tone: "steady", title: t("inRangeTitle"), body: t("inRangeBody", { strain: pct(strain), range }) };
   }
 
-  const eta = target && minutesToLow !== null && minutesToLow > 0 ? ` ${minutesWords(minutesToLow)} at this effort reaches ${pct(target[0])}.` : "";
-  if (coach.position === "below") return { tone: "push", title: "Push", body: `Pick up the pace: get above ${floor} bpm.${target ? ` You’re ${pct(target[0] - strain)} below today’s target.` : ""}` };
-  if (coach.position === "above") return { tone: "ease", title: "Ease off", body: `You’re above today’s band (${ceiling} bpm). Your Recovery favours a steadier effort.${eta}` };
-  return { tone: "steady", title: "On track", body: `Hold this effort: ${floor}–${ceiling} bpm.${eta}` };
+  // "About a minute" under 1.5, else "about N minutes": the plural key takes the count.
+  const eta = target && minutesToLow !== null && minutesToLow > 0 ? t("eta", { count: minutesToLow < 1.5 ? 1 : Math.round(minutesToLow), pct: pct(target[0]) }) : null;
+  if (coach.position === "below")
+    return { tone: "push", title: t("pushTitle"), body: target ? t("pushBodyGap", { floor, gap: pct(target[0] - strain) }) : t("pushBody", { floor }) };
+  if (coach.position === "above") return { tone: "ease", title: t("easeTitle"), body: eta ? t("aboveBodyEta", { ceiling, eta }) : t("aboveBody", { ceiling }) };
+  return { tone: "steady", title: t("onTrackTitle"), body: eta ? t("holdBodyEta", { floor, ceiling, eta }) : t("holdBody", { floor, ceiling }) };
 }

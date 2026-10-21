@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { Droplet } from "lucide-react-native";
@@ -27,6 +28,7 @@ import { goBack } from "@/ui/navigate";
 /** A log sheet (spec §11 LG1): /log?kind=water&d=2026-10-02, the web's `?log=water` over Journal's day. */
 export default function LogPage() {
   // Water and weight are typed in the person's units (src/lib/units.ts) and kept in ml and kg.
+  const { t } = useTranslation("ui");
   const water = quantity("ml");
   const { kind: raw, d } = useLocalSearchParams<{ kind?: string; d?: string }>();
   const kind = (LOG_KINDS as readonly string[]).includes(raw ?? "") ? (raw as LogKind) : "water";
@@ -41,7 +43,7 @@ export default function LogPage() {
     setError(null);
   };
 
-  const title = `Log ${KIND_LABEL[kind].toLowerCase()}`;
+  const title = t(`logForm.title.${kind}`);
   if (!vm)
     return (
       <TaskPage title={title}>
@@ -55,7 +57,7 @@ export default function LogPage() {
   const send = async (input: LogInput, close = true) => {
     setSaving(true);
     setError(null);
-    const r = await logEntry(actionCtx(), input).catch(() => ({ ok: false as const, error: "Couldn’t save. Try again." }));
+    const r = await logEntry(actionCtx(), input).catch(() => ({ ok: false as const, error: t("logForm.saveFailed") }));
     setSaving(false);
     if (!r.ok) {
       haptic.error();
@@ -64,7 +66,7 @@ export default function LogPage() {
     }
     dataChanged();
     if (close) goBack();
-    toast.success(`${KIND_LABEL[input.kind]} saved`);
+    toast.success(t("logForm.saved", { kind: KIND_LABEL[input.kind] }));
   };
   const save = () => {
     const input = toInput(kind, form, time);
@@ -73,8 +75,8 @@ export default function LogPage() {
   };
 
   const timeField = kind !== "period" && (
-    <Field label="Time">
-      <DateTimeField label="Time" mode="datetime" value={time} max={now} onChange={setAt} />
+    <Field label={t("logForm.time")}>
+      <DateTimeField label={t("logForm.time")} mode="datetime" value={time} max={now} onChange={setAt} />
     </Field>
   );
   const field = (k: string, label: string, hint: string | undefined, o: { mode: "numeric" | "decimal" | "text"; placeholder?: string; maxLength?: number; className?: string }) => (
@@ -82,17 +84,17 @@ export default function LogPage() {
       <Input accessibilityLabel={label} inputMode={o.mode} placeholder={o.placeholder} maxLength={o.maxLength} value={form[k] as string} onChangeText={set(k)} className={o.mode === "text" ? "text-base" : "text-base tabular-nums"} returnKeyType="done" />
     </Field>
   );
-  const when = (children: React.ReactNode) => <Section title="When">{children}</Section>;
+  const when = (children: React.ReactNode) => <Section title={t("logForm.when")}>{children}</Section>;
 
   return (
     <TaskPage
       title={title}
-      description="Kept on this phone"
+      description={t("logForm.keptOnPhone")}
       footer={
         <>
           {!!error && <FormAlert>{error}</FormAlert>}
           <Button onPress={save} disabled={saving}>
-            {saving ? "Saving…" : "Save"}
+            {saving ? t("logForm.saving") : t("actions.save", { ns: "common" })}
           </Button>
         </>
       }
@@ -100,7 +102,7 @@ export default function LogPage() {
       <View className="gap-6 pt-2">
           {kind === "water" && (
             <>
-              <Section title="Add">
+              <Section title={t("logForm.add")}>
                 <View className="flex-row gap-2">
                   {waterSteps().map((step) => (
                     <Button key={step} variant="secondary" disabled={saving} className="h-14 flex-1 gap-2" onPress={() => void send({ kind: "water", ml: Math.round(water.stored(step)), at: time }, false)}>
@@ -113,8 +115,8 @@ export default function LogPage() {
                   {dayLabel(vm.day, vm.today)}: {quantityText(vm.water.total, "ml", "grouped")}
                 </Text>
               </Section>
-              <Section title="Other amount">
-                {field("ml", "Amount", `(${water.unit})`, { mode: "numeric", placeholder: `e.g. ${waterSteps()[0]}` })}
+              <Section title={t("logForm.otherAmount")}>
+                {field("ml", t("logForm.amount"), `(${water.unit})`, { mode: "numeric", placeholder: t("logForm.amountExample", { value: waterSteps()[0] }) })}
                 {timeField}
               </Section>
             </>
@@ -122,14 +124,14 @@ export default function LogPage() {
 
           {kind === "food" && (
             <>
-              <Section title="Meal">
-                <Chips label="Meal" options={MEALS} value={form.meal as string} onChange={set("meal")} />
+              <Section title={t("logForm.meal")}>
+                <Chips label={t("logForm.meal")} options={MEALS} value={form.meal as string} onChange={set("meal")} />
               </Section>
-              <Section title="What you ate">
-                {field("name", "Name", "(optional)", { mode: "text", placeholder: "e.g. Dal and rice", maxLength: 80 })}
-                {field("kcal", "Calories", "(kcal)", { mode: "numeric" })}
+              <Section title={t("logForm.whatYouAte")}>
+                {field("name", t("logForm.name"), t("logForm.optionalHint"), { mode: "text", placeholder: t("logForm.nameExample"), maxLength: 80 })}
+                {field("kcal", t("logForm.calories"), "(kcal)", { mode: "numeric" })}
                 <View className="flex-row gap-2">
-                  {(["protein", "carbs", "fat"] as const).map((m) => field(m, m[0].toUpperCase() + m.slice(1), "(g)", { mode: "decimal", className: "flex-1" }))}
+                  {(["protein", "carbs", "fat"] as const).map((m) => field(m, t(`logForm.${m}`), "(g)", { mode: "decimal", className: "flex-1" }))}
                 </View>
                 {timeField}
               </Section>
@@ -137,30 +139,30 @@ export default function LogPage() {
           )}
 
           {kind === "weight" && (
-            <Section title="Measurement">
+            <Section title={t("logForm.measurement")}>
               <View className="flex-row gap-2">
-                {field("kg", "Weight", `(${quantity("kg").unit})`, { mode: "decimal", className: "flex-1" })}
-                {field("fat", "Body fat", "(%)", { mode: "decimal", placeholder: "Optional", className: "flex-1" })}
+                {field("kg", t("logForm.weight"), `(${quantity("kg").unit})`, { mode: "decimal", className: "flex-1" })}
+                {field("fat", t("logForm.bodyFat"), "(%)", { mode: "decimal", placeholder: t("logForm.optionalPlaceholder"), className: "flex-1" })}
               </View>
               {timeField}
             </Section>
           )}
 
           {kind === "spo2" && (
-            <Section title="Reading">
-              {field("pct", "Blood oxygen", "(%)", { mode: "decimal", placeholder: "e.g. 95" })}
-              <Text className={CAPTION}>The morning reading from the Fitbit app (Google Health doesn’t share blood oxygen with Health Connect).</Text>
+            <Section title={t("logForm.reading")}>
+              {field("pct", t("logForm.bloodOxygen"), "(%)", { mode: "decimal", placeholder: t("logForm.bloodOxygenExample") })}
+              <Text className={CAPTION}>{t("logForm.bloodOxygenNote")}</Text>
               {timeField}
             </Section>
           )}
 
           {kind === "mood" && (
             <>
-              <Section title="Overall">
-                <Chips label="Overall" options={VALENCES} value={form.valence as string} onChange={set("valence")} />
+              <Section title={t("logForm.overall")}>
+                <Chips label={t("logForm.overall")} options={VALENCES} value={form.valence as string} onChange={set("valence")} />
               </Section>
-              <Section title="Feelings">
-                <Chips label="Feelings" options={MOODS} value={form.moods as string[]} onChange={set("moods")} />
+              <Section title={t("logForm.feelings")}>
+                <Chips label={t("logForm.feelings")} options={MOODS} value={form.moods as string[]} onChange={set("moods")} />
               </Section>
               {when(timeField)}
             </>
@@ -168,8 +170,8 @@ export default function LogPage() {
 
           {kind === "symptoms" && (
             <>
-              <Section title="Symptoms">
-                <Chips label="Symptoms" options={SYMPTOMS.filter((s) => vm.kinds.includes("period") || !CYCLE_SYMPTOMS.has(s[0]))} value={form.symptoms as string[]} onChange={set("symptoms")} />
+              <Section title={t("logForm.symptoms")}>
+                <Chips label={t("logForm.symptoms")} options={SYMPTOMS.filter((s) => vm.kinds.includes("period") || !CYCLE_SYMPTOMS.has(s[0]))} value={form.symptoms as string[]} onChange={set("symptoms")} />
               </Section>
               {when(timeField)}
             </>
@@ -177,27 +179,27 @@ export default function LogPage() {
 
           {kind === "period" && (
             <>
-              <Section title="Days">
+              <Section title={t("logForm.days")}>
                 <View className="flex-row gap-2">
-                  <Field label="First day" className="flex-1">
-                    <DateTimeField label="First day" mode="date" value={form.start as string} max={vm.today} onChange={set("start")} />
+                  <Field label={t("logForm.firstDay")} className="flex-1">
+                    <DateTimeField label={t("logForm.firstDay")} mode="date" value={form.start as string} max={vm.today} onChange={set("start")} />
                   </Field>
-                  <Field label="Last day" className="flex-1">
-                    <DateTimeField label="Last day" mode="date" value={form.end as string} max={vm.today} min={(form.start as string) || undefined} onChange={set("end")} />
+                  <Field label={t("logForm.lastDay")} className="flex-1">
+                    <DateTimeField label={t("logForm.lastDay")} mode="date" value={form.end as string} max={vm.today} min={(form.start as string) || undefined} onChange={set("end")} />
                   </Field>
                 </View>
-                <Text className={CAPTION}>Still going? Use today as the last day, and log it again once it ends.</Text>
+                <Text className={CAPTION}>{t("logForm.periodNote")}</Text>
               </Section>
-              <Section title="Flow">
-                <Chips label="Flow" options={FLOWS} value={form.flow as string} onChange={set("flow")} />
+              <Section title={t("logForm.flow")}>
+                <Chips label={t("logForm.flow")} options={FLOWS} value={form.flow as string} onChange={set("flow")} />
               </Section>
             </>
           )}
 
           {kind === "ovulation" && (
             <>
-              <Section title="Result">
-                <Chips label="Result" options={OVULATION_RESULTS} value={form.result as string} onChange={set("result")} />
+              <Section title={t("logForm.result")}>
+                <Chips label={t("logForm.result")} options={OVULATION_RESULTS} value={form.result as string} onChange={set("result")} />
               </Section>
               {when(timeField)}
             </>

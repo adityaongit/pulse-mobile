@@ -1,7 +1,6 @@
 // Strain `/strain` (spec §7.3). Ported from Pulse's src/server/queries/strain.ts.
 import { i18n } from "@/i18n/config";
 import { inUnits } from "@/lib/units";
-import { ZONE_NAMES } from "@/core/scoring/zones";
 import { addDays } from "@/lib/time";
 import { type ExtraKey, extraMetric, metricHref } from "./_lib";
 import {
@@ -152,7 +151,7 @@ export function coach(strain: Metric<number>, target: { low: number; high: numbe
  * whole beats, so a zone's first bpm is its edge rounded UP: a Zone 2 from 132.2 starts at 133, as 132 counts in Zone 1.
  */
 export const zoneBounds = (lower: number[]): ZoneRow[] =>
-  lower.map((min, i) => ({ zone: i + 1, label: ZONE_NAMES[i], min: Math.ceil(min), max: i < lower.length - 1 ? Math.ceil(lower[i + 1]) - 1 : null, seconds: 0 }));
+  lower.map((min, i) => ({ zone: i + 1, label: i18n.t("ui:zones.zone", { n: i + 1 }), min: Math.ceil(min), max: i < lower.length - 1 ? Math.ceil(lower[i + 1]) - 1 : null, seconds: 0 }));
 
 /** How the day's zones are set, under the zone rows. */
 export const zoneNote = (row: DayRow | undefined, ctx: QueryCtx) =>
@@ -163,7 +162,7 @@ export function zoneRows(row: DayRow | undefined, seconds = row?.s1?.zoneSeconds
   if (!s1 || s1.hrCount === 0 || !seconds) return none(hrReason(s1 ?? null));
   const rows = zoneBounds(s1.zoneLower).map((z, i) => ({ ...z, seconds: Math.round(seconds[i]) }));
   // Zone 0: time under Zone 1, from the Zone 1 floor. Days stored before it was kept have no such row.
-  if (below != null) rows.push({ zone: 0, label: "Zone 0", min: 0, max: rows[0].min - 1, seconds: Math.round(below) });
+  if (below != null) rows.push({ zone: 0, label: i18n.t("ui:zones.zone", { n: 0 }), min: 0, max: rows[0].min - 1, seconds: Math.round(below) });
   return ok(rows);
 }
 

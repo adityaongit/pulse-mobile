@@ -5,6 +5,7 @@
 // catalog's box and 4-7-8 timings and copy. Phone additions: the physiological sigh (two inhales, one long exhale;
 // Balban et al., Cell Reports Medicine 2023), sessions rounded to whole breaths, and the circle's level curve.
 // Pure: no React Native, so vitest runs it.
+import { i18n } from "@/i18n/config";
 
 export type BreathPhase = "inhale" | "hold" | "exhale";
 
@@ -32,7 +33,12 @@ export type BreathProtocol = {
 /** One haptic cue: `loops` pulses `offsetMs` after the start, marking the start of stage `stage`. */
 export type BreathCue = { offsetMs: number; phase: BreathPhase; loops: number; stage: number; label?: string };
 
-export const PHASE_LABEL: Record<BreathPhase, string> = { inhale: "Breathe in", hold: "Hold", exhale: "Breathe out" };
+/** Getters, so the words resolve in the language in use when they are read. */
+export const PHASE_LABEL: Record<BreathPhase, string> = {
+  get inhale() { return i18n.t("ui:breath.phaseInhale") },
+  get hold() { return i18n.t("ui:breath.phaseHold") },
+  get exhale() { return i18n.t("ui:breath.phaseExhale") },
+};
 
 // ── The pacer (BreathPacer.kt) ──────────────────────────────────────────────
 
@@ -68,16 +74,16 @@ export function pacedStages(bpm: number, inhaleFraction = DEFAULT_INHALE_FRACTIO
 export const PROTOCOLS: readonly BreathProtocol[] = [
   {
     id: "resonance",
-    title: "Resonance",
-    subtitle: "5.5 breaths a minute · even in and out",
-    edu: "Slow, even breathing at about 5.5 breaths a minute, close to most people’s resonance pace: the heart speeds up as you breathe in and slows as you breathe out, and at this pace that swing is at its largest. A steady way to settle.",
+    get title() { return i18n.t("ui:breath.resonanceTitle") },
+    get subtitle() { return i18n.t("ui:breath.resonanceSubtitle") },
+    get edu() { return i18n.t("ui:breath.resonanceEdu") },
     stages: pacedStages(5.5, 0.5),
   },
   {
     id: "box",
-    title: "Box 4-4-4-4",
-    subtitle: "Square breath · steady focus",
-    edu: "Box (square) breathing: inhale, hold, exhale, hold, each for 4 seconds. A structured rhythm often used for focus and settling under stress. Sit comfortably and keep the counts even.",
+    get title() { return i18n.t("ui:breath.boxTitle") },
+    get subtitle() { return i18n.t("ui:breath.boxSubtitle") },
+    get edu() { return i18n.t("ui:breath.boxEdu") },
     stages: [
       { phase: "inhale", ms: 4_000, level: 1 },
       { phase: "hold", ms: 4_000, level: 1 },
@@ -87,10 +93,10 @@ export const PROTOCOLS: readonly BreathProtocol[] = [
   },
   {
     id: "478",
-    title: "4-7-8",
-    subtitle: "Inhale 4 · hold 7 · exhale 8",
-    edu: "Classic 4-7-8: a quiet nasal inhale for 4, hold for 7, a long mouth exhale for 8. Often used to wind down. Start with a few cycles; stop if you feel light-headed.",
-    caution: "If you feel dizzy or uncomfortable, stop and breathe normally.",
+    get title() { return i18n.t("ui:breath.p478Title") },
+    get subtitle() { return i18n.t("ui:breath.p478Subtitle") },
+    get edu() { return i18n.t("ui:breath.p478Edu") },
+    get caution() { return i18n.t("ui:breath.p478Caution") },
     stages: [
       { phase: "inhale", ms: 4_000, level: 1 },
       { phase: "hold", ms: 7_000, level: 1 },
@@ -99,13 +105,13 @@ export const PROTOCOLS: readonly BreathProtocol[] = [
   },
   {
     id: "sigh",
-    title: "Physiological sigh",
-    subtitle: "Two inhales · one long exhale",
-    edu: "Breathe in through the nose, take a second short sip of air to fill the lungs, then let it all go slowly through the mouth. Five minutes of this cyclic sighing a day lowered stress and resting breathing rate in a Stanford study (Balban et al., 2023).",
+    get title() { return i18n.t("ui:breath.sighTitle") },
+    get subtitle() { return i18n.t("ui:breath.sighSubtitle") },
+    get edu() { return i18n.t("ui:breath.sighEdu") },
     stages: [
       { phase: "inhale", ms: 3_000, level: 0.78 },
-      { phase: "inhale", ms: 1_000, label: "Top up", level: 1 },
-      { phase: "exhale", ms: 6_000, label: "Breathe out slowly", level: 0 },
+      { phase: "inhale", ms: 1_000, get label() { return i18n.t("ui:breath.topUp") }, level: 1 },
+      { phase: "exhale", ms: 6_000, get label() { return i18n.t("ui:breath.exhaleSlowly") }, level: 0 },
     ],
   },
 ];

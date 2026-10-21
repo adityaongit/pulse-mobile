@@ -39,7 +39,7 @@ function Hero({ vo2 }: { vo2: FitnessVM["vo2"] }) {
     <View className="items-center gap-2 py-4">
       <ValueUnit value={formatValue("decimal1", v.value)} unit="ml/kg/min" className="text-center font-numeric text-[64px] font-bold leading-[64px] tracking-[-0.01em]" />
       <View className="flex-row items-center gap-3">
-        <Text className={LABEL}>VO2 max</Text>
+        <Text className={LABEL}>{i18n.t("metrics:label.vo2max")}</Text>
         <Text className={cn(LABEL, categoryTone(v.category))}>{categoryWord(v.category)}</Text>
       </View>
       <Text className={CAPTION}>{v.source === "run" ? t("fitness.fromRun", { day: formatDay(v.sourceDay, DAY.monthDay) }) : t("fitness.daily")}</Text>
@@ -182,7 +182,7 @@ function FitnessLoading() {
         <View accessibilityElementsHidden className="items-center gap-2 py-4">
           <SkeletonText lh={64} fs={64} className="w-[133px]" />
           <View className="flex-row items-center gap-3">
-            <Text className={LABEL}>VO2 max</Text>
+            <Text className={LABEL}>{i18n.t("metrics:label.vo2max")}</Text>
             <SkeletonText className="w-16" />
           </View>
           <SkeletonText className="w-32" />

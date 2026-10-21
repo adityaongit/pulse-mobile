@@ -91,7 +91,7 @@ export type SleepPlanVM = {
   weekend: boolean;
   /** Minutes the bedtimes leave to fall asleep (the typical latency of recent nights); 0 without staged nights. */
   latencyMin: number;
-  plans: { key: "peak" | "perform" | "get_by"; label: "Peak" | "Perform" | "Get by"; share: number; sleepMin: number; bedtimeAt: number }[];
+  plans: { key: "peak" | "perform" | "get_by"; label: string; share: number; sleepMin: number; bedtimeAt: number }[];
 };
 
 export type EnergyBankVM = {
@@ -137,7 +137,7 @@ export type HomeVM = {
   monitor: Metric<{ inRange: number; total: number; flagged: number }>;
   stress: Metric<{ value: number; level: StressLevel; at: number | null; dayAverage: boolean }>;
   /** Mobile: `detected` are workouts stage 1 found from raised heart rate with none recorded; shown dashed, never scored. */
-  activities: { title: "Today’s activities" | "Activities"; items: TimelineItem[]; detected: DetectedItem[] };
+  activities: { title: string; items: TimelineItem[]; detected: DetectedItem[] };
   energyBank: Metric<EnergyBankVM>;
   tonight: Metric<SleepPlanVM>;
   keyStats: KeyStat[];

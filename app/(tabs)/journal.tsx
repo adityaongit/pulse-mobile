@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { View } from "react-native";
+import { useTranslation } from "react-i18next";
 import { useLocalSearchParams } from "expo-router";
+import { cardInfo } from "@/ui/shells/cardInfo";
 import { DAY, formatDay } from "@/lib/format";
 import { addDays } from "@/lib/time";
 import type { getJournal } from "@/queries/journal";
@@ -24,6 +26,7 @@ import { push } from "@/ui/navigate";
 
 /** Journal `/journal?d=` (spec §7.11, journey 7). */
 export default function Journal() {
+  const { t } = useTranslation("ui");
   const { d: raw } = useLocalSearchParams<{ d?: string }>();
   const [, setDay] = useSelectedDay();
   const { data, error, loading, reload } = useScreen(journalQuery(raw), journalKey(raw));
@@ -31,7 +34,7 @@ export default function Journal() {
 
   return (
     <View className="flex-1">
-      <PageShell title="Journal" dateSwitcher={{ mode: "day" }} loading={loading && !data}>
+      <PageShell title={t("tabs.journal")} dateSwitcher={{ mode: "day" }} loading={loading && !data}>
         {data ? <Page vm={data.vm} log={data.log} onSelect={setDay} /> : error ? <LoadError retry={reload} /> : <JournalSkeleton />}
       </PageShell>
     </View>
@@ -39,6 +42,8 @@ export default function Journal() {
 }
 
 function Page({ vm, log, onSelect }: { vm: Awaited<ReturnType<typeof getJournal>>; log: Awaited<ReturnType<typeof getDayLog>>; onSelect: (day: string) => void }) {
+  const { t } = useTranslation("journal");
+  const { t: tu } = useTranslation("ui");
   const { day: d, today } = vm;
   const date = formatDay(d, DAY.short);
   return (
@@ -50,23 +55,23 @@ function Page({ vm, log, onSelect }: { vm: Awaited<ReturnType<typeof getJournal>
 
       <View className="gap-8">
         {/* Log tiles first: a drink or a weigh-in is a two-tap job; then the check-in, then what the day holds (spec §11 LG1). */}
-        <SectionShell variant="section" title="Log">
+        <SectionShell variant="section" title={t("page.log")}>
           <LogTiles vm={log} />
         </SectionShell>
 
-        <CollapsibleSection id="check-in" title="Check-in">
+        <CollapsibleSection id="check-in" title={t("page.checkIn")}>
           <CheckInCard dayLabel={date} day={d} today={today} checkIn={vm.checkIn} />
         </CollapsibleSection>
 
-        <CollapsibleSection id="insights" title="Insights" action={<ActionLink label="See all" href="/journal/insights" />}>
-          <InsightCard body={vm.teaser.text} action={vm.teaser.ready ? { label: "See all insights", href: "/journal/insights" } : undefined} />
+        <CollapsibleSection id="insights" title={t("page.insights")} action={<ActionLink label={t("page.seeAll")} href="/journal/insights" />}>
+          <InsightCard body={vm.teaser.text} action={vm.teaser.ready ? { label: tu("app.seeAllInsights"), href: "/journal/insights" } : undefined} />
         </CollapsibleSection>
 
-        <SectionShell variant="section" title="This week">
+        <SectionShell variant="section" title={t("page.thisWeek")} info={cardInfo("This week")}>
           <WeekCard week={log.week} day={d} />
         </SectionShell>
 
-        <CollapsibleSection id="history" title="History">
+        <CollapsibleSection id="history" title={t("page.history")}>
           <History history={vm.history} day={d} today={today} onSelect={onSelect} />
         </CollapsibleSection>
       </View>

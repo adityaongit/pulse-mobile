@@ -150,7 +150,7 @@ export function HomeSkeleton({ stats = DASHBOARD_DEFAULT }: { stats?: DashboardK
                 <KeyStatRowSkeleton key={key} variant="card" label={DASHBOARD_LABEL[key]} icon={statIcon(key)} />
               ))}
             </View>
-            <SectionShell variant="card" title="Strain & recovery" info={STRAIN_RECOVERY_INFO} fill className="mt-3">
+            <SectionShell variant="card" title={t("section.strainRecovery")} info={STRAIN_RECOVERY_INFO} fill className="mt-3">
               <View accessibilityElementsHidden className="flex-1">
                 <Skeleton className="h-[232px] rounded-lg bg-skeleton" />
               </View>

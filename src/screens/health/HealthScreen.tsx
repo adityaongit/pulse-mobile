@@ -211,7 +211,7 @@ function Fitness({ m }: { m: HealthHubVM["fitness"] }) {
           </View>
           {v.acwr !== null && v.acwrTone && (
             <View className="shrink-0 items-end gap-1">
-              <Text className={LABEL}>Training load</Text>
+              <Text className={LABEL}>{i18n.t("ui:trainingLoad")}</Text>
               <Text className="font-numeric text-xl font-bold leading-6 tabular-nums">{formatValue("decimal2", v.acwr)}</Text>
               <StatusChip tone={v.acwrTone} className="self-end">{t(`load.${ACWR_KEY[v.acwrTone]}`)}</StatusChip>
             </View>
@@ -338,7 +338,7 @@ function HealthLoading() {
               <SkeletonText lh={16} fs={12} className="w-40" />
             </View>
             <View className="items-end gap-1">
-              <Text className={LABEL}>Training load</Text>
+              <Text className={LABEL}>{i18n.t("ui:trainingLoad")}</Text>
               <SkeletonText lh={24} fs={20} className="w-[42px]" />
               <Chip />
             </View>

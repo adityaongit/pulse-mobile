@@ -1,3 +1,4 @@
+import { i18n } from "@/i18n/config";
 import { formatDay } from "./format";
 import { addDays, type TrendRange } from "./url";
 
@@ -112,15 +113,6 @@ export function bandCounts<B extends BreakdownBand>(values: readonly (number | n
   return counts;
 }
 
-const WORD: Record<TrendViewRange, { this: string; prior: string }> = {
-  w: { this: "this week", prior: "previous 7-day" },
-  m: { this: "this month", prior: "previous 30-day" },
-  "6m": { this: "over this period", prior: "previous 6-month" },
-};
-
-const WEEKS: Record<TrendViewRange, string> = { w: "this week", m: "over these four weeks", "6m": "over this period" };
-const WEEKS_PRIOR: Record<TrendViewRange, string> = { w: "previous 7-day total", m: "previous four-week average", "6m": "previous 6-month average" };
-
 /**
  * The one-sentence verdict. `typical` (the normal range) wins for vitals on W, as the reference app words RHR;
  * otherwise the change against the prior period decides: under 1% reads "consistent with".
@@ -135,20 +127,21 @@ export function verdict(o: {
   typical?: [number, number] | null;
 }) {
   const { label, range, now, prior, fmt } = o;
-  if (now === null) return `No ${label} data ${WORD[range].this}.`;
+  const t = (key: string, v?: Record<string, unknown>) => i18n.t(`ui:verdict.${key}` as never, v as never) as unknown as string;
+  const period = t(`periodThis.${range}`);
+  if (now === null) return t("noData", { label, period });
   if (o.typical && range === "w") {
     const [lo, hi] = o.typical;
-    const where = now < lo ? "below" : now > hi ? "above" : "within";
-    return `Your average ${label} during this 7-day period was ${where} its typical range (${fmt(lo)} - ${fmt(hi)}).`;
+    const where = t(`where.${now < lo ? "below" : now > hi ? "above" : "within"}`);
+    return t("typical", { label, where, lo: fmt(lo), hi: fmt(hi) });
   }
   const change = prior === null ? null : relativeChange(now, prior);
-  const cmp = change === 0 || change === null ? "consistent with" : change > 0 ? "above" : "below";
+  const cmp = t(`cmp.${change === 0 || change === null ? "same" : change > 0 ? "above" : "below"}`);
+  const value = fmt(now);
   if (o.agg === "weekly") {
-    const lead = range === "w" ? `During this 7-day period, your total ${label} (${fmt(now)})` : `Your average weekly ${label} ${WEEKS[range]} (${fmt(now)})`;
-    if (prior === null) return `${lead}.`;
-    return `${lead} was ${cmp} your ${range === "w" ? "previous 7-day total" : WEEKS_PRIOR[range]} of ${fmt(prior)}.`;
+    if (range === "w") return prior === null ? t("weeklyWeekNoPrior", { label, value }) : t("weeklyWeek", { label, value, cmp, prior: fmt(prior) });
+    const weeks = t(`periodWeeks.${range}`);
+    return prior === null ? t("weeklyNoPrior", { label, period: weeks, value }) : t("weekly", { label, period: weeks, value, cmp, priorName: t(`priorWeekly.${range}`), prior: fmt(prior) });
   }
-  const lead = `Your average ${label} ${WORD[range].this} (${fmt(now)})`;
-  if (prior === null) return `${lead}.`;
-  return `${lead} was ${cmp} your ${WORD[range].prior} average of ${fmt(prior)}.`;
+  return prior === null ? t("avgNoPrior", { label, period, value }) : t("avg", { label, period, value, cmp, priorName: t(`priorAvg.${range}`), prior: fmt(prior) });
 }

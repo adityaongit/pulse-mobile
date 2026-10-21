@@ -71,6 +71,10 @@ export const VITAL_LABEL: Record<VitalKey, string> = {
   },
 };
 
+/** A drain's name: the engine stores "Stress", "Activity" or the workout's name in English; those three map to keys, a named workout shows as stored. */
+const DRAIN_CODE: Record<string, "stress" | "activity" | "workout"> = { Stress: "stress", Activity: "activity", Workout: "workout" };
+const drainLabel = (stored: string) => (DRAIN_CODE[stored] ? i18n.t(`ui:drain.${DRAIN_CODE[stored]}`) : stored);
+
 /** The stats Home's own cards read, whatever My Dashboard shows (HomeVM.cardStats). */
 const CARD_STATS: CardStatKey[] = ["hrv", "rhr", "resp", "steps", "calories"];
 
@@ -124,7 +128,7 @@ export async function getHome(day: string, ctx: QueryCtx, opts: HomeOptions = {}
     monitor: monitorSummary(row, isToday),
     stress: stressNow(row, isToday),
     // types.ts still types the title as the two English literals; it is translated text now (types.ts is shared).
-    activities: { title: i18n.t(isToday ? "home:activities.today" : "home:activities.other") as HomeVM["activities"]["title"], items: timelineOf(row, day, exs), detected: (row?.detected ?? []).map(detectedItem) },
+    activities: { title: i18n.t(isToday ? "home:activities.today" : "home:activities.other"), items: timelineOf(row, day, exs), detected: (row?.detected ?? []).map(detectedItem) },
     energyBank: energyBankVM(ctx, row, day, isToday, ebSeries),
     tonight: planVM(ctx, row, isToday),
     keyStats: keyStats(rows, day, isToday, keys),
@@ -250,7 +254,7 @@ export function energyBankVM(ctx: QueryCtx, row: DayRow | undefined, day: string
       charged: eb.charged,
       drained: eb.drained,
       curve,
-      drains: eb.topDrains.map((d) => ({ label: d.label, kind: d.kind, start: ms(d.start), amount: d.amount })),
+      drains: eb.topDrains.map((d) => ({ label: drainLabel(d.label), kind: d.kind, start: ms(d.start), amount: d.amount })),
       naps: eb.naps.map((n) => ({ start: ms(n.start), end: ms(n.end) })),
     },
     eb.provisional,
