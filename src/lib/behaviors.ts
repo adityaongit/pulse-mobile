@@ -6,9 +6,9 @@ import { i18n } from "@/i18n/config"
 
 /** Text from the journal namespace, read when called (never at import) so it follows the language in use. */
 const tr = (key: string) => i18n.t(`journal:${key}` as never) as unknown as string
-/** `obj` with a `label`-style getter per entry of `texts`: the text resolves when it is read. */
-const withText = <T extends object, R extends object>(obj: T, texts: Record<string, string>): T & R =>
-  Object.defineProperties(obj, Object.fromEntries(Object.entries(texts).map(([k, key]) => [k, { get: () => tr(key), enumerable: true }]))) as T & R
+/** `obj` with a getter per entry of `texts`: the text resolves when it is read. Typed by the declaration it fills. */
+const withText = (obj: object, texts: Record<string, string>): any =>
+  Object.defineProperties(obj, Object.fromEntries(Object.entries(texts).map(([k, key]) => [k, { get: () => tr(key), enumerable: true }])))
 
 const CATEGORY_KEYS = ["drugs", "health", "personal", "lifestyle", "mental", "nutrition", "recovery"] as const
 export type BehaviorCategory = (typeof CATEGORY_KEYS)[number]

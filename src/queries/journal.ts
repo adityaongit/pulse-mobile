@@ -106,7 +106,7 @@ const GROUP: Record<string, JournalTag["group"]> = {
  */
 function shownLabel(tag: string, stored: string): string {
   const b = behavior(tag);
-  return b && stored === i18n.t(`journal:behavior.${tag}` as never, { lng: "en" } as never) ? b.label : stored;
+  return b && stored === (i18n.t(`journal:behavior.${tag}` as never, { lng: "en" } as never) as unknown as string) ? b.label : stored;
 }
 
 /** Every tag, hidden ones included, in check-in order (position inside a group, then insertion order). */
