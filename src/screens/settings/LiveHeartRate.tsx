@@ -6,11 +6,13 @@
 // The band shares heart rate with the standard Bluetooth Heart Rate Service once Google Health › Fitbit Air ›
 // Connections › Share heart rate is on (src/health/ble.ts). Live readings are for viewing only: scores keep using what
 // Pulse reads from Health Connect.
+import { useTranslation } from "react-i18next";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { BatteryMedium, Bluetooth, BluetoothOff, ChevronRight, ExternalLink, Info, Watch, type LucideIcon } from "lucide-react-native";
 import { BACKGROUND_GRACE_MS } from "@/health/ble";
+import { i18n } from "@/i18n/config";
 import { signalWord } from "@/health/bleHr";
 import { MISSING } from "@/lib/format";
 import { showsLive, useLiveBle, useLiveBleControl, type FoundDevice, type LiveControl, type LiveData } from "@/state/liveBle";
@@ -30,26 +32,26 @@ type Live = LiveControl & LiveData;
 
 const GOOGLE_HEALTH = "com.fitbit.FitbitMobile";
 /** How long Pulse keeps the band after leaving the foreground, in words. */
-const GRACE_WORDS = `${Math.round(BACKGROUND_GRACE_MS / 1000)} seconds`;
+const GRACE_SECONDS = Math.round(BACKGROUND_GRACE_MS / 1000);
 const WARN = "text-[13px] font-semibold leading-[18px] text-warning-text";
 
 /** The status in a few words. */
 function statusLabel(l: Live): string {
   switch (l.status) {
     case "live":
-      return `Live · ${l.bpm ?? MISSING} bpm`;
+      return i18n.t("settings:live.status.live", { bpm: l.bpm ?? MISSING });
     case "lost":
-      return "Reconnecting…";
+      return i18n.t("settings:live.status.lost");
     case "connecting":
-      return "Connecting…";
+      return i18n.t("settings:live.status.connecting");
     case "scanning":
-      return "Searching…";
+      return i18n.t("settings:live.status.scanning");
     case "unauthorized":
-      return "Needs permission";
+      return i18n.t("settings:live.status.unauthorized");
     case "off":
-      return l.radio === "unsupported" ? "No Bluetooth" : l.radio === "unavailable" ? "Not available" : "Bluetooth off";
+      return i18n.t(l.radio === "unsupported" ? "settings:live.status.noBluetooth" : l.radio === "unavailable" ? "settings:live.status.notAvailable" : "settings:live.status.bluetoothOff");
     default:
-      return "Not connected";
+      return i18n.t("settings:live.status.notConnected");
   }
 }
 
@@ -79,33 +81,36 @@ function Panel({ icon, title, body }: { icon: ReactNode; title: string; body?: s
 
 // The per-beat rows read the live data themselves (≤ 4 renders a second); the cards around them take the controller only.
 function StatusRow() {
+  const { t } = useTranslation("settings");
   const live = useLiveBle();
-  return <Row label="Status" value={statusLabel(live)} tone={live.status === "live" ? "text-recovery-red-text" : undefined} />;
+  return <Row label={t("live.statusLabel")} value={statusLabel(live)} tone={live.status === "live" ? "text-recovery-red-text" : undefined} />;
 }
 
 function HrvRow() {
+  const { t } = useTranslation("settings");
   const live = useLiveBle();
-  return <Row rule label="HRV (RMSSD)" value={live.rmssd === null ? (live.rrMs.length ? "Measuring…" : "Not sent by the band") : `${Math.round(live.rmssd)} ms`} />;
+  return <Row rule label={t("live.hrv")} value={live.rmssd === null ? (live.rrMs.length ? t("live.measuring") : t("live.notSent")) : `${Math.round(live.rmssd)} ms`} />;
 }
 
 function BandCard({ live, onFind }: { live: LiveControl; onFind: () => void }) {
+  const { t } = useTranslation("settings");
   const [confirmForget, setConfirmForget] = useState(false);
   const [forgetting, setForgetting] = useState(false);
   const linked = live.status === "live" || live.status === "connecting" || live.status === "lost";
   const noRadio = live.radio === "unsupported" || live.radio === "unavailable";
   const remembered = live.remembered;
   return (
-    <SectionShell variant="card" title="Live heart rate">
+    <SectionShell variant="card" title={t("live.title")}>
       <View>
         <StatusRow />
-        <Row rule label="Band" value={remembered ? (remembered.name ?? "Unnamed band") : "None yet"} />
+        <Row rule label={t("live.band")} value={remembered ? (remembered.name ?? t("live.unnamedBand")) : t("live.none")} />
         {live.status === "live" && <HrvRow />}
         <View className={cn(ROW, ROW_RULE, !remembered && "opacity-disabled")}>
           <View className="min-w-0 flex-1">
-            <Text className={ROW_LABEL}>Connect automatically</Text>
-            <Text className={HINT}>Off by default to save the band’s battery. On: Pulse connects whenever it opens and the band is sharing.</Text>
+            <Text className={ROW_LABEL}>{t("live.autoConnect")}</Text>
+            <Text className={HINT}>{t("live.autoConnectHint")}</Text>
           </View>
-          <Switch label="Connect automatically" value={live.autoConnect} disabled={!remembered} onValueChange={(v) => void live.setAutoConnect(v)} />
+          <Switch label={t("live.autoConnect")} value={live.autoConnect} disabled={!remembered} onValueChange={(v) => void live.setAutoConnect(v)} />
         </View>
       </View>
       {!!live.error && !linked && (
@@ -121,16 +126,16 @@ function BandCard({ live, onFind }: { live: LiveControl; onFind: () => void }) {
         )}
         {remembered && (
           <Button variant="outline" textClassName="text-recovery-red-text" onPress={() => setConfirmForget(true)}>
-            Forget band
+            {t("live.forgetBand")}
           </Button>
         )}
       </View>
       <ConfirmDialog
         open={confirmForget}
-        title="Forget this band?"
-        description="Pulse disconnects and stops reconnecting to it. Search again to pick a band."
-        confirmLabel="Forget band"
-        pendingLabel="Forgetting…"
+        title={t("live.forgetTitle")}
+        description={t("live.forgetBody")}
+        confirmLabel={t("live.forgetBand")}
+        pendingLabel={t("live.forgetting")}
         pending={forgetting}
         onCancel={() => setConfirmForget(false)}
         onConfirm={async () => {
@@ -145,25 +150,26 @@ function BandCard({ live, onFind }: { live: LiveControl; onFind: () => void }) {
 }
 
 function PermissionsCard({ live }: { live: LiveControl }) {
+  const { t } = useTranslation("settings");
   const [btHint, setBtHint] = useState<string | null>(null);
   const noRadio = live.radio === "unsupported" || live.radio === "unavailable";
-  const permission = live.permission === "granted" ? "Allowed" : live.permission === "blocked" ? "Blocked in Android settings" : "Not allowed yet";
-  const radio = live.radio === "on" ? "On" : live.radio === "off" ? "Off" : live.radio === "turning" ? "Turning on or off" : noRadio ? "Not available" : "Unknown";
+  const permission = live.permission === "granted" ? t("live.permAllowed") : live.permission === "blocked" ? t("live.permBlocked") : t("live.permNotYet");
+  const radio = live.radio === "on" ? t("live.radioOn") : live.radio === "off" ? t("live.radioOff") : live.radio === "turning" ? t("live.radioTurning") : noRadio ? t("live.radioNotAvailable") : t("live.radioUnknown");
   return (
-    <SectionShell variant="card" title="Permissions">
+    <SectionShell variant="card" title={t("live.permissions")}>
       <View>
-        <Row label="Nearby devices" value={permission} tone={live.permission === "granted" ? undefined : "text-warning-text"} />
-        <Row rule label="Bluetooth" value={radio} tone={live.radio === "on" ? undefined : "text-warning-text"} />
+        <Row label={t("live.nearby")} value={permission} tone={live.permission === "granted" ? undefined : "text-warning-text"} />
+        <Row rule label={t("live.bluetooth")} value={radio} tone={live.radio === "on" ? undefined : "text-warning-text"} />
       </View>
-      <Text className={cn(HINT, "mt-2")}>Android asks for Nearby devices (scan and connect) only. Pulse never uses your location for this.</Text>
+      <Text className={cn(HINT, "mt-2")}>{t("live.nearbyNote")}</Text>
       {live.permission !== "granted" && (
         <Button className="mt-4" onPress={() => void live.requestPermission()}>
-          {live.permission === "blocked" ? "Open Android settings" : "Allow Nearby devices"}
+          {live.permission === "blocked" ? t("live.openAndroidSettings") : t("live.allowNearby")}
         </Button>
       )}
       {live.permission === "granted" && live.radio === "off" && (
-        <Button className="mt-4" onPress={() => void live.turnOnBluetooth().then((ok) => setBtHint(ok ? null : "Turn Bluetooth on from Quick Settings."))}>
-          Turn on Bluetooth
+        <Button className="mt-4" onPress={() => void live.turnOnBluetooth().then((ok) => setBtHint(ok ? null : t("live.quickSettings")))}>
+          {t("live.turnOnBluetooth")}
         </Button>
       )}
       {!!btHint && <Text className={cn(WARN, "mt-2")}>{btHint}</Text>}
@@ -173,30 +179,31 @@ function PermissionsCard({ live }: { live: LiveControl }) {
 
 // ── Go live ──────────────────────────────────────────────────────────────────
 
-const STEPS: { title: string; body: string }[] = [
-  { title: "Share heart rate", body: "In Google Health, open your Fitbit Air › Connections and turn on Share heart rate." },
-  { title: "Always visible (optional)", body: "Turn it on so the band keeps sharing outside workouts. It uses more of the band’s battery." },
-  { title: "Connect", body: "Come back to Pulse: it looks for the band. Tap it in the list to connect." },
-];
+const STEPS = [
+  { title: "live.step1Title", body: "live.step1Body" },
+  { title: "live.step2Title", body: "live.step2Body" },
+  { title: "live.step3Title", body: "live.step3Body" },
+] as const;
 
 function Steps() {
+  const { t } = useTranslation("settings");
   const [missing, setMissing] = useState(false);
   return (
     <View className="gap-4">
       {/* Straight to where the setting lives. */}
-      <Button variant="secondary" onPress={() => setMissing(!openApp(GOOGLE_HEALTH))} accessibilityLabel="Open Google Health">
+      <Button variant="secondary" onPress={() => setMissing(!openApp(GOOGLE_HEALTH))} accessibilityLabel={t("live.openGoogleHealth")}>
         <Icon icon={ExternalLink} size={16} tone="secondary-foreground" strokeWidth={2.25} />
-        <Text className="text-[13px] font-bold uppercase tracking-[0.1em] text-secondary-foreground">Open Google Health</Text>
+        <Text className="text-[13px] font-bold uppercase tracking-[0.1em] text-secondary-foreground">{t("live.openGoogleHealth")}</Text>
       </Button>
-      {missing && <Text className={WARN}>Couldn’t open Google Health. Open it from your home screen.</Text>}
+      {missing && <Text className={WARN}>{t("live.googleHealthFailed")}</Text>}
       {STEPS.map((s, i) => (
-        <View key={s.title} accessible accessibilityLabel={`Step ${i + 1}: ${s.title}. ${s.body}`} className="flex-row gap-3">
+        <View key={s.title} accessible accessibilityLabel={t("live.stepLabel", { n: i + 1, title: t(s.title), body: t(s.body) })} className="flex-row gap-3">
           <View className="size-8 items-center justify-center rounded-full bg-fill-faint">
             <Text className="font-numeric text-base font-bold">{String(i + 1)}</Text>
           </View>
           <View className="min-w-0 flex-1 pt-1">
-            <Text className="text-[15px] font-semibold leading-[22px]">{s.title}</Text>
-            <Text className={BODY}>{s.body}</Text>
+            <Text className="text-[15px] font-semibold leading-[22px]">{t(s.title)}</Text>
+            <Text className={BODY}>{t(s.body)}</Text>
           </View>
         </View>
       ))}
@@ -216,13 +223,14 @@ function Note({ icon, children }: { icon: LucideIcon; children: string }) {
 }
 
 function DeviceRow({ d, onPress, aside, rule }: { d: FoundDevice; onPress: () => void; aside?: string; rule?: boolean }) {
+  const { t } = useTranslation("settings");
   const signal = signalWord(d.rssi);
-  const detail = [d.paired ? "Paired with this phone" : d.likely ? "Likely your band" : null, signal ? `${signal} signal` : null, aside ?? null].filter(Boolean).join(" · ");
+  const detail = [d.paired ? t("live.pairedHere") : d.likely ? t("live.likelyBand") : null, signal ? t("live.signal", { signal }) : null, aside ?? null].filter(Boolean).join(" · ");
   return (
     <Press
       activeOpacity={0.6}
       accessibilityRole="button"
-      accessibilityLabel={`Connect to ${d.name ?? "unnamed device"}${detail ? `, ${detail}` : ""}`}
+      accessibilityLabel={detail ? t("live.connectToDetail", { name: d.name ?? t("live.unnamedDevice"), detail }) : t("live.connectTo", { name: d.name ?? t("live.unnamedDevice") })}
       onPress={onPress}
       className={cn("min-h-14 flex-row items-center gap-3 py-2", rule && ROW_RULE)}
     >
@@ -230,10 +238,10 @@ function DeviceRow({ d, onPress, aside, rule }: { d: FoundDevice; onPress: () =>
         <Icon icon={Watch} size={20} tone={d.likely ? "recovery-red-text" : "foreground-secondary"} strokeWidth={2} />
       </View>
       <View className="min-w-0 flex-1">
-        <Text className="text-[15px] font-semibold leading-[22px]">{d.name ?? "Unnamed device"}</Text>
+        <Text className="text-[15px] font-semibold leading-[22px]">{d.name ?? t("live.unnamedDeviceTitle")}</Text>
         {!!detail && <Text className={HINT}>{detail}</Text>}
       </View>
-      <Text className="text-xs font-bold uppercase leading-4 tracking-[0.1em] text-foreground-secondary">Connect</Text>
+      <Text className="text-xs font-bold uppercase leading-4 tracking-[0.1em] text-foreground-secondary">{t("live.connect")}</Text>
       <Icon icon={ChevronRight} size={16} tone="foreground-secondary" strokeWidth={2} />
     </Press>
   );
@@ -245,6 +253,7 @@ function secondsUntil(at: number | null, now: number) {
 
 /** What the link is doing, or the scan's list. */
 function BandState() {
+  const { t } = useTranslation("settings");
   const live = useLiveBle();
   const { c } = useTheme();
   const [now, setNow] = useState(() => Date.now());
@@ -253,25 +262,25 @@ function BandState() {
     const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
   }, [live.retryAt]);
-  const name = live.device?.name ?? live.remembered?.name ?? "the band";
+  const name = live.device?.name ?? live.remembered?.name ?? t("live.theBand");
 
   if (live.status === "off") {
     if (live.radio === "unsupported" || live.radio === "unavailable")
       return (
         <Panel
           icon={<Icon icon={BluetoothOff} size={20} tone="foreground-secondary" strokeWidth={2} />}
-          title={live.radio === "unsupported" ? "No Bluetooth here" : "Bluetooth isn’t available"}
-          body={live.radio === "unsupported" ? "This phone (or emulator) has no Bluetooth Low Energy, so live heart rate can’t work on it." : "This build of Pulse can’t use Bluetooth."}
+          title={live.radio === "unsupported" ? t("live.noBluetoothTitle") : t("live.bluetoothUnavailableTitle")}
+          body={live.radio === "unsupported" ? t("live.noBluetoothBody") : t("live.bluetoothUnavailableBody")}
         />
       );
-    return <Panel icon={<Icon icon={BluetoothOff} size={20} tone="warning-text" strokeWidth={2} />} title="Bluetooth is off" body="Turn it on to find your band." />;
+    return <Panel icon={<Icon icon={BluetoothOff} size={20} tone="warning-text" strokeWidth={2} />} title={t("live.bluetoothOffTitle")} body={t("live.bluetoothOffBody")} />;
   }
   if (live.status === "unauthorized")
     return (
       <Panel
         icon={<Icon icon={Bluetooth} size={20} tone="warning-text" strokeWidth={2} />}
-        title="Allow Nearby devices"
-        body={live.permission === "blocked" ? "Nearby devices is off for Pulse. Allow it in Android settings › Apps › Pulse › Permissions." : "Pulse needs it to find and connect to your band. It doesn’t use your location."}
+        title={t("live.allowNearbyTitle")}
+        body={live.permission === "blocked" ? t("live.nearbyBlockedBody") : t("live.nearbyBody")}
       />
     );
   if (showsLive(live))
@@ -291,8 +300,8 @@ function BandState() {
     return (
       <Panel
         icon={<ActivityIndicator size="small" color={c["recovery-red"]} />}
-        title={`${live.status === "lost" ? "Reconnecting to" : "Connecting to"} ${name}…`}
-        body={wait !== null && wait > 0 ? `${live.error ? `${live.error} ` : ""}Trying again in ${wait} s.` : live.error}
+        title={t(live.status === "lost" ? "live.reconnectingTo" : "live.connectingTo", { name })}
+        body={wait !== null && wait > 0 ? (live.error ? t("live.retryInWithError", { error: live.error, seconds: wait }) : t("live.retryIn", { seconds: wait })) : live.error}
       />
     );
   }
@@ -304,18 +313,18 @@ function BandState() {
       {live.status === "scanning" && (
         <View className="flex-row items-center gap-2.5 py-2">
           <ActivityIndicator size="small" color={c["recovery-red"]} />
-          <Text className={cn(BODY, "flex-1")}>Looking for bands sharing heart rate…</Text>
+          <Text className={cn(BODY, "flex-1")}>{t("live.lookingFor")}</Text>
         </View>
       )}
       {live.found.map((d, i) => (
-        <DeviceRow key={d.id} rule={i > 0} d={d} onPress={() => void live.connect(d.id)} aside={live.remembered?.id === d.id ? "Last used" : undefined} />
+        <DeviceRow key={d.id} rule={i > 0} d={d} onPress={() => void live.connect(d.id)} aside={live.remembered?.id === d.id ? t("live.lastUsed") : undefined} />
       ))}
       {remembered && (
         <DeviceRow
           rule={live.found.length > 0}
           d={{ id: remembered.id, name: remembered.name, rssi: null, likely: true }}
           onPress={() => void live.connect(remembered.id)}
-          aside={live.status === "scanning" ? "Last used, not seen yet" : "Last used"}
+          aside={live.status === "scanning" ? t("live.lastUsedNotSeen") : t("live.lastUsed")}
         />
       )}
       {live.status === "idle" && !!live.error && (
@@ -329,26 +338,27 @@ function BandState() {
 
 /** The one action the band's state calls for (halo's Go-live sheet footer). */
 function BandAction({ live }: { live: LiveControl }) {
+  const { t } = useTranslation("settings");
   const [btHint, setBtHint] = useState<string | null>(null);
   let action: ReactNode = null;
   if (live.status === "off") {
     if (live.radio !== "unsupported" && live.radio !== "unavailable")
-      action = <Button onPress={() => void live.turnOnBluetooth().then((ok) => setBtHint(ok ? null : "Turn Bluetooth on from Quick Settings, then come back."))}>Turn on Bluetooth</Button>;
+      action = <Button onPress={() => void live.turnOnBluetooth().then((ok) => setBtHint(ok ? null : t("live.quickSettingsBack")))}>{t("live.turnOnBluetooth")}</Button>;
   } else if (live.status === "unauthorized")
-    action = <Button onPress={() => void live.requestPermission()}>{live.permission === "blocked" ? "Open settings" : "Allow Nearby devices"}</Button>;
+    action = <Button onPress={() => void live.requestPermission()}>{live.permission === "blocked" ? t("live.openSettings") : t("live.allowNearby")}</Button>;
   else if (live.status === "live" || live.status === "connecting" || live.status === "lost")
     action = (
       <Button variant="secondary" onPress={() => void live.disconnect()}>
-        {live.status === "live" ? "Disconnect" : "Cancel"}
+        {live.status === "live" ? t("live.disconnect") : t("live.cancel")}
       </Button>
     );
   else if (live.status === "scanning")
     action = (
       <Button variant="secondary" onPress={live.stopScan}>
-        Stop searching
+        {t("live.stopSearching")}
       </Button>
     );
-  else action = <Button onPress={() => void live.scan()}>{live.found.length || live.error ? "Search again" : "Search for my band"}</Button>;
+  else action = <Button onPress={() => void live.scan()}>{live.found.length || live.error ? t("live.searchAgain") : t("live.searchForBand")}</Button>;
   return (
     <>
       {action}
@@ -377,21 +387,22 @@ function useScanOnce(live: LiveControl, on: boolean) {
 }
 
 function GoLiveCard({ live, scanOnArrival }: { live: LiveControl; scanOnArrival: boolean }) {
+  const { t } = useTranslation("settings");
   useScanOnce(live, scanOnArrival);
   return (
-    <SectionShell variant="card" title="Go live">
-      <Text className={cn(BODY, "mb-4")}>Beat by beat from your band, over Bluetooth.</Text>
+    <SectionShell variant="card" title={t("live.goLive")}>
+      <Text className={cn(BODY, "mb-4")}>{t("live.goLiveIntro")}</Text>
       <Steps />
-      <Text className={cn(CAPTION, "mb-2 mt-6 uppercase tracking-[0.1em]")}>Your band</Text>
+      <Text className={cn(CAPTION, "mb-2 mt-6 uppercase tracking-[0.1em]")}>{t("live.yourBand")}</Text>
       <View className="gap-3">
         <BandState />
         <BandAction live={live} />
       </View>
       <View className="mt-6 gap-2.5">
         <Note icon={BatteryMedium}>
-          {`Sharing uses the band’s battery, and the band takes one connection at a time: while Pulse holds it, gym equipment or another app can’t connect. Pulse lets go ${GRACE_WORDS} after you leave it and reconnects when you come back.`}
+          {t("live.batteryNote", { seconds: GRACE_SECONDS })}
         </Note>
-        <Note icon={Info}>Live readings are for viewing; scores use what Pulse reads from Health Connect.</Note>
+        <Note icon={Info}>{t("live.viewingNote")}</Note>
       </View>
     </SectionShell>
   );

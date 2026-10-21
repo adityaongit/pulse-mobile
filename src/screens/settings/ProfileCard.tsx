@@ -2,7 +2,7 @@
 // the rows, and "Edit", which opens the onboarding fields in a sheet (the route app/profile.tsx, U19). Above
 // them, the web's Account head: the photo and the name, and the Photo button (src/actions/photo.ts), whose menu offers
 // Take photo, Choose photo and, once there is one, Remove photo.
-import { RANGES_LABEL } from "@/screens/onboarding/ProfileForm";
+import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { View } from "react-native";
 import { Camera, ImageIcon, Pencil, Trash2, type LucideIcon } from "lucide-react-native";
@@ -24,25 +24,26 @@ import { ROW, ROW_LABEL, ROW_RULE, ROW_VALUE, SmallButton } from "./controls";
 import { push } from "@/ui/navigate";
 
 export function ProfileCard({ profile }: { profile: SettingsVM["profile"] }) {
+  const { t } = useTranslation("settings");
   const name = useApp((s) => s.profile?.name);
   const rows: [string, string][] = [
-    ["Birth date", formatDay(profile.birthDate, DAY.full)],
-    ["Age", String(profile.age)],
-    [RANGES_LABEL, profile.sex === "male" ? "Male" : "Female"],
-    ["Height", profile.heightCm ? heightText(profile.heightCm) : "Not set"],
-    ["Max heart rate", `${profile.maxHr} bpm, ${profile.maxHrSource}`],
-    ["Time zone", profile.timeZone],
+    [t("profileRows.birthDate"), formatDay(profile.birthDate, DAY.full)],
+    [t("profileRows.age"), String(profile.age)],
+    [t("profileRows.referenceRanges"), profile.sex === "male" ? t("profile.male") : t("profile.female")],
+    [t("profileRows.height"), profile.heightCm ? heightText(profile.heightCm) : t("profile.notSet")],
+    [t("profileRows.maxHeartRate"), t("profile.maxHrValue", { bpm: profile.maxHr, source: t(`profile.maxHrSource.${profile.maxHrSource}`) })],
+    [t("profileRows.timeZone"), profile.timeZone],
   ];
   return (
-    <SectionShell variant="card" title="Profile" action={<SmallButton icon={Pencil} label="Edit" accessibilityLabel="Edit profile" onPress={() => push("/profile")} className="-my-2" />}>
+    <SectionShell variant="card" title={t("profile.title")} action={<SmallButton icon={Pencil} label={t("profile.edit")} accessibilityLabel={t("profile.editLabel")} onPress={() => push("/profile")} className="-my-2" />}>
       <View className="min-h-11 flex-row items-center gap-3">
         <UserAvatar size={56} />
         <View className="min-w-0 flex-1">
           <Text numberOfLines={1} className="text-[15px] font-semibold leading-[22px]">
-            {name || "No name"}
+            {name || t("profile.noName")}
           </Text>
           <Text numberOfLines={1} className="text-[13px] leading-[18px] text-muted-foreground">
-            Your photo stays on this phone
+            {t("profile.photoStays")}
           </Text>
         </View>
       </View>
@@ -55,13 +56,14 @@ export function ProfileCard({ profile }: { profile: SettingsVM["profile"] }) {
           </View>
         ))}
       </View>
-      <Text className={`${CAPTION} mt-2`}>Your days start at midnight in your time zone. Edit changes it and recomputes your scores.</Text>
+      <Text className={`${CAPTION} mt-2`}>{t("profile.daysStart")}</Text>
     </SectionShell>
   );
 }
 
 /** Photo: a menu under the button (the kit's MenuPanel) to take one or choose one (both crop a square), and Remove photo once there is one. */
 function PhotoButtons() {
+  const { t } = useTranslation("settings");
   const has = useApp((s) => !!s.profile?.photo);
   const [pending, setPending] = useState(false);
   const { ref, anchor, open, close } = useMenu();
@@ -71,17 +73,17 @@ function PhotoButtons() {
       const uri = await pickPhoto(from);
       if (uri) {
         await setPhoto(uri);
-        toast.success("Photo updated");
+        toast.success(t("profile.photoUpdated"));
       }
     } catch (e) {
-      toast.error(e instanceof Error && e.message === "camera_denied" ? "Allow the camera in Android settings to take a photo." : "Couldn’t update the photo");
+      toast.error(e instanceof Error && e.message === "camera_denied" ? t("profile.cameraDenied") : t("profile.photoFailed"));
     } finally {
       setPending(false);
     }
   };
   const remove = async () => {
     await setPhoto(null);
-    toast.success("Photo removed");
+    toast.success(t("profile.photoRemoved"));
   };
   const item = (icon: LucideIcon, label: string, onPress: () => void, danger?: boolean) => (
     <Press
@@ -101,12 +103,12 @@ function PhotoButtons() {
   return (
     <View ref={ref} collapsable={false} className="mt-4">
       <Button variant="secondary" disabled={pending} onPress={open}>
-        {pending ? "Saving…" : "Photo"}
+        {pending ? t("profile.saving") : t("profile.photo")}
       </Button>
       <MenuPanel anchor={anchor} onClose={close} align="stretch">
-        {item(Camera, "Take photo", () => void run("camera"))}
-        {item(ImageIcon, "Choose photo", () => void run("library"))}
-        {has && item(Trash2, "Remove photo", () => void remove(), true)}
+        {item(Camera, t("profile.takePhoto"), () => void run("camera"))}
+        {item(ImageIcon, t("profile.choosePhoto"), () => void run("library"))}
+        {has && item(Trash2, t("profile.removePhoto"), () => void remove(), true)}
       </MenuPanel>
     </View>
   );

@@ -1,6 +1,7 @@
 // The form and settings pieces Settings, onboarding and Behaviours share. The web draws them with its shadcn components
 // (Input, Switch, Dialog, outline Button, Progress) and a few class strings; the kit has none of these, so they are
 // built here from the same classes and tokens, never from a platform control.
+import { useTranslation } from "react-i18next";
 import { useEffect, useImperativeHandle, useRef, useState, type ReactNode, type Ref } from "react";
 import { Modal, Pressable, TextInput, View, type TextInputProps } from "react-native";
 import Animated, { interpolateColor, useAnimatedStyle, useDerivedValue, withTiming } from "react-native-reanimated";
@@ -38,11 +39,12 @@ export const ROW_RULE = "border-t border-border";
 
 /** A form field: caps label (with "Optional"), the control, then its error or its hint (web ProfileForm `Field`). */
 export function Field({ label, hint, error, optional, children }: { label: string; hint: string; error?: string; optional?: boolean; children: ReactNode }) {
+  const { t } = useTranslation("settings");
   return (
     <View className="gap-2">
       <Text className={LABEL}>
         {label}
-        {optional && <Text className="ml-2 text-[15px] font-medium normal-case tracking-normal text-muted-foreground">{"  "}Optional</Text>}
+        {optional && <Text className="ml-2 text-[15px] font-medium normal-case tracking-normal text-muted-foreground">{"  "}{t("form.optional")}</Text>}
       </Text>
       {children}
       {error ? (
@@ -304,13 +306,14 @@ export function ConfirmDialog({
   /** "outline" (red text, the web's Disconnect and Delete) or "primary" (Choose account). */
   confirmVariant?: "outline" | "primary";
 }) {
+  const { t } = useTranslation();
   const panel = usePanelStyle({ ring: "border", shadow: null });
   useEffect(() => {
     if (open && confirmVariant === "outline") haptic.warning();
   }, [open, confirmVariant]);
   return (
     <Modal visible={open} transparent animationType="fade" onRequestClose={() => !pending && onCancel()} statusBarTranslucent navigationBarTranslucent>
-      <Pressable accessibilityLabel="Close" accessible={false} onPress={() => !pending && onCancel()} className="flex-1 items-center justify-center bg-dim-strong px-4">
+      <Pressable accessibilityLabel={t("actions.close")} accessible={false} onPress={() => !pending && onCancel()} className="flex-1 items-center justify-center bg-dim-strong px-4">
         <Pressable accessible={false} onPress={() => {}} className="w-full max-w-sm overflow-hidden rounded-xl bg-popover" style={panel}>
           <View className="gap-4 p-4">
             <View className="gap-2">
@@ -327,7 +330,7 @@ export function ConfirmDialog({
           </View>
           <View className="flex-col-reverse gap-2 border-t border-border bg-muted/50 p-4">
             <Button variant="secondary" onPress={onCancel} disabled={pending}>
-              Cancel
+              {t("actions.cancel")}
             </Button>
             {confirmVariant === "primary" ? (
               <Button onPress={onConfirm} disabled={pending}>

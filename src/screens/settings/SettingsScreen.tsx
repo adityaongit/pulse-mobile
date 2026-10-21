@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import { RANGES_LABEL } from "@/screens/onboarding/ProfileForm";
+import { useTranslation } from "react-i18next";
 import { useLocalSearchParams } from "expo-router";
 import { loadPrefs } from "@/actions/preferences";
 import { getSettings } from "@/queries/settings";
@@ -27,9 +27,10 @@ const resolve = (raw: string | undefined): SectionId => {
   return SECTIONS.includes(id) ? id : SECTIONS[0];
 };
 
-const PROFILE_ROWS = ["Birth date", "Age", RANGES_LABEL, "Height", "Max heart rate", "Time zone"];
+const PROFILE_ROWS = ["birthDate", "age", "referenceRanges", "height", "maxHeartRate", "timeZone"] as const;
 
 function SectionSkeleton({ section }: { section: SectionId }) {
+  const { t } = useTranslation("settings");
   const buttons = (
     <View className="mt-4 flex-row gap-2">
       <Skeleton className="h-11 flex-1 rounded-xl" />
@@ -38,7 +39,7 @@ function SectionSkeleton({ section }: { section: SectionId }) {
   );
   if (section === "source")
     return (
-      <SectionShell variant="card" title="Data source">
+      <SectionShell variant="card" title={t("sectionTitle.dataSource")}>
         <View className="min-h-11 flex-row items-center gap-3">
           <Skeleton className="size-11 rounded-xl" />
           <View className="min-w-0 flex-1">
@@ -55,9 +56,9 @@ function SectionSkeleton({ section }: { section: SectionId }) {
     );
   if (section === "app")
     return (
-      <SectionShell variant="card" title="Display">
+      <SectionShell variant="card" title={t("sectionTitle.display")}>
         <View>
-          {["Theme", "Units", "Clock"].map((k, i) => (
+          {(["theme", "units", "clock"] as const).map((k, i) => (
             <View key={k} className={cn(ROW, i > 0 && ROW_RULE)}>
               <SkeletonText lh={22} fs={15} className="w-16" />
               <SkeletonText lh={22} fs={15} className="w-20" />
@@ -67,7 +68,7 @@ function SectionSkeleton({ section }: { section: SectionId }) {
       </SectionShell>
     );
   return (
-    <SectionShell variant="card" title="Profile" action={<Skeleton className="h-5 w-14 rounded-full" />}>
+    <SectionShell variant="card" title={t("sectionTitle.profile")} action={<Skeleton className="h-5 w-14 rounded-full" />}>
       <View>
         {PROFILE_ROWS.map((k, i) => (
           <View key={k} className={cn(ROW, i > 0 && ROW_RULE)}>
@@ -82,6 +83,7 @@ function SectionSkeleton({ section }: { section: SectionId }) {
 }
 
 export function SettingsScreen() {
+  const { t } = useTranslation("settings");
   const { s } = useLocalSearchParams<{ s?: string }>();
   const section = resolve(s);
   // The data source reads the app state itself (src/state/app.ts), so a sync's progress redraws only that section.
@@ -90,7 +92,7 @@ export function SettingsScreen() {
   return (
     <View className="flex-1">
       <DetailShell
-        title="Settings"
+        title={t("title")}
         loading={!data}
         primary={
           <View className="w-full gap-3">
