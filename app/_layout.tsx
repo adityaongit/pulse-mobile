@@ -18,6 +18,7 @@ import { Figtree_600SemiBold } from "@expo-google-fonts/figtree/600SemiBold";
 import { Figtree_700Bold } from "@expo-google-fonts/figtree/700Bold";
 
 import { i18n } from "@/i18n/config";
+import { useLanguage } from "@/i18n/useLanguage";
 import { useNotificationDeepLinks, useTabLinks } from "@/background/links";
 import { Opening } from "@/screens/Opening";
 import { ScreenError } from "@/screens/ScreenError";
@@ -80,6 +81,7 @@ export default function RootLayout() {
 
 function Screens({ onboarded }: { onboarded: boolean }) {
   const { c, scheme } = useTheme();
+  const language = useLanguage();
   // A tapped notification opens its screen once the navigator exists, a cold start included (src/background/links.ts).
   useNotificationDeepLinks();
   useTabLinks();
@@ -95,7 +97,7 @@ function Screens({ onboarded }: { onboarded: boolean }) {
   return (
     <ThemeProvider value={theme}>
       <StatusBar style={scheme === "dark" ? "light" : "dark"} />
-      <Stack screenOptions={{ headerShown: false, animation: Platform.OS === "android" ? "ios_from_right" : "default", contentStyle: { backgroundColor: c.background } }}>
+      <Stack key={language} screenOptions={{ headerShown: false, animation: Platform.OS === "android" ? "ios_from_right" : "default", contentStyle: { backgroundColor: c.background } }}>
         {/* First run: without a profile the person lands on onboarding and the tabs are out of reach; saving the profile
             flips the guards, and the navigator moves to the tabs (Stack.Protected). Declared first so each is the first screen. */}
         <Stack.Protected guard={!onboarded}>
