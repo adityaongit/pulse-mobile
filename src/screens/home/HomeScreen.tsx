@@ -393,9 +393,11 @@ function MonitorCard({ vm, href }: { vm: HomePageVM; href: string }) {
         // No vital judged yet (no readings, or every baseline still calibrating): never "Within range".
         <MonitorLine chip={NO_READING_CHIP} chipClass="bg-secondary" top="No readings" topClass="text-foreground-secondary" bottom={reasonCopy(m.value === null ? m.reason : "calibrating").short} />
       ) : m.value.flagged === 0 ? (
-        <MonitorLine chip={<Icon icon={Check} size={16} tone="optimal-text" strokeWidth={2.5} />} chipClass="bg-optimal/15" top="Within range" topClass="text-optimal-text" bottom={`${m.value.inRange}/${m.value.total} Metrics`} />
+        <MonitorLine chip={<Icon icon={Check} size={16} tone="optimal-text" strokeWidth={2.5} />} chipClass="bg-optimal/15" top="Within range" topClass="text-optimal-text" bottom={`${m.value.inRange} of ${m.value.total} metrics`} />
       ) : (
-        <MonitorLine chip={<Icon icon={TriangleAlert} size={16} tone="warning-text" strokeWidth={2} />} chipClass="bg-warning/15" top="Out of range" topClass="text-warning-text" bottom={`${m.value.inRange}/${m.value.total} Metrics`} />
+        // The count names what the headline says: "1 of 4 metrics" under Out of range, never the in-range "3/4", which
+        // read as three vitals out of range.
+        <MonitorLine chip={<Icon icon={TriangleAlert} size={16} tone="warning-text" strokeWidth={2} />} chipClass="bg-warning/15" top="Out of range" topClass="text-warning-text" bottom={`${m.value.flagged} of ${m.value.total} metrics`} />
       )}
     </SectionShell>
   );
