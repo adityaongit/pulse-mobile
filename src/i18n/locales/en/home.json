@@ -1,1 +1,172 @@
-{}
+{
+  "title": "Home",
+  "sync": {
+    "progress": "Syncing · {{percent}}%",
+    "syncing": "Syncing…"
+  },
+  "noBand": {
+    "title": "No band data yet",
+    "short": "No band data yet",
+    "scored": "Sleep, Recovery and Strain are scored from your Fitbit’s heart rate, which your phone can’t measure.",
+    "phoneShows": "Until your Fitbit syncs, Home shows what your phone counts: steps, distance, calories and active minutes.",
+    "plannerNeeds": "Sleep Planner needs 7 nights to learn your wake time."
+  },
+  "vital": {
+    "resp": "Respiratory rate",
+    "spo2": "Blood oxygen",
+    "restingHr": "Resting heart rate",
+    "hrv": "Heart rate variability",
+    "skinTempDev": "Skin temperature"
+  },
+  "section": {
+    "myDay": "My Day",
+    "myDashboard": "My Dashboard",
+    "myJournal": "My journal",
+    "tonight": "Tonight’s sleep",
+    "energyBank": "Energy Bank",
+    "strainRecovery": "Strain & recovery",
+    "weekReview": "Your week in review",
+    "fromPhone": "From your phone",
+    "vsAverage": "vs. 30-day avg",
+    "vsAverageFull": "vs. 30-day average"
+  },
+  "activities": {
+    "today": "Today’s activities",
+    "other": "Activities",
+    "all": "All activities",
+    "add": "Add activity",
+    "emptyToday": "No activities yet today. Workouts appear after Fitbit syncs them.",
+    "emptyDay": "No activities on this day."
+  },
+  "add": {
+    "today": "Add to today",
+    "day": "Add to {{day}}",
+    "completeJournal": "Complete your journal"
+  },
+  "tonight": {
+    "openPlanner": "Open Sleep Planner",
+    "recommendedBedtime": "Recommended\nbedtime",
+    "typicalWake": "Typical\nwake",
+    "sleepGoal": "Sleep goal",
+    "goalShare": "{{label}}, {{percent}} percent of need",
+    "need": "Need tonight: <t>{{time}}</t>"
+  },
+  "journal": {
+    "open": "Open Journal",
+    "checkedIn": "{{day}}: checked in",
+    "noCheckIn": "{{day}}: no check-in",
+    "insights": "Behaviour insights"
+  },
+  "monitor": {
+    "title": "Health Monitor",
+    "noReadings": "No readings",
+    "withinRange": "Within range",
+    "outOfRange": "Out of range",
+    "ofMetrics": "{{n}} of {{total}} metrics",
+    "view": "View Health Monitor"
+  },
+  "alert": {
+    "illnessTitle": "Your body may be fighting something",
+    "flaggedTitle_one": "{{count}} vital outside your normal range",
+    "flaggedTitle_other": "{{count}} vitals outside your normal range",
+    "illnessBody": "Several vitals moved away from your normal range together, a pattern that often comes before feeling unwell. Consider an easier day.",
+    "flaggedBody_one": "{{names}} is outside your usual range. This can be an early sign of illness or heavy strain.",
+    "flaggedBody_other": "{{names}} are outside your usual range. This can be an early sign of illness or heavy strain.",
+    "someVitals": "Some vitals",
+    "namesAnd": "{{rest}} and {{last}}"
+  },
+  "stress": {
+    "title": "Stress Monitor",
+    "notWorn": "Not worn",
+    "noneScored": "No stress scored yet",
+    "today": "Today",
+    "thisDay": "This day",
+    "dayAverage": "Day average",
+    "lastUpdated": "Last updated <t>{{time}}</t>"
+  },
+  "energy": {
+    "label": "Energy",
+    "wokeAt": "Woke at <t>{{time}}</t> with <t>{{level}}%</t>",
+    "charged": "Charged",
+    "drained": "Drained",
+    "drainAt": "{{label}} at <t>{{time}}</t> · <t>{{amount}}</t>"
+  },
+  "heartRate": {
+    "title": "Heart rate",
+    "none": "No heart rate yet",
+    "demoNone": "The sample data has no readings yet.",
+    "notSynced": "Nothing synced from Health Connect yet.",
+    "lastMinutes": "Last {{minutes}} min",
+    "live": "Live heart rate {{bpm}} beats per minute",
+    "reconnecting": "Reconnecting. Last live reading {{bpm}} beats per minute",
+    "latest": "Heart rate {{bpm}} beats per minute",
+    "unknown": "unknown"
+  },
+  "insights": {
+    "label": "Insights",
+    "position": "{{n}} of {{total}}",
+    "dismiss": "Dismiss this insight ({{left}} left)",
+    "keepLight": "Keep strain light",
+    "roomForMore": "Room for more strain",
+    "optimal": "Reaching optimal strain",
+    "pastTarget": "Past your target",
+    "recoveryGreen": "Ready for strain",
+    "recoveryYellow": "A steady day",
+    "recoveryRed": "Time to recover",
+    "lastNight": "Last night’s sleep"
+  },
+  "outlook": {
+    "titleReview": "Your day in review",
+    "titleOutlook": "Your daily outlook",
+    "band": {
+      "green": "green",
+      "yellow": "yellow",
+      "red": "red"
+    },
+    "recovery": "Your Recovery is {{value}}%, {{band}}.",
+    "strainTarget": "Today’s Strain Target is {{target}}.",
+    "slept": "You slept {{asleep}} of the {{need}} you needed.",
+    "strainIs": "Day Strain is {{value}}.",
+    "strainIsTarget": "Day Strain is {{value}} against a target of {{target}}.",
+    "strainIsActs_one": "Day Strain is {{value}}, with {{count}} activity.",
+    "strainIsActs_other": "Day Strain is {{value}}, with {{count}} activities.",
+    "strainIsTargetActs_one": "Day Strain is {{value}} against a target of {{target}}, with {{count}} activity.",
+    "strainIsTargetActs_other": "Day Strain is {{value}} against a target of {{target}}, with {{count}} activities.",
+    "strainWas": "Day Strain was {{value}}.",
+    "strainWasTarget": "Day Strain was {{value}} against a target of {{target}}.",
+    "strainWasActs_one": "Day Strain was {{value}}, with {{count}} activity.",
+    "strainWasActs_other": "Day Strain was {{value}}, with {{count}} activities.",
+    "strainWasTargetActs_one": "Day Strain was {{value}} against a target of {{target}}, with {{count}} activity.",
+    "strainWasTargetActs_other": "Day Strain was {{value}} against a target of {{target}}, with {{count}} activities.",
+    "recoveryIs": "Recovery is {{value}}%.",
+    "recoveryWas": "Recovery was {{value}}%.",
+    "highStress": "You spent {{duration}} in high stress."
+  },
+  "edit": {
+    "customizeLabel": "Customize My Dashboard",
+    "customize": "Customize",
+    "pageTitle": "Customize dashboard",
+    "success": "Success",
+    "saved": "Your preferences have been saved.",
+    "saveFailed": "Couldn’t save your dashboard. Try again.",
+    "saving": "Saving…",
+    "myDashboard": "My Dashboard",
+    "addAtLeastOne": "Add at least one metric to save.",
+    "addTo": "Add to My Dashboard",
+    "searchPlaceholder": "Search metrics…",
+    "searchLabel": "Search metrics",
+    "add": "Add {{label}}",
+    "addNoData": "Add {{label}}, no data yet",
+    "noDataYet": "No data yet",
+    "noMatch": "No metric matches “{{query}}”.",
+    "allOnHome": "Every metric is on Home.",
+    "remove": "Remove {{label}}",
+    "reorder": "Reorder {{label}}, position {{position}} of {{total}}",
+    "reorderHint": "Drag, or swipe up or down, to move",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "moved": "{{label}} moved to position {{position}} of {{total}}",
+    "removed": "{{label}} removed from Home",
+    "added": "{{label}} added at position {{position}}"
+  }
+}

@@ -1,4 +1,5 @@
 // Home `/` (spec §7.1). Ported from Pulse's src/server/queries/home.ts.
+import { i18n } from "@/i18n/config";
 import { inUnits, shownValue } from "@/lib/units";
 import { addDays, localMinutes } from "@/lib/time";
 import { energyBand } from "@/core/engine/energyBank";
@@ -51,12 +52,23 @@ import {
 } from "./common";
 import type { CardStatKey, EnergyBankVM, HomeVM, KeyStat, Metric, VitalKey } from "./types";
 
+/** Getters, so the text follows the language (a plain object would freeze the first one). */
 export const VITAL_LABEL: Record<VitalKey, string> = {
-  resp: "Respiratory rate",
-  spo2: "Blood oxygen",
-  restingHr: "Resting heart rate",
-  hrv: "Heart rate variability",
-  skinTempDev: "Skin temperature",
+  get resp() {
+    return i18n.t("home:vital.resp");
+  },
+  get spo2() {
+    return i18n.t("home:vital.spo2");
+  },
+  get restingHr() {
+    return i18n.t("home:vital.restingHr");
+  },
+  get hrv() {
+    return i18n.t("home:vital.hrv");
+  },
+  get skinTempDev() {
+    return i18n.t("home:vital.skinTempDev");
+  },
 };
 
 /** The stats Home's own cards read, whatever My Dashboard shows (HomeVM.cardStats). */
@@ -111,7 +123,8 @@ export async function getHome(day: string, ctx: QueryCtx, opts: HomeOptions = {}
     monitorAlert: monitorAlert(row),
     monitor: monitorSummary(row, isToday),
     stress: stressNow(row, isToday),
-    activities: { title: isToday ? "Today’s activities" : "Activities", items: timelineOf(row, day, exs), detected: (row?.detected ?? []).map(detectedItem) },
+    // types.ts still types the title as the two English literals; it is translated text now (types.ts is shared).
+    activities: { title: i18n.t(isToday ? "home:activities.today" : "home:activities.other") as HomeVM["activities"]["title"], items: timelineOf(row, day, exs), detected: (row?.detected ?? []).map(detectedItem) },
     energyBank: energyBankVM(ctx, row, day, isToday, ebSeries),
     tonight: planVM(ctx, row, isToday),
     keyStats: keyStats(rows, day, isToday, keys),
@@ -148,24 +161,27 @@ export function outlookOf(ctx: QueryCtx, row: DayRow | undefined, s: DayScores, 
   const target = s.target ? `${Math.round(s.target[0])} - ${pct(s.target[1])}` : null;
   const parts: string[] = [];
   if (!review) {
-    if (rec != null) parts.push(`Your Recovery is ${Math.round(rec)}%, ${recoveryBand(rec)}.`);
-    if (target) parts.push(`Today’s Strain Target is ${target}.`);
+    if (rec != null) parts.push(i18n.t("home:outlook.recovery", { value: Math.round(rec), band: i18n.t(`home:outlook.band.${recoveryBand(rec)}`) }));
+    if (target) parts.push(i18n.t("home:outlook.strainTarget", { target }));
     const main = row?.sleep?.main;
     const need = nightNeedMin(row?.sleep);
-    if (main && need) parts.push(`You slept ${hmm(main.asleepMin)} of the ${hmm(need)} you needed.`);
+    if (main && need) parts.push(i18n.t("home:outlook.slept", { asleep: hmm(main.asleepMin), need: hmm(need) }));
   } else {
     const n = row?.activities.length ?? 0;
-    const acts = n ? `, with ${n} ${n === 1 ? "activity" : "activities"}` : "";
-    if (s.strain.value != null) parts.push(`Day Strain ${isToday ? "is" : "was"} ${pct(s.strain.value)}${target ? ` against a target of ${target}` : ""}${acts}.`);
-    if (rec != null) parts.push(`Recovery ${isToday ? "is" : "was"} ${Math.round(rec)}%.`);
+    const tense = isToday ? "Is" : "Was";
+    if (s.strain.value != null) {
+      const key = `home:outlook.strain${tense}${target ? "Target" : ""}${n ? "Acts" : ""}` as const;
+      parts.push(i18n.t(key, { value: pct(s.strain.value), target: target ?? "", count: n }));
+    }
+    if (rec != null) parts.push(i18n.t(`home:outlook.recovery${tense}`, { value: Math.round(rec) }));
     const st = row?.stress;
-    if (st && st.average != null) parts.push(`You spent ${hmm(st.highMin)} in high stress.`);
+    if (st && st.average != null) parts.push(i18n.t("home:outlook.highStress", { duration: hmm(st.highMin) }));
   }
   if (!parts.length) return null;
-  return { kind: review ? "review" : "outlook", title: review ? "Your day in review" : "Your daily outlook", body: parts.join(" ") };
+  return { kind: review ? "review" : "outlook", title: i18n.t(review ? "home:outlook.titleReview" : "home:outlook.titleOutlook"), body: parts.join(" ") };
 }
 
-const RECOVERY_TITLE = { green: "Ready for strain", yellow: "A steady day", red: "Time to recover" } as const;
+const RECOVERY_TITLE = { green: "home:insights.recoveryGreen", yellow: "home:insights.recoveryYellow", red: "home:insights.recoveryRed" } as const;
 
 /** Today's coach cards from the same templates the detail screens use (Strain Coach, Recovery, Sleep). */
 function insightsOf(ctx: QueryCtx, rows: Map<string, DayRow>, row: DayRow | undefined, day: string, s: Pick<DayScores, "strain" | "target">): HomeVM["insights"] {
@@ -175,13 +191,13 @@ function insightsOf(ctx: QueryCtx, rows: Map<string, DayRow>, row: DayRow | unde
   if (c && target && s.strain.value != null) {
     const v = s.strain.value;
     const red = row?.recovery?.value != null && row.recovery.value < 34;
-    const title = red ? "Keep strain light" : v < target.low ? "Room for more strain" : v <= target.high ? "Reaching optimal strain" : "Past your target";
+    const title = i18n.t(red ? "home:insights.keepLight" : v < target.low ? "home:insights.roomForMore" : v <= target.high ? "home:insights.optimal" : "home:insights.pastTarget");
     out.push({ key: "strain", title, body: c, href: "/strain" });
   }
   const r = row?.recovery;
-  if (r?.value != null) out.push({ key: "recovery", title: RECOVERY_TITLE[recoveryBand(r.value)], body: recoveryInsight(r.drivers), href: "/recovery" });
+  if (r?.value != null) out.push({ key: "recovery", title: i18n.t(RECOVERY_TITLE[recoveryBand(r.value)]), body: recoveryInsight(r.drivers), href: "/recovery" });
   const sl = sleepInsight(rows, day, ctx.timeZone);
-  if (sl) out.push({ key: "sleep", title: "Last night’s sleep", body: sl, href: "/sleep" });
+  if (sl) out.push({ key: "sleep", title: i18n.t("home:insights.lastNight"), body: sl, href: "/sleep" });
   return out;
 }
 

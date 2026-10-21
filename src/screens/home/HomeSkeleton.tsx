@@ -2,6 +2,7 @@
 // section's own box with its static titles and labels; only values are bars, so nothing moves when data arrives.
 import { Fragment } from "react";
 import { View } from "react-native";
+import { useTranslation } from "react-i18next";
 import { DASHBOARD_DEFAULT, DASHBOARD_LABEL, type DashboardKey } from "@/lib/dashboard";
 import { Wordmark } from "@/ui/brand";
 import { CARD_CLASS, CardFill, useCardStyle } from "@/ui/Card";
@@ -59,10 +60,11 @@ function InsightSkeleton() {
 
 /** `stats`: My Dashboard's chosen metrics (getHome's order), so the skeleton has as many rows as the page will. */
 export function HomeSkeleton({ stats = DASHBOARD_DEFAULT }: { stats?: DashboardKey[] }) {
+  const { t } = useTranslation("home");
   return (
     <PageShell
       loading
-      title="Home"
+      title={t("title")}
       layout="home"
       slots={{
         top: (
@@ -86,26 +88,26 @@ export function HomeSkeleton({ stats = DASHBOARD_DEFAULT }: { stats?: DashboardK
             <View className="-mt-2 gap-6">
               <View className="flex-row gap-3">
                 <View className="min-w-0 flex-1 flex-row">
-                  <SectionShell variant="card" title="Health Monitor" info={false} href="/health/monitor" fill>
+                  <SectionShell variant="card" title={t("monitor.title")} info={false} href="/health/monitor" fill>
                     <MonitorLineSkeleton />
                   </SectionShell>
                 </View>
                 <View className="min-w-0 flex-1 flex-row">
-                  <SectionShell variant="card" title="Stress Monitor" info={false} href="/health/stress" fill>
+                  <SectionShell variant="card" title={t("stress.title")} info={false} href="/health/stress" fill>
                     <MonitorLineSkeleton />
                   </SectionShell>
                 </View>
               </View>
               <InsightSkeleton />
             </View>
-            <SectionShell variant="section" title="My Day" action={<View accessibilityElementsHidden className="size-[34px] rounded-lg bg-foreground/90" />}>
+            <SectionShell variant="section" title={t("section.myDay")} action={<View accessibilityElementsHidden className="size-[34px] rounded-lg bg-foreground/90" />}>
               <View className="gap-3">
                 <BannerSkeleton />
-                <SectionShell variant="card" title="Today’s activities" action={ICON_SLOT}>
+                <SectionShell variant="card" title={t("activities.today")} action={ICON_SLOT}>
                   <TimelineSkeleton />
                   <Skeleton className="mt-3 h-12 rounded-xl" />
                 </SectionShell>
-                <SectionShell variant="card" title="My journal" action={ICON_SLOT}>
+                <SectionShell variant="card" title={t("section.myJournal")} action={ICON_SLOT}>
                   <View className="flex-row pt-1">
                     {rows(7, () => (
                       <View className="min-h-16 flex-1 items-center justify-center gap-2">
@@ -116,7 +118,7 @@ export function HomeSkeleton({ stats = DASHBOARD_DEFAULT }: { stats?: DashboardK
                   </View>
                   <Skeleton className="mt-3 h-12 rounded-xl" />
                 </SectionShell>
-                <SectionShell variant="card" title="Energy Bank" info={ENERGY_INFO} fill>
+                <SectionShell variant="card" title={t("section.energyBank")} info={ENERGY_INFO} fill>
                   <View className="flex-1 gap-4">
                     <View className="gap-1.5">
                       <TickScaleSkeleton />
@@ -130,7 +132,7 @@ export function HomeSkeleton({ stats = DASHBOARD_DEFAULT }: { stats?: DashboardK
                     <View className="gap-1">{rows(3, () => <SkeletonText className="w-28" />)}</View>
                   </View>
                 </SectionShell>
-                <SectionShell variant="card" title="Tonight’s sleep" info={TONIGHT_INFO} action={ICON_SLOT} fill>
+                <SectionShell variant="card" title={t("section.tonight")} info={TONIGHT_INFO} action={ICON_SLOT} fill>
                   <View className="flex-1 gap-4">
                     <Skeleton className="my-auto h-[60px] rounded-lg bg-skeleton" />
                     <Skeleton className="mt-auto h-11 rounded-lg" />
@@ -142,7 +144,7 @@ export function HomeSkeleton({ stats = DASHBOARD_DEFAULT }: { stats?: DashboardK
           </View>
         ),
         aside: (
-          <SectionShell variant="section" title="My Dashboard" aside="vs. 30-day average" action={ICON_SLOT}>
+          <SectionShell variant="section" title={t("section.myDashboard")} aside={t("section.vsAverageFull")} action={ICON_SLOT}>
             <View accessibilityElementsHidden className="gap-2">
               {stats.map((key) => (
                 <KeyStatRowSkeleton key={key} variant="card" label={DASHBOARD_LABEL[key]} icon={statIcon(key)} />

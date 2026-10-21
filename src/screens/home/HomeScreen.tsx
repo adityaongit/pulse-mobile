@@ -1,6 +1,10 @@
 import { useCallback, useMemo, useState, type ReactNode } from "react";
 import { View } from "react-native";
 import { useFocusEffect } from "expo-router";
+import { Trans, useTranslation } from "react-i18next";
+import { i18n } from "@/i18n/config";
+import { STRESS_WORD } from "@/lib/bands";
+import { cardInfo } from "@/ui/shells/cardInfo";
 import { CalendarRange, Check, ChevronRight, CircleAlert, Info, Lightbulb, Maximize2, Moon, Plus, Sun, TriangleAlert } from "lucide-react-native";
 import { isDashboardKey } from "@/lib/dashboard";
 import { dashboardChoice } from "@/actions/dashboard";
@@ -59,21 +63,24 @@ import { TonightPlan } from "./TonightPlan";
 import { push } from "@/ui/navigate";
 import { Press } from "@/ui/Press";
 
-const STRESS_TONE: Record<StressLevel, { chip: string; text: string; word: string }> = {
-  low: { chip: "bg-stress-low/15", text: "text-stress-low-text", word: "Low" },
-  medium: { chip: "bg-stress-medium/15", text: "text-stress-medium-text", word: "Medium" },
-  high: { chip: "bg-stress-high/15", text: "text-stress-high-text", word: "High" },
+const STRESS_TONE: Record<StressLevel, { chip: string; text: string }> = {
+  low: { chip: "bg-stress-low/15", text: "text-stress-low-text" },
+  medium: { chip: "bg-stress-medium/15", text: "text-stress-medium-text" },
+  high: { chip: "bg-stress-high/15", text: "text-stress-high-text" },
 };
+/** A time or number inside a sentence (<t>…</t> in the keys). */
+const NUM = <Text className="font-numeric tabular-nums" />;
 const CHIP_BOX = "h-7 min-w-7 shrink-0 items-center justify-center rounded-md px-1";
-const NO_BAND_INFO = {
-  title: "No band data yet",
+/** Built when read, so the text follows the language. */
+const noBandInfo = () => ({
+  title: i18n.t("home:noBand.title"),
   body: (
     <>
-      <Text className="text-[15px] leading-[22px] text-foreground-body">Sleep, Recovery and Strain are scored from your Fitbit’s heart rate, which your phone can’t measure.</Text>
-      <Text className="text-[15px] leading-[22px] text-foreground-body">Until your Fitbit syncs, Home shows what your phone counts: steps, distance, calories and active minutes.</Text>
+      <Text className="text-[15px] leading-[22px] text-foreground-body">{i18n.t("home:noBand.scored")}</Text>
+      <Text className="text-[15px] leading-[22px] text-foreground-body">{i18n.t("home:noBand.phoneShows")}</Text>
     </>
   ),
-};
+});
 
 const go = (href: string) => push(href);
 
@@ -126,11 +133,12 @@ function Home({ vm, timeZone }: { vm: HomePageVM; timeZone: string }) {
   const at = (href: string) => dayHref(href, d, today);
   const { dials } = vm;
   const { c } = useTheme();
+  const { t } = useTranslation("home");
   const dashboardKeysShown = useMemo(() => vm.keyStats.map((s) => s.key).filter(isDashboardKey), [vm.keyStats]);
 
   return (
     <PageShell
-      title="Home"
+      title={t("title")}
       layout="home"
       rings={{
         sleep: { value: dials.sleep.value, href: at("/sleep") },
@@ -165,8 +173,8 @@ function Home({ vm, timeZone }: { vm: HomePageVM; timeZone: string }) {
               {dials.reason && (
                 <View className="items-center pt-3">
                   {vm.phone ? (
-                    <InfoCardTrigger info={NO_BAND_INFO} className="flex-row items-center gap-1.5 rounded-md py-3">
-                      <ReasonPlaceholder reason={dials.reason.reason} size="sm" copy="No band data yet" />
+                    <InfoCardTrigger info={noBandInfo()} className="flex-row items-center gap-1.5 rounded-md py-3">
+                      <ReasonPlaceholder reason={dials.reason.reason} size="sm" copy={t("noBand.short")} />
                       <Icon icon={Info} size={14} tone="muted-foreground" strokeWidth={1.75} />
                     </InfoCardTrigger>
                   ) : (
@@ -192,10 +200,10 @@ function Home({ vm, timeZone }: { vm: HomePageVM; timeZone: string }) {
               {vm.insights.length > 0 && <HomeInsight day={d} items={vm.insights} />}
               {vm.monitorAlert && <MonitorAlert alert={vm.monitorAlert} href={at("/health/monitor")} />}
             </View>
-            <SectionShell variant="section" title="My Day" action={<PlusKey label={vm.isToday ? "Add to today" : `Add to ${formatDay(d, DAY.short)}`} />}>
+            <SectionShell variant="section" title={t("section.myDay")} action={<PlusKey label={vm.isToday ? t("add.today") : t("add.day", { day: formatDay(d, DAY.short) })} />}>
               <View className="gap-3">
                 {vm.outlook && <DayBanner outlook={vm.outlook} />}
-                <SectionShell variant="card" title={vm.activities.title} action={<IconLink href="/activities" label="All activities" icon={Maximize2} />}>
+                <SectionShell variant="card" title={vm.activities.title} info={vm.isToday ? false : cardInfo("Activities")} action={<IconLink href="/activities" label={t("activities.all")} icon={Maximize2} />}>
                   {vm.activities.items.length || vm.activities.detected.length ? (
                     <View className="gap-1.5">
                       {vm.activities.items.map((it) =>
@@ -208,23 +216,23 @@ function Home({ vm, timeZone }: { vm: HomePageVM; timeZone: string }) {
                       {vm.activities.detected.map((it) => <DetectedRow key={`detected-${it.start}`} item={it} timeZone={timeZone} />)}
                     </View>
                   ) : (
-                    <EmptyState body={vm.isToday ? "No activities yet today. Workouts appear after Fitbit syncs them." : "No activities on this day."} />
+                    <EmptyState body={vm.isToday ? t("activities.emptyToday") : t("activities.emptyDay")} />
                   )}
                   {/* Workouts come from Google, so Add explains importing rather than creating a local workout. */}
                   <View className="mt-3">
                     <InfoCardTrigger info={ADD_ACTIVITY_INFO} activeScale={0.96} className={CARD_BUTTON}>
-                      <CardButtonContent icon={Plus} label="Add activity" />
+                      <CardButtonContent icon={Plus} label={t("activities.add")} />
                     </InfoCardTrigger>
                   </View>
                 </SectionShell>
                 {vm.isToday && (
-                  <SectionShell variant="card" title="Tonight’s sleep" info={TONIGHT_INFO} fill action={<IconLink href={at("/sleep?section=planner")} label="Open Sleep Planner" icon={ChevronRight} />}>
+                  <SectionShell variant="card" title={t("section.tonight")} info={TONIGHT_INFO} fill action={<IconLink href={at("/sleep?section=planner")} label={t("tonight.openPlanner")} icon={ChevronRight} />}>
                     <MetricState
                       metric={vm.tonight}
                       skeleton={null}
                       renderReason={(r, meta) => (
                         <View className="my-auto">
-                          <ReasonPlaceholder reason={r} nightsLeft={meta.nightsLeft} size="md" copy={r === "calibrating" ? "Sleep Planner needs 7 nights to learn your wake time." : undefined} />
+                          <ReasonPlaceholder reason={r} nightsLeft={meta.nightsLeft} size="md" copy={r === "calibrating" ? t("noBand.plannerNeeds") : undefined} />
                         </View>
                       )}
                     >
@@ -241,7 +249,7 @@ function Home({ vm, timeZone }: { vm: HomePageVM; timeZone: string }) {
         aside: (
           <SectionShell
             variant="section"
-            title="My Dashboard"
+            title={t("section.myDashboard")}
             action={<EditDashboardButton keys={dashboardKeysShown} empty={vm.dashboard.empty} />}
           >
             <View accessibilityRole="list" className="gap-2">
@@ -251,7 +259,7 @@ function Home({ vm, timeZone }: { vm: HomePageVM; timeZone: string }) {
             </View>
             {/* One point cannot show a trend. */}
             {vm.strainRecovery.filter((p) => p.strain !== null || p.recovery !== null).length >= 2 && (
-              <SectionShell variant="card" title="Strain & recovery" info={STRAIN_RECOVERY_INFO} fill className="mt-3">
+              <SectionShell variant="card" title={t("section.strainRecovery")} info={STRAIN_RECOVERY_INFO} fill className="mt-3">
                 <StrainRecoveryChart points={vm.strainRecovery} today={d} />
               </SectionShell>
             )}
@@ -260,7 +268,7 @@ function Home({ vm, timeZone }: { vm: HomePageVM; timeZone: string }) {
         bottom: vm.weeklyTeaser && (
           <GradientBanner from={c["banner-from"]} to={c["banner-to"]} role="link" onPress={() => go(`/reports/${vm.weeklyTeaser!.period}`)}>
             <Icon icon={CalendarRange} size={22} tone="foreground" strokeWidth={1.5} />
-            <Text className="min-w-0 flex-1 text-base font-semibold leading-[22px]">Your week in review</Text>
+            <Text className="min-w-0 flex-1 text-base font-semibold leading-[22px]">{t("section.weekReview")}</Text>
             <Text className="font-numeric text-xs font-medium leading-4 tabular-nums text-foreground-secondary">{rangeLabel(vm.weeklyTeaser.start, vm.weeklyTeaser.end)}</Text>
             <Icon icon={ChevronRight} size={20} tone="foreground-secondary" strokeWidth={1.75} />
           </GradientBanner>
@@ -288,8 +296,9 @@ function DayBanner({ outlook }: { outlook: NonNullable<HomeVM["outlook"]> }) {
 }
 
 function JournalWeek({ vm, at }: { vm: HomePageVM; at: (href: string) => string }) {
+  const { t } = useTranslation("home");
   return (
-    <SectionShell variant="card" title="My journal" action={<IconLink href={at("/journal")} label="Open Journal" icon={ChevronRight} />}>
+    <SectionShell variant="card" title={t("section.myJournal")} action={<IconLink href={at("/journal")} label={t("journal.open")} icon={ChevronRight} />}>
       <View accessibilityRole="list" className="flex-row pt-1">
         {vm.journalWeek.map((w) => {
           const current = w.day === vm.day;
@@ -298,7 +307,7 @@ function JournalWeek({ vm, at }: { vm: HomePageVM; at: (href: string) => string 
               activeBg="bg-accent"
               key={w.day}
               accessibilityRole="link"
-              accessibilityLabel={`${formatDay(w.day, DAY.long)}: ${w.done ? "checked in" : "no check-in"}`}
+              accessibilityLabel={t(w.done ? "journal.checkedIn" : "journal.noCheckIn", { day: formatDay(w.day, DAY.long) })}
               accessibilityState={{ selected: current }}
               onPress={() => go(dayHref("/journal", w.day, vm.today))}
               className="min-h-16 flex-1 items-center justify-center gap-2 rounded-lg"
@@ -313,15 +322,16 @@ function JournalWeek({ vm, at }: { vm: HomePageVM; at: (href: string) => string 
           );
         })}
       </View>
-      <CardButtonLink href="/journal/insights" icon={Lightbulb} label="Behaviour insights" className="mt-3" />
+      <CardButtonLink href="/journal/insights" icon={Lightbulb} label={t("journal.insights")} className="mt-3" />
     </SectionShell>
   );
 }
 
 function MonitorAlert({ alert, href }: { alert: NonNullable<HomeVM["monitorAlert"]>; href: string }) {
   const { c } = useTheme();
+  const { t } = useTranslation("home");
   const illness = alert.kind === "illness";
-  const names = alert.names.length > 1 ? `${alert.names.slice(0, -1).join(", ")} and ${alert.names.at(-1)}` : (alert.names[0] ?? "Some vitals");
+  const names = alert.names.length > 1 ? t("alert.namesAnd", { rest: alert.names.slice(0, -1).join(", "), last: alert.names.at(-1) }) : (alert.names[0] ?? t("alert.someVitals"));
   // ring-1 ring-recovery-red/60 (or warning/50): one more shadow on the card's own.
   const shadow = useCardStyle(ring(illness ? c["alert-ring"] : c["warning-ring"], { inset: false }));
   return (
@@ -331,15 +341,13 @@ function MonitorAlert({ alert, href }: { alert: NonNullable<HomeVM["monitorAlert
         <Icon icon={illness ? CircleAlert : TriangleAlert} size={20} tone={illness ? "recovery-red-text" : "warning-text"} strokeWidth={1.75} />
       </View>
       <View className="min-w-0 flex-1 gap-0.5">
-        <Text className="text-base font-semibold leading-[22px]">{illness ? "Your body may be fighting something" : `${alert.count} ${alert.count === 1 ? "vital" : "vitals"} outside your normal range`}</Text>
+        <Text className="text-base font-semibold leading-[22px]">{illness ? t("alert.illnessTitle") : t("alert.flaggedTitle", { count: alert.count })}</Text>
         <View className="gap-2">
           <Text className="text-[15px] leading-[22px] text-foreground-secondary">
-            {illness
-              ? "Several vitals moved away from your normal range together, a pattern that often comes before feeling unwell. Consider an easier day."
-              : `${names} ${alert.names.length === 1 ? "is" : "are"} outside your usual range. This can be an early sign of illness or heavy strain.`}
+            {illness ? t("alert.illnessBody") : t("alert.flaggedBody", { names, count: alert.names.length })}
           </Text>
           <Press activeOpacity={0.7} accessibilityRole="link" onPress={() => go(href)} hitSlop={{ left: 8, right: 8, top: 14, bottom: 14 }} className="flex-row items-center gap-0.5 self-start">
-            <Text className="text-xs font-bold uppercase leading-4 tracking-[0.1em]">View Health Monitor</Text>
+            <Text className="text-xs font-bold uppercase leading-4 tracking-[0.1em]">{t("monitor.view")}</Text>
             <Icon icon={ChevronRight} size={14} tone="foreground" strokeWidth={2} />
           </Press>
         </View>
@@ -349,13 +357,14 @@ function MonitorAlert({ alert, href }: { alert: NonNullable<HomeVM["monitorAlert
 }
 
 function PhoneActivity({ stats, link }: { stats: KeyStat[]; link: { d: string; today: string } }) {
+  const { t } = useTranslation("home");
   // An odd count lets the first tile (steps) span the row as a wide strip that spells out its comparison.
   const wide = stats.length % 2 === 1;
   const rest = wide ? stats.slice(1) : stats;
   const rows: KeyStat[][] = [];
   for (let i = 0; i < rest.length; i += 2) rows.push(rest.slice(i, i + 2));
   return (
-    <SectionShell variant="section" title="From your phone" aside="vs. 30-day avg">
+    <SectionShell variant="section" title={t("section.fromPhone")} aside={t("section.vsAverage")}>
       <View accessibilityRole="list" className="gap-3">
         {wide && <KeyStatRow variant="tile" {...statProps(stats[0], link)} wide />}
         {rows.map((row) => (
@@ -386,64 +395,65 @@ function MonitorLine({ chip, chipClass, top, topClass, bottom }: { chip: ReactNo
 const NO_READING_CHIP = <Text className="font-numeric text-base font-bold text-muted-foreground">{MISSING}</Text>;
 
 function MonitorCard({ vm, href }: { vm: HomePageVM; href: string }) {
+  const { t } = useTranslation("home");
   const m = vm.monitor;
   return (
-    <SectionShell variant="card" title="Health Monitor" info={false} href={href} fill>
+    <SectionShell variant="card" title={t("monitor.title")} info={false} href={href} fill>
       {m.value === null || m.value.inRange + m.value.flagged === 0 ? (
         // No vital judged yet (no readings, or every baseline still calibrating): never "Within range".
-        <MonitorLine chip={NO_READING_CHIP} chipClass="bg-secondary" top="No readings" topClass="text-foreground-secondary" bottom={reasonCopy(m.value === null ? m.reason : "calibrating").short} />
+        <MonitorLine chip={NO_READING_CHIP} chipClass="bg-secondary" top={t("monitor.noReadings")} topClass="text-foreground-secondary" bottom={reasonCopy(m.value === null ? m.reason : "calibrating").short} />
       ) : m.value.flagged === 0 ? (
-        <MonitorLine chip={<Icon icon={Check} size={16} tone="optimal-text" strokeWidth={2.5} />} chipClass="bg-optimal/15" top="Within range" topClass="text-optimal-text" bottom={`${m.value.inRange} of ${m.value.total} metrics`} />
+        <MonitorLine chip={<Icon icon={Check} size={16} tone="optimal-text" strokeWidth={2.5} />} chipClass="bg-optimal/15" top={t("monitor.withinRange")} topClass="text-optimal-text" bottom={t("monitor.ofMetrics", { n: m.value.inRange, total: m.value.total })} />
       ) : (
         // The count names what the headline says: "1 of 4 metrics" under Out of range, never the in-range "3/4", which
         // read as three vitals out of range.
-        <MonitorLine chip={<Icon icon={TriangleAlert} size={16} tone="warning-text" strokeWidth={2} />} chipClass="bg-warning/15" top="Out of range" topClass="text-warning-text" bottom={`${m.value.flagged} of ${m.value.total} metrics`} />
+        <MonitorLine chip={<Icon icon={TriangleAlert} size={16} tone="warning-text" strokeWidth={2} />} chipClass="bg-warning/15" top={t("monitor.outOfRange")} topClass="text-warning-text" bottom={t("monitor.ofMetrics", { n: m.value.flagged, total: m.value.total })} />
       )}
     </SectionShell>
   );
 }
 
 function StressCard({ vm, href, timeZone }: { vm: HomePageVM; href: string; timeZone: string }) {
+  const { t } = useTranslation("home");
   const s = vm.stress;
   if (s.value === null)
     return (
-      <SectionShell variant="card" title="Stress Monitor" info={false} href={href} fill>
-        <MonitorLine chip={NO_READING_CHIP} chipClass="bg-secondary" top={s.reason === "band_not_worn" ? "Not worn" : "No stress scored yet"} topClass="text-foreground-secondary" bottom={vm.isToday ? "Today" : "This day"} />
+      <SectionShell variant="card" title={t("stress.title")} info={false} href={href} fill>
+        <MonitorLine chip={NO_READING_CHIP} chipClass="bg-secondary" top={s.reason === "band_not_worn" ? t("stress.notWorn") : t("stress.noneScored")} topClass="text-foreground-secondary" bottom={vm.isToday ? t("stress.today") : t("stress.thisDay")} />
       </SectionShell>
     );
   const tone = STRESS_TONE[s.value.level];
   return (
-    <SectionShell variant="card" title="Stress Monitor" info={false} href={href} fill>
+    <SectionShell variant="card" title={t("stress.title")} info={false} href={href} fill>
       <MonitorLine
         chip={<Text className={cn("font-numeric text-lg font-bold tabular-nums", tone.text)}>{formatValue("int", s.value.value)}</Text>}
         chipClass={tone.chip}
-        top={tone.word}
+        top={STRESS_WORD[s.value.level]}
         topClass={tone.text}
-        bottom={s.value.at !== null ? clock(s.value.at, timeZone) : "Day average"}
+        bottom={s.value.at !== null ? clock(s.value.at, timeZone) : t("stress.dayAverage")}
       />
     </SectionShell>
   );
 }
 
 function StressTile({ vm, href, timeZone }: { vm: HomePageVM; href: string; timeZone: string }) {
+  const { t } = useTranslation("home");
   const s = vm.stress.value;
   const tone = s && STRESS_TONE[s.level];
   const data = useMemo(() => vm.stressChart && stressSeries(vm.stressChart), [vm.stressChart]);
   return (
-    <SectionShell variant="card" title="Stress Monitor" info={false} href={href}>
+    <SectionShell variant="card" title={t("stress.title")} info={false} href={href}>
       {s && tone && (
         <View className="-mt-1 mb-3 flex-row items-baseline justify-between gap-3">
           <Text className="text-xs font-medium leading-4 text-foreground-secondary">
             {s.at !== null ? (
-              <>
-                Last updated <Text className="font-numeric tabular-nums">{clock(s.at, timeZone)}</Text>
-              </>
+              <Trans t={t} i18nKey="stress.lastUpdated" values={{ time: clock(s.at, timeZone) }} components={{ t: NUM }} />
             ) : (
-              "Day average"
+              t("stress.dayAverage")
             )}
           </Text>
           <View className="flex-row items-baseline gap-1.5">
-            <Text className={cn("text-xs font-bold uppercase leading-4 tracking-[0.1em]", tone.text)}>{tone.word}</Text>
+            <Text className={cn("text-xs font-bold uppercase leading-4 tracking-[0.1em]", tone.text)}>{STRESS_WORD[s.level]}</Text>
             <Text className="font-numeric text-base font-bold leading-5 tabular-nums text-foreground">{formatValue("int", s.value)}</Text>
           </View>
         </View>
@@ -454,9 +464,10 @@ function StressTile({ vm, href, timeZone }: { vm: HomePageVM; href: string; time
 }
 
 function EnergyCard({ vm, timeZone }: { vm: HomePageVM; timeZone: string }) {
+  const { t } = useTranslation("home");
   const e = vm.energyBank;
   return (
-    <SectionShell variant="card" title="Energy Bank" info={ENERGY_INFO} fill>
+    <SectionShell variant="card" title={t("section.energyBank")} info={ENERGY_INFO} fill>
       <MetricState
         metric={e}
         skeleton={null}
@@ -474,27 +485,28 @@ function EnergyCard({ vm, timeZone }: { vm: HomePageVM; timeZone: string }) {
 }
 
 function EnergyBody({ eb, timeZone }: { eb: NonNullable<HomeVM["energyBank"]["value"]>; timeZone: string }) {
+  const { t } = useTranslation("home");
   const metric = useMemo(() => ({ value: energySeries(eb), reason: null, provisional: false }), [eb]);
   const drains = useMemo(() => [...(metric.value.drains ?? [])].sort((a, b) => b.amount - a.amount).slice(0, 3).sort((a, b) => a.t - b.t), [metric]);
   return (
     <View className="flex-1 gap-4">
       <View className="gap-1.5">
-        <TickScale variant="meter" label="Energy" metric={{ value: eb.current, reason: null, provisional: false }} min={0} max={100} format="int" unit="%" />
+        <TickScale variant="meter" label={t("energy.label")} metric={{ value: eb.current, reason: null, provisional: false }} min={0} max={100} format="int" unit="%" />
         <Text className={CAPTION}>
-          Woke at <Text className="font-numeric tabular-nums">{clock(eb.startAt, timeZone)}</Text> with <Text className="font-numeric tabular-nums">{formatValue("int", eb.startLevel)}%</Text>
+          <Trans t={t} i18nKey="energy.wokeAt" values={{ time: clock(eb.startAt, timeZone), level: formatValue("int", eb.startLevel) }} components={{ t: NUM }} />
         </Text>
       </View>
       <EnergyBankChart data={metric} />
       <View className="mt-auto flex-row gap-3">
-        <MiniStat label="Charged" value={formatValue("signedInt", eb.charged)} className="text-optimal-text" />
-        <MiniStat label="Drained" value={formatValue("signedInt", eb.drained)} className="text-warning-text" />
+        <MiniStat label={t("energy.charged")} value={formatValue("signedInt", eb.charged)} className="text-optimal-text" />
+        <MiniStat label={t("energy.drained")} value={formatValue("signedInt", eb.drained)} className="text-warning-text" />
       </View>
       {/* The chart's dots, in time order. */}
       {drains.length > 0 && (
         <View accessibilityRole="list" className="gap-1">
           {drains.map((dr) => (
             <Text key={dr.t} className="text-xs font-medium leading-4 text-foreground-secondary">
-              {dr.label} at <Text className="font-numeric tabular-nums">{clock(dr.t, timeZone)}</Text> · <Text className="font-numeric tabular-nums">{formatValue("signedInt", -Math.abs(dr.amount))}</Text>
+              <Trans t={t} i18nKey="energy.drainAt" values={{ label: dr.label, time: clock(dr.t, timeZone), amount: formatValue("signedInt", -Math.abs(dr.amount)) }} components={{ t: NUM }} />
             </Text>
           ))}
         </View>
@@ -513,12 +525,13 @@ function MiniStat({ label, value, className }: { label: string; value: string; c
 }
 
 function FirstSync() {
+  const { t } = useTranslation("home");
   const s = useShellSync();
   if (!s || (s.connection !== "importing" && !(s.sync.state === "syncing" && s.sync.lastSuccessAt == null))) return null;
   const p = s.importProgress;
   return (
     <Text accessibilityLiveRegion="polite" className={cn(LABEL, "text-center text-muted-foreground")}>
-      {p ? `Syncing · ${Math.floor(p.done / p.total * 100)}%` : "Syncing…"}
+      {p ? t("sync.progress", { percent: Math.floor(p.done / p.total * 100) }) : t("sync.syncing")}
     </Text>
   );
 }

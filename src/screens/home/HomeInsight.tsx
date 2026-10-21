@@ -8,6 +8,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState, type ReactNode } from "react";
 import { View } from "react-native";
+import { useTranslation } from "react-i18next";
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { Check } from "lucide-react-native";
 import { CARD_CLASS, CardFill, useCardStyle } from "@/ui/Card";
@@ -44,6 +45,7 @@ function Slide({ active, onHeight, children, label }: { active: boolean; onHeigh
 const DISMISSED_KEY = "pulse.home.insights.dismissed";
 
 export function HomeInsight({ day, items: all }: { day: string; items: HomeInsightItem[] }) {
+  const { t } = useTranslation("home");
   const [dismissed, setDismissed] = useState<string[] | null>(null);
   const [heights, setHeights] = useState<number[]>([]);
   const shadow = useCardStyle();
@@ -73,7 +75,7 @@ export function HomeInsight({ day, items: all }: { day: string; items: HomeInsig
     AsyncStorage.setItem(DISMISSED_KEY, JSON.stringify({ day, keys })).catch(() => {});
   };
   return (
-    <View accessibilityLabel="Insights" className={several ? "pb-2" : undefined}>
+    <View accessibilityLabel={t("insights.label")} className={several ? "pb-2" : undefined}>
       {several && <View accessibilityElementsHidden className="absolute inset-x-5 bottom-0 h-8 rounded-b-2xl bg-card-peek" />}
       {/* The reference app's card: text inset 20 px, the counter pill 8 px from the top and right corner (spec §11 F6). */}
       <View className={`${CARD_CLASS} p-5 pr-12`} style={shadow}>
@@ -84,7 +86,7 @@ export function HomeInsight({ day, items: all }: { day: string; items: HomeInsig
               key={it.key}
               active={k === at}
               onHeight={(h) => setHeights((hs) => (hs[k] === h ? hs : Object.assign([...hs], { [k]: h })))}
-              label={several ? `${k + 1} of ${n}` : undefined}
+              label={several ? t("insights.position", { n: k + 1, total: n }) : undefined}
             >
               <View className="gap-0.5">
                 <Text className="text-base font-medium leading-[22px]">{it.title}</Text>
@@ -96,7 +98,7 @@ export function HomeInsight({ day, items: all }: { day: string; items: HomeInsig
         <Press
           activeScale={0.96}
           accessibilityRole="button"
-          accessibilityLabel={`Dismiss this insight (${n} left)`}
+          accessibilityLabel={t("insights.dismiss", { left: n })}
           onPress={dismiss}
           hitSlop={{ left: 10, right: 10, top: 2, bottom: 2 }}
           className="absolute right-2 top-2 h-12 w-6 items-center justify-center gap-1 rounded-lg bg-fill-hover"

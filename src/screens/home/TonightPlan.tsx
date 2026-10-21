@@ -3,6 +3,7 @@
 // always the typical wake time.
 import { useState } from "react";
 import { View } from "react-native";
+import { Trans, useTranslation } from "react-i18next";
 import Svg, { Line } from "react-native-svg";
 import { AlarmClock, Sunset } from "lucide-react-native";
 import { clock, hmm } from "@/lib/format";
@@ -20,6 +21,7 @@ const timeSize = (w: number) => (w >= 288 ? "text-[32px]" : w >= 240 ? "text-[26
 
 export function TonightPlan({ plan, timeZone }: { plan: SleepPlanVM; timeZone: string }) {
   const { c } = useTheme();
+  const { t } = useTranslation("home");
   const [key, setKey] = useState<SleepPlanVM["plans"][number]["key"]>("peak");
   const [width, setWidth] = useState(0);
   const chosen = plan.plans.find((p) => p.key === key) ?? plan.plans[0];
@@ -37,7 +39,7 @@ export function TonightPlan({ plan, timeZone }: { plan: SleepPlanVM; timeZone: s
             <Icon icon={Sunset} size={24} tone="foreground-secondary" strokeWidth={1.5} />
             <Text accessibilityLiveRegion="polite" className={time}>{bed}</Text>
           </View>
-          <Text className={`${LABEL} text-center`}>{"Recommended\nbedtime"}</Text>
+          <Text className={`${LABEL} text-center`}>{t("tonight.recommendedBedtime")}</Text>
         </View>
         <View accessibilityElementsHidden className="min-w-0 flex-1 items-center">
           <View className="w-full max-w-28 justify-center">
@@ -54,22 +56,22 @@ export function TonightPlan({ plan, timeZone }: { plan: SleepPlanVM; timeZone: s
             <Icon icon={AlarmClock} size={24} tone="foreground-secondary" strokeWidth={1.5} />
             <Text className={time}>{clock(plan.wakeAt, timeZone)}</Text>
           </View>
-          <Text className={`${LABEL} text-center`}>{"Typical\nwake"}</Text>
+          <Text className={`${LABEL} text-center`}>{t("tonight.typicalWake")}</Text>
         </View>
       </View>
       {/* At the foot of a stretched card, level with the Energy Bank's Charged / Drained tiles beside it (SYM4). */}
       <View className="mt-auto">
         <Segmented
           fill
-          label="Sleep goal"
+          label={t("tonight.sleepGoal")}
           value={key}
           onChange={setKey}
           textClassName="text-[13px] font-bold uppercase tracking-[0.1em]"
-          options={plan.plans.map((p) => ({ value: p.key, label: p.label, accessibilityLabel: `${p.label}, ${Math.round(p.share * 100)} percent of need` }))}
+          options={plan.plans.map((p) => ({ value: p.key, label: p.label, accessibilityLabel: t("tonight.goalShare", { label: p.label, percent: Math.round(p.share * 100) }) }))}
         />
       </View>
       <Text className="text-xs font-medium leading-4 text-muted-foreground">
-        Need tonight: <Text className="font-numeric tabular-nums">{hmm(plan.needMin)}</Text>
+        <Trans t={t} i18nKey="tonight.need" values={{ time: hmm(plan.needMin) }} components={{ t: <Text className="font-numeric tabular-nums" /> }} />
       </Text>
     </View>
   );

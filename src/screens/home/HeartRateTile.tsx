@@ -4,6 +4,7 @@
 // card opens the Heart rate screen. Only this card re-renders on a tick or a beat.
 import { useMemo } from "react";
 import { View } from "react-native";
+import { useTranslation } from "react-i18next";
 import { minuteMeanHr } from "@/core/algorithms/stress";
 import { zoneNumber, zones } from "@/core/scoring/zones";
 import { ZONE_COLOR } from "@/lib/bands";
@@ -44,6 +45,7 @@ const zoneQuery = async (ctx: Parameters<typeof loadDays>[0]) => {
 /** `phoneOnly`: Home's no-band day; with no reading at all the card stays out of the way, as the monitor cards do. */
 export function HeartRateTile({ phoneOnly }: { phoneOnly?: boolean }) {
   const { c } = useTheme();
+  const { t } = useTranslation("home");
   const { liveHr } = useLiveHr();
   const live = useLiveBle();
   const demo = useApp((s) => s.source === "demo");
@@ -61,7 +63,7 @@ export function HeartRateTile({ phoneOnly }: { phoneOnly?: boolean }) {
     body = (
       <View className="flex-row items-center gap-4">
         <View className="shrink-0 gap-1.5">
-          <View accessible accessibilityLabel={`${lost ? "Reconnecting. Last live reading" : "Live heart rate"} ${live.bpm ?? "unknown"} beats per minute`} className="flex-row items-center gap-2">
+          <View accessible accessibilityLabel={t(lost ? "heartRate.reconnecting" : "heartRate.live", { bpm: live.bpm ?? t("heartRate.unknown") })} className="flex-row items-center gap-2">
             <BeatingHeart bpm={live.bpm ?? 60} live={!lost} />
             <ValueUnit value={live.bpm === null ? MISSING : String(live.bpm)} unit="bpm" className={BPM} />
           </View>
@@ -76,14 +78,14 @@ export function HeartRateTile({ phoneOnly }: { phoneOnly?: boolean }) {
     body = (
       <View className="flex-row items-center gap-4">
         <View className="shrink-0 gap-1">
-          <View accessible accessibilityLabel={`Heart rate ${latest.bpm} beats per minute`} className="flex-row items-center gap-2">
+          <View accessible accessibilityLabel={t("heartRate.latest", { bpm: latest.bpm })} className="flex-row items-center gap-2">
             <BeatingHeart bpm={latest.bpm} live={false} />
             <ValueUnit value={String(latest.bpm)} unit="bpm" className={BPM} />
           </View>
           <LastReading t={latest.ts * 1000} now={updatedAt ?? latest.ts * 1000} />
         </View>
         <View className="min-w-0 flex-1" style={{ height: 56 }}>
-          <Sparkline values={values} color={c["recovery-red"]} colorOf={colorOf} caption={`Last ${RECENT_MINUTES} min`} className="flex-1" />
+          <Sparkline values={values} color={c["recovery-red"]} colorOf={colorOf} caption={t("heartRate.lastMinutes", { minutes: RECENT_MINUTES })} className="flex-1" />
         </View>
       </View>
     );
@@ -98,13 +100,13 @@ export function HeartRateTile({ phoneOnly }: { phoneOnly?: boolean }) {
   } else {
     body = (
       <View className="gap-0.5">
-        <Text className="text-base font-semibold leading-[22px]">No heart rate yet</Text>
-        <Text className={CAPTION}>{demo ? "The sample data has no readings yet." : "Nothing synced from Health Connect yet."}</Text>
+        <Text className="text-base font-semibold leading-[22px]">{t("heartRate.none")}</Text>
+        <Text className={CAPTION}>{demo ? t("heartRate.demoNone") : t("heartRate.notSynced")}</Text>
       </View>
     );
   }
   return (
-    <SectionShell variant="card" title="Heart rate" info={false} href={HREF}>
+    <SectionShell variant="card" title={t("heartRate.title")} info={false} href={HREF}>
       {body}
     </SectionShell>
   );
