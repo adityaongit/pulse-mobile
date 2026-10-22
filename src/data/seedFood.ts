@@ -1,6 +1,6 @@
 // Pulse-only: food for the sample person, so "Explore with sample data" shows the Nutrition screen's calories in vs. out
 // (halo's seed has no food). Kept out of seed.ts so that file stays comparable with halo's. Daily totals for the days
-// before today plus today's meals so far, as the sync and the food log would leave them.
+// before today plus today's meals so far, as the sync leaves them: the entries are Health Connect's (read-only, "Logged in Fitbit") and the day's total is their sum, so nothing counts twice.
 import { addDays, localMidnight } from "@/lib/time";
 import type { LoggedEntryRow, Store } from "./store";
 
@@ -32,7 +32,7 @@ export async function seedDemoFood(store: Store, opts: { today: string; timeZone
     const ts = midnight + Math.round(m.hour * 3600);
     if (ts > now) return [];
     const { hour: _hour, ...data } = m;
-    return [{ id: `demo-food-${m.meal}`, type: "nutrition-log", ts, day: today, data, createdAt: ts, source: "pulse" as const }];
+    return [{ id: `demo-food-${m.meal}`, type: "nutrition-log", ts, day: today, data, createdAt: ts, source: "health_connect" as const }];
   });
   const sum = (k: "kcal" | "protein" | "carbs" | "fat") => eaten.reduce((a, e) => a + (e.data as Record<typeof k, number>)[k], 0);
   if (eaten.length > 0) {
