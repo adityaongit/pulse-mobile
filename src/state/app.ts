@@ -20,6 +20,7 @@ import { askPermissions, availability, permissionState, type Availability, type 
 import { initI18n, type LanguageChoice } from "@/i18n/config";
 import { localeFor, readChoice, resolveChoice, saveChoice } from "@/i18n/language";
 import { setLocale } from "@/lib/locale";
+import { seedDemoFood } from "@/data/seedFood";
 import { forgetChanges } from "@/health/sync";
 import { localDay } from "@/lib/time";
 import type { DisplayPrefs } from "@/lib/units";
@@ -308,7 +309,9 @@ export async function exploreSample(): Promise<void> {
     await store.clearAll();
     await forgetChanges();
     const timeZone = profile?.timeZone ?? deviceTimeZone();
-    const demo = await seedDemo(store, { today: localDay(Date.now() / 1000, timeZone), timeZone });
+    const today = localDay(Date.now() / 1000, timeZone);
+    const demo = await seedDemo(store, { today, timeZone });
+    await seedDemoFood(store, { today, timeZone, now: Math.floor(Date.now() / 1000) });
     await ensureDefaultTags(store);
     await AsyncStorage.setItem(SOURCE_KEY, "demo");
     patch({ profile: demo, source: "demo" });
