@@ -47,6 +47,8 @@ export type AppInfo = {
   warnings: string[];
   /** A profile, a source and a first completed run: the tabs open. Until then onboarding shows. */
   onboarded: boolean;
+  /** The saved theme choice, read at boot so Settings › App opens without waiting on storage. */
+  theme: "system" | "light" | "dark";
 };
 
 const SOURCE_KEY = "pulse.source";
@@ -68,6 +70,7 @@ let state: AppInfo = {
   availability: null,
   warnings: [],
   onboarded: false,
+  theme: "system",
 };
 const listeners = new Set<() => void>();
 const subscribe = (l: () => void) => {
@@ -196,6 +199,7 @@ export async function boot(applyTheme: (theme: string) => void): Promise<void> {
       AsyncStorage.getItem(THEME_KEY).catch(() => null),
     ]);
     if (theme) applyTheme(theme);
+    patch({ theme: theme === "light" || theme === "dark" ? theme : "system" });
     patch({ store: st, profile, source, sync, availability: avail });
     watchForeground();
     void checkForUpdate();
@@ -251,6 +255,9 @@ export async function setPhoto(photo: string | null): Promise<void> {
   patch({ profile: p });
   if (profile.photo && profile.photo !== photo) deletePhoto(profile.photo);
 }
+
+/** Remembers the theme the person picked, for the Settings row to open on after a remount. */
+export const rememberTheme = (theme: AppInfo["theme"]) => patch({ theme });
 
 /** Sets the units and the clock (Settings › App). No rescore: the scores are stored in metric; every screen redraws. */
 export async function setDisplay(display: DisplayPrefs): Promise<void> {

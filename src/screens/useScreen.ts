@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
+import { i18n } from "@/i18n/config";
 import type { QueryCtx } from "@/queries/ctx";
 import { dataChanged, dataVersion, queryCtx, useDataVersion } from "@/state/app";
 import { useScreenReady } from "../ui/shells/useScreenReady";
@@ -14,7 +15,7 @@ const ctxOf = async (): Promise<QueryCtx> => queryCtx();
  * result in the first frame, with no skeleton, and refreshes it in the background when the data changed (`dataChanged`)
  * or the result is older than FRESH_MS (clock-relative values like "today" and "11m ago").
  */
-type Entry = { data: unknown; version: number; at: number };
+type Entry = { data: unknown; version: number; at: number; /** The language its text was written in: a result in another language is never shown. */ lng: string };
 const cache = new Map<string, Entry>();
 const loading = new Map<string, { p: Promise<void>; version: number }>();
 const cacheListeners = new Set<() => void>();
@@ -27,7 +28,8 @@ const subscribeCache = (l: () => void) => {
   return () => cacheListeners.delete(l);
 };
 
-const fresh = (e: Entry | undefined): e is Entry => !!e && e.version === dataVersion() && Date.now() - e.at < FRESH_MS;
+const sameLanguage = (e: Entry | undefined): e is Entry => !!e && e.lng === i18n.language;
+const fresh = (e: Entry | undefined): e is Entry => sameLanguage(e) && e.version === dataVersion() && Date.now() - e.at < FRESH_MS;
 
 /**
  * Runs `query` for `k` and caches its result. A load already running for this data version is joined; one started
@@ -36,6 +38,7 @@ const fresh = (e: Entry | undefined): e is Entry => !!e && e.version === dataVer
  */
 function load(k: string, query: (ctx: QueryCtx) => Promise<unknown>): Promise<void> {
   const started = dataVersion();
+  const lng = i18n.language;
   const running = loading.get(k);
   if (running?.version === started) return running.p;
   const at = performance.now();
@@ -44,9 +47,9 @@ function load(k: string, query: (ctx: QueryCtx) => Promise<unknown>): Promise<vo
     .then((data) => {
       if (__DEV__) console.info(`[screen] ${k} loaded ms=${Math.round(performance.now() - at)}`);
       const prev = cache.get(k);
-      if (prev && prev.version > started) return;
+      if (prev && prev.version > started && prev.lng === lng) return;
       cache.delete(k);
-      cache.set(k, { data: keepEqual(prev?.data, data), version: started, at: Date.now() });
+      cache.set(k, { data: keepEqual(prev?.data, data), version: started, at: Date.now(), lng });
       if (cache.size > MAX_ENTRIES) cache.delete(cache.keys().next().value!);
       for (const l of cacheListeners) l();
     })
@@ -91,14 +94,15 @@ export type ScreenKey = readonly [string, ...unknown[]];
 
 export type ScreenState<T> = { data?: T; error?: Error; loading: boolean; reload: () => void };
 
-export function useScreen<T>(query: (ctx: QueryCtx) => Promise<T>, key: ScreenKey): ScreenState<T> {
+/** `eager`: show the result as soon as it is read, without waiting for the opening transition to end (a small read on a light page). */
+export function useScreen<T>(query: (ctx: QueryCtx) => Promise<T>, key: ScreenKey, opts?: { eager?: boolean }): ScreenState<T> {
   const k = cacheKey(key);
   const ready = useScreenReady();
   const v = useDataVersion(ready);
   const entry = useSyncExternalStore(subscribeCache, () => cache.get(k));
   // A result in memory when the screen mounted shows at once; a cold one waits for the opening transition to end, so
   // the first render of the page does not land mid-slide. Once shown, results keep showing (a blurred screen too).
-  const [settled, setSettled] = useState(() => cache.has(k));
+  const [settled, setSettled] = useState(() => !!opts?.eager || cache.has(k));
   if (!settled && ready && entry) setSettled(true);
   const [tick, setTick] = useState(0);
   const [error, setError] = useState<{ k: string; error: Error }>();
@@ -119,6 +123,6 @@ export function useScreen<T>(query: (ctx: QueryCtx) => Promise<T>, key: ScreenKe
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [k, v, ready, tick]);
 
-  const shown = entry && settled ? (entry.data as T) : undefined;
+  const shown = sameLanguage(entry) && settled ? (entry.data as T) : undefined;
   return { data: shown, error: error?.k === k ? error.error : undefined, loading: !fresh(entry), reload };
 }

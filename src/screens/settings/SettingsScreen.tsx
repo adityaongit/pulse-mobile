@@ -1,7 +1,7 @@
+import { useState } from "react";
 import { View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useLocalSearchParams } from "expo-router";
-import { loadPrefs } from "@/actions/preferences";
 import { getSettings } from "@/queries/settings";
 import { useScreen } from "../useScreen";
 import { Skeleton, SkeletonText } from "@/ui/Skeleton";
@@ -82,18 +82,31 @@ function SectionSkeleton({ section }: { section: SectionId }) {
   );
 }
 
+/** The profile reads the Store (the learned max heart rate), so it is the one section that waits for a query; it skips the opening-transition wait, as it is a small read. */
+function ProfileSection() {
+  const { data } = useScreen((ctx) => getSettings(ctx), ["settings"], { eager: true });
+  return !data ? (
+    <SectionSkeleton section="profile" />
+  ) : (
+    <>
+      <ProfileCard profile={data.profile} />
+      <DeleteEverything />
+    </>
+  );
+}
+
 export function SettingsScreen() {
   const { t } = useTranslation("settings");
   const { s } = useLocalSearchParams<{ s?: string }>();
   const section = resolve(s);
-  // The data source reads the app state itself (src/state/app.ts), so a sync's progress redraws only that section.
-  const { data } = useScreen(async (ctx) => ({ vm: await getSettings(ctx), prefs: await loadPrefs(), now: ctx.now * 1000 }), ["settings"]);
-
+  const [now] = useState(() => Date.now());
+  // Every other section is static or reads the app state itself (src/state/app.ts), so it opens with its content.
   return (
     <View className="flex-1">
       <DetailShell
         title={t("title")}
-        loading={!data}
+        loading={false}
+        instant
         primary={
           <View className="w-full gap-3">
             {section === "live" ? (
@@ -102,17 +115,12 @@ export function SettingsScreen() {
               <NotificationsSection />
             ) : section === "goals" ? (
               <GoalsSettings />
-            ) : !data ? (
-              <SectionSkeleton section={section} />
             ) : section === "source" ? (
-              <DataSource now={data.now} />
+              <DataSource now={now} />
             ) : section === "app" ? (
-              <AppSettings prefs={data.prefs} />
+              <AppSettings />
             ) : (
-              <>
-                <ProfileCard profile={data.vm.profile} />
-                <DeleteEverything />
-              </>
+              <ProfileSection />
             )}
           </View>
         }

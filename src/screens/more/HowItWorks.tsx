@@ -12,6 +12,7 @@ export function HowItWorksScreen() {
   return (
     <DetailShell
       title={t("screen.title")}
+      instant
       primary={
         <View className="w-full gap-6">
           <Text className="text-[15px] leading-[22px] text-foreground-secondary">

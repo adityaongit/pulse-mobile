@@ -7,11 +7,11 @@ import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { colorScheme } from "nativewind";
 import { Bell, Monitor, Moon, Sun } from "lucide-react-native";
-import { saveTheme, type AppPrefs, type Theme } from "@/actions/preferences";
+import { saveTheme, type Theme } from "@/actions/preferences";
 import { displayPrefs, type UnitSystem } from "@/lib/units";
 import { i18n, LANGUAGES, PSEUDO, REVIEWED, showPseudo, type LanguageChoice } from "@/i18n/config";
 import { readChoice } from "@/i18n/language";
-import { setDisplay, setLanguage, useApp } from "@/state/app";
+import { rememberTheme, setDisplay, setLanguage, useApp } from "@/state/app";
 import { LinkList } from "@/ui/shells/LinkList";
 import { SectionShell } from "@/ui/shells/SectionShell";
 import { APP_VERSION } from "@/queries/settings";
@@ -81,6 +81,7 @@ function DisplayRows({ initialTheme }: { initialTheme: Theme }) {
         onChange={(v) => {
           setTheme(v);
           colorScheme.set(v);
+          rememberTheme(v);
           void saveTheme(v);
         }}
       />
@@ -116,12 +117,13 @@ function Updates() {
   );
 }
 
-export function AppSettings({ prefs }: { prefs: AppPrefs }) {
+export function AppSettings() {
   const { t } = useTranslation("settings");
+  const theme = useApp((a) => a.theme);
   return (
     <>
       <SectionShell variant="card" title={t("app.display")}>
-        <DisplayRows initialTheme={prefs.theme} />
+        <DisplayRows initialTheme={theme} />
       </SectionShell>
       <Updates />
       <LinkList title={t("app.group")} rows={[{ icon: Bell, label: t("app.notificationsLink"), href: "/settings?s=notifications" }]} />

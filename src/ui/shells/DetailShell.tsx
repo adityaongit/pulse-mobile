@@ -52,9 +52,11 @@ export type DetailShellProps = {
   bodySkeleton?: ReactNode;
   /** A route's loading state: says "Loading…" to screen readers while skeletons show. */
   loading?: boolean;
+  /** A static page with nothing to read: its body draws in the first frame instead of waiting for the slide to end. */
+  instant?: boolean;
 };
 
-export function DetailShell({ title, subtitle, info, backHref, dateSwitcher, dismiss, align, titleIcon, action, ground, hero, stats, collapse, summary, notch, insight, primary, secondary, footer, bodySkeleton, loading, onRefresh, floatingAction }: DetailShellProps) {
+export function DetailShell({ title, subtitle, info, backHref, dateSwitcher, dismiss, align, titleIcon, action, ground, hero, stats, collapse, summary, notch, insight, primary, secondary, footer, bodySkeleton, loading, instant, onRefresh, floatingAction }: DetailShellProps) {
   const insets = useSafeAreaInsets();
   const side = summary ?? (hero ? insight : null);
   const inHeader = dateSwitcher?.placement === "header";
@@ -69,7 +71,7 @@ export function DetailShell({ title, subtitle, info, backHref, dateSwitcher, dis
   // holds skeletons of its sections during the slide and fades in when the slide ends. Once rendered it stays.
   const ready = useScreenReady();
   const focused = useIsFocused();
-  const [below, setBelow] = useState(ready || !focused);
+  const [below, setBelow] = useState(ready || !focused || !!instant);
   const [fade] = useState(!below);
   if ((ready || !focused) && !below) setBelow(true);
   const body = useBodyShown();

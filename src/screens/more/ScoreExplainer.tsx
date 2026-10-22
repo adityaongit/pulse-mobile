@@ -60,6 +60,7 @@ export function ScoreExplainerScreen() {
   return (
     <DetailShell
       title={doc.name}
+      instant
       subtitle={t("screen.subtitle")}
       primary={
         <View className="w-full gap-4">

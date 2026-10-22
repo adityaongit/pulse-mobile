@@ -73,4 +73,17 @@ describe("the screen cache", () => {
     await Promise.all([prefetch(query, ["joined"]), prefetch(query, ["joined"])]);
     expect(n).toBe(1);
   });
+
+  it("reads a screen again in a new language: a result written in another one is not fresh", async () => {
+    const { i18n } = await import("@/i18n/config");
+    let n = 0;
+    const query = async () => ({ n: ++n, text: i18n.t("common:today") });
+    await prefetch(query, ["language"]);
+    await prefetch(query, ["language"]);
+    expect(n).toBe(1);
+    await i18n.changeLanguage("de");
+    await prefetch(query, ["language"]);
+    expect(n).toBe(2);
+    await i18n.changeLanguage("en");
+  });
 });
