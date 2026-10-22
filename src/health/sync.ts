@@ -9,6 +9,7 @@ import { READ_TYPES, ensureInitialized, permissionState, readAll, skippedWarning
 import { deriveDayExtras, restingHrOn, type Interval } from "@/health/derive";
 import {
   mapDailyValuesSteps,
+  SOURCE_DAILY_KEYS,
   mapExercisesSteps,
   mapExternalEntries,
   mapHrSteps,
@@ -429,7 +430,10 @@ export async function syncHealthConnect(store: Store, opts: SyncOptions): Promis
     counts.hrv = hrv.length;
     if (sessions.length) await store.upsertSessions(sessions, segments);
     if (exercises.length) await store.upsertExercises(exercises);
-    if (dailyValues.length) await store.upsertDailyValues(dailyValues);
+    // The keys of every type this sync read are replaced over the window (so a food entry deleted in Health Connect takes the
+    // day's calories with it); a type that was not granted, or had a record it could not read, keeps what is stored.
+    const replaced = Object.entries(SOURCE_DAILY_KEYS).filter(([, type]) => granted.has(type) && !skipped.has(type)).map(([key]) => key);
+    await store.replaceDailyValues({ from: fromDay, to: today }, replaced, dailyValues);
     if (metrics.length) await store.upsertMetrics(metrics);
     await store.replaceExternalEntries({ from: fromDay, to: today }, external);
     if (dirty.length) await store.markIntradayDirty(dirty);

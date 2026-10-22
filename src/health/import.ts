@@ -12,6 +12,7 @@
 //   workouts→ one Exercise per ExerciseSession with active kcal and distance overlapping it
 //   extras  → one DailyValue per day and catalogue key (floors, elevation, water, food, glucose, temperature)
 //   log     → water, food and cycle records as read-only logged entries ("Logged in Fitbit")
+import type { ReadType } from "@/health/connect";
 import type {
   ExerciseType as LibExerciseType,
   MealType as LibMealType,
@@ -637,6 +638,21 @@ export function mapDailyValues(input: HealthInput, tz: string): DailyValue[] {
 }
 
 /** mapDailyValues, pausing as it goes. */
+/** The daily keys mapDailyValuesSteps writes, each with the Health Connect type it sums: a sync replaces a key over its window when it read that type, so a day the source emptied loses its value. */
+export const SOURCE_DAILY_KEYS: Readonly<Record<string, ReadType>> = {
+  distance: "Distance",
+  active_calories: "ActiveCaloriesBurned",
+  floors: "FloorsClimbed",
+  elevation: "ElevationGained",
+  water: "Hydration",
+  calories_in: "Nutrition",
+  protein: "Nutrition",
+  carbs: "Nutrition",
+  fat: "Nutrition",
+  glucose: "BloodGlucose",
+  core_temp: "BodyTemperature",
+};
+
 export function* mapDailyValuesSteps(input: HealthInput, tz: string): Steps<DailyValue[]> {
   const out: DailyValue[] = [];
   const push = (days: Map<string, number>, key: string, fmt: (v: number) => number) => {

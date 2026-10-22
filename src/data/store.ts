@@ -28,6 +28,11 @@ export interface Store {
   /** HRV samples, keyed by ts like heart rate; re-imports overwrite. */
   putHrv(samples: HrvSample[]): Promise<boolean>;
   upsertDailyValues(rows: DailyValue[]): Promise<void>;
+  /**
+   * Replaces the `keys` of the days in `range` with `rows`: a day the source no longer has anything for loses its value
+   * (a food entry deleted in Health Connect must not leave the day's calories behind). Other keys are untouched.
+   */
+  replaceDailyValues(range: DayRange, keys: readonly string[], rows: DailyValue[]): Promise<void>;
   setJournal(entry: JournalEntry): Promise<void>;
   deleteJournal(day: string, tag: string): Promise<void>;
   /**

@@ -393,6 +393,12 @@ class SqliteStore implements Store {
       this.many(db, "insert or replace into daily_values (day, key, value) values (?, ?, ?)", rows.map((v) => [v.day, v.key, v.value])),
     );
   }
+  async replaceDailyValues(range: DayRange, keys: readonly string[], rows: DailyValue[]) {
+    await this.tx(async (db) => {
+      if (keys.length) await db.runAsync(`delete from daily_values where day >= ? and day <= ? and key in (${keys.map(() => "?").join(",")})`, [range.from, range.to, ...keys]);
+      await this.many(db, "insert or replace into daily_values (day, key, value) values (?, ?, ?)", rows.map((v) => [v.day, v.key, v.value]));
+    });
+  }
   async setJournal(entry: JournalEntry) {
     await this.tx((db) => db.runAsync("insert or replace into journal_entries (day, tag, value) values (?, ?, ?)", [entry.day, entry.tag, entry.value]));
   }

@@ -153,6 +153,10 @@ export class MemoryStore implements Store {
   async upsertDailyValues(rows: DailyValue[]) {
     for (const r of rows) this.values.set(key2(r.day, r.key), copy(r));
   }
+  async replaceDailyValues(range: DayRange, keys: readonly string[], rows: DailyValue[]) {
+    for (const [k, v] of this.values) if (inRange(v.day, range) && keys.includes(v.key)) this.values.delete(k);
+    await this.upsertDailyValues(rows);
+  }
   async setJournal(entry: JournalEntry) {
     this.journal.set(key2(entry.day, entry.tag), copy(entry));
   }
