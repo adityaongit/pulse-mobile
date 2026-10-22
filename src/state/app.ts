@@ -278,9 +278,10 @@ async function applyLanguage(choice: LanguageChoice): Promise<void> {
 
 /** Sets the language (Settings › App), kept on the device. No rescore: scores are numbers; every cached view model is rebuilt. */
 export async function setLanguage(choice: LanguageChoice): Promise<void> {
-  await saveChoice(choice);
+  // The screens switch first; the choice is written to storage behind them.
   await applyLanguage(choice);
   dataChanged();
+  await saveChoice(choice);
 }
 
 /** "Explore with sample data": halo's demo person, 180 days, no Health Connect needed. */
