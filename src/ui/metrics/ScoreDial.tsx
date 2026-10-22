@@ -5,7 +5,7 @@ import { View } from "react-native";
 import Svg, { Defs, LinearGradient, Path, Polygon, RadialGradient, Stop } from "react-native-svg";
 import { ChevronRight } from "lucide-react-native";
 import { BAND_WORD, DATA_COLORS, dialColor, recoveryBand, STRESS_COLOR, STRESS_WORD, stressLevel, type DataColor } from "@/lib/bands";
-import { dialAriaLabel, formatValue, type FormatKey } from "@/lib/format";
+import { dialAriaLabel, formatValue, type FormatKey, unitLabel } from "@/lib/format";
 import { reasonCopy, type MetricTag, type ReasonCode } from "@/lib/reasons";
 import { Wordmark } from "../brand";
 import { arcPath, polar } from "../charts/geometry";
@@ -230,7 +230,7 @@ export function ScoreDial(props: ScoreDialProps) {
             style={{ fontSize: valueSize, ...capTrim(valueSize, "numeric"), letterSpacing: s.tracking * valueSize }}
           >
             {r.text}
-            {!!r.unit && !empty && <Text style={{ fontSize: valueSize * 0.55 }}>{r.unit}</Text>}
+            {!!r.unit && !empty && <Text style={{ fontSize: valueSize * 0.55 }}>{unitLabel(r.unit)}</Text>}
           </Text>
         )}
         {gauge && !compact && r.word && <Text className={cn(DIAL_LABEL, r.word.className)} style={{ ...LABEL_TRIM, marginTop: 8 * cqi + LABEL_TRIM.marginTop }}>{r.word.text}</Text>}

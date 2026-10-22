@@ -1,7 +1,7 @@
 import { View } from "react-native";
 import { Check, CircleAlert, Triangle, TriangleAlert, type LucideIcon } from "lucide-react-native";
 import { CHIP_TONE_CLASS, type ChipTone, type DeltaDir, type Tone } from "@/lib/bands";
-import { isSymbolUnit } from "@/lib/format";
+import { isSymbolUnit, unitLabel } from "@/lib/format";
 import { TAG_COPY } from "@/lib/reasons";
 import { cn } from "../cn";
 import { Icon } from "../Icon";
@@ -77,7 +77,7 @@ export function ValueUnit({ value, unit, className, unitClassName, fit }: { valu
           {/* The web's ml-0.5 before a symbol, ml-1 before a word. A nested text has no margin, so the gap is a space of
               a known face and size (Figtree SemiBold 13 px: 0.241 em, 3.13 px) with letter spacing making up the rest. */}
           <Text className="font-sans text-[13px] font-semibold" style={{ letterSpacing: (isSymbolUnit(unit) ? 2 : 4) - SPACE_13 }}>{" "}</Text>
-          <Text className={cn("text-[13px] font-semibold leading-4 text-foreground-secondary", unitClassName)}>{unit}</Text>
+          <Text className={cn("text-[13px] font-semibold leading-4 text-foreground-secondary", unitClassName)}>{unitLabel(unit)}</Text>
         </>
       )}
     </Text>

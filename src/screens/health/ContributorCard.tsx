@@ -7,7 +7,7 @@ import { useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import Animated, { FadeIn, FadeOut, LinearTransition, useAnimatedStyle, useReducedMotion, withTiming } from "react-native-reanimated";
 import { ChevronDown, CircleGauge, Dumbbell, Footprints, Heart, Moon, Timer } from "lucide-react-native";
-import { formatValue, isSymbolUnit, NBSP, type FormatKey } from "@/lib/format";
+import { formatValue, isSymbolUnit, NBSP, type FormatKey, unitLabel } from "@/lib/format";
 import type { HealthspanContributor } from "@/queries/types";
 import { cn } from "@/ui/cn";
 import { haptic } from "@/ui/haptics";
@@ -60,7 +60,7 @@ const SHOW: Record<string, { format: FormatKey; unit?: string; scale?: number }>
   leanMass: { format: "decimal1", unit: "%" },
 };
 
-const withUnit = (text: string, unit?: string) => (unit ? `${text}${isSymbolUnit(unit) ? "" : NBSP}${unit}` : text);
+const withUnit = (text: string, unit?: string) => (unit ? `${text}${isSymbolUnit(unit) ? "" : NBSP}${unitLabel(unit)}` : text);
 
 function Chevron({ open }: { open: boolean }) {
   const reduced = useReducedMotion();

@@ -6,7 +6,7 @@
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { Moon, Target } from "lucide-react-native";
-import { dayLabel, formatValue, MISSING, NBSP } from "@/lib/format";
+import { dayLabel, formatValue, MISSING, NBSP, unitLabel } from "@/lib/format";
 import { getGoalsDay, GOAL_KEYS, GOAL_META, type GoalKey, type GoalRow, type GoalsWeek } from "@/queries/goals";
 import { STAT_ICON } from "@/screens/_lib/view";
 import { useScreen } from "@/screens/useScreen";
@@ -31,7 +31,7 @@ import { ASIDE, BarLine, goalColor, GoalRowShell, UNDER_LABEL, WeekColumns, type
 export const GOALS_SETTINGS = "/settings?s=goals";
 
 const goalIcon = (key: GoalKey) => (key === "sleep" ? Moon : STAT_ICON[key]) ?? Target;
-const unitOf = (g: { unit?: string }) => (g.unit ? `${NBSP}${g.unit}` : "");
+const unitOf = (g: { unit?: string }) => (g.unit ? `${NBSP}${unitLabel(g.unit)}` : "");
 const valueText = (g: Pick<GoalRow, "format" | "value">) => (g.value === null ? MISSING : formatValue(g.format, g.value));
 const targetText = (g: Pick<GoalRow, "format" | "target" | "unit">) => `${formatValue(g.format, g.target)}${unitOf(g)}`;
 const DONE: Mark = { dir: "up", tone: "good" };

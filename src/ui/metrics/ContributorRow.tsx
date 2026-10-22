@@ -4,7 +4,7 @@ import { useState, type ReactNode } from "react";
 import { View } from "react-native";
 import { Triangle } from "lucide-react-native";
 import { deltaTone, type GoodDirection, type Tone } from "@/lib/bands";
-import { formatValue, isSymbolUnit, MISSING, spoken, type FormatKey } from "@/lib/format";
+import { formatValue, isSymbolUnit, MISSING, spoken, type FormatKey, unitLabel } from "@/lib/format";
 import type { Metric } from "@/lib/reasons";
 import { cn } from "../cn";
 import { mix } from "../color";
@@ -108,7 +108,7 @@ function RecoveryRow({ p, value, meta }: { p: Extract<ContributorRowProps, { var
         <Text className={CAPTION}>
           {value === null
             ? notMeasured
-            : t("contributor.baseline", { mean: formatValue(p.format, mean), sd: formatValue(p.format, sd).replace(/^\+/, ""), unit: p.unit ? (isSymbolUnit(p.unit) ? p.unit : ` ${p.unit}`) : "" })}
+            : t("contributor.baseline", { mean: formatValue(p.format, mean), sd: formatValue(p.format, sd).replace(/^\+/, ""), unit: p.unit ? (isSymbolUnit(p.unit) ? p.unit : ` ${unitLabel(p.unit)}`) : "" })}
         </Text>
       </View>
     </View>

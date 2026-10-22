@@ -20,7 +20,7 @@ import {
   type WindowStats,
 } from "@/lib/chartmath";
 import { i18n } from "@/i18n/config";
-import { formatValue, isSymbolUnit, type FormatKey } from "@/lib/format";
+import { formatValue, isSymbolUnit, type FormatKey, unitLabel } from "@/lib/format";
 import type { ChartColorBy, ChartDayVM, ChartDef, ChartSeriesVM, DayView } from "@/queries/chart";
 
 export type Range = ExplorerRange | "day";
@@ -239,7 +239,7 @@ export function runningStats(series: Series, from: number, to: number): { start:
 // --- Text ---
 
 /** The unit after a value: "%" tight, words after a space. */
-export const unitText = (unit?: string) => (!unit ? "" : isSymbolUnit(unit) ? unit : ` ${unit}`);
+export const unitText = (unit?: string) => (!unit ? "" : isSymbolUnit(unit) ? unit : ` ${unitLabel(unit)}`);
 
 /** "72 bpm", "64%", "--". */
 export const valueText = (v: number | null | undefined, format: FormatKey, unit?: string) => {

@@ -6,7 +6,7 @@ import { i18n } from "@/i18n/config";
 import { View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { deltaTone } from "@/lib/bands";
-import { DAY, formatDay, formatValue } from "@/lib/format";
+import { DAY, formatDay, formatValue, unitLabel } from "@/lib/format";
 import { parseRange, RANGES, type TrendRange } from "@/lib/url";
 import { getMetricDetail, isDetailKey, isLevelMetric, type DetailKey, type MetricDetailVM } from "@/queries/metric";
 import { cardOf, Divided, HistoryChart, HistoryChartSkeleton, LoadError, period } from "@/screens/trends/parts";
@@ -122,7 +122,7 @@ export default function MetricScreen() {
   );
 }
 
-const unitText = (unit?: string) => (unit ? (unit === "%" ? "%" : ` ${unit}`) : "");
+const unitText = (unit?: string) => (unit ? (unit === "%" ? "%" : ` ${unitLabel(unit)}`) : "");
 
 /** The day's value (a reading metric's latest reading) against its 30-day average. */
 function Hero({ vm }: { vm: MetricDetailVM }) {

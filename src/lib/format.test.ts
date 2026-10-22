@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { setLocale } from "./locale";
-import { agoShort, DAY, FORMATS, dayLabel, dayPhrase, pillLabel, dialAriaLabel, durationWords, formatDay, formatValue, rangeLabel } from "./format";
+import { agoShort, DAY, FORMATS, dayLabel, dayPhrase, pillLabel, dialAriaLabel, durationWords, formatDay, formatValue, rangeLabel, unitLabel } from "./format";
 
 describe("format", () => {
   it("shortens sync ages for the header", () => {
@@ -62,5 +62,15 @@ describe("in another locale", () => {
     expect(FORMATS.decimal1(5.8)).toBe("5,8");
     expect(FORMATS.grouped(1234)).toBe("1.234");
     expect(formatDay("2026-10-21", { month: "short", day: "numeric" })).toMatch(/21\.\s?Okt/);
+  });
+});
+
+describe("unitLabel", () => {
+  it("localises min and h and leaves other units alone", async () => {
+    const { i18n } = await import("@/i18n/config");
+    expect([unitLabel("min"), unitLabel("h"), unitLabel("bpm"), unitLabel("%")]).toEqual(["min", "h", "bpm", "%"]);
+    await i18n.changeLanguage("ru");
+    expect([unitLabel("min"), unitLabel("h"), unitLabel("ms")]).toEqual(["мин", "ч", "ms"]);
+    await i18n.changeLanguage("en");
   });
 });

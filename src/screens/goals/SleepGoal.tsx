@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { i18n } from "@/i18n/config";
-import { durationWords } from "@/lib/format";
+import { durationWords, unitLabel } from "@/lib/format";
 import { sleepGoalView } from "@/queries/sleepGoal";
 import { useScreen } from "@/screens/useScreen";
 import { BODY, HINT, RadioSegments, ROW, ROW_LABEL, ROW_RULE, ROW_VALUE, SmallButton, TextField } from "@/screens/settings/controls";
@@ -47,11 +47,11 @@ function ManualGoal({ hours }: { hours: number }) {
         <View className="w-[70px]">
           <TextField variant="number" value={h} onChangeText={setH} keyboardType="number-pad" accessibilityLabel={t("sleepGoal.hoursAria")} invalid={!!error} />
         </View>
-        <Text className={HINT}>h</Text>
+        <Text className={HINT}>{unitLabel("h")}</Text>
         <View className="w-[70px]">
           <TextField variant="number" value={m} onChangeText={setM} keyboardType="number-pad" accessibilityLabel={t("sleepGoal.minutesAria")} invalid={!!error} />
         </View>
-        <Text className={cn(HINT, "flex-1")}>min</Text>
+        <Text className={cn(HINT, "flex-1")}>{unitLabel("min")}</Text>
         <SmallButton solid label={t("actions.save", { ns: "common" })} accessibilityLabel={t("sleepGoal.saveAria")} onPress={() => "hours" in r && void save(r.hours, "manual")} />
       </View>
       {!!error && <Text accessibilityRole="alert" className="pt-1 text-[13px] font-medium leading-[18px] text-recovery-red-text">{error}</Text>}

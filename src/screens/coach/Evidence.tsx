@@ -1,6 +1,7 @@
 // Tool results as kit cards (spec §7.21 Messages), ported from pulse src/app/(app)/coach/Evidence.tsx and Coach.tsx's
 // DayCard: get_day as three MiniRings with contributors, the other tools as compact KeyStatRow cards, each followed by
 // a "Based on" link to the screen it read.
+import { unitLabel } from "@/lib/format";
 import { localeFixed } from "@/lib/locale";
 import type { ReactNode } from "react";
 import { View } from "react-native";
@@ -178,7 +179,7 @@ export function Evidence({ name, output }: { name: string; output: unknown }) {
               <KeyStatRow variant="row" label={v.behaviour} metric={metric({ value: v.delta })} unit={d.unit} format="signed1" direction="none" caption={t("evidence.withWithout", { yes: v.yesDays, no: v.noDays })} />
               {v.confidenceInterval && (
                 <Text className="pb-2 text-xs leading-4 text-muted-foreground">
-                  {t(v.effect === "none" ? "evidence.intervalNone" : "evidence.interval", { from: localeFixed(v.confidenceInterval[0], 1), to: localeFixed(v.confidenceInterval[1], 1), unit: d.unit })}
+                  {t(v.effect === "none" ? "evidence.intervalNone" : "evidence.interval", { from: localeFixed(v.confidenceInterval[0], 1), to: localeFixed(v.confidenceInterval[1], 1), unit: unitLabel(d.unit) })}
                 </Text>
               )}
             </View>

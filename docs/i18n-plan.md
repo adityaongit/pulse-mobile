@@ -161,7 +161,9 @@ the engine must return codes, not copy (see "Strings outside React").
 - The cached `Intl` formatters (`grouped`, the `dates` map) are rebuilt when the locale changes.
 - Keep: the custom `hmm` minutes format, the real minus sign, NBSP joins. Use `Intl` for grouping and decimals so a
   German phone shows `1.234,5`. The 12/24-hour clock stays the person's Clock setting, not the language's default.
-- Units (`bpm`, `ms`, `km`, `kcal`, `min`) stay as they are in every language (glossary).
+- Units (`bpm`, `ms`, `km`, `kcal`, `%`) stay as they are in every language (glossary). `min` and `h` are localised: de
+  "Min." and "Std.", ru "мин" and "ч", the other languages keep "min" and "h". Data carries the unit id; `unitLabel` (`src/lib/format.ts`)
+  maps it to the text at every place a unit is shown.
 
 ### Strings outside React
 
@@ -195,8 +197,8 @@ Two rules make that safe:
 
 Pulse, Pulse Age, Health Connect, Fitbit, Google Health, Recovery, Strain, Strain Target, Sleep Performance, Sleep Debt,
 Sleep Need, Sleep Consistency, Training Load, Stress Monitor, Health Monitor, Energy Bank, Healthspan, Pace of Aging,
-Coach, HRV, RHR, VO2 max, SpO2, zone names (Zone 0 to Zone 5), units (bpm, ms, rpm, km, mi, kcal, min, h, %, °C, °F, kg,
-lb), and journal behaviour names only where they are brand terms.
+Coach, HRV, RHR, VO2 max, SpO2, zone names (Zone 0 to Zone 5), units (bpm, ms, rpm, km, mi, kcal, %, °C, °F, kg,
+lb; min and h only in the languages that keep them), and journal behaviour names only where they are brand terms.
 
 Everything else is translated, including words around those names ("Your Recovery is low today" → German "Deine
 Recovery ist heute niedrig"). Translators keep the English names capitalised as they are. Use the informal "you" (du,

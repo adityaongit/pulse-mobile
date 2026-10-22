@@ -12,7 +12,7 @@ import { GOAL_KEYS, GOAL_META, type GoalKey } from "@/queries/goals";
 import { PLAN_KEYS, PLAN_META, type PlanKey } from "@/queries/weeklyPlan";
 import { STAT_ICON } from "@/screens/_lib/view";
 import { BODY, ChoiceMenu, HINT, ROW_LABEL, ROW_RULE, TextField, type SelectOption } from "@/screens/settings/controls";
-import { hmm } from "@/lib/format";
+import { hmm, unitLabel } from "@/lib/format";
 import { quantity } from "@/lib/units";
 import { useGoals, isDefaultGoals, parseTarget, TARGET_LIMITS, targetText, withEnabled, withTarget, type TargetKey } from "@/state/goals";
 import { useWeeklyPlan } from "@/state/weeklyPlan";
@@ -81,7 +81,7 @@ function NumberField({ value, unit, onChange, onBlur, invalid, label, decimals }
       keyboardType={decimals ? "decimal-pad" : "number-pad"}
       accessibilityLabel={label}
       invalid={invalid}
-      right={value ? <Text className="pl-1 pr-2 text-[13px] leading-[18px] text-muted-foreground">{unit}</Text> : undefined}
+      right={value ? <Text className="pl-1 pr-2 text-[13px] leading-[18px] text-muted-foreground">{unitLabel(unit)}</Text> : undefined}
     />
   );
 }

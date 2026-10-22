@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { View } from "react-native";
 import { ChevronRight } from "lucide-react-native";
 import { deltaTone, type ChipTone, type DeltaDir, type GoodDirection, type Tone } from "@/lib/bands";
-import { formatValue, MISSING, statSentence, type FormatKey } from "@/lib/format";
+import { formatValue, MISSING, statSentence, type FormatKey, unitLabel } from "@/lib/format";
 import { reasonCopy, type Metric, type ReasonCode } from "@/lib/reasons";
 import { CARD_CLASS, CardFill, useCardStyle } from "../Card";
 import { cn } from "../cn";
@@ -82,7 +82,7 @@ function Frame({ p, className, children, sentence, style }: { p: KeyStatRowProps
 }
 
 const TONE_TEXT: Record<Tone, string> = { good: "text-optimal-text", bad: "text-warning-text", neutral: "text-foreground-secondary" };
-const unitSuffix = (unit?: string) => (unit ? (unit === "%" ? "%" : ` ${unit}`) : "");
+const unitSuffix = (unit?: string) => (unit ? (unit === "%" ? "%" : ` ${unitLabel(unit)}`) : "");
 
 function Row({ p, c }: { p: KeyStatRowProps; c: Computed }) {
   const card = p.variant === "card";
@@ -192,7 +192,7 @@ function Tile({ p, c }: { p: KeyStatRowProps; c: Computed }) {
                   c.avgText && (
                     <StatusChip tone="neutral" delta={c.dir} className={TILE_CHIP} textClassName="text-[11px]">
                       {c.avgText}
-                      {!!p.unit && <Text className="font-semibold">{p.unit === "%" ? "%" : ` ${p.unit}`}</Text>}
+                      {!!p.unit && <Text className="font-semibold">{p.unit === "%" ? "%" : ` ${unitLabel(p.unit)}`}</Text>}
                     </StatusChip>
                   )
                 ))}

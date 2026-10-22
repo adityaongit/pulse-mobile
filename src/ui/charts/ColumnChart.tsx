@@ -2,7 +2,7 @@ import { i18n } from "@/i18n/config";
 import { useState } from "react";
 import { Group, RoundedRect } from "@shopify/react-native-skia";
 import { DATA_COLORS } from "@/lib/bands";
-import { formatValue, type FormatKey } from "@/lib/format";
+import { formatValue, type FormatKey, unitLabel } from "@/lib/format";
 import { alpha } from "../color";
 import { Skeleton } from "../Skeleton";
 import { useTheme } from "../theme";
@@ -44,7 +44,7 @@ export function ColumnChart({ summary, data, format, unit, tickEvery = 1, refere
   const [x, setX] = useState<number | null>(null);
   const ON = css(DATA_COLORS["chart-5"].css);
   const any = data.some((d) => d.highlight);
-  const unitText = unit ? (unit === "%" ? "%" : ` ${unit}`) : "";
+  const unitText = unit ? (unit === "%" ? "%" : ` ${unitLabel(unit)}`) : "";
   const margin = { top: 8, right: labelGutter([reference?.label], 12), bottom: 0, left: 12 };
   return (
     <ChartFigure summary={summary} height={HEIGHT}>

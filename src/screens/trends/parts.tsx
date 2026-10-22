@@ -8,7 +8,7 @@ import { i18n } from "@/i18n/config";
 import { cardInfo } from "@/ui/shells/cardInfo";
 import { CircleAlert } from "lucide-react-native";
 import { deltaTone, type GoodDirection } from "@/lib/bands";
-import { formatValue, type FormatKey } from "@/lib/format";
+import { formatValue, type FormatKey, unitLabel } from "@/lib/format";
 import type { Metric } from "@/lib/reasons";
 import { byMonth, mean, monthSegments, wholeMonths, type TrendViewBar } from "@/lib/trend";
 import { RANGE_DAYS, RANGES, type TrendRange } from "@/lib/url";
@@ -138,7 +138,7 @@ function History({ points, ...p }: HistoryChartProps & { points: HistoryPoint[] 
         {delta !== null && (
           <View className="mt-1 flex-row">
             <StatusChip tone={tone === "good" ? "optimal" : tone === "bad" ? "warning" : "neutral"} delta={delta > 0 ? "up" : delta < 0 ? "down" : "flat"}>
-              {t(`deltaVsPrior.${range}`, { delta: `${formatValue(p.format, Math.abs(delta))}${p.unit === "%" ? "%" : p.unit ? ` ${p.unit}` : ""}` })}
+              {t(`deltaVsPrior.${range}`, { delta: `${formatValue(p.format, Math.abs(delta))}${p.unit === "%" ? "%" : p.unit ? ` ${unitLabel(p.unit)}` : ""}` })}
             </StatusChip>
           </View>
         )}

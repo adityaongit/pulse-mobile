@@ -2,7 +2,7 @@
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
-import { clock, clockTick, DAY, durationWords, formatDay, formatValue, hmm } from "@/lib/format";
+import { clock, clockTick, DAY, durationWords, formatDay, formatValue, hmm, unitLabel } from "@/lib/format";
 import type { Metric } from "@/lib/reasons";
 import { activityHref } from "@/lib/url";
 import type { MetricDetailVM, Section } from "@/queries/metric";
@@ -149,7 +149,7 @@ export function MetricSection({ s, ...c }: Ctx & { s: Section }) {
         </SectionShell>
       );
     case "outliers": {
-      const range = `${formatValue(c.vm.format, s.mean - s.sd)} - ${formatValue(c.vm.format, s.mean + s.sd)}${c.vm.unit ? ` ${c.vm.unit}` : ""}`;
+      const range = `${formatValue(c.vm.format, s.mean - s.sd)} - ${formatValue(c.vm.format, s.mean + s.sd)}${c.vm.unit ? ` ${unitLabel(c.vm.unit)}` : ""}`;
       return (
         <SectionShell variant="card" {...cardOf("Unusual days", t("section.unusualDays"))}>
           <Text className={cn(CAPTION, "mb-2")}>{t("section.usualRange", { range })}</Text>

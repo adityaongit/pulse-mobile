@@ -1,6 +1,6 @@
 import { View } from "react-native";
 import { useTranslation } from "react-i18next";
-import { FORMATS, formatDay } from "@/lib/format";
+import { FORMATS, formatDay, unitLabel } from "@/lib/format";
 import { quantity } from "@/lib/units";
 import type { WeekDay } from "@/queries/journalExtras";
 import { Card } from "@/ui/Card";
@@ -37,7 +37,7 @@ export function WeekCard({ week, day }: { week: WeekDay[]; day: string }) {
               <Text accessibilityRole="header" className={LABEL}>
                 {r.title}
               </Text>
-              <Text className={cn(CAPTION, "tabular-nums")}>{a === null ? t("noData.long", { ns: "reasons" }) : t("week.avg", { value: FORMATS.grouped(a), unit: r.unit })}</Text>
+              <Text className={cn(CAPTION, "tabular-nums")}>{a === null ? t("noData.long", { ns: "reasons" }) : t("week.avg", { value: FORMATS.grouped(a), unit: unitLabel(r.unit) })}</Text>
             </View>
             <ColumnChart
               summary={t("week.summary", { title: r.title, date: formatDay(day, { month: "short", day: "numeric" }) })}

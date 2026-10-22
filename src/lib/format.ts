@@ -242,6 +242,9 @@ const UNIT_KEY = {
   "fl oz": "flOz",
 } as const;
 
+/** A unit id as shown: "min" and "h" follow the language, every other unit is returned as it is. */
+export const unitLabel = (unit: string) => (unit === "min" || unit === "h" ? i18n.t(`common:unit.${unit}`) : unit);
+
 /** The unit as it is read aloud ("ms" → "milliseconds"); a unit with no spoken form is returned as it is. */
 export const unitWord = (unit: string) => (unit in UNIT_KEY ? i18n.t(`common:unitWords.${UNIT_KEY[unit as keyof typeof UNIT_KEY]}`) : unit);
 
