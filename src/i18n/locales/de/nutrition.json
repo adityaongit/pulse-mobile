@@ -195,5 +195,25 @@
     "fat": "{{pct}}% deiner {{kcal}} kcal",
     "carbs": "Die Kalorien, die nach Protein und Fett übrig bleiben",
     "between": "Zwischen {{low}} und {{high}} {{unit}}"
+  },
+  "balance": {
+    "title": "Kalorien rein und raus",
+    "summary": "{{in}} Cal aufgenommen — {{out}} Cal verbraucht",
+    "calIn": "{{in}} Cal aufgenommen",
+    "calOut": "{{out}} Cal verbraucht",
+    "noFood": "Heute noch kein Essen eingetragen",
+    "noBurn": "Heute noch kein Kalorienverbrauch",
+    "goal": "{{goal}} Cal tägliches Kalorienziel",
+    "deficit": "{{kcal}} Cal Defizit bisher",
+    "surplus": "{{kcal}} Cal Überschuss bisher",
+    "even": "Aufnahme und Verbrauch sind bisher ausgeglichen",
+    "under": "Darunter",
+    "in": "Im Bereich",
+    "over": "Darüber",
+    "out": "Verbrauch",
+    "goalPill": "Ziel",
+    "chartSummary": "Kalorienaufnahme gegenüber Verbrauch, letzte 7 Tage. Tagesziel {{goal}} Cal.",
+    "empty": "In den letzten 7 Tagen wurden keine Kalorien eingetragen oder verbraucht.",
+    "note": "Darunter heißt unter 90 % deines Tagesziels, Im Bereich 90 bis 110 %, Darüber über 110 %. Heute läuft noch."
   }
 }

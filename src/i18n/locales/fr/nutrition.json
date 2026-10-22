@@ -199,5 +199,25 @@
     "fat": "{{pct}}% de tes {{kcal}} kcal",
     "carbs": "Les calories restantes après les protéines et les lipides",
     "between": "Entre {{low}} et {{high}} {{unit}}"
+  },
+  "balance": {
+    "title": "Calories consommées et dépensées",
+    "summary": "{{in}} Cal consommées — {{out}} Cal dépensées",
+    "calIn": "{{in}} Cal consommées",
+    "calOut": "{{out}} Cal dépensées",
+    "noFood": "Aucun repas enregistré aujourd’hui",
+    "noBurn": "Aucune calorie dépensée pour l’instant aujourd’hui",
+    "goal": "{{goal}} Cal d’objectif calorique quotidien",
+    "deficit": "{{kcal}} Cal de déficit pour l’instant",
+    "surplus": "{{kcal}} Cal d’excédent pour l’instant",
+    "even": "Apports et dépenses sont équilibrés pour l’instant",
+    "under": "En dessous",
+    "in": "Dans la zone",
+    "over": "Au-dessus",
+    "out": "Calories dépensées",
+    "goalPill": "Objectif",
+    "chartSummary": "Calories consommées et dépensées, 7 derniers jours. Objectif quotidien : {{goal}} Cal.",
+    "empty": "Aucune calorie enregistrée ni dépensée ces 7 derniers jours.",
+    "note": "En dessous : moins de 90 % de ton objectif quotidien. Dans la zone : de 90 à 110 %. Au-dessus : plus de 110 %. La journée n’est pas finie."
   }
 }

@@ -195,5 +195,25 @@
     "fat": "{{pct}}% of your {{kcal}} kcal",
     "carbs": "The calories left after protein and fat",
     "between": "Between {{low}} and {{high}} {{unit}}"
+  },
+  "balance": {
+    "title": "Calories in vs. out",
+    "summary": "{{in}} Cal in — {{out}} Cal out",
+    "calIn": "{{in}} Cal in",
+    "calOut": "{{out}} Cal out",
+    "noFood": "No food logged today",
+    "noBurn": "No calories burned yet today",
+    "goal": "{{goal}} Cal daily calorie goal",
+    "deficit": "{{kcal}} Cal deficit so far",
+    "surplus": "{{kcal}} Cal surplus so far",
+    "even": "Calories in and out are even so far",
+    "under": "Under",
+    "in": "In zone",
+    "over": "Over",
+    "out": "Calories out",
+    "goalPill": "Goal",
+    "chartSummary": "Calories in versus calories out, last 7 days. Daily goal {{goal}} Cal.",
+    "empty": "No calories logged or burned in the last 7 days.",
+    "note": "Under is below 90% of your daily goal, In zone is 90 to 110%, Over is above 110%. Today is still running."
   }
 }

@@ -199,5 +199,25 @@
     "fat": "{{pct}}% de tus {{kcal}} kcal",
     "carbs": "Las calorías que quedan después de la proteína y la grasa",
     "between": "Entre {{low}} y {{high}} {{unit}}"
+  },
+  "balance": {
+    "title": "Calorías ingeridas y gastadas",
+    "summary": "{{in}} Cal ingeridas — {{out}} Cal gastadas",
+    "calIn": "{{in}} Cal ingeridas",
+    "calOut": "{{out}} Cal gastadas",
+    "noFood": "Hoy no has registrado comida",
+    "noBurn": "Todavía no hay calorías gastadas hoy",
+    "goal": "{{goal}} Cal de objetivo calórico diario",
+    "deficit": "{{kcal}} Cal de déficit hasta ahora",
+    "surplus": "{{kcal}} Cal de superávit hasta ahora",
+    "even": "Lo ingerido y lo gastado están igualados hasta ahora",
+    "under": "Por debajo",
+    "in": "En la zona",
+    "over": "Por encima",
+    "out": "Calorías gastadas",
+    "goalPill": "Objetivo",
+    "chartSummary": "Calorías ingeridas frente a gastadas, últimos 7 días. Objetivo diario: {{goal}} Cal.",
+    "empty": "No hay calorías registradas ni gastadas en los últimos 7 días.",
+    "note": "Por debajo es menos del 90 % de tu objetivo diario, En la zona de 90 a 110 %, Por encima más del 110 %. Hoy todavía no ha terminado."
   }
 }

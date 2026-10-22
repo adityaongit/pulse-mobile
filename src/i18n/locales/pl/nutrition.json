@@ -203,5 +203,25 @@
     "fat": "{{pct}}% Twoich {{kcal}} kcal",
     "carbs": "Kalorie pozostałe po białku i tłuszczu",
     "between": "Od {{low}} do {{high}} {{unit}}"
+  },
+  "balance": {
+    "title": "Kalorie spożyte i spalone",
+    "summary": "{{in}} Cal spożyte — {{out}} Cal spalone",
+    "calIn": "{{in}} Cal spożyte",
+    "calOut": "{{out}} Cal spalone",
+    "noFood": "Dziś nie dodano jedzenia",
+    "noBurn": "Dziś jeszcze brak spalonych kalorii",
+    "goal": "{{goal}} Cal dziennego celu kalorycznego",
+    "deficit": "Deficyt {{kcal}} Cal do tej pory",
+    "surplus": "Nadwyżka {{kcal}} Cal do tej pory",
+    "even": "Spożycie i spalanie są do tej pory wyrównane",
+    "under": "Poniżej",
+    "in": "W normie",
+    "over": "Powyżej",
+    "out": "Spalone kalorie",
+    "goalPill": "Cel",
+    "chartSummary": "Kalorie spożyte i spalone, ostatnie 7 dni. Dzienny cel: {{goal}} Cal.",
+    "empty": "W ostatnich 7 dniach nie zapisano ani nie spalono kalorii.",
+    "note": "Poniżej to mniej niż 90% Twojego dziennego celu, W normie to 90 do 110%, Powyżej to ponad 110%. Dzień jeszcze trwa."
   }
 }

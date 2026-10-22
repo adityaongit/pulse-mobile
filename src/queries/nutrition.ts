@@ -5,6 +5,8 @@
 import { metricsWithLoggedBody } from "@/data/body";
 import { i18n } from "@/i18n/config";
 import { addDays, localMidnight } from "@/lib/time";
+import type { Metric } from "@/lib/reasons";
+import { balanceOf, zoneOf, type BalanceZone } from "@/nutrition/balance";
 import { BURN_DAYS, NO_CUSTOM, resolveTargets, type CustomTargets, type Targets } from "@/nutrition/targets";
 import { type DayRow, finite, loadDays, type QueryCtx, todayOf } from "./common";
 import { countedPulse, EMPTY_TOTALS, foodEntry, mealOverlaps, roundNutrient, sumFood, type FoodEntry, type FoodVia, type Totals } from "./food";
@@ -49,6 +51,20 @@ export type MealGroup = {
   overlap: boolean;
 };
 
+/** One day of the calories in vs. out chart; a side with no data is null (never a made-up zero). */
+export type BalanceDay = { day: string; kcalIn: number | null; kcalOut: number | null; zone: BalanceZone | null };
+
+export type CalorieBalance = {
+  /** The calorie goal each day is measured against: the calorie target in force. */
+  goal: number;
+  /** Today so far: eaten, burned (Health Connect's running total, so provisional) and in minus out. */
+  kcalIn: Metric<number>;
+  kcalOut: Metric<number>;
+  net: number | null;
+  /** The 7 days ending today, oldest first. */
+  days: BalanceDay[];
+};
+
 export type NutritionVM = {
   today: string;
   timeZone: string;
@@ -70,6 +86,8 @@ export type NutritionVM = {
    * null when the list accounts for it all.
    */
   unlisted: Totals | null;
+  /** Calories in vs. out, today and the last 7 days. */
+  balance: CalorieBalance;
   /** Today has food logged in Pulse (some counted, some maybe repeats). */
   pulseToday: number;
 };
@@ -138,6 +156,21 @@ export function mealGroups(entries: FoodEntry[]): MealGroup[] {
   });
 }
 
+/** Calories in vs. out for the 7 days ending `today`, each day's intake in its zone against `goal`. */
+export function calorieBalance(rows: Map<string, DayRow>, today: string, goal: number): CalorieBalance {
+  const num = (v: number | null | undefined) => (finite(v) ? v : null);
+  const days = Array.from({ length: 7 }, (_, k) => {
+    const day = addDays(today, k - 6);
+    const r = rows.get(day);
+    const kcalIn = num(r?.extra.calories_in);
+    return { day, kcalIn, kcalOut: num(r?.metrics?.calories), zone: kcalIn === null ? null : zoneOf(kcalIn, goal) };
+  });
+  const t = days[6];
+  // Today is still running, so both sides are provisional.
+  const metric = (v: number | null): Metric<number> => ({ value: v, reason: v === null ? "no_data" : null, provisional: v !== null });
+  return { goal, kcalIn: metric(t.kcalIn), kcalOut: metric(t.kcalOut), net: balanceOf(t.kcalIn, t.kcalOut), days };
+}
+
 /** Nutrition for today, against `custom` targets (the person's own; null fields follow Pulse's suggestion). */
 export async function getNutrition(ctx: QueryCtx, custom: CustomTargets): Promise<NutritionVM> {
   const today = todayOf(ctx);
@@ -179,11 +212,13 @@ export async function getNutrition(ctx: QueryCtx, custom: CustomTargets): Promis
   }
 
   const basis = { weightKg, heightCm: ctx.profile.heightCm, burned: before(BURN_DAYS).map((r) => r?.metrics?.calories) };
+  const targets = resolveTargets(custom, basis);
   return {
     today,
     timeZone: ctx.timeZone,
     totals,
-    targets: resolveTargets(custom, basis),
+    targets,
+    balance: calorieBalance(rows, today, targets.kcal.value),
     suggested: resolveTargets(NO_CUSTOM, basis),
     week: averagesOf(before(7), 7),
     month: averagesOf(before(30), 30),

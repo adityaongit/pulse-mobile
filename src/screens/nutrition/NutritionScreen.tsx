@@ -8,7 +8,9 @@ import { useTranslation } from "react-i18next";
 import { Camera, Pencil, Plus, Sparkles, Trash2, Utensils, type LucideIcon } from "lucide-react-native";
 import { i18n } from "@/i18n/config";
 import { deleteLogEntry, setFoodSeparate } from "@/actions/log";
-import { clock, FORMATS } from "@/lib/format";
+import { DATA_COLORS } from "@/lib/bands";
+import { clock, formatDay, FORMATS } from "@/lib/format";
+import { reasonCopy } from "@/lib/reasons";
 import { progressOf, TARGET_KEYS, TARGET_LIMITS } from "@/nutrition/targets";
 import { getNutrition, type Averages, type FoodItem, type NutritionVM } from "@/queries/nutrition";
 import { ErrorView } from "@/screens/health/ErrorView";
@@ -17,6 +19,7 @@ import { useScreen } from "@/screens/useScreen";
 import { actionCtx, dataChanged } from "@/state/app";
 import { useNutritionTargets } from "@/state/nutrition";
 import { Button } from "@/ui/Button";
+import { CalorieBalanceChart, ZONE_TOKEN } from "@/ui/charts/CalorieBalanceChart";
 import { ColumnChart } from "@/ui/charts/ColumnChart";
 import { cn } from "@/ui/cn";
 import { Icon } from "@/ui/Icon";
@@ -141,6 +144,51 @@ function AverageTile({ title, a }: { title: string; a: Averages }) {
   );
 }
 
+/** Calories in vs. out: today as one sentence and the balance, then seven days as bars (in by zone, out grey). */
+function Balance({ vm }: { vm: NutritionVM }) {
+  const { t } = useTranslation("nutrition");
+  const { goal, kcalIn, kcalOut, net, days } = vm.balance;
+  const calIn = kcalIn.value;
+  const calOut = kcalOut.value;
+  const both = calIn !== null && calOut !== null;
+  const data = days.map((d) => ({ label: formatDay(d.day, { weekday: "short" }), kcalIn: d.kcalIn, zone: d.zone, kcalOut: d.kcalOut }));
+  const legend = [
+    ...(["under", "in", "over"] as const).map((z) => ({ key: z, label: t(`balance.${z}`), bg: DATA_COLORS[ZONE_TOKEN[z]].bg })),
+    { key: "out", label: t("balance.out"), bg: "bg-foreground/30" },
+  ];
+  return (
+    <View className="gap-3">
+      <View className="gap-1">
+        {both ? (
+          <Text className="text-[17px] font-bold leading-6 tabular-nums">{t("balance.summary", { in: grouped(calIn), out: grouped(calOut) })}</Text>
+        ) : (
+          <>
+            <Text className="text-[17px] font-bold leading-6 tabular-nums">{calIn === null ? t("balance.noFood") : t("balance.calIn", { in: grouped(calIn) })}</Text>
+            <Text className="text-[17px] font-bold leading-6 tabular-nums">{calOut === null ? t("balance.noBurn") : t("balance.calOut", { out: grouped(calOut) })}</Text>
+            {calOut === null && <Text className={CAPTION}>{reasonCopy(kcalOut.reason).long}</Text>}
+          </>
+        )}
+        <Text className="text-sm leading-5 tabular-nums">{t("balance.goal", { goal: grouped(goal) })}</Text>
+        {net !== null && <Text className="text-sm font-semibold leading-5 tabular-nums">{net < 0 ? t("balance.deficit", { kcal: grouped(-net) }) : net > 0 ? t("balance.surplus", { kcal: grouped(net) }) : t("balance.even")}</Text>}
+      </View>
+      {days.some((d) => d.kcalIn !== null || d.kcalOut !== null) ? (
+        <CalorieBalanceChart summary={t("balance.chartSummary", { goal: grouped(goal) })} data={data} goal={goal} goalLabel={t("balance.goalPill")} />
+      ) : (
+        <EmptyState body={t("balance.empty")} />
+      )}
+      <View className="flex-row flex-wrap gap-x-4 gap-y-1">
+        {legend.map((l) => (
+          <View key={l.key} className="flex-row items-center gap-1.5">
+            <View className={cn("size-2.5 rounded-sm", l.bg)} />
+            <Text className={CAPTION}>{l.label}</Text>
+          </View>
+        ))}
+      </View>
+      <Text className={CAPTION}>{t("balance.note")}</Text>
+    </View>
+  );
+}
+
 type ChartKey = "protein" | "kcal";
 
 function History({ vm }: { vm: NutritionVM }) {
@@ -237,6 +285,9 @@ export function NutritionScreen() {
           </View>
         }
         secondary={[
+          <SectionShell key="balance" variant="card" title={t("balance.title")} info={false}>
+            <Balance vm={vm} />
+          </SectionShell>,
           <SectionShell key="targets" variant="card" title={t("screen.targets")} info={false}>
             {TARGET_KEYS.map((k) => (
               <KeyStatRow key={k} variant="row" label={t(`target.${k}`)} caption={vm.targets[k].basis} metric={metric(vm.targets[k].value)} unit={TARGET_LIMITS[k].unit} format={k === "kcal" ? "grouped" : "int"} direction="none" />
