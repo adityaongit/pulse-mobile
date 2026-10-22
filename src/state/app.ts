@@ -228,6 +228,8 @@ function watchForeground() {
     const away = backgroundAt === null ? 0 : Date.now() - backgroundAt;
     backgroundAt = null;
     if (away > RESYNC_AWAY_MS && state.onboarded) void run();
+    // Android lets the person change Pulse's language in the system settings while it runs: "Phone's language" follows it.
+    void followPhoneLanguage();
     // At most once a day (src/state/update.ts): a phone left open for days still hears of a release.
     void checkForUpdate();
   });
@@ -274,6 +276,15 @@ async function applyLanguage(choice: LanguageChoice): Promise<void> {
   const language = resolveChoice(choice);
   initI18n(language);
   setLocale(localeFor(language));
+}
+
+/** On coming back to the app: when the choice is "Phone's language", apply the phone's (per-app) language if it changed. */
+async function followPhoneLanguage(): Promise<void> {
+  if ((await readChoice()) !== "auto") return;
+  const language = resolveChoice("auto");
+  if (language === i18n.language) return;
+  await applyLanguage("auto");
+  dataChanged();
 }
 
 /** Sets the language (Settings › App), kept on the device. No rescore: scores are numbers; every cached view model is rebuilt. */
