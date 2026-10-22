@@ -1,6 +1,6 @@
 // The Nutrition hero (spec §7.22): today's calories on the kit's ring, then protein, carbs and fat as three tiles on one
 // card, each a small ring with the grams inside. Shaped like the Recovery hero: the dial bare on the page, a card under it.
-import { View } from "react-native";
+import { useWindowDimensions, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import Svg, { Path } from "react-native-svg";
 import { DATA_COLORS, type DataColor } from "@/lib/bands";
@@ -51,6 +51,8 @@ export function Today({ vm }: { vm: NutritionVM }) {
   const { totals: t, targets } = vm;
   const kcal = targets.kcal.value;
   const left = t.kcal === null ? kcal : kcal - t.kcal;
+  // The hero slot centres and shrinks its content, so the card takes the page's width (16 px gutters) itself.
+  const { width } = useWindowDimensions();
   return (
     <View className="items-center gap-6">
       <View className="items-center gap-3">
@@ -65,7 +67,7 @@ export function Today({ vm }: { vm: NutritionVM }) {
           <Text className={cn(CAPTION, "text-center")}>{left > 0 ? tr("today.left", { kcal: grouped(left) }) : left < 0 ? tr("today.over", { kcal: grouped(-left) }) : tr("today.reached")}</Text>
         </View>
       </View>
-      <Card className="w-full">
+      <Card style={{ width: width - 32 }}>
         <View className="flex-row px-2">
           {MACROS.map(({ key, color }, i) => (
             <View
