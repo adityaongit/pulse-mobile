@@ -6,7 +6,7 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import { resources } from "./resources";
 
-export const NAMESPACES = ["common", "reasons", "metrics", "home", "sleep", "recovery", "strain", "health", "journal", "trends", "nutrition", "goals", "reports", "coach", "settings", "onboarding", "more", "howItWorks", "notifications", "errors", "ui"] as const;
+export const NAMESPACES = ["common", "reasons", "metrics", "home", "sleep", "recovery", "strain", "health", "journal", "trends", "nutrition", "goals", "reports", "coach", "settings", "onboarding", "more", "howItWorks", "notifications", "errors", "ui", "coachTools"] as const;
 
 
 /** Each language by its own name. Add a code here with its folder under locales/. */
