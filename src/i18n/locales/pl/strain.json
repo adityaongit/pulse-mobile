@@ -1,8 +1,8 @@
 {
   "sourceNote": "Wyniki Pulse, obliczone na podstawie Twoich danych z Fitbit.",
   "training": {
-    "readiness": "Gotowość treningowa",
-    "status": "Status treningowy",
+    "readiness": "Training Readiness",
+    "status": "Training Status",
     "effect": "Efekt treningowy",
     "ofHundred": "ze 100",
     "ofFive": "z 5"
@@ -24,9 +24,9 @@
     "wholeMin": "{{h}} h {{min}} min"
   },
   "readiness": {
-    "calibrating": "Gotowość treningowa wymaga ocenionej nocy i około 3 tygodni danych treningowych.",
+    "calibrating": "Training Readiness wymaga ocenionej nocy i około 3 tygodni danych treningowych.",
     "atWake": "Po przebudzeniu {{score}}",
-    "spoken": "Gotowość treningowa {{score}} ze 100, {{band}}",
+    "spoken": "Training Readiness {{score}} ze 100, {{band}}",
     "recoveryTime": "Czas Recovery",
     "recovered": "Zregenerowany",
     "readyAround": "Gotowość do ciężkiego treningu około {{time}}",
@@ -40,8 +40,8 @@
     "spokenFactorNone": "{{label}}: niedostępne"
   },
   "status": {
-    "calibrating": "Status treningowy wymaga około 3 tygodni danych treningowych.",
-    "noData": "Status treningowy wymaga VO2 max z Fitbit lub statusu HRV.",
+    "calibrating": "Training Status wymaga około 3 tygodni danych treningowych.",
+    "noData": "Training Status wymaga VO2 max z Fitbit lub HRV Status.",
     "loadRatio": "Wskaźnik obciążenia",
     "spokenLoad": "Wskaźnik obciążenia {{value}}",
     "spokenLoadNone": "Wskaźnik obciążenia niedostępny",
@@ -55,7 +55,7 @@
     "spokenHrvNone": "Status HRV jeszcze niedostępny"
   },
   "effect": {
-    "spoken": "Aerobowy efekt treningowy {{value}} z 5, {{label}}",
+    "spoken": "Aerobic Training Effect {{value}} z 5, {{label}}",
     "mainBenefit": "Główna korzyść",
     "spokenBenefit": "Główna korzyść: {{benefit}}. {{line}}",
     "addsRecovery": "Dodaje czas regeneracji",

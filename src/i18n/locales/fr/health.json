@@ -18,7 +18,7 @@
     "heartRhythm": "Rythme cardiaque",
     "measurements": "Mesures",
     "ecgReading": "Relevé ECG",
-    "hrvStatus": "Statut HRV",
+    "hrvStatus": "HRV Status",
     "timeInZones": "Temps par zone"
   },
   "age": {
@@ -199,13 +199,13 @@
     "hrBody3": "Le graphique montre la moyenne de chaque minute. Les minutes sans relevé, quand le bracelet était retiré ou ne synchronisait pas, restent vides."
   },
   "hrv": {
-    "infoTitle": "Statut HRV",
+    "infoTitle": "HRV Status",
     "info1": "Ta HRV nocturne moyenne sur les 7 dernières nuits, par rapport à ta plage habituelle, à la manière du HRV Status de Garmin. Ta plage habituelle vient des 60 nuits précédentes, sur une échelle logarithmique, et demande 21 nuits pour se former.",
     "info2": "Équilibré : la moyenne sur 7 jours est dans ta plage habituelle. Déséquilibré : au-dessus, ou un peu en dessous. Faible : bien en dessous, souvent signe d’effort, de maladie ou de mauvais sommeil. Une seule nuit change peu les choses ; une tendance sur plusieurs jours, si.",
     "info3": "Garmin affiche aussi Faible quand ta plage habituelle est basse pour ton âge ; Pulse l’omet tant qu’il n’a pas de norme d’âge publiée pour comparer.",
-    "calibrating": "Le statut HRV a besoin de 21 nuits de HRV pour apprendre ta plage habituelle.",
+    "calibrating": "Le HRV Status a besoin de 21 nuits de HRV pour apprendre ta plage habituelle.",
     "avg7": "Moyenne sur 7 jours",
-    "spoken": "Statut HRV {{status}}, moyenne sur 7 jours {{avg}} millisecondes",
+    "spoken": "HRV Status {{status}}, moyenne sur 7 jours {{avg}} millisecondes",
     "lastNight": "Cette nuit",
     "lastNightAria": "Cette nuit {{value}} millisecondes",
     "noHrv": "Pas de HRV cette nuit",

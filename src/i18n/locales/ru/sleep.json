@@ -73,7 +73,7 @@
     "wakeEvents": "Пробуждения"
   },
   "planner": {
-    "calibrating": "Планировщику сна нужно 7 ночей, чтобы узнать твоё время подъёма.",
+    "calibrating": "Sleep Planner нужно 7 ночей, чтобы узнать твоё время подъёма.",
     "shareOfNeed": "{{pct}}% от нормы",
     "typicalWake": "Обычный подъём",
     "weekdayWake": "Подъём в будни",

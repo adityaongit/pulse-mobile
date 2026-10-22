@@ -85,7 +85,7 @@
     "s2R3Term": "80% et plus",
     "s2R3Detail": "À fond",
     "s3Title": "Limites",
-    "s3P0": "Strain a besoin de la fréquence cardiaque ou des pas du jour ; sinon la journée affiche Données insuffisantes. Le Strain du jour est un cumul qui court jusqu’à minuit. Chaque activité reçoit aussi son propre Strain à partir de ses seules unités : 66 × atan(unités ÷ 20 000).",
+    "s3P0": "Strain a besoin de la fréquence cardiaque ou des pas du jour ; sinon la journée affiche Données insuffisantes. Le Day Strain est un cumul qui court jusqu’à minuit. Chaque activité reçoit aussi son propre Strain à partir de ses seules unités : 66 × atan(unités ÷ 20 000).",
     "s3P1": "La fréquence cardiaque rate les efforts qui la font à peine monter, comme le gros soulevé de charges avec de longs repos. L’anneau se remplit à 100% et reste plein au-delà ; le chiffre affiche la vraie valeur."
   },
   "strainTarget": {
@@ -106,7 +106,7 @@
     "s2R2Term": "Au-dessus de la plage",
     "s2R2Detail": "Plus de Strain que ne le suggère la Recovery du jour ; attends-toi à le sentir demain.",
     "s3Title": "Un exemple chiffré",
-    "s3P0": "Prends 14 jours de Strain passé, du plus ancien au plus récent : 45, 50, 20, 55, 48, 40, 60, 47, 52, 25, 50, 45, 55, 50. Le Strain du jour est exclu. Fondue jour après jour, la base donne 47,9.",
+    "s3P0": "Prends 14 jours de Strain passé, du plus ancien au plus récent : 45, 50, 20, 55, 48, 40, 60, 47, 52, 25, 50, 45, 55, 50. Le Day Strain est exclu. Fondue jour après jour, la base donne 47,9.",
     "s3P1": "La Recovery du jour est de 72%, donc le centre est 47,9 × 1,13 = 54,2. La plage va de 54,2 − 8,6 à 54,2 + 24,4 : une cible de 46 - 79%. Avec le même historique et une Recovery de 30%, le centre tombe à 42,2 et la cible à 36 - 58%.",
     "s4Title": "Limites",
     "s4P0": "Avec moins de 14 jours de Strain, la base fond ce qu’il y a, donc les premières semaines sont une estimation. La cible ne connaît ni ton plan d’entraînement, ni tes courses, ni tes blessures. C’est un repère, pas une prescription."
@@ -159,14 +159,14 @@
     "s0Title": "Ce qui entre en jeu",
     "s0R0Term": "Ton objectif de sommeil",
     "s0R0Detail": "7,5 heures par nuit.",
-    "s0R1Term": "Le Strain du jour",
+    "s0R1Term": "Le Day Strain",
     "s0R1Detail": "Un Strain au-dessus de ta moyenne sur 30 jours augmente le besoin.",
     "s0R2Term": "Sleep Debt",
     "s0R2Detail": "Ce que le sommeil de tes 7 derniers jours doit à ton objectif.",
     "s0R3Term": "Tes nuits récentes",
     "s0R3Detail": "Ton heure de réveil habituelle, ton efficacité de sommeil et ton temps d’endormissement.",
     "s1Title": "Comment c’est pondéré",
-    "s1P0": "Besoin de ce soir = 7,5 heures + 2% pour chaque dispersion du Strain du jour au-dessus de ta moyenne sur 30 jours + un quart de ta Sleep Debt.",
+    "s1P0": "Besoin de ce soir = 7,5 heures + 2% pour chaque dispersion du Day Strain au-dessus de ta moyenne sur 30 jours + un quart de ta Sleep Debt.",
     "s1P1": "La Sleep Debt additionne le sommeil des 7 derniers jours, siestes comprises, moins 7,5 heures chacun, les jours récents comptant le plus : la nuit dernière en entier, chaque jour d’avant environ trois quarts de celui d’après. Un solde négatif est une dette ; les siestes la réduisent.",
     "s1P2": "Les heures de coucher se calculent à rebours depuis ton heure de réveil habituelle des matins récents en semaine ou le week-end, pour correspondre à demain, en ajoutant le temps que coûtent ton efficacité habituelle et ton temps d’endormissement, jusqu’à une heure chacun.",
     "s2Title": "Ce que signifient les niveaux",
@@ -444,7 +444,7 @@
     "s4P0": "Elle demande une fréquence cardiaque dense autour de la fin de l’activité, ce que Fitbit n’enregistre pas toujours ; sinon elle affiche Pas assez de données de fréquence cardiaque. Bouger pendant ces 2 minutes, ou arrêter l’activité tard, réduit la baisse. Compare-la entre entraînements similaires, pas entre sports différents."
   },
   "hrvStatus": {
-    "name": "Statut HRV",
+    "name": "HRV Status",
     "summary": "Ta HRV sur 7 jours par rapport à ta plage habituelle, à la manière de Garmin.",
     "s0Title": "Ce qui entre en jeu",
     "s0P0": "La HRV nocturne de Fitbit (RMSSD, en ms), une valeur par nuit.",
@@ -468,7 +468,7 @@
     "s0R0Detail": "Sleep Performance.",
     "s0R1Term": "Temps de récupération",
     "s0R1Detail": "Heures restantes avant ta prochaine séance intense (ci-dessous).",
-    "s0R2Term": "Statut HRV",
+    "s0R2Term": "HRV Status",
     "s0R2Detail": "Équilibré, Déséquilibré au-dessus ou en dessous, ou Faible.",
     "s0R3Term": "Ratio de charge",
     "s0R3Detail": "La charge aiguë de Garmin contre la charge chronique.",
@@ -477,7 +477,7 @@
     "s0R5Term": "Historique de stress",
     "s0R5Detail": "Ton stress moyen éveillé sur les 3 derniers jours.",
     "s1Title": "Comment c’est pondéré",
-    "s1P0": "Chaque facteur est noté de 0 à 100 : le temps de récupération comme 100 × (1 − heures ÷ 72)^1,3 ; Statut HRV Équilibré 100, Déséquilibré au-dessus 75, en dessous 55, Faible 25 ; ratio de charge 100 de 0,8 à 1,5, tombant à 30 à 2,0, et 90 sous 0,8 ; stress 100 moins 50 par point de stress moyen au-dessus de 0,75.",
+    "s1P0": "Chaque facteur est noté de 0 à 100 : le temps de récupération comme 100 × (1 − heures ÷ 72)^1,3 ; HRV Status Équilibré 100, Déséquilibré au-dessus 75, en dessous 55, Faible 25 ; ratio de charge 100 de 0,8 à 1,5, tombant à 30 à 2,0, et 90 sous 0,8 ; stress 100 moins 50 par point de stress moyen au-dessus de 0,75.",
     "s1P1": "Readiness = 25% sommeil + 25% temps de récupération + 15% HRV + 15% charge + 10% historique de sommeil + 10% historique de stress, le poids d’un facteur manquant étant réparti sur les autres. Elle ne dépasse jamais le facteur le plus faible + 30, et une journée de plus de 18 heures d’éveil avant le sommeil de cette nuit en retire 10.",
     "s1P2": "Temps de récupération : chaque entraînement ajoute 72 × ((Training Effect − 1) ÷ 4)^2,32 heures (environ 24 à 3,5, 72 à 5) ; en plus du temps restant, le plus grand plus un quart du plus petit, jusqu’à 96, et 15% de plus avec un ratio de charge de 1,5 ou plus. Il décompte une heure par heure, 1,4 endormi après une nuit à 85% ou mieux, 0,7 pendant une heure stressée ou après une nuit sous 70%.",
     "s2Title": "Ce que signifient les niveaux",
@@ -531,7 +531,7 @@
     "s0R0Detail": "La charge aiguë de Garmin contre la charge chronique, et si la charge aiguë baisse (moins de 90% d’il y a une semaine).",
     "s0R1Term": "Tendance du VO2 max",
     "s0R1Detail": "Le VO2 max de Fitbit sur les 28 derniers jours, les jours récents pesant plus, en variation par mois.",
-    "s0R2Term": "Statut HRV",
+    "s0R2Term": "HRV Status",
     "s0R2Detail": "Celui d’aujourd’hui, et celui des 3 derniers jours.",
     "s1Title": "Comment c’est pondéré",
     "s1P0": "Règles, dans l’ordre, la première qui correspond : Désentraînement, charge aiguë sous 20% de ta médiane sur 12 semaines pendant 7 jours ; Sous tension, HRV Faible, ou Déséquilibré en dessous pendant 3 jours, à un ratio de 0,8 ou plus ; Surcharge, un ratio de 1,5 ou plus avec un VO2 max en baisse de 1,5 par mois ou plus ou une HRV Faible ; Récupération, un ratio sous 0,8 et une charge en baisse ; Au pic, un VO2 max en hausse de 1,5 par mois ou plus pendant que la charge baisse ; Productif, un ratio de 0,8 à 1,5 avec un VO2 max en hausse, ou une HRV Équilibrée à 1,0 ou plus ; Improductif, ce ratio avec un VO2 max en baisse ; sinon Maintien.",
@@ -545,6 +545,6 @@
     "s2R3Term": "Surcharge",
     "s2R3Detail": "La charge est assez haute pour te coûter. Lève le pied.",
     "s3Title": "Limites",
-    "s3P0": "Il faut environ 3 semaines de données d’entraînement et un VO2 max ou un Statut HRV. Le VO2 max de Fitbit est une estimation qui bouge lentement, donc Pulse lit sa tendance sur 28 jours plutôt que les 14 de Garmin. Le statut En pause de Garmin (arrêt pour maladie ou blessure) n’est pas détecté. C’est l’implémentation par Pulse des règles du brevet publié de Firstbeat, pas le chiffre de Garmin."
+    "s3P0": "Il faut environ 3 semaines de données d’entraînement et un VO2 max ou un HRV Status. Le VO2 max de Fitbit est une estimation qui bouge lentement, donc Pulse lit sa tendance sur 28 jours plutôt que les 14 de Garmin. Le statut En pause de Garmin (arrêt pour maladie ou blessure) n’est pas détecté. C’est l’implémentation par Pulse des règles du brevet publié de Firstbeat, pas le chiffre de Garmin."
   }
 }

@@ -154,7 +154,7 @@
     "s3P0": "Sleep Performance puntúa solo el sueño principal, una vez que Fitbit lo ha procesado. Una noche sin fases deja fuera el sueño profundo y el REM, y una noche sin frecuencia cardíaca deja fuera el descenso; las demás partes se reparten su peso. Las fases del sueño vienen de un sensor de muñeca y son una estimación."
   },
   "sleepPlanner": {
-    "name": "Planificador de sueño",
+    "name": "Sleep Planner",
     "summary": "El Sleep Need de esta noche y las horas de acostarte que lo cubren.",
     "s0Title": "Qué entra",
     "s0R0Term": "Tu meta de sueño",
@@ -444,7 +444,7 @@
     "s4P0": "Necesita frecuencia cardíaca densa alrededor del final de la actividad, algo que Fitbit no siempre registra; si no, muestra Datos de frecuencia cardíaca insuficientes. Moverte en esos 2 minutos o detener la actividad tarde reduce la caída. Compárala entre entrenamientos similares, no entre deportes distintos."
   },
   "hrvStatus": {
-    "name": "Estado de HRV",
+    "name": "HRV Status",
     "summary": "Tu HRV de 7 días frente a tu rango habitual, al estilo de Garmin.",
     "s0Title": "Qué entra",
     "s0P0": "La HRV nocturna de Fitbit (RMSSD, en ms), un valor por noche.",
@@ -461,14 +461,14 @@
     "s3P0": "Primero necesita 21 noches de HRV. Garmin lee la HRV durante toda la noche con su propio sensor y añade un estado Deficiente cuando tu rango es bajo para tu edad; Pulse usa el valor nocturno de Fitbit y omite Deficiente hasta tener una norma de edad publicada. La dispersión y las líneas de 0.75 y 1.5 son decisiones de Pulse: Garmin no publica las suyas. Es la implementación de Pulse de una idea publicada por Garmin, no el número de Garmin."
   },
   "trainingReadiness": {
-    "name": "Preparación para entrenar",
+    "name": "Training Readiness",
     "summary": "Qué tan listo estás para un entrenamiento duro hoy, de 1 a 100.",
     "s0Title": "Qué entra",
     "s0R0Term": "El sueño de anoche",
     "s0R0Detail": "Sleep Performance.",
     "s0R1Term": "Tiempo de Recovery",
     "s0R1Detail": "Horas que faltan antes de tu próxima sesión dura (abajo).",
-    "s0R2Term": "Estado de HRV",
+    "s0R2Term": "HRV Status",
     "s0R2Detail": "Equilibrado, Desequilibrado por encima o por debajo, o Bajo.",
     "s0R3Term": "Razón de carga",
     "s0R3Detail": "La carga aguda frente a la crónica de Garmin.",
@@ -531,7 +531,7 @@
     "s0R0Detail": "La carga aguda frente a la crónica de Garmin, y si la carga aguda está bajando (menos de 90% de hace una semana).",
     "s0R1Term": "Tendencia de VO2 max",
     "s0R1Detail": "El VO2 max de Fitbit de los últimos 28 días, con más peso en los días recientes, como cambio por mes.",
-    "s0R2Term": "Estado de HRV",
+    "s0R2Term": "HRV Status",
     "s0R2Detail": "El de hoy y el de los últimos 3 días.",
     "s1Title": "Cómo se pondera",
     "s1P0": "Reglas, en orden, la primera que encaje: Desentrenamiento, carga aguda menor de 20% de tu mediana de 12 semanas durante 7 días; Strain alto, HRV Bajo, o Desequilibrado por debajo durante 3 días, con una razón de 0.8 o más; Sobreesfuerzo, una razón de 1.5 o más con el VO2 max bajando 1.5 al mes o más, o HRV Bajo; Recovery, una razón menor de 0.8 y carga bajando; Máximo rendimiento, VO2 max subiendo 1.5 al mes o más mientras la carga baja; Productivo, una razón de 0.8 a 1.5 con el VO2 max subiendo, o HRV Equilibrado en 1.0 o más; Improductivo, esa razón con el VO2 max bajando; si no, Mantenimiento.",
@@ -545,6 +545,6 @@
     "s2R3Term": "Sobreesfuerzo",
     "s2R3Detail": "La carga es lo bastante alta como para pasarte factura. Baja el ritmo.",
     "s3Title": "Límites",
-    "s3P0": "Necesita unas 3 semanas de datos de entrenamiento y un VO2 max o un Estado de HRV. El VO2 max de Fitbit es una estimación que se mueve despacio, así que Pulse lee su tendencia en 28 días y no en los 14 de Garmin. El estado Pausado de Garmin (tiempo libre por enfermedad o lesión) no se detecta. Es la implementación de Pulse de las reglas de la patente publicada de Firstbeat, no el número de Garmin."
+    "s3P0": "Necesita unas 3 semanas de datos de entrenamiento y un VO2 max o un HRV Status. El VO2 max de Fitbit es una estimación que se mueve despacio, así que Pulse lee su tendencia en 28 días y no en los 14 de Garmin. El estado Pausado de Garmin (tiempo libre por enfermedad o lesión) no se detecta. Es la implementación de Pulse de las reglas de la patente publicada de Firstbeat, no el número de Garmin."
   }
 }

@@ -1,1 +1,14 @@
-{}
+{
+  "costUnit": "Recovery-Prozentpunkte",
+  "costBaselineRest": "mittlere Recovery an Tagen ohne Workout an dem Tag oder in den 7 Tagen davor",
+  "costBaselineAll": "mittlere Recovery über alle Tage (zu wenige Ruhetage)",
+  "strainScale": "Prozent, 0-100 (über 100 an einem sehr großen Tag)",
+  "facts": {
+    "unknown": "unbekannt",
+    "activity": "Aktivität: {{name}}, {{minutes}} Minuten.",
+    "strain": "Strain: {{value}} (üblich für {{name}}: {{usual}}).",
+    "stat": "{{label}}: {{value}} (üblich: {{usual}}).",
+    "steps": "Schritte: {{value}} (üblich: {{usual}}).",
+    "zone": "{{label}}: {{minutes}} Minuten."
+  }
+}

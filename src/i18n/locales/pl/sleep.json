@@ -73,7 +73,7 @@
     "wakeEvents": "Wybudzenia"
   },
   "planner": {
-    "calibrating": "Planer snu potrzebuje 7 nocy, aby poznać Twoją porę budzenia.",
+    "calibrating": "Sleep Planner potrzebuje 7 nocy, aby poznać Twoją porę budzenia.",
     "shareOfNeed": "{{pct}}% potrzeby",
     "typicalWake": "Typowa pobudka",
     "weekdayWake": "Pora budzenia w tygodniu",

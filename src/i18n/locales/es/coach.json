@@ -168,7 +168,7 @@
     "sleepDebt": "Sleep Debt",
     "plan": "Para despertar a las {{wake}}, {{plans}}. Son horas de acostarse planeadas.",
     "planItem": "{{label}}: {{time}}",
-    "plannerTitle": "Planificador de sueño y hora de acostarse · {{day}}",
+    "plannerTitle": "Sleep Planner y hora de acostarse · {{day}}",
     "workoutsTitle": "Entrenamientos · {{start}} a {{end}}",
     "workoutCaption": "{{day}} · {{minutes}} min · Strain",
     "noWorkouts": "No hay entrenamientos registrados en este periodo.",

@@ -212,7 +212,7 @@
     "cantSync": "Pulse ne peut pas se synchroniser",
     "cantSyncHint": "Une fois par jour, quand Health Connect ne s’est pas synchronisé depuis 36 heures.",
     "strainTarget": "Strain Target atteinte",
-    "strainTargetHint": "Une fois par jour, quand le Strain du jour atteint la cible du jour.",
+    "strainTargetHint": "Une fois par jour, quand le Day Strain atteint la cible du jour.",
     "healthMonitor": "Health Monitor",
     "healthMonitorHint": "Quand les constantes de la nuit dernière sortent de ta plage normale ou qu’un signal de maladie apparaît ; pas de nouvelle alerte tant que ça dure.",
     "weeklyReport": "Rapport hebdomadaire",

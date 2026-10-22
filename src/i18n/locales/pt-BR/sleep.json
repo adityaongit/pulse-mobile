@@ -70,16 +70,16 @@
     "wakeEvents": "Despertares"
   },
   "planner": {
-    "calibrating": "O planejador de sono precisa de 7 noites para aprender seu horário de acordar.",
+    "calibrating": "O Sleep Planner precisa de 7 noites para aprender seu horário de acordar.",
     "shareOfNeed": "{{pct}}% do necessário",
     "typicalWake": "Despertar típico",
     "weekdayWake": "Horário de acordar em dias úteis",
     "weekendWake": "Horário de acordar no fim de semana",
     "needTonight": "Necessário hoje à noite: <n>{{value}}</n>",
     "plan": {
-      "peak": "Pico",
-      "perform": "Desempenho",
-      "getBy": "Básico"
+      "peak": "Peak",
+      "perform": "Perform",
+      "getBy": "Get by"
     }
   },
   "weekly": {

@@ -2,22 +2,22 @@
   "sourceNote": "Pulse-Werte, berechnet aus deinen Fitbit-Daten.",
   "training": {
     "readiness": "Training Readiness",
-    "status": "Trainingsstatus",
-    "effect": "Trainingseffekt",
+    "status": "Training Status",
+    "effect": "Training Effect",
     "ofHundred": "von 100",
     "ofFive": "von 5"
   },
   "trainingInfo": {
-    "readinessP1": "Wie bereit du heute für hartes Training bist, von 1 bis 100, nach dem Vorbild von Garmins Training Readiness. Der Schlaf der letzten Nacht und deine Recovery-Zeit zählen am meisten (je ein Viertel), danach dein HRV-Status und das Belastungsverhältnis, dann dein Schlaf der letzten 3 Nächte und dein Stress der letzten 3 Tage. Ein sehr schwacher Faktor deckelt den Wert, und ein sehr langer Tag ohne Schlaf vor der letzten Nacht zieht 10 ab.",
+    "readinessP1": "Wie bereit du heute für hartes Training bist, von 1 bis 100, nach dem Vorbild von Garmins Training Readiness. Der Schlaf der letzten Nacht und deine Recovery-Zeit zählen am meisten (je ein Viertel), danach dein HRV Status und das Belastungsverhältnis, dann dein Schlaf der letzten 3 Nächte und dein Stress der letzten 3 Tage. Ein sehr schwacher Faktor deckelt den Wert, und ein sehr langer Tag ohne Schlaf vor der letzten Nacht zieht 10 ab.",
     "readinessP2": "95-100 Top, 75-94 Hoch, 50-74 Mittel, 25-49 Niedrig, 1-24 Schwach. Der Wert wird beim Aufwachen festgelegt und sinkt nach dem Training, wenn sich Recovery-Zeit aufbaut.",
-    "readinessP3": "Die Recovery-Zeit ist die Dauer, bis du bereit für die nächste harte Einheit bist: Jedes Workout fügt je nach Trainingseffekt Stunden hinzu (etwa einen Tag bei 3,5, drei bei 5), bis zu 96. Sie läuft bei gutem Schlaf schneller herunter und bei stressigen Stunden oder nach einer schlechten Nacht langsamer.",
+    "readinessP3": "Die Recovery-Zeit ist die Dauer, bis du bereit für die nächste harte Einheit bist: Jedes Workout fügt je nach Training Effect Stunden hinzu (etwa einen Tag bei 3,5, drei bei 5), bis zu 96. Sie läuft bei gutem Schlaf schneller herunter und bei stressigen Stunden oder nach einer schlechten Nacht langsamer.",
     "readinessP4": "Garmin veröffentlicht seine Gewichtungen nicht; das hier sind die von Pulse.",
-    "statusP1": "Was dein aktuelles Training bewirkt, nach dem Vorbild von Garmins Trainingsstatus: aus deinem Belastungsverhältnis (Garmins akute gegenüber chronischer Belastung), dem Trend von Fitbits VO2 max über 28 Tage und deinem HRV-Status.",
+    "statusP1": "Was dein aktuelles Training bewirkt, nach dem Vorbild von Garmins Training Status: aus deinem Belastungsverhältnis (Garmins akute gegenüber chronischer Belastung), dem Trend von Fitbits VO2 max über 28 Tage und deinem HRV Status.",
     "statusP2": "Produktiv: Belastung wie üblich oder darüber, bei steigender VO2 max oder stabiler HRV. Erhaltend: genug, um die Fitness zu halten. Recovery: eine leichtere Phase. Höchstform: Fitness steigt, während die Belastung nachlässt. Unproduktiv: gleichbleibende Belastung, aber sinkende VO2 max. Überlastung: sehr hohe Belastung, die dich zu belasten beginnt. Unter Strain: niedrige HRV unter Belastung. Abbau: eine Woche weit unter deiner üblichen Belastung.",
-    "statusP3": "Fitbits VO2 max ändert sich langsam, deshalb wird der Trend über 28 Tage gelesen, nicht über Garmins 14. Braucht etwa 3 Wochen Daten sowie eine VO2 max oder einen HRV-Status.",
-    "effectP1": "Wie stark dieses Workout deine aerobe Fitness verbessert, von 0 bis 5, nach dem Vorbild von Garmins aerobem Trainingseffekt. Pulse schätzt den EPOC der Einheit (den zusätzlichen Sauerstoff, den dein Körper danach zur Erholung braucht) aus deiner Herzfrequenz und VO2 max und vergleicht ihn mit dem, was deine Fitness und dein bisheriges Training gewohnt sind: Derselbe Lauf zählt weniger, je fitter und aktiver du bist.",
+    "statusP3": "Fitbits VO2 max ändert sich langsam, deshalb wird der Trend über 28 Tage gelesen, nicht über Garmins 14. Braucht etwa 3 Wochen Daten sowie eine VO2 max oder einen HRV Status.",
+    "effectP1": "Wie stark dieses Workout deine aerobe Fitness verbessert, von 0 bis 5, nach dem Vorbild von Garmins aerobem Training Effect. Pulse schätzt den EPOC der Einheit (den zusätzlichen Sauerstoff, den dein Körper danach zur Erholung braucht) aus deiner Herzfrequenz und VO2 max und vergleicht ihn mit dem, was deine Fitness und dein bisheriges Training gewohnt sind: Derselbe Lauf zählt weniger, je fitter und aktiver du bist.",
     "effectP2": "0-0,9 Kein Nutzen, 1-1,9 Gering, 2-2,9 Erhaltend, 3-3,9 Verbessernd, 4-4,9 Stark verbessernd, 5 Überlastung.",
-    "effectP3": "Garmin schätzt den EPOC mit Schlag-für-Schlag-Daten und unveröffentlichten Konstanten; Pulses Wert kommt allein aus der Herzfrequenz, angepasst an die veröffentlichten Zahlen von Firstbeat. Einen anaeroben Trainingseffekt gibt es nicht: Er braucht Tempo oder Leistung."
+    "effectP3": "Garmin schätzt den EPOC mit Schlag-für-Schlag-Daten und unveröffentlichten Konstanten; Pulses Wert kommt allein aus der Herzfrequenz, angepasst an die veröffentlichten Zahlen von Firstbeat. Einen anaeroben Training Effect gibt es nicht: Er braucht Tempo oder Leistung."
   },
   "hours": {
     "whole": "{{h}} Std.",
@@ -38,8 +38,8 @@
     "spokenFactorNone": "{{label}}: nicht verfügbar"
   },
   "status": {
-    "calibrating": "Der Trainingsstatus braucht etwa 3 Wochen Trainingsdaten.",
-    "noData": "Der Trainingsstatus braucht eine VO2 max von Fitbit oder einen HRV-Status.",
+    "calibrating": "Der Training Status braucht etwa 3 Wochen Trainingsdaten.",
+    "noData": "Der Training Status braucht eine VO2 max von Fitbit oder einen HRV Status.",
     "loadRatio": "Belastungsverhältnis",
     "spokenLoad": "Belastungsverhältnis {{value}}",
     "spokenLoadNone": "Belastungsverhältnis nicht verfügbar",
@@ -47,13 +47,13 @@
     "aMonth": "im Monat",
     "spokenVo2": "Trend der VO2 max {{value}} im Monat",
     "spokenVo2None": "Trend der VO2 max nicht verfügbar",
-    "hrv": "HRV-Status",
+    "hrv": "HRV Status",
     "notYet": "Noch nicht",
-    "spokenHrv": "HRV-Status {{value}}",
-    "spokenHrvNone": "HRV-Status noch nicht verfügbar"
+    "spokenHrv": "HRV Status {{value}}",
+    "spokenHrvNone": "HRV Status noch nicht verfügbar"
   },
   "effect": {
-    "spoken": "Aerober Trainingseffekt {{value}} von 5, {{label}}",
+    "spoken": "Aerober Training Effect {{value}} von 5, {{label}}",
     "mainBenefit": "Hauptnutzen",
     "spokenBenefit": "Hauptnutzen {{benefit}}. {{line}}",
     "addsRecovery": "Fügt Recovery-Zeit hinzu",
@@ -69,7 +69,7 @@
   "readinessFactor": {
     "sleep": "Schlaf der letzten Nacht",
     "recoveryTime": "Recovery-Zeit",
-    "hrv": "HRV-Status",
+    "hrv": "HRV Status",
     "load": "Belastungsverhältnis",
     "sleepHistory": "Schlaf, letzte 3 Nächte",
     "stressHistory": "Stress, letzte 3 Tage"
@@ -298,7 +298,7 @@
     "statTime": "Zeit",
     "statAvgStrain": "Ø Strain",
     "steps": "{{value}} Schritte",
-    "dayStrain": "Tages-Strain <b>{{value}}</b>",
+    "dayStrain": "Day Strain <b>{{value}}</b>",
     "noneToday": "Heute noch keine Aktivitäten. Workouts erscheinen, nachdem Fitbit sie synchronisiert hat."
   },
   "activity": {
@@ -326,8 +326,8 @@
   "live": {
     "title": "Live-Workout",
     "infoTitle": "Über Live-Workout",
-    "infoBody": "Strain-Coaching auf Basis der Live-Herzfrequenz deines Bands. Der Tages-Strain baut sich beim Training auf, mit derselben Strain-Berechnung wie im Rest von Pulse, ausgehend von dem, was der Tag schon enthält. Der Coach vergleicht ihn mit dem heutigen Strain Target und deine Herzfrequenz mit einem Band, das von der heutigen Recovery bestimmt wird: Er sagt Gas geben, wenn du für den Tag noch locker unterwegs bist, und Tempo rausnehmen, sobald du im Zielbereich bist oder über das steigst, was die Recovery hergibt. Nichts davon wird in deinen Werten gespeichert: Das Workout zählt, wenn Fitbit es synchronisiert.",
-    "dayStrain": "Tages-Strain",
+    "infoBody": "Strain-Coaching auf Basis der Live-Herzfrequenz deines Bands. Der Day Strain baut sich beim Training auf, mit derselben Strain-Berechnung wie im Rest von Pulse, ausgehend von dem, was der Tag schon enthält. Der Coach vergleicht ihn mit dem heutigen Strain Target und deine Herzfrequenz mit einem Band, das von der heutigen Recovery bestimmt wird: Er sagt Gas geben, wenn du für den Tag noch locker unterwegs bist, und Tempo rausnehmen, sobald du im Zielbereich bist oder über das steigst, was die Recovery hergibt. Nichts davon wird in deinen Werten gespeichert: Das Workout zählt, wenn Fitbit es synchronisiert.",
+    "dayStrain": "Day Strain",
     "end": "Workout beenden",
     "start": "Workout starten",
     "startAnother": "Neues starten",
@@ -358,7 +358,7 @@
     "targetLine": "Dein Ziel heute ist {{low}} - {{high}}.",
     "noTarget": "Heute noch kein Strain Target: Es braucht die heutige Recovery. Der Coach nutzt nur dein Herzfrequenzband.",
     "recoveryLine": "Die Recovery von {{value}}% bestimmt, wie hart der Coach dich gehen lässt.",
-    "notSynced": "Die heutige Herzfrequenz wurde noch nicht synchronisiert, deshalb startet der Tages-Strain mit diesem Workout.",
+    "notSynced": "Die heutige Herzfrequenz wurde noch nicht synchronisiert, deshalb startet der Day Strain mit diesem Workout.",
     "connect": "Band verbinden",
     "connectBody": "Live-Workout braucht die Herzfrequenz deines Bands per Bluetooth. Schalte in Google Health „Herzfrequenz teilen“ ein und verbinde dich dann.",
     "noHeartRate": "Noch keine Herzfrequenz",

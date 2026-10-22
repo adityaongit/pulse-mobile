@@ -18,7 +18,7 @@
     "heartRhythm": "Ritmo cardíaco",
     "measurements": "Mediciones",
     "ecgReading": "Lectura de ECG",
-    "hrvStatus": "Estado de HRV",
+    "hrvStatus": "HRV Status",
     "timeInZones": "Tiempo en zonas"
   },
   "age": {
@@ -199,13 +199,13 @@
     "hrBody3": "El gráfico muestra el promedio de cada minuto. Los minutos sin lectura, cuando la pulsera estaba apagada o sin sincronizar, quedan en blanco."
   },
   "hrv": {
-    "infoTitle": "Estado de HRV",
-    "info1": "Tu HRV promedio nocturno de las últimas 7 noches, frente a tu rango habitual, al estilo del Estado de HRV de Garmin. Tu rango habitual sale de las 60 noches anteriores, en escala logarítmica, y necesita 21 noches para formarse.",
+    "infoTitle": "HRV Status",
+    "info1": "Tu HRV promedio nocturno de las últimas 7 noches, frente a tu rango habitual, al estilo del HRV Status de Garmin. Tu rango habitual sale de las 60 noches anteriores, en escala logarítmica, y necesita 21 noches para formarse.",
     "info2": "Equilibrado: el promedio de 7 días está dentro de tu rango habitual. Desequilibrado: por encima, o un poco por debajo. Bajo: muy por debajo, a menudo señal de esfuerzo, enfermedad o mal sueño. Una sola noche lo mueve poco; una tendencia de varios días sí.",
     "info3": "Garmin también muestra Deficiente cuando tu rango habitual es bajo para tu edad; Pulse lo omite hasta tener una norma de edad publicada con la que comparar.",
-    "calibrating": "El Estado de HRV necesita 21 noches de HRV para conocer tu rango habitual.",
+    "calibrating": "El HRV Status necesita 21 noches de HRV para conocer tu rango habitual.",
     "avg7": "Promedio de 7 días",
-    "spoken": "Estado de HRV {{status}}, promedio de 7 días {{avg}} milisegundos",
+    "spoken": "HRV Status {{status}}, promedio de 7 días {{avg}} milisegundos",
     "lastNight": "Anoche",
     "lastNightAria": "Anoche {{value}} milisegundos",
     "noHrv": "Sin HRV anoche",

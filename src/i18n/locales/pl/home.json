@@ -9,7 +9,7 @@
     "short": "Brak jeszcze danych z opaski",
     "scored": "Sen, Recovery i Strain są oceniane na podstawie tętna z Twojego Fitbit, którego telefon nie potrafi zmierzyć.",
     "phoneShows": "Dopóki Fitbit się nie zsynchronizuje, ekran główny pokazuje to, co liczy telefon: kroki, dystans, kalorie i aktywne minuty.",
-    "plannerNeeds": "Planer snu potrzebuje 7 nocy, by poznać Twoją porę wstawania."
+    "plannerNeeds": "Sleep Planner potrzebuje 7 nocy, by poznać Twoją porę wstawania."
   },
   "vital": {
     "resp": "Częstość oddechów",
@@ -44,7 +44,7 @@
     "completeJournal": "Uzupełnij swój dziennik"
   },
   "tonight": {
-    "openPlanner": "Otwórz planer snu",
+    "openPlanner": "Otwórz Sleep Planner",
     "recommendedBedtime": "Zalecana\npora snu",
     "typicalWake": "Typowa\npobudka",
     "sleepGoal": "Cel snu",

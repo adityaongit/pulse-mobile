@@ -1,1 +1,14 @@
-{}
+{
+  "costUnit": "процентные пункты Recovery",
+  "costBaselineRest": "средний Recovery в дни без тренировки в этот день и за 7 дней до него",
+  "costBaselineAll": "средний Recovery за все дни (слишком мало дней отдыха)",
+  "strainScale": "проценты, 0-100 (больше 100 в очень тяжёлый день)",
+  "facts": {
+    "unknown": "неизвестно",
+    "activity": "Активность: {{name}}, {{minutes}} мин.",
+    "strain": "Strain: {{value}} (обычно для {{name}}: {{usual}}).",
+    "stat": "{{label}}: {{value}} (обычно: {{usual}}).",
+    "steps": "Шаги: {{value}} (обычно: {{usual}}).",
+    "zone": "{{label}}: {{minutes}} мин."
+  }
+}

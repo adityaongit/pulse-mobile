@@ -9,7 +9,7 @@
     "short": "Noch keine Banddaten",
     "scored": "Schlaf, Recovery und Strain werden aus der Herzfrequenz deines Fitbit bewertet, die dein Handy nicht messen kann.",
     "phoneShows": "Bis dein Fitbit synchronisiert, zeigt der Start, was dein Handy zählt: Schritte, Distanz, Kalorien und aktive Minuten.",
-    "plannerNeeds": "Der Schlafplaner braucht 7 Nächte, um deine Aufwachzeit zu lernen."
+    "plannerNeeds": "Der Sleep Planner braucht 7 Nächte, um deine Aufwachzeit zu lernen."
   },
   "vital": {
     "resp": "Atemfrequenz",
@@ -44,7 +44,7 @@
     "completeJournal": "Journal abschließen"
   },
   "tonight": {
-    "openPlanner": "Schlafplaner öffnen",
+    "openPlanner": "Sleep Planner öffnen",
     "recommendedBedtime": "Empfohlene\nSchlafenszeit",
     "typicalWake": "Übliches\nAufwachen",
     "sleepGoal": "Schlafziel",
@@ -126,18 +126,18 @@
     "recovery": "Deine Recovery liegt bei {{value}}%, {{band}}.",
     "strainTarget": "Das heutige Strain Target ist {{target}}.",
     "slept": "Du hast {{asleep}} von den benötigten {{need}} geschlafen.",
-    "strainIs": "Der Tages-Strain liegt bei {{value}}.",
-    "strainIsTarget": "Der Tages-Strain liegt bei {{value}} bei einem Ziel von {{target}}.",
-    "strainIsActs_one": "Der Tages-Strain liegt bei {{value}}, mit {{count}} Aktivität.",
-    "strainIsActs_other": "Der Tages-Strain liegt bei {{value}}, mit {{count}} Aktivitäten.",
-    "strainIsTargetActs_one": "Der Tages-Strain liegt bei {{value}} bei einem Ziel von {{target}}, mit {{count}} Aktivität.",
-    "strainIsTargetActs_other": "Der Tages-Strain liegt bei {{value}} bei einem Ziel von {{target}}, mit {{count}} Aktivitäten.",
-    "strainWas": "Der Tages-Strain lag bei {{value}}.",
-    "strainWasTarget": "Der Tages-Strain lag bei {{value}} bei einem Ziel von {{target}}.",
-    "strainWasActs_one": "Der Tages-Strain lag bei {{value}}, mit {{count}} Aktivität.",
-    "strainWasActs_other": "Der Tages-Strain lag bei {{value}}, mit {{count}} Aktivitäten.",
-    "strainWasTargetActs_one": "Der Tages-Strain lag bei {{value}} bei einem Ziel von {{target}}, mit {{count}} Aktivität.",
-    "strainWasTargetActs_other": "Der Tages-Strain lag bei {{value}} bei einem Ziel von {{target}}, mit {{count}} Aktivitäten.",
+    "strainIs": "Der Day Strain liegt bei {{value}}.",
+    "strainIsTarget": "Der Day Strain liegt bei {{value}} bei einem Ziel von {{target}}.",
+    "strainIsActs_one": "Der Day Strain liegt bei {{value}}, mit {{count}} Aktivität.",
+    "strainIsActs_other": "Der Day Strain liegt bei {{value}}, mit {{count}} Aktivitäten.",
+    "strainIsTargetActs_one": "Der Day Strain liegt bei {{value}} bei einem Ziel von {{target}}, mit {{count}} Aktivität.",
+    "strainIsTargetActs_other": "Der Day Strain liegt bei {{value}} bei einem Ziel von {{target}}, mit {{count}} Aktivitäten.",
+    "strainWas": "Der Day Strain lag bei {{value}}.",
+    "strainWasTarget": "Der Day Strain lag bei {{value}} bei einem Ziel von {{target}}.",
+    "strainWasActs_one": "Der Day Strain lag bei {{value}}, mit {{count}} Aktivität.",
+    "strainWasActs_other": "Der Day Strain lag bei {{value}}, mit {{count}} Aktivitäten.",
+    "strainWasTargetActs_one": "Der Day Strain lag bei {{value}} bei einem Ziel von {{target}}, mit {{count}} Aktivität.",
+    "strainWasTargetActs_other": "Der Day Strain lag bei {{value}} bei einem Ziel von {{target}}, mit {{count}} Aktivitäten.",
     "recoveryIs": "Die Recovery liegt bei {{value}}%.",
     "recoveryWas": "Die Recovery lag bei {{value}}%.",
     "highStress": "Du hast {{duration}} unter hohem Stress verbracht."

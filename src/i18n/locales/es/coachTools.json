@@ -1,1 +1,14 @@
-{}
+{
+  "costUnit": "puntos porcentuales de Recovery",
+  "costBaselineRest": "Recovery promedio en los días sin entrenamiento ese día ni en los 7 días anteriores",
+  "costBaselineAll": "Recovery promedio de todos los días (muy pocos días de descanso)",
+  "strainScale": "porcentaje, 0-100 (más de 100 en un día muy exigente)",
+  "facts": {
+    "unknown": "desconocido",
+    "activity": "Actividad: {{name}}, {{minutes}} minutos.",
+    "strain": "Strain: {{value}} (lo habitual para {{name}}: {{usual}}).",
+    "stat": "{{label}}: {{value}} (lo habitual: {{usual}}).",
+    "steps": "Pasos: {{value}} (lo habitual: {{usual}}).",
+    "zone": "{{label}}: {{minutes}} minutos."
+  }
+}

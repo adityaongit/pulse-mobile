@@ -154,7 +154,7 @@
     "s3P0": "Sleep Performance ocenia tylko główny sen, gdy Fitbit go przetworzy. Noc bez faz pomija sen głęboki i REM, a noc bez tętna pomija spadek; pozostałe części dzielą się ich wagą. Fazy snu pochodzą z czujnika na nadgarstku i są szacunkiem."
   },
   "sleepPlanner": {
-    "name": "Planer snu",
+    "name": "Sleep Planner",
     "summary": "Dzisiejsza potrzeba snu i pory snu, które ją zaspokajają.",
     "s0Title": "Co wchodzi",
     "s0R0Term": "Twój cel snu",

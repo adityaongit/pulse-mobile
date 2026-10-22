@@ -505,7 +505,7 @@
     "s0R2Term": "Dein Trainingshintergrund",
     "s0R2Detail": "Eine Aktivitätsklasse von 0 bis 10: aus deinem VO2 max, Alter, BMI und Geschlecht (Jackson 1990) oder aus deinen wöchentlichen Workout-Stunden der letzten 4 Wochen, je nachdem, was höher ist.",
     "s1Title": "Wie gewichtet wird",
-    "s1P0": "Pulse schätzt das EPOC des Workouts, den zusätzlichen Sauerstoff, den dein Körper danach zur Erholung nutzt, Sekunde für Sekunde: Es steigt mit der Intensität und klingt ab, wenn du nachlässt, auf Kurven, die an die veröffentlichten Zahlen von Firstbeat angepasst sind (eine Stunde bei 70% des VO2 max sind etwa 137 ml/kg). Der Spitzenwert wird mit dem EPOC verglichen, das jede Training-Effect-Stufe für deine Aktivitätsklasse ausmacht (Firstbeats veröffentlichte Linien), linear dazwischen.",
+    "s1P0": "Pulse schätzt das EPOC des Workouts, den zusätzlichen Sauerstoff, den dein Körper danach zur Erholung nutzt, Sekunde für Sekunde: Es steigt mit der Intensität und klingt ab, wenn du nachlässt, auf Kurven, die an die veröffentlichten Zahlen von Firstbeat angepasst sind (eine Stunde bei 70% des VO2 max sind etwa 137 ml/kg). Der Spitzenwert wird mit dem EPOC verglichen, das jede Stufe des Training Effect für deine Aktivitätsklasse ausmacht (Firstbeats veröffentlichte Linien), linear dazwischen.",
     "s1P1": "Der Hauptnutzen ergibt sich aus dem Effekt und deiner Zeit nach Anteil der maximalen Herzfrequenz: Recovery unter 2; VO2 max ab 4 mit über 10 Minuten über 90%; Threshold, wenn der Großteil bei 80% oder mehr lag; Tempo, wenn ein Viertel oder mehr es war; sonst Base.",
     "s2Title": "Was die Bereiche bedeuten",
     "s2R0Term": "0-0,9",

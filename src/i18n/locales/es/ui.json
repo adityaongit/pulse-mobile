@@ -152,7 +152,7 @@
     "dayAriaToday": "Hoy, {{date}}{{value}}",
     "dayAria": "{{date}}{{value}}",
     "dayValue": ", {{value}}",
-    "legendStrain": "Strain del día {{value}}+",
+    "legendStrain": "Day Strain {{value}}+",
     "legendSleep": "Sueño {{value}}%+"
   },
   "dateSwitcher": {
@@ -305,7 +305,7 @@
     "energyMid": "34-66: dosifica tu energía.",
     "energyLow": "1-33: quedan pocas reservas.",
     "strainRecoveryTitle": "Strain y Recovery",
-    "strainRecovery1": "Tus últimos 7 días lado a lado: Strain del día en azul en la escala izquierda, de 0 a 100%, y Recovery en la escala derecha, de 0 a 100%.",
+    "strainRecovery1": "Tus últimos 7 días lado a lado: Day Strain en azul en la escala izquierda, de 0 a 100%, y Recovery en la escala derecha, de 0 a 100%.",
     "strainRecovery2": "Un Strain alto un día suele reflejarse en un Recovery más bajo a la mañana siguiente. Los días sin puntuación se dejan como huecos.",
     "addActivityTitle": "Añadir una actividad",
     "addActivity1": "Pulse lee tus entrenamientos de Fitbit a través de Health Connect, así que no puede añadir uno aquí.",
@@ -365,7 +365,7 @@
     "inRangeEaseTitle": "En rango: baja el ritmo",
     "inRangeEaseBody": "Estás dentro del objetivo de hoy de {{range}}. Baja tu frecuencia cardíaca de {{ceiling}} bpm para terminar con calma.",
     "inRangeTitle": "En tu rango objetivo",
-    "inRangeBody": "El Strain del día de {{strain}} está dentro del {{range}} de hoy. Puedes parar aquí o seguir con suavidad.",
+    "inRangeBody": "El Day Strain de {{strain}} está dentro del {{range}} de hoy. Puedes parar aquí o seguir con suavidad.",
     "pushTitle": "Acelera",
     "pushBody": "Sube el ritmo: supera los {{floor}} bpm.",
     "pushBodyGap": "Sube el ritmo: supera los {{floor}} bpm. Estás {{gap}} por debajo del objetivo de hoy.",

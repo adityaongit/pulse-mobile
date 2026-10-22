@@ -18,7 +18,7 @@
     "heartRhythm": "Ritmo cardíaco",
     "measurements": "Medições",
     "ecgReading": "Leitura de ECG",
-    "hrvStatus": "Status de HRV",
+    "hrvStatus": "HRV Status",
     "timeInZones": "Tempo nas zonas"
   },
   "age": {
@@ -199,13 +199,13 @@
     "hrBody3": "O gráfico mostra a média de cada minuto. Minutos sem leitura, quando a pulseira estava desligada ou sem sincronizar, ficam em branco."
   },
   "hrv": {
-    "infoTitle": "Status de HRV",
+    "infoTitle": "HRV Status",
     "info1": "Sua HRV média noturna nas últimas 7 noites, contra a sua faixa habitual, no estilo do HRV Status da Garmin. Sua faixa habitual vem das 60 noites anteriores, em escala logarítmica, e precisa de 21 noites para se formar.",
     "info2": "Equilibrado: a média de 7 dias fica na sua faixa habitual. Desequilibrado: acima dela, ou um pouco abaixo. Baixo: bem abaixo, muitas vezes sinal de esforço, doença ou sono ruim. Uma única noite não a move muito; uma tendência ao longo dos dias, sim.",
     "info3": "A Garmin também mostra Ruim quando sua faixa habitual é baixa para a sua idade; o Pulse deixa isso de fora até ter uma norma etária publicada para comparar.",
-    "calibrating": "O Status de HRV precisa de 21 noites de HRV para aprender sua faixa habitual.",
+    "calibrating": "O HRV Status precisa de 21 noites de HRV para aprender sua faixa habitual.",
     "avg7": "Média de 7 dias",
-    "spoken": "Status de HRV {{status}}, média de 7 dias {{avg}} milissegundos",
+    "spoken": "HRV Status {{status}}, média de 7 dias {{avg}} milissegundos",
     "lastNight": "Noite passada",
     "lastNightAria": "Noite passada {{value}} milissegundos",
     "noHrv": "Sem HRV ontem à noite",

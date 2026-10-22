@@ -1,20 +1,20 @@
 {
   "sourceNote": "Scores do Pulse, calculados a partir dos seus dados do Fitbit.",
   "training": {
-    "readiness": "Prontidão para treinar",
-    "status": "Status do treino",
+    "readiness": "Training Readiness",
+    "status": "Training Status",
     "effect": "Efeito do treino",
     "ofHundred": "de 100",
     "ofFive": "de 5"
   },
   "trainingInfo": {
-    "readinessP1": "Quão pronto você está para um treino pesado hoje, de 1 a 100, nos moldes da Training Readiness da Garmin. O sono da noite passada e o seu tempo de Recovery pesam mais (um quarto cada), depois o seu status de HRV e a razão de carga, depois o seu sono nas últimas 3 noites e o seu estresse nos últimos 3 dias. Um fator muito fraco limita o score, e um dia muito longo acordado antes da noite passada tira 10 pontos.",
+    "readinessP1": "Quão pronto você está para um treino pesado hoje, de 1 a 100, nos moldes da Training Readiness da Garmin. O sono da noite passada e o seu tempo de Recovery pesam mais (um quarto cada), depois o seu HRV Status e a razão de carga, depois o seu sono nas últimas 3 noites e o seu estresse nos últimos 3 dias. Um fator muito fraco limita o score, e um dia muito longo acordado antes da noite passada tira 10 pontos.",
     "readinessP2": "95-100 Ótimo, 75-94 Alto, 50-74 Moderado, 25-49 Baixo, 1-24 Ruim. É definido ao acordar e cai depois do treino conforme o tempo de recuperação aumenta.",
     "readinessP3": "O tempo de Recovery é quanto falta para você estar pronto para outro treino pesado: cada treino soma horas conforme o Efeito do treino (cerca de um dia com 3,5, três com 5), até 96. Ele diminui mais rápido durante um bom sono e mais devagar em horas de estresse ou depois de uma noite ruim.",
     "readinessP4": "A Garmin não divulga seus pesos; estes são do Pulse.",
-    "statusP1": "O que o seu treino recente está fazendo, nos moldes do Training Status da Garmin: a partir da sua razão de carga (carga aguda contra crônica, da Garmin), da tendência do VO2 max do Fitbit em 28 dias e do seu status de HRV.",
+    "statusP1": "O que o seu treino recente está fazendo, nos moldes do Training Status da Garmin: a partir da sua razão de carga (carga aguda contra crônica, da Garmin), da tendência do VO2 max do Fitbit em 28 dias e do seu HRV Status.",
     "statusP2": "Produtivo: carga igual ou acima do seu normal, com VO2 max subindo ou HRV estável. Mantendo: o suficiente para manter o condicionamento. Recovery: uma fase mais leve. Pico: condicionamento em alta enquanto a carga diminui. Improdutivo: carga estável, mas VO2 max caindo. Sobrecarga: carga muito alta que começa a cobrar seu preço. Strain alto: HRV baixo sob carga. Destreino: bem abaixo da sua carga normal por uma semana.",
-    "statusP3": "O VO2 max do Fitbit muda devagar, então a tendência é lida em 28 dias, não nos 14 da Garmin. Precisa de cerca de 3 semanas de dados e de um VO2 max ou de um status de HRV.",
+    "statusP3": "O VO2 max do Fitbit muda devagar, então a tendência é lida em 28 dias, não nos 14 da Garmin. Precisa de cerca de 3 semanas de dados e de um VO2 max ou de um HRV Status.",
     "effectP1": "Quanto este treino melhora o seu condicionamento aeróbico, de 0 a 5, nos moldes do Aerobic Training Effect da Garmin. O Pulse estima o EPOC da sessão (o oxigênio extra que o corpo usa depois para se recuperar) a partir da sua frequência cardíaca e do seu VO2 max, e compara com o que o seu condicionamento e o seu treino recente tornam rotina: a mesma corrida vale menos quanto mais em forma e mais ativo você está.",
     "effectP2": "0-0,9 Sem benefício, 1-1,9 Pequeno, 2-2,9 Mantendo, 3-3,9 Melhorando, 4-4,9 Melhorando muito, 5 Sobrecarga.",
     "effectP3": "A Garmin estima o EPOC com dados batimento a batimento e constantes que não divulga; o do Pulse vem só da frequência cardíaca, ajustado aos números publicados pela Firstbeat. Não há Efeito do treino anaeróbico: ele precisa de ritmo ou potência."
@@ -24,9 +24,9 @@
     "wholeMin": "{{h}} h {{min}} min"
   },
   "readiness": {
-    "calibrating": "A Prontidão para treinar precisa de uma noite com score e cerca de 3 semanas de dados de treino.",
+    "calibrating": "A Training Readiness precisa de uma noite com score e cerca de 3 semanas de dados de treino.",
     "atWake": "Ao acordar {{score}}",
-    "spoken": "Prontidão para treinar {{score}} de 100, {{band}}",
+    "spoken": "Training Readiness {{score}} de 100, {{band}}",
     "recoveryTime": "Tempo de Recovery",
     "recovered": "Recuperado",
     "readyAround": "Pronto para treino pesado por volta de {{time}}",
@@ -39,8 +39,8 @@
     "spokenFactorNone": "{{label}}: indisponível"
   },
   "status": {
-    "calibrating": "O Status do treino precisa de cerca de 3 semanas de dados de treino.",
-    "noData": "O Status do treino precisa de um VO2 max do Fitbit ou de um status de HRV.",
+    "calibrating": "O Training Status precisa de cerca de 3 semanas de dados de treino.",
+    "noData": "O Training Status precisa de um VO2 max do Fitbit ou de um HRV Status.",
     "loadRatio": "Razão de carga",
     "spokenLoad": "Razão de carga {{value}}",
     "spokenLoadNone": "Razão de carga indisponível",
@@ -48,10 +48,10 @@
     "aMonth": "por mês",
     "spokenVo2": "Tendência do VO2 max {{value}} por mês",
     "spokenVo2None": "Tendência do VO2 max indisponível",
-    "hrv": "Status de HRV",
+    "hrv": "HRV Status",
     "notYet": "Ainda não",
-    "spokenHrv": "Status de HRV {{value}}",
-    "spokenHrvNone": "Status de HRV ainda não disponível"
+    "spokenHrv": "HRV Status {{value}}",
+    "spokenHrvNone": "HRV Status ainda não disponível"
   },
   "effect": {
     "spoken": "Aerobic Training Effect {{value}} de 5, {{label}}",
@@ -70,7 +70,7 @@
   "readinessFactor": {
     "sleep": "Sono da noite passada",
     "recoveryTime": "Tempo de Recovery",
-    "hrv": "Status de HRV",
+    "hrv": "HRV Status",
     "load": "Razão de carga",
     "sleepHistory": "Sono, últimas 3 noites",
     "stressHistory": "Estresse, últimos 3 dias"
@@ -312,7 +312,7 @@
     "statTime": "Tempo",
     "statAvgStrain": "Strain méd.",
     "steps": "{{value}} passos",
-    "dayStrain": "Strain do dia <b>{{value}}</b>",
+    "dayStrain": "Day Strain <b>{{value}}</b>",
     "noneToday": "Ainda sem atividades hoje. Os treinos aparecem depois que o Fitbit os sincroniza."
   },
   "activity": {
@@ -340,8 +340,8 @@
   "live": {
     "title": "Treino ao vivo",
     "infoTitle": "Sobre o Treino ao vivo",
-    "infoBody": "O Coach de Strain com a frequência cardíaca ao vivo da sua pulseira. O Strain do dia sobe conforme você treina, com o mesmo cálculo de Strain do resto do Pulse, partindo do que hoje já acumulou. O Coach compara com o Strain Target de hoje, e a sua frequência cardíaca com uma faixa definida pela Recovery de hoje: ele diz para acelerar quando você está leve para o dia e para pegar leve quando você entra na faixa ou passa do que a Recovery aguenta. Nada aqui é salvo nos seus scores: o treino conta quando o Fitbit o sincroniza.",
-    "dayStrain": "Strain do dia",
+    "infoBody": "O Coach de Strain com a frequência cardíaca ao vivo da sua pulseira. O Day Strain sobe conforme você treina, com o mesmo cálculo de Strain do resto do Pulse, partindo do que hoje já acumulou. O Coach compara com o Strain Target de hoje, e a sua frequência cardíaca com uma faixa definida pela Recovery de hoje: ele diz para acelerar quando você está leve para o dia e para pegar leve quando você entra na faixa ou passa do que a Recovery aguenta. Nada aqui é salvo nos seus scores: o treino conta quando o Fitbit o sincroniza.",
+    "dayStrain": "Day Strain",
     "end": "Encerrar treino",
     "start": "Iniciar treino",
     "startAnother": "Iniciar outro",
@@ -372,7 +372,7 @@
     "targetLine": "A meta de hoje é {{low}} - {{high}}.",
     "noTarget": "Ainda sem Strain Target hoje: ele precisa da Recovery de hoje. O Coach usa só a sua faixa de frequência cardíaca.",
     "recoveryLine": "Recovery de {{value}}% define até onde o Coach deixa você ir.",
-    "notSynced": "A frequência cardíaca de hoje ainda não sincronizou, então o Strain do dia parte deste treino.",
+    "notSynced": "A frequência cardíaca de hoje ainda não sincronizou, então o Day Strain parte deste treino.",
     "connect": "Conecte sua pulseira",
     "connectBody": "O Treino ao vivo precisa da frequência cardíaca da sua pulseira por Bluetooth. Ative Compartilhar frequência cardíaca no Google Health e depois conecte.",
     "noHeartRate": "Ainda sem frequência cardíaca",

@@ -15,8 +15,8 @@
   "checkIn": { "title": "Check-in", "body": "Comment s’est passée ta journée ? Prends une minute pour ton check-in." },
   "strainTarget": {
     "title": "Strain Target atteinte",
-    "inside": "Ton Strain du jour ({{strain}}) est dans la cible : {{range}}.",
-    "past": "Ton Strain du jour ({{strain}}) dépasse la cible : {{range}}. Privilégie le sommeil ce soir pour récupérer."
+    "inside": "Ton Day Strain ({{strain}}) est dans la cible : {{range}}.",
+    "past": "Ton Day Strain ({{strain}}) dépasse la cible : {{range}}. Privilégie le sommeil ce soir pour récupérer."
   },
   "monitor": {
     "illnessTitle": "Ton corps lutte peut-être contre quelque chose",
@@ -33,7 +33,7 @@
   "report": {
     "title": "Bilan hebdo prêt",
     "recovery": "Recovery moyenne de {{value}}%",
-    "strain": "Strain du jour {{value}}",
+    "strain": "Day Strain {{value}}",
     "withParts": "{{range}} : {{parts}}.",
     "empty": "Ta semaine du {{range}} est arrivée."
   },

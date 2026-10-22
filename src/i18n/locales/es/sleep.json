@@ -70,7 +70,7 @@
     "wakeEvents": "Despertares"
   },
   "planner": {
-    "calibrating": "El planificador de sueño necesita 7 noches para aprender tu hora de despertar.",
+    "calibrating": "El Sleep Planner necesita 7 noches para aprender tu hora de despertar.",
     "shareOfNeed": "{{pct}}% de lo necesario",
     "typicalWake": "Despertar típico",
     "weekdayWake": "Hora de despertar entre semana",

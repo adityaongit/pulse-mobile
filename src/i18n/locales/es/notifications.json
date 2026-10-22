@@ -15,8 +15,8 @@
   "checkIn": { "title": "Registra tu día", "body": "¿Cómo te fue hoy? Tómate un minuto para tu registro." },
   "strainTarget": {
     "title": "Strain Target alcanzado",
-    "inside": "El Strain del día de {{strain}} está dentro del objetivo de hoy de {{range}}.",
-    "past": "El Strain del día de {{strain}} superó el objetivo de hoy de {{range}}. Prioriza dormir bien esta noche para recuperarte."
+    "inside": "El Day Strain de {{strain}} está dentro del objetivo de hoy de {{range}}.",
+    "past": "El Day Strain de {{strain}} superó el objetivo de hoy de {{range}}. Prioriza dormir bien esta noche para recuperarte."
   },
   "monitor": {
     "illnessTitle": "Tu cuerpo podría estar combatiendo algo",
@@ -33,7 +33,7 @@
   "report": {
     "title": "Tu informe semanal está listo",
     "recovery": "Recovery promedio de {{value}}%",
-    "strain": "Strain del día {{value}}",
+    "strain": "Day Strain {{value}}",
     "withParts": "{{range}}: {{parts}}.",
     "empty": "Ya está tu semana del {{range}}."
   },

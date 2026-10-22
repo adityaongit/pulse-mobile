@@ -10,6 +10,7 @@ const GLOSSARY = [
   "Pulse Age", "Pulse", "Health Connect", "Fitbit", "Google Health", "Recovery", "Strain Target", "Strain", "Sleep Performance",
   "Sleep Debt", "Sleep Need", "Sleep Consistency", "Training Load", "Stress Monitor", "Health Monitor", "Energy Bank",
   "Healthspan", "Pace of Aging", "Coach", "HRV", "RHR", "VO2 max", "SpO2",
+  "Day Strain", "Sleep Planner", "HRV Status", "Training Readiness", "Training Effect", "Training Status", "Active Zone Minutes",
 ];
 const UNIT_WORDS = new Set(["bpm", "ms", "rpm", "km", "mi", "kcal", "min", "kg", "lb"]);
 /** Cognates and names (Fitness, Total, REM) are the same in two languages; a sentence of four words is not. */

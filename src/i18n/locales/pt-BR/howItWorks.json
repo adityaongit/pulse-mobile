@@ -154,7 +154,7 @@
     "s3P0": "O Sleep Performance avalia só o sono principal, depois que o Fitbit o processou. Uma noite sem fases deixa de fora o profundo e o REM, e uma noite sem frequência cardíaca deixa de fora a queda; as outras partes dividem o peso. As fases do sono vêm de um sensor de pulso e são uma estimativa."
   },
   "sleepPlanner": {
-    "name": "Planejador de sono",
+    "name": "Sleep Planner",
     "summary": "A necessidade de sono de hoje à noite e os horários de deitar que a atendem.",
     "s0Title": "O que entra",
     "s0R0Term": "Sua meta de sono",
@@ -170,11 +170,11 @@
     "s1P1": "O Sleep Debt soma o sono dos últimos 7 dias, cochilos incluídos, menos 7,5 horas cada, com os dias recentes pesando mais: a noite passada por inteiro, cada dia anterior com cerca de três quartos do seguinte. Um saldo negativo é dívida; cochilos a abatem.",
     "s1P2": "Os horários de deitar são contados de trás para frente a partir do seu horário habitual de acordar em manhãs recentes de dia útil ou de fim de semana, para combinar com amanhã, somando o tempo que sua eficiência habitual e o tempo para pegar no sono custam, até uma hora cada.",
     "s2Title": "O que significam as faixas",
-    "s2R0Term": "Pico",
+    "s2R0Term": "Peak",
     "s2R0Detail": "100% da necessidade de hoje à noite.",
-    "s2R1Term": "Desempenho",
+    "s2R1Term": "Perform",
     "s2R1Detail": "85% da necessidade de hoje à noite.",
-    "s2R2Term": "Básico",
+    "s2R2Term": "Get by",
     "s2R2Detail": "70% da necessidade de hoje à noite.",
     "s3Title": "Limites",
     "s3P0": "O planejador precisa de alguns sonos principais antes de dar horários de deitar. Ele supõe que amanhã será como suas manhãs recentes e não vê alarmes nem planos. O Strain mais tarde hoje muda a necessidade de hoje à noite. É um guia, não uma prescrição."
@@ -444,7 +444,7 @@
     "s4P0": "Precisa de frequência cardíaca densa perto do fim da atividade, que o Fitbit nem sempre registra; senão mostra Dados de frequência cardíaca insuficientes. Se mexer nesses 2 minutos, ou parar a atividade tarde, reduz a queda. Compare entre treinos parecidos, não entre esportes diferentes."
   },
   "hrvStatus": {
-    "name": "Status de HRV",
+    "name": "HRV Status",
     "summary": "Sua HRV de 7 dias contra a sua faixa habitual, no estilo da Garmin.",
     "s0Title": "O que entra",
     "s0P0": "A HRV noturna do Fitbit (RMSSD, em ms), um valor por noite.",
@@ -461,14 +461,14 @@
     "s3P0": "Precisa antes de 21 noites de HRV. A Garmin lê a HRV a noite toda com o próprio sensor e adiciona um status Ruim quando sua faixa é baixa para a sua idade; o Pulse usa o valor noturno do Fitbit e deixa o Ruim de fora até ter uma norma etária publicada. A variação e as linhas de 0,75 e 1,5 são escolhas do Pulse: a Garmin não publica as dela. Esta é a implementação do Pulse da ideia publicada pela Garmin, não o número da Garmin."
   },
   "trainingReadiness": {
-    "name": "Prontidão para treinar",
+    "name": "Training Readiness",
     "summary": "O quanto você está pronto para um treino pesado hoje, de 1 a 100.",
     "s0Title": "O que entra",
     "s0R0Term": "Sono da noite passada",
     "s0R0Detail": "Sleep Performance.",
     "s0R1Term": "Tempo de recuperação",
     "s0R1Detail": "Horas restantes antes da sua próxima sessão pesada (abaixo).",
-    "s0R2Term": "Status de HRV",
+    "s0R2Term": "HRV Status",
     "s0R2Detail": "Equilibrado, Desequilibrado acima ou abaixo, ou Baixo.",
     "s0R3Term": "Razão de carga",
     "s0R3Detail": "A carga aguda contra a crônica, da Garmin.",
@@ -524,14 +524,14 @@
     "s3P0": "A Garmin estima o EPOC com dados batimento a batimento e constantes não publicadas; o do Pulse vem só da frequência cardíaca, então leia como estimativa. Não há efeito de treino anaeróbico, que precisa de ritmo ou potência. Um treino sem frequência cardíaca suficiente não tem nenhum. Esta é a implementação do Pulse do método publicado pela Garmin, não o número da Garmin."
   },
   "trainingStatus": {
-    "name": "Status do treino",
+    "name": "Training Status",
     "summary": "O que seu treino recente está fazendo com o seu condicionamento.",
     "s0Title": "O que entra",
     "s0R0Term": "Razão de carga",
     "s0R0Detail": "A carga aguda contra a crônica, da Garmin, e se a carga aguda está caindo (abaixo de 90% de uma semana atrás).",
     "s0R1Term": "Tendência do VO2 max",
     "s0R1Detail": "O VO2 max do Fitbit nos últimos 28 dias, com os dias recentes pesando mais, como mudança por mês.",
-    "s0R2Term": "Status de HRV",
+    "s0R2Term": "HRV Status",
     "s0R2Detail": "O de hoje e o dos últimos 3 dias.",
     "s1Title": "Como é ponderado",
     "s1P0": "Regras, em ordem, vale a primeira que servir: Destreino, carga aguda abaixo de 20% da sua mediana de 12 semanas por 7 dias; Sobrecarregado, HRV Baixo, ou Desequilibrado abaixo por 3 dias, com razão de 0,8 ou mais; Excesso, razão de 1,5 ou mais com VO2 max caindo 1,5 por mês ou mais ou HRV Baixo; Recuperação, razão abaixo de 0,8 e carga caindo; Pico, VO2 max subindo 1,5 por mês ou mais enquanto a carga cai; Produtivo, razão de 0,8 a 1,5 com VO2 max subindo, ou HRV Equilibrado com 1,0 ou mais; Improdutivo, essa razão com VO2 max caindo; senão Mantendo.",
@@ -545,6 +545,6 @@
     "s2R3Term": "Excesso",
     "s2R3Detail": "A carga é alta o bastante para custar caro. Diminua o ritmo.",
     "s3Title": "Limites",
-    "s3P0": "Precisa de cerca de 3 semanas de dados de treino e de um VO2 max ou de um Status de HRV. O VO2 max do Fitbit é uma estimativa que se move devagar, então o Pulse lê sua tendência em 28 dias em vez dos 14 da Garmin. O status Pausado da Garmin (tempo parado por doença ou lesão) não é detectado. Esta é a implementação do Pulse das regras da patente publicada da Firstbeat, não o número da Garmin."
+    "s3P0": "Precisa de cerca de 3 semanas de dados de treino e de um VO2 max ou de um HRV Status. O VO2 max do Fitbit é uma estimativa que se move devagar, então o Pulse lê sua tendência em 28 dias em vez dos 14 da Garmin. O status Pausado da Garmin (tempo parado por doença ou lesão) não é detectado. Esta é a implementação do Pulse das regras da patente publicada da Firstbeat, não o número da Garmin."
   }
 }

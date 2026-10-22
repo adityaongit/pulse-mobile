@@ -211,7 +211,7 @@
     "cantSync": "Pulse kann nicht synchronisieren",
     "cantSyncHint": "Einmal am Tag, wenn Health Connect 36 Stunden lang nicht synchronisiert hat.",
     "strainTarget": "Strain Target erreicht",
-    "strainTargetHint": "Einmal am Tag, wenn der Tages-Strain das heutige Ziel erreicht.",
+    "strainTargetHint": "Einmal am Tag, wenn der Day Strain das heutige Ziel erreicht.",
     "healthMonitor": "Health Monitor",
     "healthMonitorHint": "Wenn die Vitalwerte der letzten Nacht deinen Normalbereich verlassen oder ein Krankheitssignal auftritt; nicht erneut, solange es anhält.",
     "weeklyReport": "Wochenbericht",
