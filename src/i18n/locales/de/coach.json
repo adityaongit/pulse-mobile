@@ -170,7 +170,7 @@
     "planItem": "{{label}}: {{time}}",
     "plannerTitle": "Schlaf- und Schlafenszeitplaner · {{day}}",
     "workoutsTitle": "Workouts · {{start}} bis {{end}}",
-    "workoutCaption": "{{day}} · {{minutes}} min · Strain",
+    "workoutCaption": "{{day}} · {{minutes}} Min. · Strain",
     "noWorkouts": "In diesem Zeitraum wurden keine Workouts erfasst.",
     "showing": "Zeigt 5 von {{total}} erfassten Workouts.",
     "recordedTitle": "Erfasste Workouts · {{start}} bis {{end}}",

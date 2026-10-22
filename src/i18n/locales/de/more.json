@@ -100,7 +100,7 @@
     "changePace": "Tempo ändern",
     "pace": "Tempo",
     "sessionLength": "Sitzungsdauer",
-    "minutesShort": "{{count}} min",
+    "minutesShort": "{{count}} Min.",
     "minutesLabel_one": "{{count}} Minute",
     "minutesLabel_other": "{{count}} Minuten",
     "hapticCues": "Haptische Hinweise",

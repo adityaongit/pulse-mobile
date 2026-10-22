@@ -66,9 +66,9 @@ export const baselineText = (vm: Pick<ActivityCostVM, "baseline" | "baselineKind
 /** The coach's digest (get_activities): each kind's change in Recovery points and bounce-back, or why it isn't measured. */
 export function costDigest(vm: ActivityCostVM) {
   return {
-    unit: "Recovery percentage points",
+    unit: i18n.t("coachTools:costUnit"),
     baseline: vm.baseline === null ? null : Math.round(vm.baseline),
-    baselineIs: vm.baselineKind === "rest" ? "mean Recovery on days with no workout that day or in the 7 days before" : "mean Recovery over every day (too few rest days)",
+    baselineIs: i18n.t(vm.baselineKind === "rest" ? "coachTools:costBaselineRest" : "coachTools:costBaselineAll"),
     kinds: vm.items.map((e) =>
       e.reason === null
         ? { activity: e.name, workoutsMeasured: e.sessions, nextMorningChange: Math.round(e.change), daysToBaseline: e.daysToBaseline, confidence: e.confidence, summary: costSentence(e, vm), reason: null }

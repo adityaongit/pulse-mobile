@@ -4,6 +4,7 @@
 // series, ids or raw payloads.
 import { tool, type InferToolOutput } from "ai";
 import { z } from "zod";
+import { i18n } from "@/i18n/config";
 import { trainingGuidance } from "@/core/algorithms/coaching";
 import type { Metric } from "@/lib/reasons";
 import { addDays, daysBetween } from "@/lib/time";
@@ -117,7 +118,7 @@ export async function dayDigest(ctx: QueryCtx, day: string) {
     },
     strain: {
       ...num(strain.strain),
-      scale: "percent, 0-100 (above 100 on a very big day)",
+      scale: i18n.t("coachTools:strainScale"),
       soFar: strain.soFar,
       target: strain.target.value ? [round(strain.target.value.low), round(strain.target.value.high)] : null,
       coachLine: strain.coach,

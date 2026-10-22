@@ -49,6 +49,10 @@
     "hours": "{{count}} ч",
     "days": "{{count}} д"
   },
+  "unit": {
+    "min": "мин",
+    "h": "ч"
+  },
   "unitWords": {
     "percent": "процентов",
     "ms": "миллисекунд",

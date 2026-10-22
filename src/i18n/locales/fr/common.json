@@ -44,6 +44,10 @@
     "hours": "{{count}} h",
     "days": "{{count}} j"
   },
+  "unit": {
+    "min": "min",
+    "h": "h"
+  },
   "unitWords": {
     "percent": "pour cent",
     "ms": "millisecondes",

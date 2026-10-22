@@ -1,1 +1,14 @@
-{}
+{
+  "costUnit": "Recovery percentage points",
+  "costBaselineRest": "mean Recovery on days with no workout that day or in the 7 days before",
+  "costBaselineAll": "mean Recovery over every day (too few rest days)",
+  "strainScale": "percent, 0-100 (above 100 on a very big day)",
+  "facts": {
+    "unknown": "unknown",
+    "activity": "Activity: {{name}}, {{minutes}} minutes.",
+    "strain": "Strain: {{value}} (usual for {{name}}: {{usual}}).",
+    "stat": "{{label}}: {{value}} (usual: {{usual}}).",
+    "steps": "Steps: {{value}} (usual: {{usual}}).",
+    "zone": "{{label}}: {{minutes}} minutes."
+  }
+}

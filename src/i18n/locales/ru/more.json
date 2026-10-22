@@ -106,7 +106,7 @@
     "changePace": "Сменить ритм",
     "pace": "Ритм",
     "sessionLength": "Длительность сессии",
-    "minutesShort": "{{count}} min",
+    "minutesShort": "{{count}} мин",
     "minutesLabel_one": "{{count}} минута",
     "minutesLabel_few": "{{count}} минуты",
     "minutesLabel_many": "{{count}} минут",

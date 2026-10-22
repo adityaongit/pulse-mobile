@@ -20,8 +20,8 @@
     "effectP3": "Garmin schätzt den EPOC mit Schlag-für-Schlag-Daten und unveröffentlichten Konstanten; Pulses Wert kommt allein aus der Herzfrequenz, angepasst an die veröffentlichten Zahlen von Firstbeat. Einen anaeroben Trainingseffekt gibt es nicht: Er braucht Tempo oder Leistung."
   },
   "hours": {
-    "whole": "{{h}} h",
-    "wholeMin": "{{h}} h {{min}} min"
+    "whole": "{{h}} Std.",
+    "wholeMin": "{{h}} Std. {{min}} Min."
   },
   "readiness": {
     "calibrating": "Training Readiness braucht eine bewertete Nacht und etwa 3 Wochen Trainingsdaten.",

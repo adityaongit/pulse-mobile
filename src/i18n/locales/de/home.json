@@ -96,7 +96,7 @@
     "none": "Noch keine Herzfrequenz",
     "demoNone": "Die Beispieldaten haben noch keine Messwerte.",
     "notSynced": "Noch nichts aus Health Connect synchronisiert.",
-    "lastMinutes": "Letzte {{minutes}} min",
+    "lastMinutes": "Letzte {{minutes}} Min.",
     "live": "Live-Herzfrequenz {{bpm}} Schläge pro Minute",
     "reconnecting": "Verbindet neu. Letzter Live-Messwert {{bpm}} Schläge pro Minute",
     "latest": "Herzfrequenz {{bpm}} Schläge pro Minute",

@@ -172,7 +172,7 @@
     "planItem": "{{label}}: {{time}}",
     "plannerTitle": "Планировщик сна · {{day}}",
     "workoutsTitle": "Тренировки · {{start}} до {{end}}",
-    "workoutCaption": "{{day}} · {{minutes}} min · Strain",
+    "workoutCaption": "{{day}} · {{minutes}} мин · Strain",
     "noWorkouts": "За этот период тренировок не записано.",
     "showing": "Показаны 5 из {{total}} записанных тренировок.",
     "recordedTitle": "Записанные тренировки · {{start}} до {{end}}",

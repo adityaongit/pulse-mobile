@@ -54,8 +54,8 @@
     "sleepNeed": "Ночи, когда ты выспался по Sleep Need"
   },
   "planUnit": {
-    "zone13": "min",
-    "zone45": "min",
+    "zone13": "мин",
+    "zone45": "мин",
     "strength": "тренировок",
     "steps": "шагов",
     "consistency": "%",
@@ -77,7 +77,7 @@
     "noData": "Нет данных"
   },
   "planTarget": {
-    "minutes": "из {{value}} min",
+    "minutes": "из {{value}} мин",
     "sessions_one": "из {{value}} тренировки",
     "sessions_few": "из {{value}} тренировок",
     "sessions_many": "из {{value}} тренировок",
@@ -90,7 +90,7 @@
     "plain": "из {{value}}"
   },
   "planLeft": {
-    "minutes": "{{value}} min",
+    "minutes": "{{value}} мин",
     "sessions_one": "{{value}} тренировка",
     "sessions_few": "{{value}} тренировки",
     "sessions_many": "{{value}} тренировок",
@@ -163,7 +163,7 @@
   },
   "week": {
     "caption": "Эта неделя, с понедельника по воскресенье",
-    "of": "из {{target}} min",
+    "of": "из {{target}} мин",
     "spoken": "Минуты активной зоны на этой неделе: {{total}} из {{target}} минут",
     "spokenReached": "Минуты активной зоны на этой неделе: {{total}} из {{target}} минут, достигнуто",
     "daysLabel": "Минуты активной зоны, дней с выполненной дневной целью: {{met}} из {{total}}"

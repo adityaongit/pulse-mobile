@@ -39,6 +39,10 @@
     "hours": "{{count}} Std.",
     "days": "{{count}} T."
   },
+  "unit": {
+    "min": "Min.",
+    "h": "Std."
+  },
   "unitWords": {
     "percent": "Prozent",
     "ms": "Millisekunden",

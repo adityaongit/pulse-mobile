@@ -54,8 +54,8 @@
     "sleepNeed": "Nächte, in denen du deinen Bedarf geschlafen hast"
   },
   "planUnit": {
-    "zone13": "min",
-    "zone45": "min",
+    "zone13": "Min.",
+    "zone45": "Min.",
     "strength": "Einheiten",
     "steps": "Schritte",
     "consistency": "%",
@@ -77,7 +77,7 @@
     "noData": "Keine Daten"
   },
   "planTarget": {
-    "minutes": "von {{value}} min",
+    "minutes": "von {{value}} Min.",
     "sessions_one": "von {{value}} Einheit",
     "sessions_other": "von {{value}} Einheiten",
     "percent": "von {{value}}%",
@@ -86,7 +86,7 @@
     "plain": "von {{value}}"
   },
   "planLeft": {
-    "minutes": "{{value}} min",
+    "minutes": "{{value}} Min.",
     "sessions_one": "{{value}} Einheit",
     "sessions_other": "{{value}} Einheiten",
     "steps_one": "{{value}} Schritt pro Tag",
@@ -143,7 +143,7 @@
   },
   "week": {
     "caption": "Diese Woche, Montag bis Sonntag",
-    "of": "von {{target}} min",
+    "of": "von {{target}} Min.",
     "spoken": "Active Zone Minutes diese Woche: {{total}} von {{target}} Minuten",
     "spokenReached": "Active Zone Minutes diese Woche: {{total}} von {{target}} Minuten, erreicht",
     "daysLabel": "Active Zone Minutes, Tage mit erreichtem Tagesziel: {{met}} von {{total}}"
