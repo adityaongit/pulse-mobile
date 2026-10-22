@@ -11,10 +11,10 @@ import { deleteLogEntry, setFoodSeparate } from "@/actions/log";
 import { DATA_COLORS } from "@/lib/bands";
 import { clock, formatDay, FORMATS } from "@/lib/format";
 import { reasonCopy } from "@/lib/reasons";
-import { progressOf, TARGET_KEYS, TARGET_LIMITS } from "@/nutrition/targets";
+import { TARGET_KEYS, TARGET_LIMITS } from "@/nutrition/targets";
 import { getNutrition, type Averages, type FoodItem, type NutritionVM } from "@/queries/nutrition";
 import { ErrorView } from "@/screens/health/ErrorView";
-import { ConfirmDialog, ProgressBar } from "@/screens/settings/controls";
+import { ConfirmDialog } from "@/screens/settings/controls";
 import { useScreen } from "@/screens/useScreen";
 import { actionCtx, dataChanged } from "@/state/app";
 import { useNutritionTargets } from "@/state/nutrition";
@@ -24,7 +24,7 @@ import { ColumnChart } from "@/ui/charts/ColumnChart";
 import { cn } from "@/ui/cn";
 import { Icon } from "@/ui/Icon";
 import { KeyStatRow } from "@/ui/metrics/KeyStatRow";
-import { CAPTION, LABEL } from "@/ui/metrics/primitives";
+import { CAPTION } from "@/ui/metrics/primitives";
 import { Press } from "@/ui/Press";
 import { Segmented } from "@/ui/Segmented";
 import { DetailShell } from "@/ui/shells/DetailShell";
@@ -34,6 +34,7 @@ import { Skeleton } from "@/ui/Skeleton";
 import { Text } from "@/ui/Text";
 import { toast } from "@/ui/Toast";
 import { foodHref } from "./FoodPage";
+import { Today } from "./NutritionHero";
 import { push } from "@/ui/navigate";
 
 const grouped = (v: number) => FORMATS.grouped(v);
@@ -41,40 +42,6 @@ const grams = (v: number) => FORMATS.int(v);
 const show = (v: number | null, f: (x: number) => string) => (v === null ? "--" : f(v));
 const metric = (v: number | null) => (v === null ? { value: null, reason: "no_data" as const, provisional: false } : { value: v, reason: null, provisional: false });
 
-
-/** Today: calories big against the target, then each macro with a thin bar. */
-function Today({ vm }: { vm: NutritionVM }) {
-  const { t: tr } = useTranslation("nutrition");
-  const { totals: t, targets } = vm;
-  const kcal = targets.kcal.value;
-  const left = t.kcal === null ? kcal : kcal - t.kcal;
-  return (
-    <View className="gap-4">
-      <View accessible accessibilityLabel={tr("today.a11y", { eaten: show(t.kcal, grouped), target: grouped(kcal) })} className="gap-2">
-        <Text className={LABEL}>{t.kcal === null ? tr("today.nothing") : tr("today.soFar")}</Text>
-        <View className="flex-row flex-wrap items-baseline gap-x-2">
-          <Text className="font-numeric text-[44px] font-bold leading-[50px] tabular-nums">{show(t.kcal, grouped)}</Text>
-          <Text className="text-sm font-medium leading-5 text-muted-foreground">{tr("today.ofTarget", { target: grouped(kcal) })}</Text>
-        </View>
-        <ProgressBar value={(progressOf(t.kcal, kcal) ?? 0) * 100} label={tr("today.calorieBar")} />
-        <Text className={CAPTION}>{left > 0 ? tr("today.left", { kcal: grouped(left) }) : left < 0 ? tr("today.over", { kcal: grouped(-left) }) : tr("today.reached")}</Text>
-      </View>
-      {(["protein", "carbs", "fat"] as const).map((k) => (
-        <View key={k} accessible accessibilityLabel={tr("today.macroA11y", { label: tr(`target.${k}`), value: show(t[k], grams), target: grams(targets[k].value) })} className="gap-1.5">
-          <View className="flex-row items-baseline justify-between">
-            <Text className={LABEL}>{tr(`target.${k}`)}</Text>
-            <Text className="font-numeric text-[15px] font-bold leading-5 tabular-nums">
-              {show(t[k], grams)}
-              <Text className="text-xs font-medium text-muted-foreground">{tr("today.macroOf", { target: grams(targets[k].value) })}</Text>
-            </Text>
-          </View>
-          <ProgressBar value={(progressOf(t[k], targets[k].value) ?? 0) * 100} label={tr("today.macroBar", { label: tr(`target.${k}`) })} />
-        </View>
-      ))}
-      {t.fiber !== null && <Text className={cn(CAPTION, "tabular-nums")}>{tr("today.fiber", { g: grams(t.fiber) })}</Text>}
-    </View>
-  );
-}
 
 const VIA_ICON: Record<NonNullable<FoodItem["via"]>, LucideIcon> = { photo: Camera, text: Sparkles, manual: Utensils };
 
@@ -132,14 +99,26 @@ function RowLink({ label, onPress }: { label: string; onPress: () => void }) {
   );
 }
 
-/** One period's daily averages: calories as a tile value, the macros under it, then how many days had food. */
+/** One period's daily averages: a flat tile on the card, calories big, the macros as a caption row, then the days logged. */
 function AverageTile({ title, a }: { title: string; a: Averages }) {
   const { t: tr } = useTranslation("nutrition");
-  const sub = a.days === 0 ? tr("averages.none") : tr("averages.summary", { protein: show(a.protein, grams), carbs: show(a.carbs, grams), fat: show(a.fat, grams), days: a.days, span: a.span });
+  const macros = [tr("numbers.protein", { value: show(a.protein, grams) }), tr("numbers.carbs", { value: show(a.carbs, grams) }), tr("numbers.fat", { value: show(a.fat, grams) })].join(" · ");
+  const days = tr("averages.days", { days: a.days, span: a.span });
   return (
-    <View className="flex-1 gap-1.5">
-      <KeyStatRow variant="tile" label={title} metric={metric(a.days ? a.kcal : null)} unit="kcal" format="grouped" direction="none" />
-      <Text className={CAPTION}>{sub}</Text>
+    <View accessible accessibilityLabel={`${title}: ${a.days === 0 ? tr("averages.none") : `${tr("numbers.kcal", { value: show(a.kcal, grouped) })}, ${macros}, ${days}`}`} className="min-w-0 flex-1 gap-2 rounded-xl bg-inset p-3">
+      <Text className="text-[10px] font-bold uppercase leading-3 tracking-[0.1em] text-foreground-secondary">{title}</Text>
+      {a.days === 0 ? (
+        <Text className={CAPTION}>{tr("averages.none")}</Text>
+      ) : (
+        <>
+          <Text className="font-numeric text-[30px] font-bold leading-9 tracking-[-0.01em] tabular-nums">
+            {show(a.kcal, grouped)}
+            <Text className="text-sm font-medium leading-5">{` ${tr("unit.kcal")}`}</Text>
+          </Text>
+          <Text className={cn(CAPTION, "tabular-nums")}>{macros}</Text>
+          <Text className={cn(CAPTION, "tabular-nums")}>{days}</Text>
+        </>
+      )}
     </View>
   );
 }

@@ -53,7 +53,7 @@
   },
   "averages": {
     "none": "Noch keine Tage mit eingetragenem Essen",
-    "summary": "{{protein}} g Protein · {{carbs}} g Kohlenhydrate · {{fat}} g Fett · {{days}} von {{span}} Tagen",
+    "days": "{{days}} von {{span}} Tagen",
     "title": "Tagesdurchschnitte",
     "body": "Über die Tage mit eingetragenem Essen, vor heute. Ein Tag ohne Einträge zieht den Durchschnitt nicht nach unten.",
     "last7": "Letzte 7 Tage",

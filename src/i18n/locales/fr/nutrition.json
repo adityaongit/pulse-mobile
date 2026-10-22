@@ -53,7 +53,7 @@
   },
   "averages": {
     "none": "Aucun jour avec de l’alimentation notée",
-    "summary": "{{protein}} g de protéines · {{carbs}} g de glucides · {{fat}} g de lipides · {{days}} jours sur {{span}}",
+    "days": "{{days}} jours sur {{span}}",
     "title": "Moyennes quotidiennes",
     "body": "Sur les jours avec de l’alimentation notée, avant aujourd’hui. Un jour sans rien noter ne tire pas la moyenne vers le bas.",
     "last7": "7 derniers jours",

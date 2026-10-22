@@ -53,7 +53,7 @@
   },
   "averages": {
     "none": "No days with food logged yet",
-    "summary": "{{protein}} g protein · {{carbs}} g carbs · {{fat}} g fat · {{days}} of {{span}} days",
+    "days": "{{days}} of {{span}} days",
     "title": "Daily averages",
     "body": "Over the days with food logged, before today. A day you logged nothing doesn’t pull the average down.",
     "last7": "Last 7 days",

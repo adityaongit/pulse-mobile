@@ -53,7 +53,7 @@
   },
   "averages": {
     "none": "Brak dni z zapisanym jedzeniem",
-    "summary": "{{protein}} g białka · {{carbs}} g węglowodanów · {{fat}} g tłuszczu · {{days}} z {{span}} dni",
+    "days": "{{days}} z {{span}} dni",
     "title": "Średnie dzienne",
     "body": "Z dni z zapisanym jedzeniem, sprzed dzisiaj. Dzień, w którym nic nie zapisano, nie obniża średniej.",
     "last7": "Ostatnie 7 dni",

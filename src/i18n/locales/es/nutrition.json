@@ -53,7 +53,7 @@
   },
   "averages": {
     "none": "Aún no hay días con comida registrada",
-    "summary": "{{protein}} g de proteína · {{carbs}} g de carbs · {{fat}} g de grasa · {{days}} de {{span}} días",
+    "days": "{{days}} de {{span}} días",
     "title": "Promedios diarios",
     "body": "Sobre los días con comida registrada, antes de hoy. Un día sin registros no baja el promedio.",
     "last7": "Últimos 7 días",
