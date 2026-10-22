@@ -47,9 +47,11 @@ export { forgetChanges };
  * as sedentary); heart-rate and steps records running over midnight keep their samples after it. 4: every HRV sample is
  * kept (`hrv_days`), not only the nightly mean, for the Pulse engine. 5: under the Fitbit policies, other apps' workouts
  * that overlap none of the Fitbit's and smart scale readings are kept (sourcePolicy.ts OTHER_APPS), and a malformed
- * record is left out instead of failing the sync.
+ * record is left out instead of failing the sync. 6: a sync replaces the window's source-derived daily totals (calories
+ * eaten, water, distance and the rest), so a record deleted in Health Connect no longer leaves its day's total behind,
+ * and a sync that finds deletions re-imports the whole window (a deletion names no day).
  */
-export const IMPORT_VERSION = 5;
+export const IMPORT_VERSION = 6;
 
 /**
  * How far before the window's first local midnight the reads start. Health Connect returns a record only to a read whose
@@ -125,8 +127,10 @@ export function windowPlan(a: {
   imported: { version: number; policy: string } | null;
   policy: SourcePolicy;
   importVersion?: number;
+  /** Health Connect reports records deleted since the last sync: a deletion names no day, so the whole window is replaced. */
+  deleted?: boolean;
 }): { full: boolean; reimport: boolean } {
-  const reimport = !a.imported || a.imported.version < (a.importVersion ?? IMPORT_VERSION) || a.imported.policy !== a.policy;
+  const reimport = !a.imported || a.imported.version < (a.importVersion ?? IMPORT_VERSION) || a.imported.policy !== a.policy || !!a.deleted;
   const full = reimport || a.requested || a.lastSyncTs === null || !a.hasNights || !a.hasToken || a.newlyGranted > 0;
   return { full, reimport };
 }
@@ -207,7 +211,10 @@ export async function syncHealthConnect(store: Store, opts: SyncOptions): Promis
     // Types with a record Health Connect could not read (malformed by the app that wrote it), left out and reported.
     const skipped = new Set<ReadType>();
     const readOptions = (type: ReadType): ReadOptions => ({ origins: originFilter(policy, type), onSkipped: () => skipped.add(type) });
+    // What Health Connect changed since the last sync (read first: a deletion decides the plan).
+    const changed = token && state.lastSyncTs !== null ? await changesSince(token).catch(() => "expired" as const) : ("expired" as const);
     const plan = windowPlan({
+      deleted: changed !== "expired" && changed.deleted,
       requested: !!opts.full,
       lastSyncTs: state.lastSyncTs,
       hasNights,
@@ -227,7 +234,6 @@ export async function syncHealthConnect(store: Store, opts: SyncOptions): Promis
       fromDay = historyFrom;
       counts.full = 1;
     } else {
-      const changed = await changesSince(token).catch(() => "expired" as const);
       // Nothing written to Health Connect or deleted from it since the last sync, on the same day: the re-read would
       // bring back exactly what is stored, so it is skipped (most background runs).
       if (changed !== "expired" && changed.earliest === null && !changed.deleted && localDay(state.lastSyncTs, tz) === today) {

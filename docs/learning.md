@@ -890,3 +890,7 @@ flowchart TD
 ## Languages: i18next, bundled, one choice in AsyncStorage
 
 Pulse uses `i18next` + `react-i18next` with every language bundled and `initAsync: false`, so the first screen never waits. The language choice is in AsyncStorage (`pulse.language`), not the profile, because onboarding and the headless background task need it before a profile exists. `expo-localization`'s config plugin lists `supportedLocales`, which puts Pulse in Android's per-app language setting; `getLocales()` then returns that language and "Phone's language" follows it. Formatters read `src/lib/locale.ts` and rebuild their cached `Intl` objects when it changes.
+
+## Staying in sync with Health Connect: edits replace by id, deletions replace the window
+
+Health Connect's change feed (`getChanges`) says which records were written (with their time) and which were deleted (a record id only, no day). An edited record comes back as a write with the same id, so rows keyed by id (sleep sessions, workouts, logged entries) are overwritten, and the sync re-reads from the earliest changed record. A deletion names no day, so a sync that finds one re-imports the whole history window (`windowPlan({ deleted })` in `src/health/sync.ts`), the same clear-and-rewrite as a policy change. Summed daily totals (calories eaten, water, distance) are replaced over the window per type that was read (`replaceDailyValues`, `SOURCE_DAILY_KEYS`), so a day with no records left loses its total. A type that was not granted or could not be read keeps what is stored.

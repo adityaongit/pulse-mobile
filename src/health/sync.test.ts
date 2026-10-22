@@ -58,9 +58,14 @@ function fixture() {
 }
 
 const hc = { readAll: vi.mocked(readAll), permissionState: vi.mocked(permissionState) };
-beforeEach(() => {
+const NO_CHANGES = { nextChangesToken: "tok", upsertionChanges: [], deletionChanges: [], hasMore: false, changesTokenExpired: false };
+/** A write since the last sync, on `day`: the window is read again (no deletion, which would re-import it all). */
+const WRITTEN = (day: string) => ({ nextChangesToken: "tok2", upsertionChanges: [{ record: { startTime: `${day}T00:00:00Z` } }], deletionChanges: [], hasMore: false, changesTokenExpired: false });
+
+beforeEach(async () => {
   storage.clear();
   vi.clearAllMocks();
+  vi.mocked((await import("react-native-health-connect")).getChanges).mockResolvedValue(NO_CHANGES as never);
   const data = fixture();
   hc.permissionState.mockResolvedValue({ granted: ["Steps", "TotalCaloriesBurned", "SleepSession", "HeartRate"], missing: [], history: true, background: true });
   hc.readAll.mockImplementation(startTimeRead(data));
@@ -101,6 +106,11 @@ describe("windowPlan", () => {
     expect(windowPlan({ ...base, imported: { version: IMPORT_VERSION - 1, policy: "fitbit_only" } })).toEqual({ full: true, reimport: true });
     expect(windowPlan({ ...base, imported: { version: IMPORT_VERSION, policy: "all" } })).toEqual({ full: true, reimport: true });
     expect(windowPlan({ ...base, imported: null })).toEqual({ full: true, reimport: true });
+  });
+  it("re-imports the whole window when Health Connect reports a deletion (it names no day)", () => {
+    const imported = { version: IMPORT_VERSION, policy: "fitbit_only" };
+    expect(windowPlan({ ...base, imported, deleted: true })).toEqual({ full: true, reimport: true });
+    expect(windowPlan({ ...base, imported, deleted: false })).toEqual({ full: false, reimport: false });
   });
   it("reads the full window without re-importing for the old reasons", () => {
     const imported = { version: IMPORT_VERSION, policy: "fitbit_only" };
@@ -183,6 +193,22 @@ describe("syncHealthConnect re-import", () => {
     expect(hc.readAll).toHaveBeenCalled();
   });
 
+  it("a record deleted in Health Connect takes what it made with it, whatever day it was on", async () => {
+    const { getChanges } = await import("react-native-health-connect");
+    vi.mocked(getChanges).mockResolvedValue({ nextChangesToken: "tok", upsertionChanges: [], deletionChanges: [], hasMore: false, changesTokenExpired: false } as never);
+    const store = await staleStore();
+    await syncHealthConnect(store, { timeZone: TZ, now: NOW, historyDays: 5 });
+    // Something an earlier sync brought in that Health Connect no longer has: the food of an older day, a workout, a night.
+    await store.upsertDailyValues([{ day: "2026-10-03", key: "calories_in", value: 642 }]);
+    await store.upsertExercises([{ id: "gone", day: "2026-10-04", startTs: sec("2026-10-04T08:00:00Z"), endTs: sec("2026-10-04T08:30:00Z"), type: "RUNNING", name: null, calories: null, distanceM: null }]);
+    const later = new Date(NOW.getTime() + 15 * 60_000);
+    vi.mocked(getChanges).mockResolvedValue({ nextChangesToken: "tok2", upsertionChanges: [], deletionChanges: [{ recordId: "x" }], hasMore: false, changesTokenExpired: false } as never);
+    const r = await syncHealthConnect(store, { timeZone: TZ, now: later, historyDays: 5 });
+    expect(r.counts).toMatchObject({ reimport: 1, full: 1 });
+    expect((await store.dailyValues()).some((v) => v.key === "calories_in")).toBe(false);
+    expect((await store.allExercises()).some((e) => e.id === "gone")).toBe(false);
+  });
+
   it("re-imports under a new policy: all apps brings the other app's day back, still the largest source per day", async () => {
     const store = await staleStore();
     await syncHealthConnect(store, { timeZone: TZ, now: NOW, historyDays: 5 });
@@ -263,6 +289,7 @@ describe("syncHealthConnect under Health Connect's start-time reads", () => {
     const full = await dayOf(store, D);
     expect(full).toMatchObject({ hrvMs: 55, respBpm: 14, nightlyTempC: 34.5, tempBaselineC: 34, sessions: ["nap:nap", "nightA:main"] });
     // Three days after the last sync: D is the window's first day.
+    vi.mocked((await import("react-native-health-connect")).getChanges).mockResolvedValue(WRITTEN("2026-10-08") as never);
     const r = await syncHealthConnect(store, { timeZone: TZ, now: new Date("2026-10-08T18:00:00Z"), historyDays: 7 });
     expect(r.from).toBe(D);
     expect(r.counts.full).toBeUndefined();
@@ -312,6 +339,7 @@ describe("syncHealthConnect under Health Connect's start-time reads", () => {
     const once = await periods();
     expect(once).toHaveLength(1);
     // The incremental sync's window starts on Oct 5, inside the period: its flow days are still the period's.
+    vi.mocked((await import("react-native-health-connect")).getChanges).mockResolvedValue(WRITTEN("2026-10-08") as never);
     const r = await syncHealthConnect(store, { timeZone: TZ, now: new Date("2026-10-08T18:00:00Z"), historyDays: 10 });
     expect(r.from).toBe(D);
     expect(await periods()).toEqual(once);
