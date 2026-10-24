@@ -154,6 +154,28 @@ import esCoachTools from "./locales/es/coachTools.json";
 import ptBRCoachTools from "./locales/pt-BR/coachTools.json";
 import ruCoachTools from "./locales/ru/coachTools.json";
 import plCoachTools from "./locales/pl/coachTools.json";
+import itCommon from "./locales/it/common.json";
+import itReasons from "./locales/it/reasons.json";
+import itMetrics from "./locales/it/metrics.json";
+import itHome from "./locales/it/home.json";
+import itSleep from "./locales/it/sleep.json";
+import itRecovery from "./locales/it/recovery.json";
+import itStrain from "./locales/it/strain.json";
+import itHealth from "./locales/it/health.json";
+import itJournal from "./locales/it/journal.json";
+import itTrends from "./locales/it/trends.json";
+import itNutrition from "./locales/it/nutrition.json";
+import itGoals from "./locales/it/goals.json";
+import itReports from "./locales/it/reports.json";
+import itCoach from "./locales/it/coach.json";
+import itSettings from "./locales/it/settings.json";
+import itOnboarding from "./locales/it/onboarding.json";
+import itMore from "./locales/it/more.json";
+import itHowItWorks from "./locales/it/howItWorks.json";
+import itNotifications from "./locales/it/notifications.json";
+import itErrors from "./locales/it/errors.json";
+import itUi from "./locales/it/ui.json";
+import itCoachTools from "./locales/it/coachTools.json";
 
 export const resources = {
   "en": { common: enCommon, reasons: enReasons, metrics: enMetrics, home: enHome, sleep: enSleep, recovery: enRecovery, strain: enStrain, health: enHealth, journal: enJournal, trends: enTrends, nutrition: enNutrition, goals: enGoals, reports: enReports, coach: enCoach, settings: enSettings, onboarding: enOnboarding, more: enMore, howItWorks: enHowItWorks, notifications: enNotifications, errors: enErrors, ui: enUi, coachTools: enCoachTools },
@@ -163,4 +185,5 @@ export const resources = {
   "pt-BR": { common: ptBRCommon, reasons: ptBRReasons, metrics: ptBRMetrics, home: ptBRHome, sleep: ptBRSleep, recovery: ptBRRecovery, strain: ptBRStrain, health: ptBRHealth, journal: ptBRJournal, trends: ptBRTrends, nutrition: ptBRNutrition, goals: ptBRGoals, reports: ptBRReports, coach: ptBRCoach, settings: ptBRSettings, onboarding: ptBROnboarding, more: ptBRMore, howItWorks: ptBRHowItWorks, notifications: ptBRNotifications, errors: ptBRErrors, ui: ptBRUi, coachTools: ptBRCoachTools },
   "ru": { common: ruCommon, reasons: ruReasons, metrics: ruMetrics, home: ruHome, sleep: ruSleep, recovery: ruRecovery, strain: ruStrain, health: ruHealth, journal: ruJournal, trends: ruTrends, nutrition: ruNutrition, goals: ruGoals, reports: ruReports, coach: ruCoach, settings: ruSettings, onboarding: ruOnboarding, more: ruMore, howItWorks: ruHowItWorks, notifications: ruNotifications, errors: ruErrors, ui: ruUi, coachTools: ruCoachTools },
   "pl": { common: plCommon, reasons: plReasons, metrics: plMetrics, home: plHome, sleep: plSleep, recovery: plRecovery, strain: plStrain, health: plHealth, journal: plJournal, trends: plTrends, nutrition: plNutrition, goals: plGoals, reports: plReports, coach: plCoach, settings: plSettings, onboarding: plOnboarding, more: plMore, howItWorks: plHowItWorks, notifications: plNotifications, errors: plErrors, ui: plUi, coachTools: plCoachTools },
+  "it": { common: itCommon, reasons: itReasons, metrics: itMetrics, home: itHome, sleep: itSleep, recovery: itRecovery, strain: itStrain, health: itHealth, journal: itJournal, trends: itTrends, nutrition: itNutrition, goals: itGoals, reports: itReports, coach: itCoach, settings: itSettings, onboarding: itOnboarding, more: itMore, howItWorks: itHowItWorks, notifications: itNotifications, errors: itErrors, ui: itUi, coachTools: itCoachTools },
 };

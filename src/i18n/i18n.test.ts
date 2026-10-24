@@ -87,7 +87,8 @@ describe("matchLanguage", () => {
     [["de-AT", "en-US"], "de"],
     [["pt-PT"], "pt-BR"],
     [["pt-BR"], "pt-BR"],
-    [["it-IT", "pl-PL"], "pl"],
+    [["ja-JP", "pl-PL"], "pl"],
+    [["it-IT"], "it"],
     [["ja-JP"], "en"],
     [[], "en"],
   ])("%j → %s", (tags, want) => expect(matchLanguage(tags)).toBe(want));

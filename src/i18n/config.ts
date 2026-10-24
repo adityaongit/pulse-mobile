@@ -18,6 +18,7 @@ export const LANGUAGES = [
   { code: "pt-BR", name: "Português (Brasil)" },
   { code: "ru", name: "Русский" },
   { code: "pl", name: "Polski" },
+  { code: "it", name: "Italiano" },
 ] as const;
 /** A development-only language: English wrapped and padded by 40%, so a string that was not moved into keys stays plain and a layout that cannot take longer words overflows. */
 export const PSEUDO = "en-XA";

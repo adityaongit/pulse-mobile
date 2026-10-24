@@ -15,7 +15,7 @@ function displayLine({ units, hours }: DisplayPrefs) {
 }
 
 /** The app languages by their English name, for the model. */
-const LANGUAGE_NAMES: Record<string, string> = { en: "English", de: "German", fr: "French", es: "Spanish", "pt-BR": "Brazilian Portuguese", ru: "Russian", pl: "Polish" };
+const LANGUAGE_NAMES: Record<string, string> = { en: "English", de: "German", fr: "French", es: "Spanish", "pt-BR": "Brazilian Portuguese", ru: "Russian", pl: "Polish", it: "Italian" };
 
 /** Read at call time, so a language switch applies to the next question. */
 const languageLine = () => `Reply in ${LANGUAGE_NAMES[i18n.language] ?? "English"}, whatever language the question is in.`;
