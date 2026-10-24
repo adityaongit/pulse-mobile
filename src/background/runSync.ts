@@ -2,6 +2,7 @@
 // (task.ts) do the same thing: take the run lock (lock.ts), import from Health Connect, score, then send the alerts
 // that are due (alerts.ts). Within one JavaScript runtime a second call joins the first; across runtimes the lock keeps
 // the two apart. Copied from halo's src/background/runSync.ts without the Google source.
+import { appendLog } from "./log";
 import { AppState } from "react-native";
 import { openStore } from "@/data/db";
 import type { Store } from "@/data/store";
@@ -85,9 +86,15 @@ async function run(store: Store, profile: Profile, source: Source, opts: RunSync
   let unchanged = false;
   try {
     if (source === "health_connect") {
+      const t0 = Date.now();
       const r = await timed(`sync-health-connect (${opts.owner})`, () => syncHealthConnect(store, { timeZone: opts.timeZone, onProgress: opts.onProgress }));
       warnings.push(...(r.warnings ?? []));
       unchanged = !!r.unchanged;
+      // The app's syncs are logged like the background task's, with what the sync did (whole window or not, and why).
+      if (opts.owner === "app") {
+        const flags = Object.keys(r.counts).filter((k) => ["full", "reimport", "backfillFrom", "deleted", "unchanged"].includes(k) || k.startsWith("why:"));
+        await appendLog({ at: t0, result: "ok", ms: Date.now() - t0, note: `app sync: ${flags.length ? flags.join(", ") : "recent days"}` });
+      }
     }
     await timed(`pipeline (${opts.owner})`, () => runPipeline(store, profile, { today: localDay(Date.now() / 1000, opts.timeZone), onProgress: opts.onProgress }));
     // After scoring, so the day that just aged out was scored from its raw samples. A failure here costs space, not

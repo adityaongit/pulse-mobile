@@ -133,6 +133,19 @@ export function windowPlan(a: {
   return { full, reimport };
 }
 
+/** Why a sync reads the whole window, for the run log (null when it does not): the one thing to look at when "it synced from scratch". */
+export function fullReason(a: Parameters<typeof windowPlan>[0]): string | null {
+  if (!a.imported) return "no_import_state";
+  if (a.imported.version < (a.importVersion ?? IMPORT_VERSION)) return "importer_version";
+  if (a.imported.policy !== a.policy) return "source_policy";
+  if (a.requested) return "requested";
+  if (a.lastSyncTs === null) return "first_sync";
+  if (!a.hasNights) return "no_nights";
+  if (!a.hasToken) return "no_changes_token";
+  if (a.newlyGranted > 0) return "newly_granted_types";
+  return null;
+}
+
 const recordStart = (r: { time?: string; startTime?: string }): number | null => {
   const iso = r.time ?? r.startTime;
   const ms = iso ? Date.parse(iso) : NaN;
@@ -237,6 +250,8 @@ export async function syncHealthConnect(store: Store, opts: SyncOptions): Promis
       imported: await readImportState(),
       policy,
     });
+    const why = fullReason({ requested: !!opts.full, lastSyncTs: state.lastSyncTs, hasNights, hasToken: !!token, newlyGranted: newlyGranted.length, imported: await readImportState(), policy });
+    if (why) counts[`why:${why}`] = 1;
     if (plan.reimport) {
       await forgetChanges();
       counts.reimport = 1;
@@ -267,6 +282,7 @@ export async function syncHealthConnect(store: Store, opts: SyncOptions): Promis
       if (changed === "expired") {
         fromDay = historyFrom;
         counts.full = 1;
+        counts["why:change_feed_expired_or_failed"] = 1;
       } else if (changed.earliest !== null) {
         const backfill = localDay(changed.earliest, tz);
         if (backfill < fromDay) fromDay = backfill;
@@ -491,7 +507,9 @@ export async function syncHealthConnect(store: Store, opts: SyncOptions): Promis
     const firstDay = state.firstDay && state.firstDay < fromDay ? state.firstDay : fromDay;
     await store.setSyncState({ lastSyncTs: nowTs, firstDay, lastError: null });
     if (nextToken) await AsyncStorage.multiSet([[TOKEN_KEY, nextToken], [TYPES_KEY, JSON.stringify(grantedTypes)]]).catch(() => {});
-    else await forgetChanges();
+    // No token this time (the feed would not give one): the old one stays, it only reports more. Forgetting it would turn
+    // the next sync into a read of the whole window.
+    else if (!token) await forgetChanges();
     // Recorded last: a sync that fails part-way re-imports again next time.
     await writeImportState({ version: IMPORT_VERSION, policy });
     progress("done", done, total);

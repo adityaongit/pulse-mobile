@@ -26,7 +26,7 @@ vi.mock("@/health/connect", async (actual) => ({
 const { MemoryStore } = await import("@/data/memory");
 const { emptyMetrics } = await import("@/data/types");
 const { permissionState, readAll } = await import("@/health/connect");
-const { IMPORT_VERSION, dayOfStoredRecords, syncHealthConnect, windowPlan } = await import("./sync");
+const { IMPORT_VERSION, dayOfStoredRecords, fullReason, syncHealthConnect, windowPlan } = await import("./sync");
 const { originFilter, setSourcePolicy } = await import("./sourcePolicy");
 const { IMPORT_STATE_KEY } = await import("./importState");
 
@@ -98,6 +98,18 @@ async function staleStore() {
   storage.set(IMPORT_STATE_KEY, JSON.stringify({ version: 1, policy: "all" }));
   return store;
 }
+
+describe("fullReason", () => {
+  const base = { requested: false, lastSyncTs: 1, hasNights: true, hasToken: true, newlyGranted: 0, policy: "fitbit_only" as const, imported: { version: IMPORT_VERSION, policy: "fitbit_only" } };
+  it("names why a sync reads the whole window, and is null when it does not", () => {
+    expect(fullReason(base)).toBeNull();
+    expect(fullReason({ ...base, hasToken: false })).toBe("no_changes_token");
+    expect(fullReason({ ...base, newlyGranted: 2 })).toBe("newly_granted_types");
+    expect(fullReason({ ...base, hasNights: false })).toBe("no_nights");
+    expect(fullReason({ ...base, imported: null })).toBe("no_import_state");
+    expect(fullReason({ ...base, imported: { version: IMPORT_VERSION - 1, policy: "fitbit_only" } })).toBe("importer_version");
+  });
+});
 
 describe("windowPlan", () => {
   const base = { requested: false, lastSyncTs: 1, hasNights: true, hasToken: true, newlyGranted: 0, policy: "fitbit_only" as const };
