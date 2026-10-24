@@ -7,7 +7,7 @@
   "noBand": {
     "title": "Ainda sem dados da pulseira",
     "short": "Ainda sem dados da pulseira",
-    "scored": "Sleep, Recovery e Strain são calculados a partir da frequência cardíaca do seu Fitbit, que o celular não consegue medir.",
+    "scored": "Sono, Recovery e Strain são calculados a partir da frequência cardíaca do seu Fitbit, que o celular não consegue medir.",
     "phoneShows": "Até o seu Fitbit sincronizar, o Início mostra o que o celular conta: passos, distância, calorias e minutos ativos.",
     "plannerNeeds": "O Sleep Planner precisa de 7 noites para aprender seu horário de acordar."
   },
@@ -84,7 +84,7 @@
     "today": "Hoje",
     "thisDay": "Este dia",
     "dayAverage": "Média do dia",
-    "lastUpdated": "Atualizado por último <t>{{time}}</t>"
+    "lastUpdated": "Última atualização <t>{{time}}</t>"
   },
   "energy": {
     "label": "Energia",

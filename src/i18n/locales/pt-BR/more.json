@@ -1,7 +1,7 @@
 {
   "title": "Mais",
   "group": {
-    "accountSettings": "Conta e ajustes",
+    "accountSettings": "Conta e configurações",
     "reports": "Relatórios",
     "trends": "Tendências",
     "live": "Ao vivo",
@@ -36,7 +36,7 @@
   },
   "about": {
     "title": "Sobre",
-    "body": "A pontuação foi portada do noop. O Pulse é para uso pessoal e não é um dispositivo médico.",
+    "body": "A pontuação foi adaptada do noop. O Pulse é para uso pessoal e não é um dispositivo médico.",
     "version": "Versão",
     "scoringVersion": "Versão da pontuação",
     "sourceCode": "Código-fonte",
@@ -91,7 +91,7 @@
   "breathe": {
     "title": "Respirar",
     "aboutTitle": "Sobre Respirar",
-    "aboutBody": "Respiração guiada com um círculo e avisos por vibração: um pulso leve ao inspirar, dois ao expirar, nenhum numa pausa. Com a pulseira ao vivo, o Pulse mostra a sua frequência cardíaca; quando a pulseira também envia os intervalos entre batimentos, ele faz uma leitura de HRV (RMSSD) de um minuto antes e depois. As sessões ficam neste celular e os scores não as usam.",
+    "aboutBody": "Respiração guiada com um círculo e avisos por vibração: um pulso leve ao inspirar, dois ao expirar, nenhum durante a pausa. Com a pulseira ao vivo, o Pulse mostra a sua frequência cardíaca; quando a pulseira também envia os intervalos entre batimentos, ele faz uma leitura de HRV (RMSSD) de um minuto antes e depois. As sessões ficam neste celular e os scores não as usam.",
     "hrvLine": "HRV {{value}} ms · RMSSD, último minuto",
     "hrvMeasuring": "HRV: medindo…",
     "length": "Duração",
@@ -100,7 +100,7 @@
     "leftLabel": "{{time}} restantes · {{title}}",
     "endSession": "Encerrar sessão",
     "goAgain": "Repetir",
-    "changePace": "Mudar ritmo",
+    "changePace": "Mudar o ritmo",
     "pace": "Ritmo",
     "sessionLength": "Duração da sessão",
     "minutesShort": "{{count}} min",

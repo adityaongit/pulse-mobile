@@ -35,7 +35,7 @@
     "shareMonthly": "Compartilhar relatório mensal",
     "shareWeekA11y": "Compartilhar o relatório desta semana",
     "shareMonthA11y": "Compartilhar o relatório deste mês",
-    "recoveryBreakdown": "Detalhe da Recovery",
+    "recoveryBreakdown": "Detalhamento da Recovery",
     "days": "Dias",
     "noRecoveryDays": "Nenhum dia com Recovery neste período.",
     "averages": "Médias",
@@ -71,7 +71,7 @@
     "productive": "Sua fadiga ficou um pouco acima do seu condicionamento: o tipo de carga que o constrói.",
     "fatigued": "Sua fadiga ficou acima do seu condicionamento enquanto a Recovery estava baixa. Fique de olho na sua Recovery.",
     "overtraining": "Sua fadiga disparou bem acima do seu condicionamento. O risco de lesão e doença aumenta.",
-    "detraining": "Seu condicionamento estava caindo. Ele some aos poucos se isso durar."
+    "detraining": "Seu condicionamento estava caindo. Ele diminui aos poucos se isso durar."
   },
   "insight": {
     "demandingWeek": "Uma semana puxada",
@@ -95,7 +95,7 @@
   },
   "perf": {
     "hoursSlept": "Horas dormidas",
-    "nightsAtNeed": "Noites no Sleep Need",
+    "nightsAtNeed": "Noites com o Sleep Need atingido",
     "moderate": "Atividade moderada",
     "vigorous": "Atividade intensa",
     "strength": "Treinos de força",
@@ -145,7 +145,7 @@
     },
     "declineRecovery": "Sua Recovery caiu {{points}}; guarde os treinos pesados para os dias verdes e pegue mais leve nos vermelhos.",
     "declineSleepPerf": "Sua Sleep Performance caiu {{points}}; reserve uma janela de sono completa e proteja-a.",
-    "declineHrv": "Sua HRV caiu {{ms}} ms; aposte em sono, dias leves e menos álcool à noite até ela voltar a subir.",
+    "declineHrv": "Seu HRV caiu {{ms}} ms; aposte em sono, dias leves e menos álcool à noite até ela voltar a subir.",
     "declineRhr": "Sua frequência cardíaca em repouso subiu {{bpm}} bpm; isso pode indicar cansaço, estresse ou uma gripe a caminho, então pegue leve por alguns dias.",
     "declineSlept": "Você dormiu {{less}} a menos por noite; tente ir para a cama {{earlier}} mais cedo.",
     "declineConsistency": "Sua Sleep Consistency caiu {{points}}; busque o mesmo horário de dormir, ±30 min, inclusive nos fins de semana.",
@@ -163,8 +163,8 @@
     "riseRecoveryDown": "Sua Recovery caiu {{points}} em relação a {{period}}; continue assim.",
     "riseSleepPerfUp": "Sua Sleep Performance subiu {{points}} em relação a {{period}}; continue assim.",
     "riseSleepPerfDown": "Sua Sleep Performance caiu {{points}} em relação a {{period}}; continue assim.",
-    "riseHrvUp": "Sua HRV subiu {{value}} ms em relação a {{period}}; continue assim.",
-    "riseHrvDown": "Sua HRV caiu {{value}} ms em relação a {{period}}; continue assim.",
+    "riseHrvUp": "Seu HRV subiu {{value}} ms em relação a {{period}}; continue assim.",
+    "riseHrvDown": "Seu HRV caiu {{value}} ms em relação a {{period}}; continue assim.",
     "riseRhrUp": "Sua frequência cardíaca em repouso subiu {{value}} bpm em relação a {{period}}; continue assim.",
     "riseRhrDown": "Sua frequência cardíaca em repouso caiu {{value}} bpm em relação a {{period}}; continue assim.",
     "riseSleptUp": "Seu tempo de sono subiu {{value}} em relação a {{period}}; continue assim.",

@@ -1,1 +1,395 @@
-{}
+{
+  "sourceNote": "Punteggi Pulse, calcolati dai tuoi dati Fitbit.",
+  "training": {
+    "readiness": "Training Readiness",
+    "status": "Training Status",
+    "effect": "Effetto dell’allenamento",
+    "ofHundred": "su 100",
+    "ofFive": "su 5"
+  },
+  "trainingInfo": {
+    "readinessP1": "Quanto sei pronto per un allenamento intenso oggi, da 1 a 100, sul modello della Training Readiness di Garmin. Pesano di più il sonno di stanotte e il tempo di recupero (un quarto ciascuno), poi il tuo HRV Status e il rapporto di carico, poi il sonno delle ultime 3 notti e lo stress degli ultimi 3 giorni. Un solo fattore molto debole limita il punteggio, e una giornata molto lunga da sveglio prima di stanotte toglie 10 punti.",
+    "readinessP2": "95-100 Ottima, 75-94 Alta, 50-74 Moderata, 25-49 Bassa, 1-24 Scarsa. Viene fissata al risveglio e scende dopo l’allenamento man mano che si accumula il tempo di recupero.",
+    "readinessP3": "Il tempo di recupero è il tempo che manca prima di essere pronto per un’altra sessione intensa: ogni allenamento aggiunge ore in base al suo Training Effect (circa un giorno a 3,5, tre a 5), fino a 96. Scende più in fretta durante un buon sonno e più piano nelle ore di stress o dopo una notte scarsa.",
+    "readinessP4": "Garmin non pubblica i suoi pesi: questi sono quelli di Pulse.",
+    "statusP1": "Cosa sta facendo il tuo allenamento recente, sul modello del Training Status di Garmin: in base al tuo rapporto di carico (il carico acuto rispetto a quello cronico di Garmin), all’andamento del VO2 max di Fitbit su 28 giorni e al tuo HRV Status.",
+    "statusP2": "Produttivo: carico pari o superiore al solito, con VO2 max in crescita o HRV stabile. Mantenimento: abbastanza per tenere la forma. Recovery: un periodo più leggero. Picco: forma in crescita mentre il carico cala. Improduttivo: carico stabile ma VO2 max in calo. Sovraccarico: carico molto alto che inizia a costarti. Sotto sforzo: HRV basso sotto carico. Perdita di forma: carico ben sotto il solito per una settimana.",
+    "statusP3": "Il VO2 max di Fitbit si muove lentamente, quindi l’andamento si legge su 28 giorni, non sui 14 di Garmin. Servono circa 3 settimane di dati e un VO2 max o un HRV Status.",
+    "effectP1": "Quanto questo allenamento migliora la tua forma aerobica, da 0 a 5, sul modello dell’Aerobic Training Effect di Garmin. Pulse stima l’EPOC della sessione (l’ossigeno extra che il corpo usa dopo per recuperare) dalla tua frequenza cardiaca e dal VO2 max, e lo confronta con ciò che la tua forma e i tuoi allenamenti recenti rendono normale: la stessa corsa conta meno quanto più sei allenato e impegnato.",
+    "effectP2": "0-0,9 Nessun beneficio, 1-1,9 Lieve, 2-2,9 Mantenimento, 3-3,9 Miglioramento, 4-4,9 Grande miglioramento, 5 Sovraccarico.",
+    "effectP3": "Garmin stima l’EPOC con dati battito per battito e costanti che non pubblica; quella di Pulse deriva dalla sola frequenza cardiaca, calibrata sui valori pubblicati da Firstbeat. Non c’è un Training Effect anaerobico: servirebbero ritmo o potenza."
+  },
+  "hours": {
+    "whole": "{{h}} h",
+    "wholeMin": "{{h}} h {{min}} min"
+  },
+  "readiness": {
+    "calibrating": "La Training Readiness richiede una notte con punteggio e circa 3 settimane di dati di allenamento.",
+    "atWake": "Al risveglio {{score}}",
+    "spoken": "Training Readiness {{score}} su 100, {{band}}",
+    "recoveryTime": "Tempo di recupero",
+    "recovered": "Recuperato",
+    "readyAround": "Pronto per un allenamento intenso verso le {{time}}",
+    "readyAroundDays_one": "Pronto per un allenamento intenso verso le {{time}} tra {{count}} giorno",
+    "readyAroundDays_many": "Pronto per un allenamento intenso verso le {{time}} tra {{count}} di giorni",
+    "readyAroundDays_other": "Pronto per un allenamento intenso verso le {{time}} tra {{count}} giorni",
+    "spokenRecoveryTime": "Tempo di recupero {{time}}",
+    "spokenRecovered": "Tempo di recupero: completamente recuperato",
+    "spokenFactor": "{{label}}: {{value}} su 100",
+    "spokenFactorNone": "{{label}}: non disponibile"
+  },
+  "status": {
+    "calibrating": "Il Training Status richiede circa 3 settimane di dati di allenamento.",
+    "noData": "Il Training Status richiede un VO2 max da Fitbit o un HRV Status.",
+    "loadRatio": "Rapporto di carico",
+    "spokenLoad": "Rapporto di carico {{value}}",
+    "spokenLoadNone": "Rapporto di carico non disponibile",
+    "vo2Trend": "Andamento VO2 max",
+    "aMonth": "al mese",
+    "spokenVo2": "Andamento VO2 max {{value}} al mese",
+    "spokenVo2None": "Andamento VO2 max non disponibile",
+    "hrv": "HRV Status",
+    "notYet": "Non ancora",
+    "spokenHrv": "HRV Status {{value}}",
+    "spokenHrvNone": "HRV Status non ancora disponibile"
+  },
+  "effect": {
+    "spoken": "Aerobic Training Effect {{value}} su 5, {{label}}",
+    "mainBenefit": "Beneficio principale",
+    "spokenBenefit": "Beneficio principale {{benefit}}. {{line}}",
+    "addsRecovery": "Aggiunge tempo di recupero",
+    "spokenAdds": "Aggiunge {{time}} di tempo di recupero"
+  },
+  "readinessBand": {
+    "prime": "Ottima",
+    "high": "Alta",
+    "moderate": "Moderata",
+    "low": "Bassa",
+    "poor": "Scarsa"
+  },
+  "readinessFactor": {
+    "sleep": "Sonno di stanotte",
+    "recoveryTime": "Tempo di recupero",
+    "hrv": "HRV Status",
+    "load": "Rapporto di carico",
+    "sleepHistory": "Sonno, ultime 3 notti",
+    "stressHistory": "Stress, ultimi 3 giorni"
+  },
+  "readinessLimit": {
+    "sleep": "Il sonno di stanotte la frena.",
+    "recoveryTime": "Il tuo corpo si sta ancora riprendendo dagli ultimi allenamenti.",
+    "hrv": "Il tuo HRV è fuori dal tuo intervallo abituale.",
+    "load": "Il tuo carico recente è alto per te.",
+    "sleepHistory": "Il sonno delle ultime notti la frena.",
+    "stressHistory": "Lo stress degli ultimi giorni la frena."
+  },
+  "readinessLongDay": "Una giornata molto lunga da sveglio prima di stanotte la frena.",
+  "readinessAllGood": "Tutto ciò che la influenza è in buona forma.",
+  "statusWord": {
+    "productive": "Produttivo",
+    "maintaining": "Mantenimento",
+    "recovery": "Recupero",
+    "peaking": "Picco",
+    "unproductive": "Improduttivo",
+    "overreaching": "Sovraccarico",
+    "strained": "Sotto sforzo",
+    "detraining": "Perdita di forma"
+  },
+  "statusLine": {
+    "productive": "Il tuo allenamento sta costruendo forma.",
+    "maintaining": "Il tuo allenamento mantiene la forma dov’è; più carico la farebbe crescere.",
+    "recovery": "Un periodo più leggero lascia recuperare il corpo, pronto per lavori più duri.",
+    "peaking": "La forma sale mentre il carico cala: momento ideale per una gara o un test.",
+    "unproductive": "Il carico è stabile ma la forma cala. Controlla sonno, stress e recupero.",
+    "overreaching": "Il carico è molto alto e inizia a costarti. Rallenta.",
+    "strained": "Il tuo HRV è basso sotto questo carico: il corpo fatica a recuperare.",
+    "detraining": "L’allenamento è ben sotto il tuo solito, quindi la forma calerà lentamente."
+  },
+  "teWord": {
+    "noBenefit": "Nessun beneficio",
+    "minor": "Lieve",
+    "maintaining": "Mantenimento",
+    "improving": "Miglioramento",
+    "highlyImproving": "Grande miglioramento",
+    "overreaching": "Sovraccarico"
+  },
+  "benefitWord": {
+    "recovery": "Recupero",
+    "base": "Base",
+    "tempo": "Ritmo medio",
+    "threshold": "Soglia",
+    "vo2max": "VO2 max"
+  },
+  "benefitLine": {
+    "recovery": "Lavoro leggero che ti aiuta a recuperare.",
+    "base": "Lavoro aerobico costante che costruisce la tua base.",
+    "tempo": "Lavoro aerobico più duro che aumenta la tua resistenza.",
+    "threshold": "Lavoro duro e prolungato che alza il ritmo che puoi mantenere.",
+    "vo2max": "Sforzi intensi che alzano il tuo limite aerobico."
+  },
+  "hrvWord": {
+    "balanced": "Equilibrato",
+    "unbalanced": "Squilibrato",
+    "low": "Basso"
+  },
+  "hrvLine": {
+    "balanced": "La tua media di 7 giorni è nel tuo intervallo abituale.",
+    "low": "La tua media di 7 giorni è ben sotto il tuo intervallo abituale: spesso è segno di sforzo, malattia o sonno scarso.",
+    "high": "La tua media di 7 giorni è sopra il tuo intervallo abituale.",
+    "belowRange": "La tua media di 7 giorni è un po’ sotto il tuo intervallo abituale."
+  },
+  "costKind": {
+    "run_one": "{{count}} corsa",
+    "run_many": "{{count}} di corse",
+    "run_other": "{{count}} corse",
+    "ride_one": "{{count}} uscita in bici",
+    "ride_many": "{{count}} di uscite in bici",
+    "ride_other": "{{count}} uscite in bici",
+    "walk_one": "{{count}} camminata",
+    "walk_many": "{{count}} di camminate",
+    "walk_other": "{{count}} camminate",
+    "strength_one": "{{count}} sessione di forza",
+    "strength_many": "{{count}} di sessioni di forza",
+    "strength_other": "{{count}} sessioni di forza",
+    "workout_one": "{{count}} allenamento",
+    "workout_many": "{{count}} di allenamenti",
+    "workout_other": "{{count}} allenamenti"
+  },
+  "costGerund": {
+    "run": "una corsa",
+    "ride": "un’uscita in bici",
+    "walk": "una camminata",
+    "strength": "un allenamento di forza",
+    "workout": "un allenamento"
+  },
+  "costAgainst": {
+    "rest": "i tuoi giorni di riposo",
+    "all": "la tua media"
+  },
+  "bounce": {
+    "notEnough": "Ancora pochi dati",
+    "barely": "Cambia appena la Recovery del mattino dopo",
+    "higher": "Recovery più alta il mattino dopo",
+    "notBack": "Non torna alla base entro una settimana",
+    "back_one": "Torna alla base il mattino dopo",
+    "back_many": "Torna alla base in circa {{count}} di giorni",
+    "back_other": "Torna alla base in circa {{count}} giorni"
+  },
+  "costCaption": {
+    "notEnough": "Ancora pochi dati: {{have}} su {{needed}}",
+    "based": "{{bounce}} · {{sessions}}",
+    "early": "{{bounce}} · {{sessions}}, stima iniziale"
+  },
+  "costSentence": {
+    "needs": "Pulse ha bisogno di {{needed}} con una Recovery il mattino dopo per misurare quanto ti costano; finora ne ha {{have}}.",
+    "same": "Dopo {{activity}}, la tua Recovery del mattino dopo è circa la stessa di {{against}}.",
+    "above": "Dopo {{activity}}, la tua Recovery del mattino dopo è in media il {{pts}}% sopra {{against}}.",
+    "belowOpen": "Dopo {{activity}}, la tua Recovery del mattino dopo è in media il {{pts}}% sotto {{against}} ed è ancora più bassa una settimana dopo.",
+    "belowDays_one": "Dopo {{activity}}, la tua Recovery del mattino dopo è in media il {{pts}}% sotto {{against}}, abbastanza vicina da contare come recuperata.",
+    "belowDays_many": "Dopo {{activity}}, la tua Recovery del mattino dopo è in media il {{pts}}% sotto {{against}} e impiega circa {{count}} di giorni a tornare.",
+    "belowDays_other": "Dopo {{activity}}, la tua Recovery del mattino dopo è in media il {{pts}}% sotto {{against}} e impiega circa {{count}} giorni a tornare."
+  },
+  "costBaseline": "Misurata rispetto a {{against}} ({{value}}%)",
+  "detectedKind": {
+    "walk": "Camminata",
+    "run": "Corsa",
+    "cardio": "Altro cardio"
+  },
+  "cost": {
+    "spoken": "{{name}}: Recovery del mattino dopo {{value}}. {{caption}}",
+    "spokenNone": "{{name}}: {{caption}}",
+    "footer": "{{baseline}}. Medie sulla tua storia, non prova di causa.",
+    "caveat": "Medie sulla tua storia, non prova di causa.",
+    "afterThis": "Recovery dopo questo",
+    "bounceBack": "Ripresa tipica",
+    "restDay": "Recovery nei giorni di riposo",
+    "average": "Recovery media",
+    "spokenValue": "Recovery del mattino dopo {{value}}",
+    "nextMorning": "Recovery del mattino dopo"
+  },
+  "detected": {
+    "spoken": "Attività rilevata, probabilmente {{label}}, frequenza cardiaca media {{hr}} bpm, dalle {{start}} alle {{end}}. Non è un allenamento registrato.",
+    "title": "Rilevata",
+    "line": "{{label}} · {{hr}} bpm medi",
+    "lineSteps": "{{label}} · {{hr}} bpm medi · {{steps}} passi",
+    "note": "Attività rilevata: 12 minuti o più di frequenza cardiaca elevata senza un allenamento registrato, etichettata in base ai tuoi passi. È mostrata come riferimento e non aggiunge nulla ai tuoi punteggi."
+  },
+  "menu": {
+    "more": "Altro su questa attività",
+    "strainForDay": "Strain di questo giorno",
+    "hrSettings": "Impostazioni della frequenza cardiaca"
+  },
+  "glance": {
+    "ask": "Chiedi al Coach di questo allenamento",
+    "analyzing": "Analisi in corso…",
+    "spokenText": "Coach: {{text}} Chiedi al Coach di questo allenamento.",
+    "spokenAnalyzing": "Il Coach sta analizzando questo allenamento. Chiedigli di più."
+  },
+  "stat": {
+    "zones13": "Zone di frequenza cardiaca 1-3",
+    "zones45": "Zone di frequenza cardiaca 4-5",
+    "strength": "Tempo di attività di forza",
+    "steps": "Passi",
+    "distance": "Distanza",
+    "pace": "Ritmo",
+    "duration": "Durata",
+    "avgHr": "FC media",
+    "maxHr": "FC max",
+    "calories": "Calorie"
+  },
+  "coach": {
+    "rest": "Oggi il tuo corpo ha bisogno di riposo. Tieni lo Strain tra {{low}} e {{high}}.",
+    "below_one": "Il tuo obiettivo di oggi è {{range}}. Sei a {{strain}}, quindi circa {{count}} minuto di attività moderata ti porterebbe nell’intervallo.",
+    "below_many": "Il tuo obiettivo di oggi è {{range}}. Sei a {{strain}}, quindi circa {{count}} di minuti di attività moderata ti porterebbero nell’intervallo.",
+    "below_other": "Il tuo obiettivo di oggi è {{range}}. Sei a {{strain}}, quindi circa {{count}} minuti di attività moderata ti porterebbero nell’intervallo.",
+    "inside": "Sei dentro l’obiettivo di oggi di {{range}}. Altro Strain da qui aggiunge carico più in fretta del beneficio.",
+    "past": "Hai superato l’obiettivo di oggi. Dai la priorità al sonno stanotte per recuperare."
+  },
+  "zoneNote": "Zone in % della tua frequenza cardiaca massima ({{maxHr}} bpm): zona 1 dal 50%, zona 5 dal 90%.",
+  "hrrWord": {
+    "good": "Buono",
+    "typical": "Nella norma",
+    "low": "Basso"
+  },
+  "zoneInsight": {
+    "hard_one": "Hai passato {{count}} minuto nelle zone 4 e 5, lavoro intenso che costruisce velocità e potenza.",
+    "hard_many": "Hai passato {{count}} di minuti nelle zone 4 e 5, lavoro intenso che costruisce velocità e potenza.",
+    "hard_other": "Hai passato {{count}} minuti nelle zone 4 e 5, lavoro intenso che costruisce velocità e potenza.",
+    "steady_one": "Hai passato {{count}} minuto nella zona 3, lavoro aerobico costante che costruisce la tua base.",
+    "steady_many": "Hai passato {{count}} di minuti nella zona 3, lavoro aerobico costante che costruisce la tua base.",
+    "steady_other": "Hai passato {{count}} minuti nella zona 3, lavoro aerobico costante che costruisce la tua base.",
+    "easy_one": "Hai passato {{count}} minuto nelle zone 1 e 2, movimento leggero che ti aiuta a recuperare.",
+    "easy_many": "Hai passato {{count}} di minuti nelle zone 1 e 2, movimento leggero che ti aiuta a recuperare.",
+    "easy_other": "Hai passato {{count}} minuti nelle zone 1 e 2, movimento leggero che ti aiuta a recuperare."
+  },
+  "screen": {
+    "title": "Strain",
+    "prior30": "30 giorni precedenti",
+    "todayVsPrior": "Oggi rispetto ai 30 giorni precedenti",
+    "exploreInsights": "Esplora gli approfondimenti sul tuo Strain",
+    "heartRate": "Frequenza cardiaca",
+    "explore": "Esplora",
+    "timeInZones": "Tempo nelle zone",
+    "activities": "Attività",
+    "noZonesToday": "Ancora nessuna zona di frequenza cardiaca oggi.",
+    "noZonesDay": "Nessuna zona di frequenza cardiaca in questo giorno.",
+    "noActivities": "Nessuna attività in questo giorno.",
+    "liveWorkout": "Allenamento live"
+  },
+  "target": {
+    "label": "Strain Target",
+    "range": "{{low}} - {{high}}",
+    "spoken": "Strain Target da {{low}} a {{high}}",
+    "spokenReason": "Strain Target: {{reason}}"
+  },
+  "weekly": {
+    "strain": "Strain",
+    "zones13": "Zone FC 1-3",
+    "zones45": "Zone FC 4-5",
+    "steps": "Passi",
+    "calories": "Calorie",
+    "strength": "Tempo di attività di forza"
+  },
+  "activities": {
+    "title": "Attività",
+    "sport": "Sport",
+    "all": "Tutte",
+    "kindRun": "Corse",
+    "kindRide": "Uscite in bici",
+    "kindWalk": "Camminate",
+    "kindStrength": "Forza",
+    "kindWorkout": "Allenamenti",
+    "recoveryCost": "Costo di Recovery",
+    "empty": "Nessun allenamento nell’ultimo mese. Gli allenamenti che registri con il tuo Fitbit o il telefono compaiono qui dopo la sincronizzazione.",
+    "showOlder": "Mostra precedenti",
+    "noOlder": "Nessuna attività precedente",
+    "lastDays_one": "Ultimo {{count}} giorno",
+    "lastDays_many": "Ultimi {{count}} di giorni",
+    "lastDays_other": "Ultimi {{count}} giorni",
+    "statActivity_one": "Attività",
+    "statActivity_many": "Attività",
+    "statActivity_other": "Attività",
+    "statTime": "Tempo",
+    "statAvgStrain": "Strain medio",
+    "steps": "{{value}} passi",
+    "dayStrain": "Day Strain <b>{{value}}</b>",
+    "noneToday": "Ancora nessuna attività oggi. Gli allenamenti compaiono dopo la sincronizzazione di Fitbit."
+  },
+  "activity": {
+    "title": "Attività",
+    "unavailable": "Questa attività non è disponibile.",
+    "question": "Parlami della mia attività {{name}} {{when}}.",
+    "subtitle": "{{day}} dalle {{start}} alle {{end}}",
+    "heartRate": "Frequenza cardiaca",
+    "timeInZones": "Tempo nelle zone",
+    "viewHrSettings": "Vedi le impostazioni della frequenza cardiaca",
+    "noZones": "Nessuna zona di frequenza cardiaca per questa attività.",
+    "keyStats": "Statistiche principali",
+    "vsAverage": "rispetto alla media di 30 giorni",
+    "hrRecovery": "Recupero della frequenza cardiaca",
+    "recoveryCost": "Costo di Recovery",
+    "heroStrain": "Strain dell’attività",
+    "heroSteps": "Passi dell’attività",
+    "heroDuration": "Durata",
+    "spokenAverage": "Media di 30 giorni per questo tipo di attività {{value}}",
+    "noHrBand": "Il braccialetto non era indossato, quindi per questa attività non ci sono frequenza cardiaca, zone o Strain.",
+    "noHrData": "Troppo pochi dati di frequenza cardiaca per mostrare frequenza cardiaca, zone o Strain di questa attività.",
+    "hrrNone": "Dati di frequenza cardiaca insufficienti dopo l’allenamento.",
+    "hrrNote": "Calo nei primi 60 secondi dopo che ti sei fermato. Sopra 20 è nella norma per gli adulti allenati."
+  },
+  "live": {
+    "title": "Allenamento live",
+    "infoTitle": "Info sull’allenamento live",
+    "infoBody": "Strain Coach sulla frequenza cardiaca live del tuo braccialetto. Il Day Strain cresce mentre ti alleni, con lo stesso calcolo dello Strain del resto di Pulse, partendo da quanto contiene già la giornata. Il Coach lo confronta con lo Strain Target di oggi, e la tua frequenza cardiaca con una fascia stabilita dalla Recovery di oggi: ti dice di spingere quando sei leggero per la giornata e di rallentare quando sei nell’intervallo o stai superando ciò che la Recovery può permettersi. Nulla qui viene salvato nei tuoi punteggi: l’allenamento conta quando Fitbit lo sincronizza.",
+    "dayStrain": "Day Strain",
+    "end": "Termina allenamento",
+    "start": "Inizia allenamento",
+    "startAnother": "Iniziane un altro",
+    "done": "Fine",
+    "haptics": "Segnali tattili",
+    "hapticsHint": "Un tocco per spingere, due per rallentare, una vibrazione al raggiungimento dell’obiettivo",
+    "recent": "Allenamenti live recenti",
+    "recentEmpty": "Gli allenamenti che segui qui sono riassunti su questo telefono. Fitbit sincronizza l’allenamento stesso con i tuoi punteggi.",
+    "guidanceSpoken": "{{title}}. {{body}}",
+    "elapsed": "Trascorso",
+    "heartRate": "Frequenza cardiaca",
+    "workout": "Allenamento",
+    "noReading": "nessuna lettura",
+    "beatsPerMinute": "{{bpm}} battiti al minuto",
+    "workoutStrainSpoken": "Strain dell’allenamento {{value}} percento",
+    "now": "Ora",
+    "cellSpoken": "{{label}}: {{spoken}}",
+    "zoneSpoken": "Zone {{zone}}: {{time}}",
+    "zoneSpokenCurrent": "Zone {{zone}}, attuale: {{time}}",
+    "zoneShort": "Z{{zone}}",
+    "belowZone1": "Sotto Zone 1",
+    "zone": "Zone {{zone}}",
+    "waiting": "In attesa di un battito",
+    "zoneWithBand": "{{zone}} · fascia di oggi {{floor}}–{{ceiling}} bpm",
+    "today": "Oggi",
+    "readError": "Impossibile leggere i punteggi di oggi.",
+    "reading": "Lettura dei punteggi di oggi…",
+    "targetLine": "L’obiettivo di oggi è {{low}} - {{high}}.",
+    "noTarget": "Ancora nessuno Strain Target oggi: serve la Recovery di oggi. Il Coach usa solo la tua fascia di frequenza cardiaca.",
+    "recoveryLine": "La Recovery {{value}}% stabilisce fino a dove il Coach ti lascia spingere.",
+    "notSynced": "La frequenza cardiaca di oggi non è ancora sincronizzata, quindi il Day Strain parte da questo allenamento.",
+    "connect": "Collega il tuo braccialetto",
+    "connectBody": "L’allenamento live richiede la frequenza cardiaca del braccialetto via Bluetooth. Attiva Condividi frequenza cardiaca in Google Health, poi collega.",
+    "noHeartRate": "Ancora nessuna frequenza cardiaca",
+    "workoutStrain": "Strain dell’allenamento",
+    "time": "Tempo",
+    "avgMax": "{{avg}} medi · {{max}} max",
+    "verdictPast": "Oltre l’obiettivo di oggi: dai la priorità al sonno stanotte.",
+    "verdictInside": "Dentro l’obiettivo di oggi.",
+    "verdictBelow": "{{value}} sotto l’obiettivo di oggi.",
+    "summary": "Riepilogo dell’allenamento",
+    "rowSpoken": "{{label}}: {{value}}",
+    "to": "a",
+    "timeInZones": "Tempo nelle zone",
+    "keptOnPhone": "Conservato su questo telefono; Fitbit sincronizza l’allenamento stesso con i tuoi punteggi.",
+    "when": "{{day}}, {{time}}",
+    "recentSpoken": "{{when}}: {{duration}}, Strain dell’allenamento {{value}} percento",
+    "recentLine": "{{duration}} · {{bpm}} bpm medi",
+    "strain": "Strain"
+  }
+}

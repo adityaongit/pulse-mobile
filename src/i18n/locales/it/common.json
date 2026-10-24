@@ -1,1 +1,105 @@
-{}
+{
+  "actions": {
+    "save": "Salva",
+    "cancel": "Annulla",
+    "back": "Indietro",
+    "tryAgain": "Riprova",
+    "checkIn": "Check-in",
+    "close": "Chiudi",
+    "later": "Più tardi",
+    "update": "Aggiorna"
+  },
+  "loading": "Caricamento…",
+  "today": "Oggi",
+  "yesterday": "Ieri",
+  "phrase": {
+    "today": "oggi",
+    "yesterday": "ieri",
+    "on": "il {{date}}"
+  },
+  "duration": {
+    "minutes_one": "{{count}} minuto",
+    "minutes_many": "{{count}} di minuti",
+    "minutes_other": "{{count}} minuti",
+    "hours_one": "{{count}} ora",
+    "hours_many": "{{count}} di ore",
+    "hours_other": "{{count}} ore",
+    "hoursMinutes": "{{hours}} {{minutes}}"
+  },
+  "ago": {
+    "justNow": "proprio ora",
+    "minutes_one": "{{count}} minuto fa",
+    "minutes_many": "{{count}} di minuti fa",
+    "minutes_other": "{{count}} minuti fa",
+    "hours_one": "{{count}} ora fa",
+    "hours_many": "{{count}} di ore fa",
+    "hours_other": "{{count}} ore fa",
+    "days_one": "{{count}} giorno fa",
+    "days_many": "{{count}} di giorni fa",
+    "days_other": "{{count}} giorni fa"
+  },
+  "agoShort": {
+    "now": "Ora",
+    "minutes": "{{count}}m",
+    "hours": "{{count}}h",
+    "days": "{{count}}g"
+  },
+  "unit": {
+    "min": "min",
+    "h": "h"
+  },
+  "unitWords": {
+    "percent": "percento",
+    "ms": "millisecondi",
+    "bpm": "battiti al minuto",
+    "rpm": "respiri al minuto",
+    "celsius": "gradi Celsius",
+    "fahrenheit": "gradi Fahrenheit",
+    "kcal": "calorie",
+    "mlKgMin": "millilitri per chilo al minuto",
+    "times": "volte",
+    "min": "minuti",
+    "h": "ore",
+    "km": "chilometri",
+    "perKm": "per chilometro",
+    "mi": "miglia",
+    "perMi": "per miglio",
+    "kg": "chilogrammi",
+    "lb": "libbre",
+    "m": "metri",
+    "ft": "piedi",
+    "cm": "centimetri",
+    "in": "pollici",
+    "ml": "millilitri",
+    "flOz": "once fluide"
+  },
+  "spoken": {
+    "minus": "meno",
+    "noData": "nessun dato",
+    "unavailable": "{{label}} non disponibile: {{why}}",
+    "provisional": " provvisorio,",
+    "soFar": " finora",
+    "target": ", obiettivo da {{from}} a {{to}} percento",
+    "band": ", {{band}}",
+    "dialStrain": "{{label}}{{provisional}} {{value}}{{soFar}}{{target}}",
+    "dialValue": "{{label}}{{provisional}} {{value}}{{band}}",
+    "stat": "{{label}} {{value}}",
+    "statVsAverage": "{{label}} {{value}}, {{relation}} la tua {{averageLabel}} di {{average}}{{tone}}",
+    "above": "sopra",
+    "below": "sotto",
+    "inLineWith": "in linea con",
+    "average30": "media a 30 giorni",
+    "toneGood": ", bene",
+    "toneBad": ", peggio del solito"
+  },
+  "band": {
+    "green": "Verde",
+    "yellow": "Giallo",
+    "red": "Rosso"
+  },
+  "stressLevel": {
+    "low": "Basso",
+    "medium": "Medio",
+    "high": "Alto"
+  }
+}

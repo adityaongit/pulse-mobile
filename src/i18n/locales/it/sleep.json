@@ -1,1 +1,113 @@
-{}
+{
+  "title": "Sonno",
+  "band": {
+    "optimal": "ottimale",
+    "sufficient": "sufficiente",
+    "poor": "scarso"
+  },
+  "status": {
+    "poor": "Scarso",
+    "sufficient": "Sufficiente",
+    "optimal": "Ottimale"
+  },
+  "stat": {
+    "hours": "Ore vs. necessarie",
+    "consistency": "Sleep Consistency",
+    "efficiency": "Efficienza del sonno",
+    "restorative": "Sonno rigenerante",
+    "sleepStress": "Stress nel sonno",
+    "timeInBed": "Tempo a letto",
+    "wakeEvents": "Risvegli",
+    "resp": "Frequenza respiratoria",
+    "debt": "Sleep Debt"
+  },
+  "stage": {
+    "awake": "Sveglio",
+    "rem": "REM",
+    "light": "Leggero",
+    "deep": "Profondo"
+  },
+  "insight": {
+    "laterBedtime_one": "Il tuo sonno è stato {{band}}. La costanza è la via più facile: sei andato a letto {{count}} minuto più tardi del solito.",
+    "laterBedtime_many": "Il tuo sonno è stato {{band}}. La costanza è la via più facile: sei andato a letto {{count}} di minuti più tardi del solito.",
+    "laterBedtime_other": "Il tuo sonno è stato {{band}}. La costanza è la via più facile: sei andato a letto {{count}} minuti più tardi del solito.",
+    "earlierBedtime_one": "Il tuo sonno è stato {{band}}. La costanza è la via più facile: sei andato a letto {{count}} minuto prima del solito.",
+    "earlierBedtime_many": "Il tuo sonno è stato {{band}}. La costanza è la via più facile: sei andato a letto {{count}} di minuti prima del solito.",
+    "earlierBedtime_other": "Il tuo sonno è stato {{band}}. La costanza è la via più facile: sei andato a letto {{count}} minuti prima del solito.",
+    "steadier": "Il tuo sonno è stato {{band}}. Orari più regolari per andare a letto e svegliarti migliorerebbero la tua Sleep Consistency.",
+    "lessSleep_one": "Il tuo sonno è stato {{band}}. Hai dormito {{count}} minuto in meno del necessario; una notte più anticipata aiuta.",
+    "lessSleep_many": "Il tuo sonno è stato {{band}}. Hai dormito {{count}} di minuti in meno del necessario; una notte più anticipata aiuta.",
+    "lessSleep_other": "Il tuo sonno è stato {{band}}. Hai dormito {{count}} minuti in meno del necessario; una notte più anticipata aiuta.",
+    "onTrack": "Il tuo sonno è stato {{band}}. Hai rispettato il tuo solito orario e hai dormito vicino al necessario.",
+    "explore": "Esplora i tuoi approfondimenti sul sonno"
+  },
+  "cards": {
+    "lastNight": "Il sonno di stanotte",
+    "vsPrior30": "vs. 30 giorni precedenti",
+    "hoursVsNeeded": "Ore vs. necessarie",
+    "consistency": "Sleep Consistency",
+    "efficiency": "Efficienza del sonno",
+    "tonight": "Il sonno di stanotte"
+  },
+  "need": {
+    "hoursOfSleep": "Ore di sonno",
+    "sleepNeeded": "Sonno necessario",
+    "calibrating": "Il tuo fabbisogno si assesta dopo 7 notti. Fino ad allora uso {{need}}.",
+    "healthyMinimum": "Minimo salutare",
+    "recentStrain": "Strain recente",
+    "sleepDebt": "Sleep Debt",
+    "naps": "Pisolini",
+    "priorAverage": "Media delle 30 notti precedenti {{value}}%"
+  },
+  "consistency": {
+    "optimal": "Orario ottimale per dormire e svegliarsi",
+    "aria": "Orari di sonno e risveglio delle ultime cinque notti",
+    "ariaLast": "Orari di sonno e risveglio delle ultime cinque notti, ultima notte da {{bed}} a {{wake}}"
+  },
+  "efficiency": {
+    "asleep": "Addormentato",
+    "awake": "Sveglio",
+    "wakeEvents": "Risvegli"
+  },
+  "planner": {
+    "calibrating": "Sleep Planner ha bisogno di 7 notti per imparare il tuo orario di risveglio.",
+    "shareOfNeed": "{{pct}}% del necessario",
+    "typicalWake": "Risveglio tipico",
+    "weekdayWake": "Risveglio nei giorni feriali",
+    "weekendWake": "Risveglio nel weekend",
+    "needTonight": "Necessario stanotte: <n>{{value}}</n>",
+    "plan": {
+      "peak": "Peak",
+      "perform": "Perform",
+      "getBy": "Get by"
+    }
+  },
+  "weekly": {
+    "sleep": "Sleep Performance",
+    "hours": "Ore vs. necessarie (ore)",
+    "hoursNeed": "Ore vs. necessarie (%)",
+    "restorative": "Sonno rigenerante",
+    "consistency": "Sleep Consistency",
+    "timeInBed": "Tempo a letto",
+    "efficiency": "Efficienza del sonno"
+  },
+  "skeleton": {
+    "healthyMinimum": "Minimo salutare",
+    "recentStrain": "Strain recente",
+    "sleepDebt": "Sleep Debt"
+  },
+  "nap": {
+    "title": "Pisolino",
+    "notFound": "Impossibile trovare questa pagina.",
+    "when": "{{day}} da {{start}} a {{end}}",
+    "activity": "Attività",
+    "activityStrain": "Strain dell’attività",
+    "duration": "Durata",
+    "keyStats": "Statistiche chiave",
+    "vs30": "vs. media a 30 giorni",
+    "avgHr": "FC media",
+    "maxHr": "FC max",
+    "calories": "Calorie",
+    "hrr": "Recupero della frequenza cardiaca"
+  }
+}

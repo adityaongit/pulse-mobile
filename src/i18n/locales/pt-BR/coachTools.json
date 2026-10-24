@@ -1,7 +1,7 @@
 {
   "costUnit": "pontos percentuais de Recovery",
-  "costBaselineRest": "Recovery média nos dias sem treino naquele dia nem nos 7 dias anteriores",
-  "costBaselineAll": "Recovery média de todos os dias (poucos dias de descanso)",
+  "costBaselineRest": "Recovery médio nos dias sem treino naquele dia nem nos 7 dias anteriores",
+  "costBaselineAll": "Recovery médio de todos os dias (poucos dias de descanso)",
   "strainScale": "porcentagem, 0-100 (acima de 100 em um dia muito intenso)",
   "facts": {
     "unknown": "desconhecido",

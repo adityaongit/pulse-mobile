@@ -13,9 +13,9 @@
   },
   "behaviors": {
     "title": "Insights de comportamento",
-    "body": "Alguns dos seus comportamentos de ontem podem ter afetado seu Recovery de hoje.",
-    "spokenUp": "{{label}}, associado a Recovery mais alto",
-    "spokenDown": "{{label}}, associado a Recovery mais baixo",
+    "body": "Alguns dos seus comportamentos de ontem podem ter afetado sua Recovery de hoje.",
+    "spokenUp": "{{label}}, associado a uma Recovery mais alta",
+    "spokenDown": "{{label}}, associado a uma Recovery mais baixa",
     "spokenNeutral": "{{label}}, sem efeito claro"
   },
   "subject": {
@@ -27,7 +27,7 @@
   },
   "driver": {
     "strongSleep": "Noite de sono forte",
-    "weakSleep": "Sono abaixo de uma boa noite",
+    "weakSleep": "Sono abaixo do ideal",
     "typicalSleep": "Noite de sono típica",
     "skinWarmer": "Temperatura da pele mais quente que o normal",
     "skinCooler": "Temperatura da pele mais fria que o normal",
@@ -46,14 +46,14 @@
     "respGood": "sua frequência respiratória está estável",
     "respBad": "sua frequência respiratória subiu",
     "sleepGood": "você dormiu bem",
-    "sleepBad": "seu sono ficou aquém",
+    "sleepBad": "seu sono ficou abaixo do ideal",
     "skinGood": "sua temperatura da pele está normal",
     "skinBad": "sua temperatura da pele saiu do normal"
   },
   "insight": {
-    "lifted": "{{phrase}}, o que elevou o Recovery de hoje.",
-    "heldBack": "{{phrase}}, o que segurou o Recovery de hoje.",
-    "mixed": "{{good}}, mas {{bad}}. Juntos, eles moldaram o Recovery de hoje.",
-    "steady": "Seus sinais estão próximos da sua referência, então o Recovery está perto do seu nível habitual."
+    "lifted": "{{phrase}}, o que elevou a Recovery de hoje.",
+    "heldBack": "{{phrase}}, o que segurou a Recovery de hoje.",
+    "mixed": "{{good}}, mas {{bad}}. Juntos, eles moldaram a Recovery de hoje.",
+    "steady": "Seus sinais estão próximos da sua referência, então a Recovery está perto do seu nível habitual."
   }
 }

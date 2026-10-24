@@ -3,21 +3,21 @@
   "training": {
     "readiness": "Training Readiness",
     "status": "Training Status",
-    "effect": "Efeito do treino",
+    "effect": "Training Effect",
     "ofHundred": "de 100",
     "ofFive": "de 5"
   },
   "trainingInfo": {
     "readinessP1": "Quão pronto você está para um treino pesado hoje, de 1 a 100, nos moldes da Training Readiness da Garmin. O sono da noite passada e o seu tempo de Recovery pesam mais (um quarto cada), depois o seu HRV Status e a razão de carga, depois o seu sono nas últimas 3 noites e o seu estresse nos últimos 3 dias. Um fator muito fraco limita o score, e um dia muito longo acordado antes da noite passada tira 10 pontos.",
     "readinessP2": "95-100 Ótimo, 75-94 Alto, 50-74 Moderado, 25-49 Baixo, 1-24 Ruim. É definido ao acordar e cai depois do treino conforme o tempo de recuperação aumenta.",
-    "readinessP3": "O tempo de Recovery é quanto falta para você estar pronto para outro treino pesado: cada treino soma horas conforme o Efeito do treino (cerca de um dia com 3,5, três com 5), até 96. Ele diminui mais rápido durante um bom sono e mais devagar em horas de estresse ou depois de uma noite ruim.",
+    "readinessP3": "O tempo de Recovery é quanto falta para você estar pronto para outro treino pesado: cada treino soma horas conforme o Training Effect (cerca de um dia com 3,5, três com 5), até 96. Ele diminui mais rápido durante um bom sono e mais devagar em horas de estresse ou depois de uma noite ruim.",
     "readinessP4": "A Garmin não divulga seus pesos; estes são do Pulse.",
     "statusP1": "O que o seu treino recente está fazendo, nos moldes do Training Status da Garmin: a partir da sua razão de carga (carga aguda contra crônica, da Garmin), da tendência do VO2 max do Fitbit em 28 dias e do seu HRV Status.",
     "statusP2": "Produtivo: carga igual ou acima do seu normal, com VO2 max subindo ou HRV estável. Mantendo: o suficiente para manter o condicionamento. Recovery: uma fase mais leve. Pico: condicionamento em alta enquanto a carga diminui. Improdutivo: carga estável, mas VO2 max caindo. Sobrecarga: carga muito alta que começa a cobrar seu preço. Strain alto: HRV baixo sob carga. Destreino: bem abaixo da sua carga normal por uma semana.",
     "statusP3": "O VO2 max do Fitbit muda devagar, então a tendência é lida em 28 dias, não nos 14 da Garmin. Precisa de cerca de 3 semanas de dados e de um VO2 max ou de um HRV Status.",
     "effectP1": "Quanto este treino melhora o seu condicionamento aeróbico, de 0 a 5, nos moldes do Aerobic Training Effect da Garmin. O Pulse estima o EPOC da sessão (o oxigênio extra que o corpo usa depois para se recuperar) a partir da sua frequência cardíaca e do seu VO2 max, e compara com o que o seu condicionamento e o seu treino recente tornam rotina: a mesma corrida vale menos quanto mais em forma e mais ativo você está.",
     "effectP2": "0-0,9 Sem benefício, 1-1,9 Pequeno, 2-2,9 Mantendo, 3-3,9 Melhorando, 4-4,9 Melhorando muito, 5 Sobrecarga.",
-    "effectP3": "A Garmin estima o EPOC com dados batimento a batimento e constantes que não divulga; o do Pulse vem só da frequência cardíaca, ajustado aos números publicados pela Firstbeat. Não há Efeito do treino anaeróbico: ele precisa de ritmo ou potência."
+    "effectP3": "A Garmin estima o EPOC com dados batimento a batimento e constantes que não divulga; o do Pulse vem só da frequência cardíaca, ajustado aos números publicados pela Firstbeat. Não há Training Effect anaeróbico: ele precisa de ritmo ou potência."
   },
   "hours": {
     "whole": "{{h}} h",
@@ -55,8 +55,8 @@
   },
   "effect": {
     "spoken": "Aerobic Training Effect {{value}} de 5, {{label}}",
-    "mainBenefit": "Principal benefício",
-    "spokenBenefit": "Principal benefício {{benefit}}. {{line}}",
+    "mainBenefit": "Benefício principal",
+    "spokenBenefit": "Benefício principal {{benefit}}. {{line}}",
     "addsRecovery": "Soma tempo de Recovery",
     "spokenAdds": "Soma {{time}} de tempo de Recovery"
   },
@@ -217,7 +217,7 @@
   "menu": {
     "more": "Mais sobre esta atividade",
     "strainForDay": "Strain deste dia",
-    "hrSettings": "Ajustes de frequência cardíaca"
+    "hrSettings": "Configurações de frequência cardíaca"
   },
   "glance": {
     "ask": "Pergunte ao Coach sobre este treino",
@@ -322,7 +322,7 @@
     "subtitle": "{{day}} {{start}} a {{end}}",
     "heartRate": "Frequência cardíaca",
     "timeInZones": "Tempo nas zonas",
-    "viewHrSettings": "Ver ajustes de frequência cardíaca",
+    "viewHrSettings": "Ver configurações de frequência cardíaca",
     "noZones": "Sem zonas de frequência cardíaca para esta atividade.",
     "keyStats": "Principais números",
     "vsAverage": "vs. média de 30 dias",
@@ -359,11 +359,11 @@
     "workoutStrainSpoken": "Strain do treino {{value}} por cento",
     "now": "Agora",
     "cellSpoken": "{{label}}: {{spoken}}",
-    "zoneSpoken": "Zona {{zone}}: {{time}}",
-    "zoneSpokenCurrent": "Zona {{zone}}, atual: {{time}}",
+    "zoneSpoken": "Zone {{zone}}: {{time}}",
+    "zoneSpokenCurrent": "Zone {{zone}}, atual: {{time}}",
     "zoneShort": "Z{{zone}}",
-    "belowZone1": "Abaixo da Zona 1",
-    "zone": "Zona {{zone}}",
+    "belowZone1": "Abaixo de Zone 1",
+    "zone": "Zone {{zone}}",
     "waiting": "Aguardando um batimento",
     "zoneWithBand": "{{zone}} · faixa de hoje {{floor}}–{{ceiling}} bpm",
     "today": "Hoje",

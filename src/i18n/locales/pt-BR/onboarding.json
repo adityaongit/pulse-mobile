@@ -1,7 +1,7 @@
 {
   "welcome": {
-    "title": "Seu Fitbit, com score toda manhã",
-    "subtitle": "Sleep, Recovery e Strain do Health Connect, calculados neste celular.",
+    "title": "Seu Fitbit, avaliado toda manhã",
+    "subtitle": "Sono, Recovery e Strain do Health Connect, calculados neste celular.",
     "exploreSample": "Explorar com dados de exemplo",
     "private": "Fica neste celular. Sem conta, sem servidor.",
     "sampleFailed": "Não foi possível montar os dados de exemplo. Tente de novo."
@@ -12,13 +12,13 @@
   },
   "profile": {
     "title": "Duas coisas que o Health Connect não compartilha",
-    "intro": "O Pulse compara sua frequência cardíaca com a de pessoas da sua idade, usando as faixas de referência que você escolher. Você pode mudar isso depois em Ajustes.",
+    "intro": "O Pulse compara sua frequência cardíaca com a de pessoas da sua idade, usando as faixas de referência que você escolher. Você pode mudar isso depois em Configurações.",
     "saveContinue": "Salvar e continuar",
     "saving": "Salvando…"
   },
   "form": {
     "name": "Nome",
-    "nameHint": "Aparece no Início e em Ajustes. Fica neste celular.",
+    "nameHint": "Aparece no Início e em Configurações. Fica neste celular.",
     "namePlaceholder": "Seu nome",
     "birthDate": "Data de nascimento",
     "birthDateHint": "Para zonas de frequência cardíaca, Sleep Need e Pulse Age.",
@@ -87,10 +87,10 @@
   "background": {
     "titleOn": "A sincronização em segundo plano está ativa",
     "title": "Mantenha o Pulse em dia",
-    "bodyOn": "O Pulse sincroniza com o app fechado. Mude em Ajustes › Notificações e segundo plano.",
+    "bodyOn": "O Pulse sincroniza com o app fechado. Mude em Configurações › Notificações e segundo plano.",
     "bodyBattery": "Mais um passo: em Bateria, escolha Permitir atividade em segundo plano ou Sem restrições. Senão, muitos celulares pausam o Pulse em segundo plano.",
-    "body": "Sincronize com o Pulse fechado. Muitos celulares também precisam permitir que o Pulse rode em segundo plano; o botão abre esse ajuste.",
-    "openBattery": "Abrir ajustes de bateria",
+    "body": "Sincronize com o Pulse fechado. Muitos celulares também precisam permitir que o Pulse rode em segundo plano; o botão abre essa configuração.",
+    "openBattery": "Abrir configurações de bateria",
     "turnOn": "Ativar sincronização em segundo plano"
   }
 }

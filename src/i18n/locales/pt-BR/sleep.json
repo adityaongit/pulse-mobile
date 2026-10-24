@@ -28,16 +28,16 @@
     "deep": "Profundo"
   },
   "insight": {
-    "laterBedtime_one": "Seu sono foi {{band}}. A regularidade é a vitória mais fácil: você foi dormir {{count}} minuto mais tarde que o normal.",
-    "laterBedtime_many": "Seu sono foi {{band}}. A regularidade é a vitória mais fácil: você foi dormir {{count}} de minutos mais tarde que o normal.",
-    "laterBedtime_other": "Seu sono foi {{band}}. A regularidade é a vitória mais fácil: você foi dormir {{count}} minutos mais tarde que o normal.",
-    "earlierBedtime_one": "Seu sono foi {{band}}. A regularidade é a vitória mais fácil: você foi dormir {{count}} minuto mais cedo que o normal.",
-    "earlierBedtime_many": "Seu sono foi {{band}}. A regularidade é a vitória mais fácil: você foi dormir {{count}} de minutos mais cedo que o normal.",
-    "earlierBedtime_other": "Seu sono foi {{band}}. A regularidade é a vitória mais fácil: você foi dormir {{count}} minutos mais cedo que o normal.",
+    "laterBedtime_one": "Seu sono foi {{band}}. A regularidade é o ganho mais fácil: você foi dormir {{count}} minuto mais tarde do que o normal.",
+    "laterBedtime_many": "Seu sono foi {{band}}. A regularidade é o ganho mais fácil: você foi dormir {{count}} de minutos mais tarde do que o normal.",
+    "laterBedtime_other": "Seu sono foi {{band}}. A regularidade é o ganho mais fácil: você foi dormir {{count}} minutos mais tarde do que o normal.",
+    "earlierBedtime_one": "Seu sono foi {{band}}. A regularidade é o ganho mais fácil: você foi dormir {{count}} minuto mais cedo do que o normal.",
+    "earlierBedtime_many": "Seu sono foi {{band}}. A regularidade é o ganho mais fácil: você foi dormir {{count}} de minutos mais cedo do que o normal.",
+    "earlierBedtime_other": "Seu sono foi {{band}}. A regularidade é o ganho mais fácil: você foi dormir {{count}} minutos mais cedo do que o normal.",
     "steadier": "Seu sono foi {{band}}. Manter um horário mais regular de dormir e acordar melhoraria sua Sleep Consistency.",
-    "lessSleep_one": "Seu sono foi {{band}}. Você dormiu {{count}} minuto a menos que o necessário; dormir mais cedo ajuda.",
-    "lessSleep_many": "Seu sono foi {{band}}. Você dormiu {{count}} de minutos a menos que o necessário; dormir mais cedo ajuda.",
-    "lessSleep_other": "Seu sono foi {{band}}. Você dormiu {{count}} minutos a menos que o necessário; dormir mais cedo ajuda.",
+    "lessSleep_one": "Seu sono foi {{band}}. Você dormiu {{count}} minuto a menos do que precisava; dormir mais cedo ajuda.",
+    "lessSleep_many": "Seu sono foi {{band}}. Você dormiu {{count}} de minutos a menos do que precisava; dormir mais cedo ajuda.",
+    "lessSleep_other": "Seu sono foi {{band}}. Você dormiu {{count}} minutos a menos do que precisava; dormir mais cedo ajuda.",
     "onTrack": "Seu sono foi {{band}}. Você manteve sua rotina habitual e dormiu perto do necessário.",
     "explore": "Explore seus insights de sono"
   },
@@ -52,7 +52,7 @@
   "need": {
     "hoursOfSleep": "Horas de sono",
     "sleepNeeded": "Sono necessário",
-    "calibrating": "Sua necessidade se ajusta após 7 noites. Usando {{need}} até lá.",
+    "calibrating": "Sua necessidade de sono se ajusta após 7 noites. Usando {{need}} até lá.",
     "healthyMinimum": "Mínimo saudável",
     "recentStrain": "Strain recente",
     "sleepDebt": "Sleep Debt",
@@ -72,7 +72,7 @@
   "planner": {
     "calibrating": "O Sleep Planner precisa de 7 noites para aprender seu horário de acordar.",
     "shareOfNeed": "{{pct}}% do necessário",
-    "typicalWake": "Despertar típico",
+    "typicalWake": "Horário típico de acordar",
     "weekdayWake": "Horário de acordar em dias úteis",
     "weekendWake": "Horário de acordar no fim de semana",
     "needTonight": "Necessário hoje à noite: <n>{{value}}</n>",
@@ -99,7 +99,7 @@
   "nap": {
     "title": "Cochilo",
     "notFound": "Esta página não foi encontrada.",
-    "when": "{{day}} {{start}} às {{end}}",
+    "when": "{{day}}, das {{start}} às {{end}}",
     "activity": "Atividade",
     "activityStrain": "Strain da atividade",
     "duration": "Duração",

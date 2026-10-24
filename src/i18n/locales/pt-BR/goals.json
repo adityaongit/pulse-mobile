@@ -126,8 +126,8 @@
     "weekOf": "Semana de {{date}}",
     "cardThisWeek": "Plano semanal · esta semana",
     "cardWeekOf": "Plano semanal · semana de {{date}}",
-    "onTrack": "{{on}} de {{total}} no caminho",
-    "pageDescription": "{{range}} · {{on}} de {{total}} no caminho",
+    "onTrack": "{{on}} de {{total}} no ritmo",
+    "pageDescription": "{{range}} · {{on}} de {{total}} no ritmo",
     "streak_one": "Todas as metas cumpridas na semana passada",
     "streak_many": "Todas as metas cumpridas por {{count}} de semanas seguidas",
     "streak_other": "Todas as metas cumpridas por {{count}} semanas seguidas",
@@ -175,7 +175,7 @@
     "title": "Metas",
     "edit": "Editar metas",
     "off": "Desativadas",
-    "offBody": "{{labels}}. Ative em Ajustes › Metas."
+    "offBody": "{{labels}}. Ative em Configurações › Metas."
   },
   "weekdayLetter": {
     "mon": "S",
@@ -202,7 +202,7 @@
     "resetGoals": "Restaurar padrões do Fitbit",
     "goalsReset": "Metas restauradas para os padrões do Fitbit",
     "planTitle": "Plano semanal",
-    "planBody": "Metas semanais para os hábitos que o Pulse Age pontua, de segunda a domingo, com uma sequência para cada semana em que você as cumpre. Apague um número para desativá-la.",
+    "planBody": "Metas semanais para os hábitos que o Pulse Age pontua, de segunda a domingo, com uma sequência para cada semana em que você as cumpre. Apague um número para desativar essa meta.",
     "resetPlan": "Restaurar plano semanal",
     "planReset": "Plano semanal restaurado para os padrões"
   },
@@ -216,11 +216,11 @@
     "hoursAria": "Horas da meta de sono",
     "minutesAria": "Minutos da meta de sono",
     "saveAria": "Salvar meta de sono",
-    "body": "O alvo de Sleep Performance, Sleep Need, Sleep Debt e Energy Bank. Mudá-la recalcula seu histórico.",
+    "body": "A referência para Sleep Performance, Sleep Need, Sleep Debt e Energy Bank. Mudar a meta recalcula seu histórico.",
     "goal": "Meta",
     "method": "Como a meta é definida",
     "estimate": "A média de sono antes das suas {{best}} melhores manhãs de Recovery das últimas {{nights}}: {{duration}}.",
-    "estimateEarly": "A média de sono antes das suas {{best}} melhores manhãs de Recovery das últimas {{nights}}: {{duration}}. Uma estimativa inicial: ela se firma com 90 noites, 15 delas com Recovery de 67 ou mais ({{high}} até agora).",
+    "estimateEarly": "A média de sono antes das suas {{best}} melhores manhãs de Recovery das últimas {{nights}}: {{duration}}. Uma estimativa inicial: ela fica mais precisa com 90 noites, 15 delas com Recovery de 67 ou mais ({{high}} até agora).",
     "use": "Usar {{duration}}",
     "useAria": "Usar {{duration}} como meta de sono",
     "notEnough": "Ainda não há noites suficientes: a estimativa precisa de noites com score de Recovery, uma delas com 67 ou mais. Até lá a meta fica como está."

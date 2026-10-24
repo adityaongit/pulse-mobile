@@ -1,1 +1,41 @@
-{}
+{
+  "recovery": { "title": "Recovery pronto", "body": "{{percent}}%: {{band}}" },
+  "cantSync": {
+    "title": "Pulse non riesce a sincronizzare",
+    "body": "Health Connect non sincronizza da {{gap}}. Apri Pulse per sincronizzare."
+  },
+  "since": {
+    "hours_one": "{{count}} ora",
+    "hours_many": "{{count}} di ore",
+    "hours_other": "{{count}} ore",
+    "days_one": "{{count}} giorno",
+    "days_many": "{{count}} di giorni",
+    "days_other": "{{count}} giorni"
+  },
+  "checkIn": { "title": "Check-in", "body": "Com’è andata oggi? Prenditi un minuto per il tuo check-in." },
+  "strainTarget": {
+    "title": "Strain Target raggiunto",
+    "inside": "Day Strain {{strain}} rientra nell’obiettivo di oggi di {{range}}.",
+    "past": "Day Strain {{strain}} supera l’obiettivo di oggi di {{range}}. Dai priorità al sonno stanotte per recuperare."
+  },
+  "monitor": {
+    "illnessTitle": "Il tuo corpo potrebbe combattere qualcosa",
+    "illnessBody": "Diversi parametri vitali si sono allontanati insieme dal tuo intervallo normale, uno schema che spesso precede il malessere. Valuta una giornata più leggera.",
+    "title_one": "{{count}} parametro vitale fuori dal tuo intervallo normale",
+    "title_many": "{{count}} di parametri vitali fuori dal tuo intervallo normale",
+    "title_other": "{{count}} parametri vitali fuori dal tuo intervallo normale",
+    "body_one": "{{names}} è fuori dal tuo intervallo abituale. Può essere un segnale precoce di malattia o di forte sforzo.",
+    "body_many": "{{names}} sono fuori dal tuo intervallo abituale. Può essere un segnale precoce di malattia o di forte sforzo.",
+    "body_other": "{{names}} sono fuori dal tuo intervallo abituale. Può essere un segnale precoce di malattia o di forte sforzo.",
+    "oneVital": "Un parametro vitale",
+    "namesAnd": "{{list}} e {{last}}"
+  },
+  "report": {
+    "title": "Report settimanale pronto",
+    "recovery": "Recovery medio {{value}}%",
+    "strain": "Day Strain {{value}}",
+    "withParts": "{{range}}: {{parts}}.",
+    "empty": "La tua settimana {{range}} è arrivata."
+  },
+  "windDown": { "title": "Rilassati", "body": "A letto entro le {{time}} per soddisfare il bisogno di sonno di stanotte." }
+}

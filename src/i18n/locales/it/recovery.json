@@ -1,1 +1,59 @@
-{}
+{
+  "title": "Recovery",
+  "loadError": "Impossibile caricare questa schermata.",
+  "legendPeriod": "ultimi 30 giorni",
+  "legendSkeleton": "Oggi vs. ultimi 30 giorni",
+  "exploreInsights": "Esplora i tuoi approfondimenti su Recovery",
+  "weeklyTitle": {
+    "recovery": "Recovery",
+    "hrv": "Variabilità della frequenza cardiaca",
+    "rhr": "Frequenza cardiaca a riposo",
+    "resp": "Frequenza respiratoria",
+    "sleep": "Sleep Performance"
+  },
+  "behaviors": {
+    "title": "Approfondimenti sui comportamenti",
+    "body": "Alcuni tuoi comportamenti di ieri potrebbero aver influito sul tuo punteggio Recovery di oggi.",
+    "spokenUp": "{{label}}, associato a un Recovery più alto",
+    "spokenDown": "{{label}}, associato a un Recovery più basso",
+    "spokenNeutral": "{{label}}, nessun effetto chiaro"
+  },
+  "subject": {
+    "hrv": "HRV",
+    "rhr": "Frequenza cardiaca a riposo",
+    "resp": "Frequenza respiratoria",
+    "sleep": "Sonno",
+    "skin": "Temperatura cutanea"
+  },
+  "driver": {
+    "strongSleep": "Notte di sonno ottima",
+    "weakSleep": "Sonno sotto una buona notte",
+    "typicalSleep": "Notte di sonno nella norma",
+    "skinWarmer": "Temperatura cutanea più alta del solito",
+    "skinCooler": "Temperatura cutanea più bassa del solito",
+    "hrvBelow": "HRV sotto la tua base",
+    "atBaseline": "{{subject}} in linea con la base",
+    "slightlyAbove": "{{subject}} leggermente sopra la base",
+    "slightlyBelow": "{{subject}} leggermente sotto la base",
+    "above": "{{subject}} sopra la base",
+    "below": "{{subject}} sotto la base"
+  },
+  "phrase": {
+    "hrvGood": "il tuo HRV è sopra la tua base",
+    "hrvBad": "il tuo HRV è sotto la tua base",
+    "rhrGood": "la tua frequenza cardiaca a riposo è più bassa del solito",
+    "rhrBad": "la tua frequenza cardiaca a riposo è più alta del solito",
+    "respGood": "la tua frequenza respiratoria è stabile",
+    "respBad": "la tua frequenza respiratoria è salita",
+    "sleepGood": "hai dormito bene",
+    "sleepBad": "il tuo sonno è stato scarso",
+    "skinGood": "la tua temperatura cutanea è nella norma",
+    "skinBad": "la tua temperatura cutanea si è allontanata dalla norma"
+  },
+  "insight": {
+    "lifted": "{{phrase}}, e questo ha alzato il Recovery di oggi.",
+    "heldBack": "{{phrase}}, e questo ha frenato il Recovery di oggi.",
+    "mixed": "{{good}}, ma {{bad}}. Insieme hanno determinato il Recovery di oggi.",
+    "steady": "I tuoi segnali sono vicini alla tua base, quindi il Recovery è vicino al tuo livello abituale."
+  }
+}
