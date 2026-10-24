@@ -41,7 +41,7 @@ export interface Store {
    * "health_connect"`), the heart-rate, HRV and step samples with fromTs <= ts < toTs, and those days' scores and series,
    * before a re-import (or the other source) writes them afresh. Pulse's own logs, the journal and the profile stay.
    */
-  clearImported(range: DayRange, fromTs: number, toTs: number): Promise<void>;
+  clearImported(range: DayRange, fromTs: number, toTs: number, opts?: { keepScores?: boolean }): Promise<void>;
   /** Removes sleep sessions and their segments by id: nights the source no longer has (deleted in Fitbit). */
   deleteSessions(ids: string[]): Promise<void>;
   /** Removes workouts by id: workouts the source no longer has. */

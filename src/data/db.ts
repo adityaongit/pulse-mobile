@@ -405,7 +405,7 @@ class SqliteStore implements Store {
   async deleteJournal(day: string, tag: string) {
     await this.tx((db) => db.runAsync("delete from journal_entries where day = ? and tag = ?", [day, tag]));
   }
-  async clearImported(range: DayRange, fromTs: number, toTs: number) {
+  async clearImported(range: DayRange, fromTs: number, toTs: number, opts?: { keepScores?: boolean }) {
     const days = [range.from, range.to];
     await this.tx(async (db) => {
       await db.runAsync("delete from daily_metrics where day >= ? and day <= ?", days);
@@ -415,9 +415,11 @@ class SqliteStore implements Store {
       await db.runAsync("delete from daily_values where day >= ? and day <= ?", days);
       await db.runAsync("delete from health_records where day >= ? and day <= ?", days);
       await db.runAsync("delete from logged_entries where source = 'health_connect' and day >= ? and day <= ?", days);
-      await db.runAsync("delete from daily_scores where day >= ? and day <= ?", days);
-      // The rows it vouches for are going.
-      await db.runAsync("delete from pipeline_checkpoint");
+      if (!opts?.keepScores) {
+        await db.runAsync("delete from daily_scores where day >= ? and day <= ?", days);
+        // The rows it vouches for are going.
+        await db.runAsync("delete from pipeline_checkpoint");
+      }
       await db.runAsync("delete from intraday_series where day >= ? and day <= ?", days);
       if (toTs > fromTs) for (const table of ["hr_days", "steps_days", "hrv_days"] as const) await this.dropSamples(db, table, fromTs, toTs);
     });

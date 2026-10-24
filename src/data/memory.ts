@@ -163,7 +163,7 @@ export class MemoryStore implements Store {
   async deleteJournal(day: string, tag: string) {
     this.journal.delete(key2(day, tag));
   }
-  async clearImported(range: DayRange, fromTs: number, toTs: number) {
+  async clearImported(range: DayRange, fromTs: number, toTs: number, opts?: { keepScores?: boolean }) {
     for (const [d] of this.metrics) if (inRange(d, range)) this.metrics.delete(d);
     for (const [id, s] of this.sessions) {
       if (!inRange(s.day, range)) continue;
@@ -174,8 +174,10 @@ export class MemoryStore implements Store {
     for (const [k, v] of this.values) if (inRange(v.day, range)) this.values.delete(k);
     for (const [id, r] of this.records) if (inRange(r.day, range)) this.records.delete(id);
     for (const [id, r] of this.logged) if (r.source === "health_connect" && inRange(r.day, range)) this.logged.delete(id);
-    for (const [d] of this.scores) if (inRange(d, range)) this.scores.delete(d);
-    this.checkpoint = null;
+    if (!opts?.keepScores) {
+      for (const [d] of this.scores) if (inRange(d, range)) this.scores.delete(d);
+      this.checkpoint = null;
+    }
     for (const k of [...this.series.keys()]) if (inRange(k.split("\u0000")[0], range)) this.series.delete(k);
     this.hr.drop(fromTs, toTs);
     this.steps.drop(fromTs, toTs);

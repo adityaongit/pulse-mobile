@@ -49,7 +49,7 @@ export { forgetChanges };
  * that overlap none of the Fitbit's and smart scale readings are kept (sourcePolicy.ts OTHER_APPS), and a malformed
  * record is left out instead of failing the sync. 6: a sync replaces the window's source-derived daily totals (calories
  * eaten, water, distance and the rest), so a record deleted in Health Connect no longer leaves its day's total behind,
- * and a sync that finds deletions re-imports the whole window (a deletion names no day).
+ * and a sync that finds deletions replaces the window it re-reads (see replaceWindow).
  */
 export const IMPORT_VERSION = 6;
 
@@ -127,10 +127,8 @@ export function windowPlan(a: {
   imported: { version: number; policy: string } | null;
   policy: SourcePolicy;
   importVersion?: number;
-  /** Health Connect reports records deleted since the last sync: a deletion names no day, so the whole window is replaced. */
-  deleted?: boolean;
 }): { full: boolean; reimport: boolean } {
-  const reimport = !a.imported || a.imported.version < (a.importVersion ?? IMPORT_VERSION) || a.imported.policy !== a.policy || !!a.deleted;
+  const reimport = !a.imported || a.imported.version < (a.importVersion ?? IMPORT_VERSION) || a.imported.policy !== a.policy;
   const full = reimport || a.requested || a.lastSyncTs === null || !a.hasNights || !a.hasToken || a.newlyGranted > 0;
   return { full, reimport };
 }
@@ -142,13 +140,31 @@ const recordStart = (r: { time?: string; startTime?: string }): number | null =>
 };
 
 /**
+ * The earliest day of a stored workout, night or log made from one of the deleted Health Connect records (their ids are
+ * Health Connect's own; a log's carries a `hc-<kind>-` prefix), or null when Pulse holds none of them.
+ */
+export async function dayOfStoredRecords(store: Store, deletedIds: readonly string[]): Promise<string | null> {
+  if (!deletedIds.length) return null;
+  const gone = new Set(deletedIds);
+  let earliest: string | null = null;
+  const take = (day: string) => {
+    if (earliest === null || day < earliest) earliest = day;
+  };
+  for (const s of await store.allSessions()) if (gone.has(s.id)) take(s.day);
+  for (const e of await store.allExercises()) if (gone.has(e.id)) take(e.day);
+  for (const l of await store.loggedEntries(0, Number.MAX_SAFE_INTEGER)) if (l.source === "health_connect" && gone.has(l.id.replace(/^hc-[a-z]+-/, ""))) take(l.day);
+  return earliest;
+}
+
+/**
  * What Health Connect changed since `token`: the earliest instant among records written (null when none), whether any
  * record was deleted, and the token after them; or "expired".
  */
-async function changesSince(token: string): Promise<{ earliest: number | null; deleted: boolean; token: string } | "expired"> {
+async function changesSince(token: string): Promise<{ earliest: number | null; deleted: boolean; deletedIds: string[]; token: string } | "expired"> {
   let tok = token;
   let earliest: number | null = null;
   let deleted = false;
+  const deletedIds: string[] = [];
   for (let page = 0; page < MAX_CHANGE_PAGES; page++) {
     const res = await getChanges({ changesToken: tok });
     if (res.changesTokenExpired) return "expired";
@@ -157,8 +173,9 @@ async function changesSince(token: string): Promise<{ earliest: number | null; d
       if (t !== null && (earliest === null || t < earliest)) earliest = t;
     }
     if (res.deletionChanges.length) deleted = true;
+    for (const c of res.deletionChanges) deletedIds.push(c.recordId);
     tok = res.nextChangesToken;
-    if (!res.hasMore) return { earliest, deleted, token: tok };
+    if (!res.hasMore) return { earliest, deleted, deletedIds, token: tok };
   }
   return "expired";
 }
@@ -211,10 +228,7 @@ export async function syncHealthConnect(store: Store, opts: SyncOptions): Promis
     // Types with a record Health Connect could not read (malformed by the app that wrote it), left out and reported.
     const skipped = new Set<ReadType>();
     const readOptions = (type: ReadType): ReadOptions => ({ origins: originFilter(policy, type), onSkipped: () => skipped.add(type) });
-    // What Health Connect changed since the last sync (read first: a deletion decides the plan).
-    const changed = token && state.lastSyncTs !== null ? await changesSince(token).catch(() => "expired" as const) : ("expired" as const);
     const plan = windowPlan({
-      deleted: changed !== "expired" && changed.deleted,
       requested: !!opts.full,
       lastSyncTs: state.lastSyncTs,
       hasNights,
@@ -229,11 +243,18 @@ export async function syncHealthConnect(store: Store, opts: SyncOptions): Promis
     }
 
     let fromDay: string;
+    // A sync that finds records deleted in Health Connect replaces the window it re-reads (below), not only upserts into it.
+    let replaceWindow = false;
     // (plan.full already covers a missing token or first sync; repeated so the else branch can rely on both.)
     if (plan.full || !token || state.lastSyncTs === null) {
       fromDay = historyFrom;
       counts.full = 1;
     } else {
+      // A read of the change feed that throws is tried once more before the window is read in full: a service that was
+      // busy for a moment must not turn into a re-read of the whole history.
+      const changed = await changesSince(token)
+        .catch(() => changesSince(token))
+        .catch(() => "expired" as const);
       // Nothing written to Health Connect or deleted from it since the last sync, on the same day: the re-read would
       // bring back exactly what is stored, so it is skipped (most background runs).
       if (changed !== "expired" && changed.earliest === null && !changed.deleted && localDay(state.lastSyncTs, tz) === today) {
@@ -250,6 +271,14 @@ export async function syncHealthConnect(store: Store, opts: SyncOptions): Promis
         const backfill = localDay(changed.earliest, tz);
         if (backfill < fromDay) fromDay = backfill;
         counts.backfillFrom = 1;
+      }
+      // A deletion names no day, only a record id. The window the sync re-reads is replaced (what Health Connect no
+      // longer has goes), reaching back to the day of any workout, night or log Pulse holds under a deleted id.
+      if (changed !== "expired" && changed.deleted) {
+        replaceWindow = true;
+        counts.deleted = changed.deletedIds.length;
+        const day = await dayOfStoredRecords(store, changed.deletedIds);
+        if (day !== null && day < fromDay) fromDay = day;
       }
       if (fromDay < historyFrom) fromDay = historyFrom;
     }
@@ -313,6 +342,8 @@ export async function syncHealthConnect(store: Store, opts: SyncOptions): Promis
     // new mapping or policy leaves without steps, a workout or a derived minute doesn't keep the old one. The first day
     // goes too: the reads' lead (READ_LEAD_S) brings back its night, which began before the window.
     if (plan.reimport) await store.clearImported({ from: fromDay, to: today }, windowStart, nowTs + 1);
+    // A deletion only replaces the window's imported rows: the scores stay, and stage 2 redoes the days whose inputs changed.
+    else if (replaceWindow) await store.clearImported({ from: fromDay, to: today }, windowStart, nowTs + 1, { keepScores: true });
 
     // 2. Per-day heart rate and steps, written as they come. A record comes back with the day its start falls in, so one
     // running over midnight carries its later samples into the next day (`spill`); the first day reads the lead for
