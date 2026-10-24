@@ -133,13 +133,5 @@
     "signalStrong": "Stark",
     "signalGood": "Gut",
     "signalWeak": "Schwach"
-  },
-  "sourcePolicy": {
-    "fitbitOnlyLabel": "Nur Fitbit",
-    "fitbitOnlyDetail": "Was dein Fitbit-Gerät über die App Google Health gemessen hat, plus Workouts anderer Apps zu anderen Zeiten und Werte von Smart-Waagen. Schrittzahlen des Handys und Messwerte anderer Apps bleiben außen vor.",
-    "fitbitFirstLabel": "Fitbit zuerst",
-    "fitbitFirstDetail": "Die Daten deines Fitbit-Geräts; an einem Tag, an dem es von einer Art keine hat, das, was dein Handy oder andere Apps aufgezeichnet haben. Workouts anderer Apps zu anderen Zeiten und Werte von Smart-Waagen bleiben ebenfalls erhalten.",
-    "allLabel": "Alle Apps",
-    "allDetail": "Alles in Health Connect. Wo sich Apps überschneiden, nimmt Pulse die größte Quelle, statt sie zu addieren."
   }
 }

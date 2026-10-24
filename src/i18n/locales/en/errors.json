@@ -133,13 +133,5 @@
     "signalStrong": "Strong",
     "signalGood": "Good",
     "signalWeak": "Weak"
-  },
-  "sourcePolicy": {
-    "fitbitOnlyLabel": "Fitbit only",
-    "fitbitOnlyDetail": "What your Fitbit device measured, through the Google Health app, plus other apps' workouts at other times and smart scale readings. Phone step counts and other apps' measurements are left out.",
-    "fitbitFirstLabel": "Fitbit first",
-    "fitbitFirstDetail": "Your Fitbit device's data; on a day it has none of a kind, what your phone or other apps recorded. Other apps' workouts at other times and smart scale readings are kept too.",
-    "allLabel": "All apps",
-    "allDetail": "Everything in Health Connect. Where apps overlap, Pulse takes the largest source rather than adding them up."
   }
 }

@@ -135,13 +135,5 @@
     "signalStrong": "Mocny",
     "signalGood": "Dobry",
     "signalWeak": "Słaby"
-  },
-  "sourcePolicy": {
-    "fitbitOnlyLabel": "Tylko Fitbit",
-    "fitbitOnlyDetail": "To, co zmierzyło Twoje urządzenie Fitbit w aplikacji Google Health, a także treningi z innych aplikacji z innych pór i odczyty z inteligentnej wagi. Kroki z telefonu i pomiary z innych aplikacji są pomijane.",
-    "fitbitFirstLabel": "Najpierw Fitbit",
-    "fitbitFirstDetail": "Dane Twojego urządzenia Fitbit; w dniu, w którym nie ma jakiegoś rodzaju danych, to, co zapisał telefon lub inne aplikacje. Treningi z innych aplikacji z innych pór i odczyty z inteligentnej wagi też zostają.",
-    "allLabel": "Wszystkie aplikacje",
-    "allDetail": "Wszystko z Health Connect. Gdy aplikacje się pokrywają, Pulse bierze największe źródło zamiast je sumować."
   }
 }

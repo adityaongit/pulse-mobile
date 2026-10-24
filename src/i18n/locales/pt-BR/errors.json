@@ -134,13 +134,5 @@
     "signalStrong": "Forte",
     "signalGood": "Bom",
     "signalWeak": "Fraco"
-  },
-  "sourcePolicy": {
-    "fitbitOnlyLabel": "Só Fitbit",
-    "fitbitOnlyDetail": "O que o seu dispositivo Fitbit mediu, pelo app Google Health, mais treinos de outros apps em outros horários e leituras de balança inteligente. Contagens de passos do celular e medições de outros apps ficam de fora.",
-    "fitbitFirstLabel": "Fitbit primeiro",
-    "fitbitFirstDetail": "Os dados do seu dispositivo Fitbit; num dia em que ele não tem um tipo, o que o celular ou outros apps registraram. Treinos de outros apps em outros horários e leituras de balança inteligente também são mantidos.",
-    "allLabel": "Todos os apps",
-    "allDetail": "Tudo no Health Connect. Onde os apps se sobrepõem, o Pulse usa a maior fonte em vez de somar."
   }
 }
