@@ -44,7 +44,7 @@ export type AppInfo = {
   /** The last run's (or connect's) failure, or null. */
   error: string | null;
   availability: Availability | null;
-  /** The last completed sync's hints (e.g. "no_fitbit_records"), so Settings can explain an empty Pulse. */
+  /** The last completed sync's hints (e.g. "skipped_records:<Type>"), so Settings can explain them. */
   warnings: string[];
   /** A profile, a source and a first completed run: the tabs open. Until then onboarding shows. */
   onboarded: boolean;

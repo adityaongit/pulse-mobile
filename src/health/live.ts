@@ -7,7 +7,6 @@ import type { Store } from "@/data/store";
 import type { HrSample } from "@/data/types";
 import { availability, permissionState, readAll } from "@/health/connect";
 import { mapHr } from "@/health/import";
-import { applySourcePolicy, getSourcePolicy, originFilter } from "@/health/sourcePolicy";
 import { localDay } from "@/lib/time";
 
 /** How far back the ticker asks Health Connect: a Fitbit sync lands ~15 minutes of samples, plus slack. */
@@ -99,10 +98,7 @@ async function pullFromHealthConnect(store: Store, from: number, to: number, tim
   const perms = await permissionState();
   if (!perms.granted.includes("HeartRate")) throw new Error("Heart-rate permission is missing in Health Connect.");
 
-  // The same source policy as the sync, so the ticker never writes samples the sync would leave out.
-  const policy = await getSourcePolicy();
-  const read = await readAll("HeartRate", { start: new Date(from * 1000), end: new Date(to * 1000) }, { origins: originFilter(policy, "HeartRate") });
-  const records = applySourcePolicy("HeartRate", read, policy, timeZone);
+  const records = await readAll("HeartRate", { start: new Date(from * 1000), end: new Date(to * 1000) });
   const incoming = mapHr(records, { startTs: from, endTs: to });
   if (!incoming.length) return 0;
 

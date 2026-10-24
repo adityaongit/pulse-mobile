@@ -1,6 +1,6 @@
 // Settings › Data source: Health Connect, as halo's src/screens/settings/sections.tsx shows it, in Pulse's section look.
 // The source row (availability, last sync), what needs doing (access revoked, permissions missing, the last failure),
-// the running import, Sync now and Re-import, the sample data, the source policy, the data check, and every record
+// the running import, Sync now and Re-import, the sample data, the data check, and every record
 // type's permission folded underneath. The state is the app's (src/state/app.ts); permissions are re-read whenever the
 // app comes back from Health Connect's settings.
 import { useTranslation } from "react-i18next";
@@ -10,7 +10,6 @@ import Animated, { cancelAnimation, Easing, useAnimatedStyle, useSharedValue, wi
 import { Check, ChevronDown, Minus, RefreshCw, TriangleAlert } from "lucide-react-native";
 import { askPermissions, openHealthConnectSettings, permissionState, READ_TYPES, skippedTypes, type PermissionState, type ReadType } from "@/health/connect";
 import { runDataCheck } from "@/health/dataCheck";
-import { getSourcePolicy, setSourcePolicy, SOURCE_POLICIES, SOURCE_POLICY_LABELS, type SourcePolicy } from "@/health/sourcePolicy";
 import { i18n } from "@/i18n/config";
 import { ago } from "@/lib/format";
 import { appState, appStore, exploreSample, refresh, reimport, stepLabel, useApp } from "@/state/app";
@@ -27,7 +26,7 @@ import { Text } from "@/ui/Text";
 import { toast } from "@/ui/Toast";
 import { useTheme } from "@/ui/theme";
 import { DURATION } from "@/ui/motion";
-import { BODY, ConfirmDialog, HINT, ProgressBar, RadioSegments, ROW_LABEL, ROW_RULE } from "./controls";
+import { BODY, ConfirmDialog, HINT, ProgressBar, ROW_LABEL, ROW_RULE } from "./controls";
 
 /** Health Connect's record types as Settings lists them: the key of each label in `settings:recordType`. The words resolve at use. */
 const TYPE_KEY = {
@@ -156,33 +155,6 @@ function SyncNowButton({ syncing }: { syncing: boolean }) {
   );
 }
 
-/** Which Health Connect records Pulse uses: Fitbit only (default), Fitbit first, or every app. A change re-imports. */
-function SourcePolicyPicker({ syncing }: { syncing: boolean }) {
-  const { t } = useTranslation("settings");
-  const [policy, setPolicy] = useState<SourcePolicy | null>(null);
-  useEffect(() => {
-    let live = true;
-    void getSourcePolicy().then((p) => live && setPolicy(p));
-    return () => {
-      live = false;
-    };
-  }, []);
-  const choose = async (p: SourcePolicy) => {
-    if (p === policy || syncing) return;
-    setPolicy(p);
-    await setSourcePolicy(p);
-    toast.success(t("source.reimporting", { policy: SOURCE_POLICY_LABELS[p].label }));
-    void reimport();
-  };
-  return (
-    <View className="mt-4 gap-2 border-t border-border pt-4">
-      <Text className={ROW_LABEL}>{t("source.useDataFrom")}</Text>
-      <RadioSegments label={t("source.useDataFrom")} value={policy} options={SOURCE_POLICIES.map((p) => ({ value: p, label: SOURCE_POLICY_LABELS[p].label }))} onChange={(p) => void choose(p)} />
-      {policy && <Text className={HINT}>{SOURCE_POLICY_LABELS[policy].detail}</Text>}
-    </View>
-  );
-}
-
 type Confirm = "sample" | "reimport" | null;
 
 /** The running sync's step and percent. It reads the progress itself, so a tick redraws this line, not the card. */
@@ -270,12 +242,6 @@ export function DataSource({ now }: { now: number }) {
           {t("source.lastSyncFailed", { error })}
         </Text>
       )}
-      {hc && !syncing && warnings.includes("no_fitbit_records") && (
-        <Callout
-          title={t("source.noFitbitTitle")}
-          body={t("source.noFitbitBody")}
-        />
-      )}
       {hc && !syncing && skipped.length > 0 && (
         <Callout
           title={t("source.skippedTitle")}
@@ -323,7 +289,6 @@ export function DataSource({ now }: { now: number }) {
           </Button>
         )}
       </View>
-      {hc && <SourcePolicyPicker syncing={syncing} />}
       {hc && (
         <View className="mt-4 gap-2 border-t border-border pt-4">
           <Text className={ROW_LABEL}>{t("source.dataCheck")}</Text>

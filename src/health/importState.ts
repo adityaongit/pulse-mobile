@@ -1,20 +1,20 @@
 // What the Health Connect import remembers between syncs, outside the Store (it describes Health Connect, not Pulse's
-// rows): the changes token and the types it was taken for, and the importer version and source policy the stored rows
-// were imported under (sync.ts re-imports the whole history window when either differs).
+// rows): the changes token and the types it was taken for, and the importer version the stored rows were
+// imported under (sync.ts re-imports the whole history window when it is older).
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const TOKEN_KEY = "pulse.hc.changesToken";
 export const TYPES_KEY = "pulse.hc.readTypes";
-/** `{ version, policy }` of the last completed import. */
+/** `{ version }` of the last completed import (older installs also stored a `policy`, now ignored). */
 export const IMPORT_STATE_KEY = "pulse.hc.importState";
 
-export type ImportState = { version: number; policy: string };
+export type ImportState = { version: number };
 
 export async function readImportState(): Promise<ImportState | null> {
   try {
     const raw = await AsyncStorage.getItem(IMPORT_STATE_KEY);
     const v = raw ? (JSON.parse(raw) as Partial<ImportState>) : null;
-    return v && typeof v.version === "number" && typeof v.policy === "string" ? { version: v.version, policy: v.policy } : null;
+    return v && typeof v.version === "number" ? { version: v.version } : null;
   } catch {
     return null;
   }

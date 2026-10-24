@@ -46,6 +46,6 @@ describe("readAll", () => {
   });
 
   it("names the skipped types from the sync's warnings", () => {
-    expect(skippedTypes(["no_fitbit_records", skippedWarning("ExerciseSession"), skippedWarning("SleepSession")])).toEqual(["SleepSession", "ExerciseSession"]);
+    expect(skippedTypes(["permission_missing:Steps", skippedWarning("ExerciseSession"), skippedWarning("SleepSession")])).toEqual(["SleepSession", "ExerciseSession"]);
   });
 });

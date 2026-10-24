@@ -41,7 +41,7 @@ Every score is explained on the [metrics pages](https://pulse.portlabs.in/metric
 flowchart LR
   F[Fitbit band] --> G[Google Health app]
   G --> HC[(Health Connect)]
-  HC -->|read permissions, source policy| S[Import on the phone]
+  HC -->|read permissions| S[Import on the phone]
   S --> DB[(SQLite: expo-sqlite, async)]
   DB --> P[Pipeline: stage 1, stage 2, scoring v19]
   P --> DB

@@ -18,14 +18,14 @@ describe("data check summary", () => {
     const [day] = summarize({ Steps: steps, OxygenSaturation: spo2 }, [], [m], [], ["2026-10-06"], TZ);
     const st = day.metrics.find((x) => x.key === "steps")!;
     expect(st.pulse).toBe(6000);
-    expect(st.sources.map((s) => [s.source, s.value, s.fitbit])).toEqual([
-      ["Fitbit app/watch", 6000, true],
-      ["Fitbit app/phone", 4500, false],
+    expect(st.sources.map((s) => [s.source, s.value])).toEqual([
+      ["Fitbit app/watch", 6000],
+      ["Fitbit app/phone", 4500],
     ]);
     const sp = day.metrics.find((x) => x.key === "spo2")!;
     expect(sp.sources[0].detail).toBe("06:30 96");
-    const text = formatReport([day], "fitbit_only");
+    const text = formatReport([day]);
     expect(text).toContain("Steps: Pulse 6000");
-    expect(text).toContain("★ Fitbit app/watch: 6000");
+    expect(text).toContain("Fitbit app/watch: 6000");
   });
 });
