@@ -140,21 +140,18 @@ export const skippedWarning = (type: ReadType) => `skipped_records:${type}`;
 export const skippedTypes = (warnings: readonly string[]) => READ_TYPES.filter((t) => warnings.includes(skippedWarning(t)));
 
 export type ReadOptions = {
-  /** Only these apps' records (Health Connect's dataOriginFilter; see sourcePolicy.ts). */
-  origins?: string[];
   /** Told of each range left out because a record starting in it could not be read. */
   onSkipped?: (range: Range) => void;
 };
 
 /** Every record of `type` in the range, following page tokens (Health Connect's default page size). Ascending by time. */
-async function readPages<T extends ReadType>(type: T, range: Range, origins: string[] | undefined): Promise<RecordResult<T>[]> {
+async function readPages<T extends ReadType>(type: T, range: Range): Promise<RecordResult<T>[]> {
   await ensureInitialized();
   const out: RecordResult<T>[] = [];
   let pageToken: string | undefined;
   do {
     const options: ReadRecordsOptions = {
       timeRangeFilter: { operator: "between", startTime: range.start.toISOString(), endTime: range.end.toISOString() },
-      ...(origins?.length && { dataOriginFilter: origins }),
       ascendingOrder: true,
       pageToken,
     };
@@ -173,7 +170,7 @@ async function readPages<T extends ReadType>(type: T, range: Range, origins: str
  */
 export async function readAll<T extends ReadType>(type: T, range: Range, opts: ReadOptions = {}): Promise<RecordResult<T>[]> {
   try {
-    return await readPages(type, range, opts.origins);
+    return await readPages(type, range);
   } catch (e) {
     if (errorCode(e) !== MALFORMED_RECORD) throw e;
     const [start, end] = [range.start.getTime(), range.end.getTime()];

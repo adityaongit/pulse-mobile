@@ -35,7 +35,7 @@ Run `pnpm typecheck && pnpm lint && pnpm test` before every commit. Run the bund
 ```
 app/          Expo Router routes: one file per screen, _layout.tsx files are navigators. Routes live in the root app/, not in src/.
 src/
-  health/     Health Connect: permissions, record → row mapping, sync, source policy, data check (halo)
+  health/     Health Connect: permissions, record → row mapping, sync, data check (halo)
   data/       the Store interface, the async expo-sqlite store, the in-memory store for tests, the demo seed (halo)
   core/       pure TypeScript: engine/ (the Pulse engine, from the reference study: every score the screens show), scoring and algorithms (halo's, kept for the extras listed in docs/engine-plan.md Phase 7)
   pipeline/   stage 1 and stage 2: imported rows to stored scores (halo)

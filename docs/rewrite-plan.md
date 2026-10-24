@@ -63,7 +63,7 @@ flowchart TB
     Release[EAS, release scripts, in.portlabs.pulse]
   end
   subgraph Take[Take from halo]
-    HC[src/health: Health Connect sync, source policy, data check]
+    HC[src/health: Health Connect sync, data check]
     Store[src/data: async expo-sqlite store, JSON score rows]
     Engine[src/core + src/pipeline: scoring v19]
     Queries[src/queries: view models, superset of ours]
@@ -125,4 +125,4 @@ Each phase lands on its own branch and goes through a PR. Each one ends with the
 ## Open questions
 
 - Package id: keep `in.portlabs.pulse`. Health Connect also needs a privacy-policy rationale activity, which the `react-native-health-connect` config plugin declares.
-- Source policy: halo defaults to `fitbit_only`, which drops records measured by the phone itself. Keep that default.
+- Source policy: halo defaults to `fitbit_only`. Pulse first kept it, then removed it (importer version 7): every app's records are kept and the largest source per day wins for measured totals.

@@ -409,13 +409,13 @@ Docs: [Config plugins](https://docs.expo.dev/config-plugins/introduction/), [Rea
 
 ## Health Connect source
 
-Pulse reads Fitbit data from Health Connect (`react-native-health-connect`, halo's `src/health`). The Google Health app writes the band's data there; Pulse only reads. Onboarding asks for every read type, older data (`READ_HEALTH_DATA_HISTORY`) and background reads in one system sheet. The first import reads the last 180 days (30 without the history permission). Later syncs take a changes token, re-read from 3 days before the last sync and widen back to the oldest record that arrived since. The source policy (Settings › Data source) picks whose records count: Fitbit only (the default), Fitbit first, or all apps. A changed policy or importer version re-imports the whole window. Health Connect carries no ECG, irregular rhythm notifications or personal ranges, so those cards hide. The config plugin adds the permission rationale activity; `app.json` lists the permissions and sets minSdk 26 and SDK 36.
+Pulse reads Fitbit data from Health Connect (`react-native-health-connect`, halo's `src/health`). The Google Health app writes the band's data there; Pulse only reads. Onboarding asks for every read type, older data (`READ_HEALTH_DATA_HISTORY`) and background reads in one system sheet. The first import reads the last 180 days (30 without the history permission). Later syncs take a changes token, re-read from 3 days before the last sync and widen back to the oldest record that arrived since. There is no source setting in Pulse: it takes every app's records and the person picks sources in Health Connect's own settings; for measured totals (steps, distance, calories) the importer takes the largest source per day instead of adding sources up. A changed importer version re-imports the whole window. Health Connect carries no ECG, irregular rhythm notifications or personal ranges, so those cards hide. The config plugin adds the permission rationale activity; `app.json` lists the permissions and sets minSdk 26 and SDK 36.
 
 ```mermaid
 flowchart TB
   Fitbit[Fitbit band] --> GH[Google Health app]
   GH --> HC[(Health Connect)]
-  HC -->|readRecords, source policy| Import[src/health/import.ts: records to rows]
+  HC -->|readRecords, every app| Import[src/health/import.ts: records to rows]
   Import --> Derive[derive.ts: active minutes, zones, resting HR]
   Derive --> Store[(Store)]
   Token[changes token, import state in AsyncStorage] --> Window{Full 180 days or since last sync?}

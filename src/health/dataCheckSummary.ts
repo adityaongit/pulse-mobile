@@ -4,7 +4,7 @@
 import { clock } from "@/lib/format";
 import { localDay } from "@/lib/time";
 import type { Metrics, Session } from "@/data/types";
-import { DEVICE_NAME, isFitbit } from "./sourcePolicy";
+import { DEVICE_NAME } from "./origins";
 import type { ReadType } from "./connect";
 
 export type RawRecord = {
@@ -43,7 +43,7 @@ const startOf = (r: RawRecord): number | null => {
 
 const hhmm = (s: number, tz: string) => clock(s * 1000, tz);
 
-export type SourceLine = { source: string; fitbit: boolean; records: number; value: number | null; detail: string };
+export type SourceLine = { source: string; records: number; value: number | null; detail: string };
 export type MetricLine = { key: string; label: string; unit: string; pulse: number | null; sources: SourceLine[] };
 export type DayCheck = { day: string; metrics: MetricLine[]; sleep: { pulse: string[]; sources: SourceLine[] } };
 
@@ -53,14 +53,14 @@ export function summarize(raw: Partial<Record<ReadType, RawRecord[]>>, sleepRaw:
   const valueOn = (day: string, key: string) => values.find((v) => v.day === day && v.key === key)?.value ?? null;
   return days.map((day) => {
     const lines: MetricLine[] = CHECK_METRICS.map((cm) => {
-      const groups = new Map<string, { fitbit: boolean; values: { t: number; v: number }[] }>();
+      const groups = new Map<string, { values: { t: number; v: number }[] }>();
       for (const r of raw[cm.type] ?? []) {
         const t = startOf(r);
         if (t == null || localDay(t, tz) !== day) continue;
         const v = cm.value(r);
         if (v == null) continue;
         const key = sourceOf(r);
-        const g = groups.get(key) ?? { fitbit: isFitbit(cm.type, r), values: [] };
+        const g = groups.get(key) ?? { values: [] };
         g.values.push({ t, v });
         groups.set(key, g);
       }
@@ -72,9 +72,9 @@ export function summarize(raw: Partial<Record<ReadType, RawRecord[]>>, sleepRaw:
           cm.combine === "list"
             ? vs.slice(0, 8).map((x) => `${hhmm(x.t, tz)} ${round(x.v)}`).join(", ") + (vs.length > 8 ? ` +${vs.length - 8}` : "")
             : `${hhmm(vs[0].t, tz)}–${hhmm(vs[vs.length - 1].t, tz)}`;
-        return { source, fitbit: g.fitbit, records: vs.length, value: round(value), detail };
+        return { source, records: vs.length, value: round(value), detail };
       });
-      sources.sort((a, b) => Number(b.fitbit) - Number(a.fitbit) || b.records - a.records);
+      sources.sort((a, b) => b.records - a.records);
       const m = byDay.get(day);
       const pulse = cm.key === "distance" ? valueOn(day, "distance") : m && cm.pulse ? cm.pulse(m) : null;
       return { key: cm.key, label: cm.label, unit: cm.unit, pulse, sources };
@@ -87,7 +87,7 @@ export function summarize(raw: Partial<Record<ReadType, RawRecord[]>>, sleepRaw:
       if (end == null || start == null || localDay(end, tz) !== day) continue;
       const stages = (r.stages as { stage: number }[] | undefined) ?? [];
       const kinds = [...new Set(stages.map((s) => s.stage))].sort().join(",");
-      sleepSources.push({ source: sourceOf(r), fitbit: isFitbit("SleepSession", r), records: 1, value: round((end - start) / 3600), detail: `${hhmm(start, tz)}–${hhmm(end, tz)}, ${stages.length} stages [${kinds || "none"}]` });
+      sleepSources.push({ source: sourceOf(r), records: 1, value: round((end - start) / 3600), detail: `${hhmm(start, tz)}–${hhmm(end, tz)}, ${stages.length} stages [${kinds || "none"}]` });
     }
     const pulseSleep = sessions
       .filter((s) => s.day === day)
@@ -98,25 +98,19 @@ export function summarize(raw: Partial<Record<ReadType, RawRecord[]>>, sleepRaw:
 
 const round = (v: number) => (Math.abs(v) >= 100 ? Math.round(v) : Math.round(v * 10) / 10);
 
-/**
- * Plain-text report (for Share and for reading back from the device). `opts.source` and `opts.legend` replace the
- * Health Connect header and star legend (the Google check, src/google/dataCheck.ts).
- */
-export function formatReport(days: DayCheck[], policy: string, opts: { source?: string; legend?: string } = {}): string {
-  const out: string[] = [
-    opts.source ? `Pulse data check — ${opts.source}` : `Pulse data check — source policy: ${policy}`,
-    opts.legend ?? "★ = kept by the policy (Fitbit, not phone-measured)",
-  ];
+/** Plain-text report (for Share and for reading back from the device). */
+export function formatReport(days: DayCheck[]): string {
+  const out: string[] = ["Pulse data check — every app's records in Health Connect"];
   for (const d of days) {
     out.push("", `■ ${d.day}`);
     for (const m of d.metrics) {
       if (!m.sources.length && m.pulse == null) continue;
       out.push(`  ${m.label}: Pulse ${m.pulse == null ? "—" : round(m.pulse)}${m.unit ? ` ${m.unit}` : ""}`);
-      for (const s of m.sources) out.push(`    ${s.fitbit ? "★" : " "} ${s.source}: ${s.value}${m.unit ? ` ${m.unit}` : ""} (${s.records} rec; ${s.detail})`);
+      for (const s of m.sources) out.push(`    ${s.source}: ${s.value}${m.unit ? ` ${m.unit}` : ""} (${s.records} rec; ${s.detail})`);
     }
     if (d.sleep.sources.length || d.sleep.pulse.length) {
       out.push(`  Sleep: Pulse ${d.sleep.pulse.join(" | ") || "—"}`);
-      for (const s of d.sleep.sources) out.push(`    ${s.fitbit ? "★" : " "} ${s.source}: ${s.value} h (${s.detail})`);
+      for (const s of d.sleep.sources) out.push(`    ${s.source}: ${s.value} h (${s.detail})`);
     }
   }
   return out.join("\n");

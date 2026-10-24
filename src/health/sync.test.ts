@@ -1,5 +1,5 @@
 // The sync without a device: Health Connect's reads are mocked over fixed records, the Store is in memory. Checks the
-// importer-version re-import (it replaces what an old import wrote) and the source policy.
+// importer-version re-import (it replaces what an old import wrote) and the single source behaviour (every app kept).
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const storage = new Map<string, string>();
@@ -27,7 +27,6 @@ const { MemoryStore } = await import("@/data/memory");
 const { emptyMetrics } = await import("@/data/types");
 const { permissionState, readAll } = await import("@/health/connect");
 const { IMPORT_VERSION, dayOfStoredRecords, fullReason, syncHealthConnect, windowPlan } = await import("./sync");
-const { originFilter, setSourcePolicy } = await import("./sourcePolicy");
 const { IMPORT_STATE_KEY } = await import("./importState");
 
 const TZ = "UTC";
@@ -73,13 +72,13 @@ beforeEach(async () => {
 
 /**
  * Health Connect's read (AOSP RecordHelper.getReadTableWhereClause): the records whose START (an instant record's time)
- * falls in [start, end), not every record overlapping the range, from the given apps when a dataOriginFilter is set.
+ * falls in [start, end), not every record overlapping the range.
  */
 const startTimeRead = (data: Record<string, { metadata: { dataOrigin: string }; startTime?: string; time?: string }[]>) =>
-  (async (type: string, range: { start: Date; end: Date }, _page?: number, origins?: string[]) =>
+  (async (type: string, range: { start: Date; end: Date }, _page?: number) =>
     (data[type] ?? []).filter((r) => {
       const t = Date.parse((r.startTime ?? r.time)!);
-      return t >= range.start.getTime() && t < range.end.getTime() && (!origins || origins.includes(r.metadata.dataOrigin));
+      return t >= range.start.getTime() && t < range.end.getTime();
     })) as never;
 
 async function staleStore() {
@@ -100,27 +99,26 @@ async function staleStore() {
 }
 
 describe("fullReason", () => {
-  const base = { requested: false, lastSyncTs: 1, hasNights: true, hasToken: true, newlyGranted: 0, policy: "fitbit_only" as const, imported: { version: IMPORT_VERSION, policy: "fitbit_only" } };
+  const base = { requested: false, lastSyncTs: 1, hasNights: true, hasToken: true, newlyGranted: 0, imported: { version: IMPORT_VERSION } };
   it("names why a sync reads the whole window, and is null when it does not", () => {
     expect(fullReason(base)).toBeNull();
     expect(fullReason({ ...base, hasToken: false })).toBe("no_changes_token");
     expect(fullReason({ ...base, newlyGranted: 2 })).toBe("newly_granted_types");
     expect(fullReason({ ...base, hasNights: false })).toBe("no_nights");
     expect(fullReason({ ...base, imported: null })).toBe("no_import_state");
-    expect(fullReason({ ...base, imported: { version: IMPORT_VERSION - 1, policy: "fitbit_only" } })).toBe("importer_version");
+    expect(fullReason({ ...base, imported: { version: IMPORT_VERSION - 1 } })).toBe("importer_version");
   });
 });
 
 describe("windowPlan", () => {
-  const base = { requested: false, lastSyncTs: 1, hasNights: true, hasToken: true, newlyGranted: 0, policy: "fitbit_only" as const };
-  it("re-imports when the importer version or the source policy changed, or nothing was recorded", () => {
-    expect(windowPlan({ ...base, imported: { version: IMPORT_VERSION, policy: "fitbit_only" } })).toEqual({ full: false, reimport: false });
-    expect(windowPlan({ ...base, imported: { version: IMPORT_VERSION - 1, policy: "fitbit_only" } })).toEqual({ full: true, reimport: true });
-    expect(windowPlan({ ...base, imported: { version: IMPORT_VERSION, policy: "all" } })).toEqual({ full: true, reimport: true });
+  const base = { requested: false, lastSyncTs: 1, hasNights: true, hasToken: true, newlyGranted: 0 };
+  it("re-imports when the importer version changed, or nothing was recorded", () => {
+    expect(windowPlan({ ...base, imported: { version: IMPORT_VERSION } })).toEqual({ full: false, reimport: false });
+    expect(windowPlan({ ...base, imported: { version: IMPORT_VERSION - 1 } })).toEqual({ full: true, reimport: true });
     expect(windowPlan({ ...base, imported: null })).toEqual({ full: true, reimport: true });
   });
   it("reads the full window without re-importing for the old reasons", () => {
-    const imported = { version: IMPORT_VERSION, policy: "fitbit_only" };
+    const imported = { version: IMPORT_VERSION };
     expect(windowPlan({ ...base, imported, requested: true })).toEqual({ full: true, reimport: false });
     expect(windowPlan({ ...base, imported, hasToken: false })).toEqual({ full: true, reimport: false });
     expect(windowPlan({ ...base, imported, newlyGranted: 1 })).toEqual({ full: true, reimport: false });
@@ -129,29 +127,27 @@ describe("windowPlan", () => {
 });
 
 describe("syncHealthConnect re-import", () => {
-  it("replaces what the old importer wrote for every day in the window, under Fitbit only", async () => {
+  it("replaces what the old importer wrote for every day in the window, keeping every app and the largest source per day", async () => {
     const store = await staleStore();
     const r = await syncHealthConnect(store, { timeZone: TZ, now: NOW, historyDays: 5 });
     expect(r.counts).toMatchObject({ reimport: 1, full: 1 });
     expect(r.from).toBe("2026-10-03");
-    // Fitbit only: the band's 600 steps (not 1,150) and its calories; the other app's day is gone.
+    // The largest source per day (the band's 600 steps against the phone's 590, not 1,150 added up); the other app's day stays.
     const metrics = new Map((await store.allMetrics()).map((m) => [m.day, m]));
     expect(metrics.get("2026-10-04")).toMatchObject({ steps: 600, calories: 1000 });
     expect(metrics.get("2026-10-06")).toMatchObject({ steps: 600, calories: 1000 });
-    expect(metrics.has("2026-10-05")).toBe(false);
+    expect(metrics.get("2026-10-05")).toMatchObject({ steps: 3000, calories: 900 });
     // Stale derived values, per-minute steps and workouts in the window are replaced too.
-    expect((await store.dailyValues({ from: "2026-10-05", to: "2026-10-05" })).length).toBe(0);
-    expect(await store.readSteps(sec("2026-10-05T00:00:00Z"), sec("2026-10-06T00:00:00Z"))).toEqual([]);
+    expect((await store.readSteps(sec("2026-10-05T00:00:00Z"), sec("2026-10-06T00:00:00Z"))).some((s) => s.v === 40)).toBe(false);
     expect((await store.allExercises()).map((e) => e.id)).toEqual([]);
     // The derived minutes come from the band's own minutes: 5 light ones, not the phone's 60.
     const derived = await store.dailyValues({ from: "2026-10-06", to: "2026-10-06" });
     expect(derived.find((v) => v.key === "light_minutes")?.value).toBe(5);
-    // The phone's spread steps are not stored either: only the band's five minutes that day.
-    expect((await store.readSteps(sec("2026-10-06T00:00:00Z"), sec("2026-10-07T00:00:00Z"))).map((s) => s.v)).toEqual([120, 120, 120, 120, 120]);
-    expect(JSON.parse(storage.get(IMPORT_STATE_KEY)!)).toEqual({ version: IMPORT_VERSION, policy: "fitbit_only" });
-    // Health Connect was asked for the Fitbit app's records only, workouts and scale readings aside.
-    expect(hc.readAll.mock.calls.every((c) => JSON.stringify(c[2]?.origins) === JSON.stringify(originFilter("fitbit_only", c[0])))).toBe(true);
-    expect(hc.readAll.mock.calls.some((c) => JSON.stringify(c[2]?.origins) === JSON.stringify([FITBIT]))).toBe(true);
+    // The phone's spread steps are kept too (every app's records are): the band's five minutes, the largest per minute, then the rest of the hour.
+    const minutes = (await store.readSteps(sec("2026-10-06T00:00:00Z"), sec("2026-10-07T00:00:00Z"))).map((s) => s.v);
+    expect(minutes).toHaveLength(60);
+    expect(minutes.slice(0, 5)).toEqual([120, 120, 120, 120, 120]);
+    expect(JSON.parse(storage.get(IMPORT_STATE_KEY)!)).toEqual({ version: IMPORT_VERSION });
   });
 
   it("re-imports once: the next sync is incremental again", async () => {
@@ -241,22 +237,20 @@ describe("syncHealthConnect re-import", () => {
     expect(await dayOfStoredRecords(store, [])).toBeNull();
   });
 
-  it("re-imports under a new policy: all apps brings the other app's day back, still the largest source per day", async () => {
+  it("still reads an import state stored by an older app, with a policy: current version, no re-import", async () => {
     const store = await staleStore();
     await syncHealthConnect(store, { timeZone: TZ, now: NOW, historyDays: 5 });
-    await setSourcePolicy("all");
+    storage.set(IMPORT_STATE_KEY, JSON.stringify({ version: IMPORT_VERSION, policy: "fitbit_only" }));
     const r = await syncHealthConnect(store, { timeZone: TZ, now: NOW, historyDays: 5 });
-    expect(r.counts.reimport).toBe(1);
-    const metrics = new Map((await store.allMetrics()).map((m) => [m.day, m]));
-    expect(metrics.get("2026-10-05")).toMatchObject({ steps: 3000, calories: 900 });
-    expect(metrics.get("2026-10-06")?.steps).toBe(600); // band 600 against the phone's 590
-    expect(JSON.parse(storage.get(IMPORT_STATE_KEY)!)).toEqual({ version: IMPORT_VERSION, policy: "all" });
+    expect(r.counts.reimport).toBeUndefined();
   });
 
-  it("warns when Fitbit only finds nothing from the Fitbit app", async () => {
-    hc.readAll.mockResolvedValue([] as never);
-    const r = await syncHealthConnect(new MemoryStore(), { timeZone: TZ, now: NOW, historyDays: 5 });
-    expect(r.warnings).toContain("no_fitbit_records");
+  it("an install that stored an older version re-imports once under the single behaviour", async () => {
+    const store = await staleStore();
+    storage.set(IMPORT_STATE_KEY, JSON.stringify({ version: IMPORT_VERSION - 1, policy: "fitbit_only" }));
+    const r = await syncHealthConnect(store, { timeZone: TZ, now: NOW, historyDays: 5 });
+    expect(r.counts.reimport).toBe(1);
+    expect(JSON.parse(storage.get(IMPORT_STATE_KEY)!)).toEqual({ version: IMPORT_VERSION });
   });
 });
 

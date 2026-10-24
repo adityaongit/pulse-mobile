@@ -31,12 +31,12 @@ import { addDays, daysBetween, localDay, localMidnight } from "@/lib/time";
 import { slice, sliced } from "@/lib/yield";
 import { resolveMaxHr } from "@/pipeline/index";
 import { forgetChanges, readImportState, TOKEN_KEY, TYPES_KEY, writeImportState } from "@/health/importState";
-import { applySourcePolicySteps, getSourcePolicy, originBreakdown, originFilter, type SourcePolicy } from "@/health/sourcePolicy";
+import { originBreakdown } from "@/health/origins";
 
 export { forgetChanges };
 
 /**
- * The importer's mapping version: bump when the importer's mapping changes (import.ts, derive.ts, the source policy, or
+ * The importer's mapping version: bump when the importer's mapping changes (import.ts, derive.ts, or
  * what sync.ts writes), so installed apps re-import the whole history window once under the new mapping and replace
  * what the old one wrote. 1: the first port. 2: the formula audit (steps and other measured totals from the largest
  * source, derived minutes on heart-rate reserve from the largest source's steps, staged nights' stage minutes kept) and
@@ -46,12 +46,13 @@ export { forgetChanges };
  * temperature, nightly vitals from the fallback windows, a nap promoted to the main sleep, the night's minutes counted
  * as sedentary); heart-rate and steps records running over midnight keep their samples after it. 4: every HRV sample is
  * kept (`hrv_days`), not only the nightly mean, for the Pulse engine. 5: under the Fitbit policies, other apps' workouts
- * that overlap none of the Fitbit's and smart scale readings are kept (sourcePolicy.ts OTHER_APPS), and a malformed
+ * that overlap none of the Fitbit's and smart scale readings are kept (the old source policy), and a malformed
  * record is left out instead of failing the sync. 6: a sync replaces the window's source-derived daily totals (calories
  * eaten, water, distance and the rest), so a record deleted in Health Connect no longer leaves its day's total behind,
- * and a sync that finds deletions replaces the window it re-reads (see replaceWindow).
+ * and a sync that finds deletions replaces the window it re-reads (see replaceWindow). 7: the source policy is gone; every
+ * app's records are kept, the largest source per day for measured totals.
  */
-export const IMPORT_VERSION = 6;
+export const IMPORT_VERSION = 7;
 
 /**
  * How far before the window's first local midnight the reads start. Health Connect returns a record only to a read whose
@@ -101,7 +102,7 @@ export type SyncResult = {
   to: string;
   /** Rows written per kind, plus records read per type. */
   counts: Record<string, number>;
-  /** Hints, never errors: "history_permission_missing", "permission_missing:<Type>", "no_fitbit_records". */
+  /** Hints, never errors: "history_permission_missing", "permission_missing:<Type>". */
   warnings: string[];
   /** Health Connect had nothing new since the last sync, so nothing was read: the last sync's read-time warnings stand. */
   unchanged?: true;
@@ -115,7 +116,7 @@ const MAX_CHANGE_PAGES = 400;
 
 /**
  * Whether this sync reads the whole history window, and whether it re-imports it: clears what the earlier imports wrote
- * for those days first, because the importer's version or the source policy changed (or nothing was recorded yet), so
+ * for those days first, because the importer's version changed (or nothing was recorded yet), so
  * a day the new mapping leaves empty doesn't keep old values. Pure, for the tests.
  */
 export function windowPlan(a: {
@@ -124,11 +125,10 @@ export function windowPlan(a: {
   hasNights: boolean;
   hasToken: boolean;
   newlyGranted: number;
-  imported: { version: number; policy: string } | null;
-  policy: SourcePolicy;
+  imported: { version: number } | null;
   importVersion?: number;
 }): { full: boolean; reimport: boolean } {
-  const reimport = !a.imported || a.imported.version < (a.importVersion ?? IMPORT_VERSION) || a.imported.policy !== a.policy;
+  const reimport = !a.imported || a.imported.version < (a.importVersion ?? IMPORT_VERSION);
   const full = reimport || a.requested || a.lastSyncTs === null || !a.hasNights || !a.hasToken || a.newlyGranted > 0;
   return { full, reimport };
 }
@@ -137,7 +137,6 @@ export function windowPlan(a: {
 export function fullReason(a: Parameters<typeof windowPlan>[0]): string | null {
   if (!a.imported) return "no_import_state";
   if (a.imported.version < (a.importVersion ?? IMPORT_VERSION)) return "importer_version";
-  if (a.imported.policy !== a.policy) return "source_policy";
   if (a.requested) return "requested";
   if (a.lastSyncTs === null) return "first_sync";
   if (!a.hasNights) return "no_nights";
@@ -236,11 +235,9 @@ export async function syncHealthConnect(store: Store, opts: SyncOptions): Promis
     const knownTypes = new Set<string>(typesJson ? (JSON.parse(typesJson) as string[]) : []);
     const newlyGranted = grantedTypes.filter((t) => !knownTypes.has(t));
 
-    // Which records count (sourcePolicy.ts), and whether the stored rows were imported under this mapping and policy.
-    const policy = await getSourcePolicy();
     // Types with a record Health Connect could not read (malformed by the app that wrote it), left out and reported.
     const skipped = new Set<ReadType>();
-    const readOptions = (type: ReadType): ReadOptions => ({ origins: originFilter(policy, type), onSkipped: () => skipped.add(type) });
+    const readOptions = (type: ReadType): ReadOptions => ({ onSkipped: () => skipped.add(type) });
     const plan = windowPlan({
       requested: !!opts.full,
       lastSyncTs: state.lastSyncTs,
@@ -248,9 +245,8 @@ export async function syncHealthConnect(store: Store, opts: SyncOptions): Promis
       hasToken: !!token,
       newlyGranted: newlyGranted.length,
       imported: await readImportState(),
-      policy,
     });
-    const why = fullReason({ requested: !!opts.full, lastSyncTs: state.lastSyncTs, hasNights, hasToken: !!token, newlyGranted: newlyGranted.length, imported: await readImportState(), policy });
+    const why = fullReason({ requested: !!opts.full, lastSyncTs: state.lastSyncTs, hasNights, hasToken: !!token, newlyGranted: newlyGranted.length, imported: await readImportState() });
     if (why) counts[`why:${why}`] = 1;
     if (plan.reimport) {
       await forgetChanges();
@@ -319,17 +315,15 @@ export async function syncHealthConnect(store: Store, opts: SyncOptions): Promis
 
     // 1. Whole-window reads.
     const input: HealthInput = {};
-    let recordsKept = 0;
     const windowTypes = WINDOW_TYPES.filter((t) => granted.has(t));
     const takeWindow = readAhead(windowTypes.length, READ_CONCURRENCY, (k) => readAll(windowTypes[k], range(windowTypes[k]), readOptions(windowTypes[k])));
     let windowRead = 0;
     for (const type of WINDOW_TYPES) {
       progress(`read:${type}`, done, total);
       if (granted.has(type)) {
-        const records = await sliced(applySourcePolicySteps(type, (await takeWindow(windowRead++)) as never, policy, tz));
+        const records = (await takeWindow(windowRead++)) as unknown[];
         (input as Record<string, unknown[]>)[type] = records;
         counts[`read:${type}`] = records.length;
-        recordsKept += records.length;
       }
       done++;
     }
@@ -355,7 +349,7 @@ export async function syncHealthConnect(store: Store, opts: SyncOptions): Promis
     const derived: DailyValue[] = [];
 
     // A re-import replaces: what earlier imports wrote for these days goes before the new rows are written, so a day the
-    // new mapping or policy leaves without steps, a workout or a derived minute doesn't keep the old one. The first day
+    // new mapping leaves without steps, a workout or a derived minute doesn't keep the old one. The first day
     // goes too: the reads' lead (READ_LEAD_S) brings back its night, which began before the window.
     if (plan.reimport) await store.clearImported({ from: fromDay, to: today }, windowStart, nowTs + 1);
     // A deletion only replaces the window's imported rows: the scores stay, and stage 2 redoes the days whose inputs changed.
@@ -387,9 +381,8 @@ export async function syncHealthConnect(store: Store, opts: SyncOptions): Promis
     /** The day's records of `type`: those begun on it, and those begun before it that run past its midnight. */
     const dayRecords = async <T extends "HeartRate" | "Steps">(type: T, dayStart: number) => {
       const [raw, leadRaw] = await takeDay(dayRead++);
-      const read = await sliced(applySourcePolicySteps(type, raw as RecordResult<T>[], policy, tz));
-      recordsKept += read.length;
-      const before = leadRaw ? await sliced(applySourcePolicySteps(type, leadRaw as RecordResult<T>[], policy, tz)) : spill[type];
+      const read = raw as RecordResult<T>[];
+      const before = leadRaw ? (leadRaw as RecordResult<T>[]) : spill[type];
       return uniqueRecords([...before.filter((r) => ts(r.endTime) > dayStart), ...read]) as RecordsOf<T>;
     };
     for (let i = 0; i < dayCount; i++) {
@@ -499,9 +492,6 @@ export async function syncHealthConnect(store: Store, opts: SyncOptions): Promis
     counts.metrics = metrics.length;
     done++;
 
-    // Under "Fitbit only", nothing at all from the Fitbit app means the policy is hiding everything (another band's app,
-    // or Google Health not sharing yet): say so rather than show an empty Pulse.
-    if (policy === "fitbit_only" && recordsKept === 0 && plan.full) warnings.push("no_fitbit_records");
     for (const type of skipped) warnings.push(skippedWarning(type));
 
     const firstDay = state.firstDay && state.firstDay < fromDay ? state.firstDay : fromDay;
@@ -511,7 +501,7 @@ export async function syncHealthConnect(store: Store, opts: SyncOptions): Promis
     // the next sync into a read of the whole window.
     else if (!token) await forgetChanges();
     // Recorded last: a sync that fails part-way re-imports again next time.
-    await writeImportState({ version: IMPORT_VERSION, policy });
+    await writeImportState({ version: IMPORT_VERSION });
     progress("done", done, total);
     return { from: fromDay, to: today, counts, warnings };
   } catch (e) {
@@ -521,7 +511,7 @@ export async function syncHealthConnect(store: Store, opts: SyncOptions): Promis
   }
 }
 
-/** `origins`: "app/device: count" per origin and device type (sourcePolicy.ts originBreakdown). */
+/** `origins`: "app/device: count" per origin and device type (origins.ts originBreakdown). */
 export type HealthConnectDescription = { type: ReadType; count: number; origins: string[]; latest: string | null; error?: string };
 
 /** What Health Connect holds for the last `days` days, per type: a diagnostics list for the Settings screen. */
@@ -536,8 +526,7 @@ export async function describeHealthConnect(days = 7, now = new Date()): Promise
         const t = recordStart(r as { time?: string; startTime?: string });
         if (t !== null && (latest === null || t > latest)) latest = t;
       }
-      // Every app and device that wrote this type, with counts ("com.fitbit.FitbitMobile/watch: 412"), whatever the
-      // source policy keeps, so the list shows what the policy leaves out too.
+      // Every app and device that wrote this type, with counts ("com.fitbit.FitbitMobile/watch: 412"), whatever Pulse imports.
       out.push({ type, count: records.length, origins: originBreakdown(records), latest: latest === null ? null : new Date(latest * 1000).toISOString() });
     } catch (e) {
       out.push({ type, count: 0, origins: [], latest: null, error: e instanceof Error ? e.message : String(e) });
