@@ -81,7 +81,8 @@
     "android": "expo run:android",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "export-fixtures": "tsx scripts/export-fixtures.ts"
   },
   "private": true,
   "packageManager": "pnpm@11.17.0",
