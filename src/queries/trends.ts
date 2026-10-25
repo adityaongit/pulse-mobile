@@ -22,6 +22,7 @@ export type TrendMetricKey =
   | "steps"
   | "weight"
   | "body_fat"
+  | "bp"
   | ExtraKey;
 
 /** The Trends picker's sections, in order (ids; `groupLabel(id)` names them). */
@@ -90,6 +91,7 @@ const CORE_DEFS = [
   { key: "steps", group: "activity", name: (lng) => i18n.t("metrics:label.steps", { lng }), format: "grouped", colorBy: "single", direction: "up", href: metricHref("steps"), column: "steps", pick: (r) => r.metrics?.steps, partialToday: true },
   { key: "weight", group: "body", name: (lng) => i18n.t("metrics:label.weight", { lng }), unit: "kg", format: "decimal1", colorBy: "single", direction: "neutral", href: metricHref("weight"), column: "weight_kg", pick: (r) => r.metrics?.weightKg },
   { key: "body_fat", group: "body", name: (lng) => i18n.t("metrics:label.body_fat", { lng }), unit: "%", format: "decimal1", colorBy: "single", direction: "down", href: metricHref("body_fat"), column: "body_fat_pct", pick: (r) => r.metrics?.bodyFatPct },
+  { key: "bp", group: "vitals", name: (lng) => i18n.t("metrics:label.bp", { lng }), unit: "mmHg", format: "int", colorBy: "single", direction: "down", href: metricHref("bp"), column: "blood_pressure_systolic_mmhg", pick: (r) => r.healthMonitor?.bloodPressure?.systolic },
 ] as const satisfies readonly (Omit<TrendMetric, "label" | "infoTitle"> & { name: (lng?: string) => string })[];
 
 /** `label` is a getter, so the name resolves when it is read, in the language then in use. */

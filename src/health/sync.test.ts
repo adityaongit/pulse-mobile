@@ -370,4 +370,30 @@ describe("syncHealthConnect under Health Connect's start-time reads", () => {
     expect(r.from).toBe(D);
     expect(await periods()).toEqual(once);
   });
+
+  it("syncs blood pressure records through syncHealthConnect into the store", async () => {
+    const bpData = {
+      BloodPressure: [
+        {
+          metadata: { id: "bp-sync-1", dataOrigin: "com.omronhealthcare.omronconnect" },
+          time: "2026-10-06T14:30:00Z",
+          systolic: { inMillimetersOfMercury: 124 },
+          diastolic: { inMillimetersOfMercury: 82 },
+        },
+      ],
+    };
+    hc.readAll.mockImplementation(startTimeRead(bpData as never));
+    granted(["BloodPressure"]);
+    const store = await profiled();
+    const res = await syncHealthConnect(store, { timeZone: TZ, now: new Date("2026-10-08T12:00:00Z"), historyDays: 7 });
+    expect(res.counts.bloodPressure).toBe(1);
+    const stored = await store.allBloodPressure();
+    expect(stored).toHaveLength(1);
+    expect(stored[0]).toMatchObject({
+      id: "bp-sync-1",
+      systolicMmhg: 124,
+      diastolicMmhg: 82,
+      sourceApplication: "com.omronhealthcare.omronconnect",
+    });
+  });
 });
