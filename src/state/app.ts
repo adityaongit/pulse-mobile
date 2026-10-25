@@ -11,6 +11,11 @@ import { AppState } from "react-native";
 import { markUiRuntime, registerAppStore, runSync, type Source } from "@/background/runSync";
 import { startBackground } from "@/background/startup";
 import { deleteAllPhotos, deletePhoto } from "@/actions/photo";
+import {
+  deleteBloodPressureCalibration,
+  logBloodPressureCalibration,
+  type BloodPressureCalibrationInput,
+} from "@/actions/bloodPressure";
 import { openStore } from "@/data/db";
 import { memoStore } from "@/data/memo";
 import { seedDemo } from "@/data/seed";
@@ -394,3 +399,16 @@ export const stepLabel = (step: string): string => {
   }
   return Object.hasOwn(STEP_LABEL, step) ? i18n.t(STEP_LABEL[step as keyof typeof STEP_LABEL]) : step;
 };
+
+/** Logs a manual brachial cuff calibration reading, runs the pipeline, and bumps `dataVersion`. */
+export async function saveManualBloodPressure(input: BloodPressureCalibrationInput) {
+  const ctx = actionCtx();
+  return logBloodPressureCalibration(input, { store: ctx.store, profile: ctx.profile, onChanged: dataChanged });
+}
+
+/** Deletes a manual brachial cuff calibration reading, runs the pipeline, and bumps `dataVersion`. */
+export async function removeManualBloodPressure(id: string) {
+  const ctx = actionCtx();
+  await deleteBloodPressureCalibration(id, { store: ctx.store, profile: ctx.profile, onChanged: dataChanged });
+}
+
