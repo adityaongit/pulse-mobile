@@ -898,3 +898,8 @@ Health Connect's change feed (`getChanges`) says which records were written (wit
 ## Opening a workout in Coach
 
 Each workout link starts a fresh Expo Router chat using `n`, carries the workout ID, and keeps the preview as the opening exchange. The ID is saved in message metadata so follow-up questions still refer to that workout after reopening the chat. Route parameters are cleared after the first full answer. Hash-only links do not scroll native stat rows; zone rows use their explicit trend routes.
+
+
+## Sleep analysis uses the wake-up date
+
+Sleep Coach links carry the selected wake-up date in Expo Router params, then message metadata for saved follow-ups. The preview uses the existing sleep digest and a session-only cache keyed by night data, provider, model and instructions, including language and display units. Matching concurrent requests share one promise; failures are not cached. Coach settings can disable automatic sleep requests while keeping analysis available on tap.

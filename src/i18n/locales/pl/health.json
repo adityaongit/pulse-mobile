@@ -282,7 +282,7 @@
     "steps": "Więcej kroków dziennie wiąże się z niższą śmiertelnością. Punkt odniesienia to 8 000 dziennie (6 000 od 60. roku życia), a zaliczanie kończy się na 10 000 (8 000 od 60). Dni bez tętna lub kroków są pomijane, więc opaska zostawiona na ładowarce nie jest odczytywana jako leniwy dzień.",
     "vo2max": "Wyższa wydolność krążeniowo-oddechowa to jeden z najsilniejszych predyktorów dłuższego życia. Punkt odniesienia pochodzi z tabeli dla Twojego wieku i płci; każdy ml/kg/min powyżej odejmuje około 0,4 roku, każdy poniżej dodaje tyle samo. Z odczytów VO2 max z Fitbit.",
     "restingHr": "Wyższe tętno spoczynkowe wiąże się z wyższą śmiertelnością. Punkt odniesienia pochodzi z tabeli dla Twojego wieku i płci; każde 10 bpm powyżej dodaje około 1,2 roku.",
-    "leanMass": "Część Twojej wagi, która nie jest tłuszczem. Punkt odniesienia to 100 minus typowa zawartość tłuszczu dla Twojego wieku i płci. Zejście poniżej kosztuje lata, tym szybciej, im dalej jesteś; od 35. roku życia przekroczenie go trochę odejmuje, bardziej z wiekiem. Z Twoich odczytów tkanki tłuszczowej."
+    "leanMass": "Część Twojej masy ciała bez tłuszczu, obliczona z odczytów tkanki tłuszczowej. Cel zależy od wieku i płci. Wynik poniżej celu dodaje lata do Pulse Age. W wieku 35 lat lub mniej osiągnięcie albo przekroczenie celu daje wkład 0,0 lat; nie obniża Pulse Age. Powyżej 35 lat przekroczenie celu może obniżyć Pulse Age, a efekt rośnie z wiekiem."
   },
   "hs": {
     "source": "Populacyjne badania śmiertelności",

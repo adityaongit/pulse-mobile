@@ -79,6 +79,19 @@ describe("coach turn", () => {
     expect(JSON.stringify(prompts.at(-1))).toContain("selected-ride");
   });
 
+  it("keeps the selected sleep night on first turn and saved follow-ups", async () => {
+    const { model, prompts } = scripted();
+    const d = deps({ model: async () => ({ model, provider: "anthropic", instructions: null }) });
+    const first = { ...user("sleep-question", "Analyze this night"), metadata: { sleepDay: "2026-10-01" } };
+    await last(await coachTurn(d, "sleep-chat", [first]));
+    expect(JSON.stringify(prompts[0])).toContain("Selected sleep data");
+    expect(JSON.stringify(prompts[0])).toContain("2026-10-01");
+    const saved = d.saved.get("sleep-chat")!;
+    await last(await coachTurn(d, "sleep-chat", [...saved.map((m) => ({ ...m, metadata: undefined })), user("sleep-follow", "And efficiency?")]));
+    expect(JSON.stringify(prompts.at(-1))).toContain("Selected sleep data");
+    expect(JSON.stringify(prompts.at(-1))).toContain("2026-10-01");
+  });
+
   it("streams a tool card then the answer, and saves the whole chat", async () => {
     const { model, prompts } = scripted();
     const d = deps({ model: async () => ({ model, provider: "anthropic", instructions: "Short and direct." }) });

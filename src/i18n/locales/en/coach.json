@@ -192,5 +192,15 @@
   },
   "workout": {
     "expand": "Expand this workout analysis."
+  },
+  "sleep": {
+    "settingsTitle": "Sleep analysis",
+    "analyze": "Analyze each night",
+    "analyzeHint": "Show an automatic sleep summary when opening a night. Uses your AI provider. Off, analysis runs only when tapped.",
+    "ask": "Ask Coach about this night",
+    "question": "Analyze my sleep ending on {{day}}.",
+    "expand": "Expand this sleep analysis.",
+    "spokenText": "Ask Coach about this night. {{text}}",
+    "spokenAnalyzing": "Coach is analyzing this night. Tap to open the chat."
   }
 }

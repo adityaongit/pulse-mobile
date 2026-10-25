@@ -280,7 +280,7 @@
     "steps": "More daily steps go with lower mortality. The reference is 8,000 a day (6,000 from 60), and credit stops at 10,000 (8,000 from 60). Days without heart rate or steps are left out, so a band left on the charger isn't read as a lazy day.",
     "vo2max": "Higher cardiorespiratory fitness is one of the strongest predictors of a longer life. The reference comes from a table for your age and sex; each ml/kg/min above it takes about 0.4 years off, each below adds about as much. From Fitbit's VO2 max readings.",
     "restingHr": "A higher resting heart rate is linked to higher mortality. The reference comes from a table for your age and sex; each 10 bpm above it adds about 1.2 years.",
-    "leanMass": "The share of your weight that isn't fat. The reference is 100 less the typical body fat for your age and sex. Falling short of it costs years, faster the further you are; from 35, beating it takes a little off, more so with age. From your body fat readings."
+    "leanMass": "The share of your weight that isn't fat, calculated from your body fat readings. The target depends on your age and sex. Below the target adds years to Pulse Age. At age 35 or younger, meeting or beating the target contributes 0.0 years; it does not lower Pulse Age. Above 35, beating the target can lower Pulse Age, with a larger effect as you age."
   },
   "hs": {
     "source": "Population mortality studies",

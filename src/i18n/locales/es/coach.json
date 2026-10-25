@@ -192,5 +192,15 @@
   },
   "workout": {
     "expand": "Amplía este análisis del entrenamiento."
+  },
+  "sleep": {
+    "settingsTitle": "Análisis del sueño",
+    "analyze": "Analizar cada noche",
+    "analyzeHint": "Mostrar un resumen automático al abrir una noche usando tu proveedor de IA. Desactivado, el análisis solo se inicia al tocar.",
+    "ask": "Preguntar a Coach sobre esta noche",
+    "question": "Analiza mi sueño que termina el {{day}}.",
+    "expand": "Amplía este análisis del sueño.",
+    "spokenText": "Preguntar a Coach sobre esta noche. {{text}}",
+    "spokenAnalyzing": "Coach está analizando esta noche. Toca para abrir el chat."
   }
 }

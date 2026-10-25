@@ -1,5 +1,8 @@
 // Sleep `/sleep` (spec §7.4), ported from pulse src/app/(app)/sleep/page.tsx. Left out: the Sleep Stress card
 // (`FEATURES.sleepStress`, off).
+import { useCoachSetup } from "@/coach/session";
+import { coachReady } from "@/coach/providers";
+import { CoachGlance } from "../activity/CoachGlance";
 import { Fragment } from "react";
 import { View } from "react-native";
 import { Trans, useTranslation } from "react-i18next";
@@ -25,7 +28,7 @@ import { useShellCalendar } from "@/ui/shells/ShellStatus";
 import { Text } from "@/ui/Text";
 import { SLEEP_INFO, TONIGHT_INFO } from "../_lib/info";
 import { statProps } from "../_lib/view";
-import { useScreen } from "../useScreen";
+import { useScreen, useDataVersion } from "../useScreen";
 import { cardInfoFor } from "./cardInfoFor";
 import { HoursVsNeed, SleepConsistency, SleepEfficiency } from "./SleepCards";
 import { WeeklyTrends } from "../trends/WeeklyTrends";
@@ -68,69 +71,77 @@ export function SleepScreen() {
 }
 
 function Sleep({ vm, weekly, timeZone }: { vm: SleepPageVM; weekly: TrendViewVM[]; timeZone: string }) {
-  const { t } = useTranslation("sleep");
+  const { t, i18n } = useTranslation("sleep");
+  const { t: coachT } = useTranslation("coach");
+  const setup = useCoachSetup();
+  const version = useDataVersion();
+  const coach = coachReady(setup) && vm.hours.value !== null;
   const { today } = useShellCalendar();
   const d = vm.day;
   const p = vm.performance;
   return (
-    <DetailShell
-      title={t("title")}
-      bodySkeleton={SLEEP_BODY_SKELETON}
-      info={SLEEP_INFO}
-      dateSwitcher={{ mode: "day", placement: "header", steppers: false }}
-      notch
-      hero={
-        <ScoreDial
-          variant="sleep"
-          size="lg"
-          value={p.value}
-          reason={p.reason}
-          nightsLeft={p.nightsLeft}
-          provisional={p.provisional}
-          tags={p.tags}
-          status={p.value === null ? undefined : p.value >= 85 ? "optimal" : p.value >= 70 ? "sufficient" : "poor"}
-        />
-      }
-      summary={
-        <Card className="gap-0 px-4 py-1">
-          {vm.summary.map((k, i) => (
-            <Fragment key={k.key}>
-              {i > 0 && <View className="h-px bg-border" />}
-              <KeyStatRow variant="row" {...statProps(k, { d, today })} average={null} direction="none" />
-            </Fragment>
-          ))}
-          <View className={cn(INSET_ROW, "mb-3 mt-1 flex-row flex-wrap items-center gap-x-4 gap-y-1 py-2")}>
-            {STATUS_LEGEND.map(([swatch, word]) => (
-              <View key={word} className="flex-row items-center gap-1.5">
-                <View accessibilityElementsHidden className={cn("h-1 w-4 rounded-sm", swatch)} />
-                <Text className="text-xs font-medium leading-4 text-foreground-secondary">{t(`status.${word}`)}</Text>
-              </View>
+    <View className="flex-1">
+      <DetailShell
+        title={t("title")}
+        floatingAction={!coach}
+        bodySkeleton={SLEEP_BODY_SKELETON}
+        info={SLEEP_INFO}
+        dateSwitcher={{ mode: "day", placement: "header", steppers: false }}
+        notch
+        hero={
+          <ScoreDial
+            variant="sleep"
+            size="lg"
+            value={p.value}
+            reason={p.reason}
+            nightsLeft={p.nightsLeft}
+            provisional={p.provisional}
+            tags={p.tags}
+            status={p.value === null ? undefined : p.value >= 85 ? "optimal" : p.value >= 70 ? "sufficient" : "poor"}
+          />
+        }
+        summary={
+          <Card className="gap-0 px-4 py-1">
+            {vm.summary.map((k, i) => (
+              <Fragment key={k.key}>
+                {i > 0 && <View className="h-px bg-border" />}
+                <KeyStatRow variant="row" {...statProps(k, { d, today })} average={null} direction="none" />
+              </Fragment>
             ))}
-          </View>
-        </Card>
-      }
-      insight={vm.insight ? <InsightCard body={vm.insight} action={{ label: t("insight.explore"), href: trendHref("sleep", { d, today }) }} /> : undefined}
-      primary={
-        <SectionShell variant="card" title={t("cards.lastNight")} aside={t("cards.vsPrior30")} info={cardInfoFor("Last night’s sleep", t("cards.lastNight"))}>
-          <SleepStages hours={vm.hours} hr={vm.nightHr} data={vm.stages} restorative={vm.restorative} />
-        </SectionShell>
-      }
-      secondary={[
-        <SectionShell key="need" variant="card" title={t("cards.hoursVsNeeded")} info={cardInfoFor("Hours vs. needed", t("cards.hoursVsNeeded"))}>
-          <HoursVsNeed vm={vm} />
-        </SectionShell>,
-        <SectionShell key="consistency" variant="card" title={t("cards.consistency")} info={cardInfoFor("Sleep consistency", t("cards.consistency"))}>
-          <SleepConsistency vm={vm} />
-        </SectionShell>,
-        <SectionShell key="efficiency" variant="card" title={t("cards.efficiency")} info={cardInfoFor("Sleep efficiency", t("cards.efficiency"))}>
-          <SleepEfficiency vm={vm} />
-        </SectionShell>,
-        <SectionShell key="planner" id="planner" variant="card" title={t("cards.tonight")} info={TONIGHT_INFO}>
-          <Planner vm={vm} timeZone={timeZone} />
-        </SectionShell>,
-      ]}
-      footer={<WeeklyTrends cards={weekly} d={d} today={today} />}
-    />
+            <View className={cn(INSET_ROW, "mb-3 mt-1 flex-row flex-wrap items-center gap-x-4 gap-y-1 py-2")}>
+              {STATUS_LEGEND.map(([swatch, word]) => (
+                <View key={word} className="flex-row items-center gap-1.5">
+                  <View accessibilityElementsHidden className={cn("h-1 w-4 rounded-sm", swatch)} />
+                  <Text className="text-xs font-medium leading-4 text-foreground-secondary">{t(`status.${word}`)}</Text>
+                </View>
+              ))}
+            </View>
+          </Card>
+        }
+        insight={vm.insight ? <InsightCard body={vm.insight} action={{ label: t("insight.explore"), href: trendHref("sleep", { d, today }) }} /> : undefined}
+        primary={
+          <SectionShell variant="card" title={t("cards.lastNight")} aside={t("cards.vsPrior30")} info={cardInfoFor("Last night’s sleep", t("cards.lastNight"))}>
+            <SleepStages hours={vm.hours} hr={vm.nightHr} data={vm.stages} restorative={vm.restorative} />
+          </SectionShell>
+        }
+        secondary={[
+          <SectionShell key="need" variant="card" title={t("cards.hoursVsNeeded")} info={cardInfoFor("Hours vs. needed", t("cards.hoursVsNeeded"))}>
+            <HoursVsNeed vm={vm} />
+          </SectionShell>,
+          <SectionShell key="consistency" variant="card" title={t("cards.consistency")} info={cardInfoFor("Sleep consistency", t("cards.consistency"))}>
+            <SleepConsistency vm={vm} />
+          </SectionShell>,
+          <SectionShell key="efficiency" variant="card" title={t("cards.efficiency")} info={cardInfoFor("Sleep efficiency", t("cards.efficiency"))}>
+            <SleepEfficiency vm={vm} />
+          </SectionShell>,
+          <SectionShell key="planner" id="planner" variant="card" title={t("cards.tonight")} info={TONIGHT_INFO}>
+            <Planner vm={vm} timeZone={timeZone} />
+          </SectionShell>,
+        ]}
+        footer={<WeeklyTrends cards={weekly} d={d} today={today} />}
+      />
+    {coach && <CoachGlance key={JSON.stringify([d, version, i18n.language, setup])} id={d} sleepDay={d} question={coachT("sleep.question", { day: d })} auto={setup?.autoSleepAnalysis ?? true} />}
+    </View>
   );
 }
 

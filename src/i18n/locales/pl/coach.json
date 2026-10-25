@@ -194,5 +194,15 @@
   },
   "workout": {
     "expand": "Rozwiń tę analizę treningu."
+  },
+  "sleep": {
+    "settingsTitle": "Analiza snu",
+    "analyze": "Analizuj każdą noc",
+    "analyzeHint": "Pokaż automatyczne podsumowanie po otwarciu nocy, używając dostawcy AI. Po wyłączeniu analiza zaczyna się tylko po dotknięciu.",
+    "ask": "Zapytaj Coach o tę noc",
+    "question": "Przeanalizuj mój sen kończący się {{day}}.",
+    "expand": "Rozwiń tę analizę snu.",
+    "spokenText": "Zapytaj Coach o tę noc. {{text}}",
+    "spokenAnalyzing": "Coach analizuje tę noc. Dotknij, aby otworzyć czat."
   }
 }

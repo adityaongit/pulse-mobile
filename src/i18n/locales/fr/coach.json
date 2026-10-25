@@ -192,5 +192,15 @@
   },
   "workout": {
     "expand": "Développe cette analyse de séance."
+  },
+  "sleep": {
+    "settingsTitle": "Analyse du sommeil",
+    "analyze": "Analyser chaque nuit",
+    "analyzeHint": "Afficher un résumé automatique à l’ouverture d’une nuit avec votre fournisseur IA. Sinon, l’analyse démarre uniquement au toucher.",
+    "ask": "Interroger Coach sur cette nuit",
+    "question": "Analyse mon sommeil se terminant le {{day}}.",
+    "expand": "Développe cette analyse du sommeil.",
+    "spokenText": "Interroger Coach sur cette nuit. {{text}}",
+    "spokenAnalyzing": "Coach analyse cette nuit. Touchez pour ouvrir la discussion."
   }
 }

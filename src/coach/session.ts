@@ -9,6 +9,7 @@ import { coachReady, modelFor } from "./providers";
 import { apiKey, chatCount, coachSetup, loadChat, saveChat, subscribe, type CoachSetup } from "./storage";
 import { CoachTransport, type CoachModel } from "./transport";
 import { testKey, type ProviderInput } from "./validate";
+import { createSleepGlance } from "./sleep";
 import { workoutGlance } from "./workout";
 
 /** The model for a turn: consent, a provider and model, and a key the keystore can read; else null. */
@@ -16,7 +17,7 @@ export async function deviceModel(): Promise<CoachModel | null> {
   const s = await coachSetup();
   if (!coachReady(s) || !s.provider || !s.model) return null;
   const model = modelFor({ provider: s.provider, model: s.model, apiKey: await apiKey(), baseUrl: s.baseUrl }, deviceFetch);
-  return model ? { model, provider: s.provider, instructions: s.instructions } : null;
+  return model ? { model, provider: s.provider, instructions: s.instructions, cacheKey: JSON.stringify([s.provider, s.model, s.baseUrl, s.last4]) } : null;
 }
 
 /** The person's query context as of now; null before onboarding. */
@@ -41,6 +42,9 @@ export function deviceTransport(): CoachTransport {
 
 /** The coach's one-line take on a workout, from the phone (the activity screen's pill). */
 export const deviceWorkoutGlance = (id: string) => workoutGlance({ ctx: currentCtx, model: deviceModel }, id);
+
+const sleepGlance = createSleepGlance();
+export const deviceSleepGlance = (day: string) => sleepGlance({ ctx: currentCtx, model: deviceModel }, day);
 
 /** The tiny test request, from the phone. */
 export const testDeviceKey = (input: ProviderInput) => testKey(input, deviceFetch);

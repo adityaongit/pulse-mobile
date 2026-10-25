@@ -192,5 +192,15 @@
   },
   "workout": {
     "expand": "Erkläre diese Trainingsanalyse genauer."
+  },
+  "sleep": {
+    "settingsTitle": "Schlafanalyse",
+    "analyze": "Jede Nacht analysieren",
+    "analyzeHint": "Beim Öffnen einer Nacht automatisch eine Schlafzusammenfassung mit deinem KI-Anbieter erstellen. Ausgeschaltet startet die Analyse nur beim Tippen.",
+    "ask": "Coach zu dieser Nacht fragen",
+    "question": "Analysiere meinen Schlaf mit Aufwachdatum {{day}}.",
+    "expand": "Erweitere diese Schlafanalyse.",
+    "spokenText": "Coach zu dieser Nacht fragen. {{text}}",
+    "spokenAnalyzing": "Coach analysiert diese Nacht. Tippen, um den Chat zu öffnen."
   }
 }

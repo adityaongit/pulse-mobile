@@ -281,7 +281,7 @@
     "steps": "Più passi al giorno vanno con una mortalità più bassa. Il riferimento è 8.000 al giorno (6.000 dai 60 anni) e il merito si ferma a 10.000 (8.000 dai 60). I giorni senza frequenza cardiaca o passi sono esclusi, così una fascia lasciata in carica non è letta come una giornata pigra.",
     "vo2max": "Una fitness cardiorespiratoria più alta è uno dei più forti indicatori di una vita più lunga. Il riferimento viene da una tabella per la tua età e il tuo sesso; ogni ml/kg/min sopra toglie circa 0,4 anni, ogni ml/kg/min sotto ne aggiunge altrettanti. Dalle letture del VO2 max di Fitbit.",
     "restingHr": "Una frequenza cardiaca a riposo più alta è legata a una mortalità più alta. Il riferimento viene da una tabella per la tua età e il tuo sesso; ogni 10 bpm sopra aggiunge circa 1,2 anni.",
-    "leanMass": "La parte del tuo peso che non è grasso. Il riferimento è 100 meno il grasso corporeo tipico per la tua età e il tuo sesso. Restarne sotto costa anni, più in fretta quanto più sei lontano; dai 35 anni, superarlo ne toglie un po’, di più con l’età. Dalle tue letture del grasso corporeo."
+    "leanMass": "La quota del tuo peso senza grasso, calcolata dalle letture del grasso corporeo. L’obiettivo dipende dalla tua età e dal tuo sesso. Un valore inferiore aggiunge anni a Pulse Age. A 35 anni o meno, raggiungere o superare l’obiettivo contribuisce per 0,0 anni; non riduce Pulse Age. Dopo i 35 anni, superarlo può ridurre Pulse Age, con un effetto maggiore con l’età."
   },
   "hs": {
     "source": "Studi di mortalità sulla popolazione",

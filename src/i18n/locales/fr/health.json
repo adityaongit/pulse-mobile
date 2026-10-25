@@ -281,7 +281,7 @@
     "steps": "Plus de pas par jour va de pair avec une mortalité plus basse. La référence est de 8 000 par jour (6 000 à partir de 60 ans), et le crédit s’arrête à 10 000 (8 000 à partir de 60 ans). Les jours sans fréquence cardiaque ni pas sont exclus, donc un bracelet resté sur son chargeur n’est pas lu comme une journée paresseuse.",
     "vo2max": "Une meilleure condition cardiorespiratoire est l’un des meilleurs prédicteurs d’une vie plus longue. La référence vient d’un tableau pour ton âge et ton sexe ; chaque ml/kg/min au-dessus retire environ 0,4 an, chacun en dessous en ajoute autant. D’après les relevés de VO2 max de Fitbit.",
     "restingHr": "Une fréquence cardiaque au repos plus élevée est liée à une mortalité plus élevée. La référence vient d’un tableau pour ton âge et ton sexe ; chaque tranche de 10 bpm au-dessus ajoute environ 1,2 an.",
-    "leanMass": "La part de ton poids qui n’est pas de la graisse. La référence est 100 moins la masse grasse typique pour ton âge et ton sexe. Rester en dessous coûte des années, d’autant plus vite qu’on s’en éloigne ; à partir de 35 ans, la dépasser en retire un peu, davantage avec l’âge. D’après tes relevés de masse grasse."
+    "leanMass": "La part de ton poids sans graisse, calculée à partir de tes relevés de masse grasse. La cible dépend de ton âge et de ton sexe. Être en dessous ajoute des années à Pulse Age. À 35 ans ou moins, atteindre ou dépasser la cible contribue à hauteur de 0,0 an ; cela ne réduit pas Pulse Age. Après 35 ans, la dépasser peut réduire Pulse Age, avec un effet plus marqué avec l’âge."
   },
   "hs": {
     "source": "Études de mortalité en population",

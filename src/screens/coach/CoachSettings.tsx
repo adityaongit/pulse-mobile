@@ -8,7 +8,7 @@ import { i18n } from "@/i18n/config";
 import { MAX_NOTES } from "@/coach/instructions";
 import { providerLabel, providerOf } from "@/coach/providers";
 import { useCoachSetup } from "@/coach/session";
-import { deleteAllChats, removeProvider, setAutoAnalysis, setConsent, setInstructions } from "@/coach/storage";
+import { deleteAllChats, removeProvider, setAutoAnalysis, setAutoSleepAnalysis, setConsent, setInstructions } from "@/coach/storage";
 import { Card } from "@/ui/Card";
 import { Text } from "@/ui/Text";
 import { toast } from "@/ui/Toast";
@@ -104,6 +104,10 @@ export function CoachSettings() {
         <View className="gap-2">
           <Text className={GROUP_LABEL}>{t("settings.workouts")}</Text>
           <SwitchRow rule={false} label={t("settings.analyze")} hint={t("settings.analyzeHint")} value={setup.autoAnalysis} onChange={(on) => void setAutoAnalysis(on).catch(failed)} />
+        </View>
+        <View className="gap-2">
+          <Text className={GROUP_LABEL}>{t("sleep.settingsTitle")}</Text>
+          <SwitchRow rule={false} label={t("sleep.analyze")} hint={t("sleep.analyzeHint")} value={setup.autoSleepAnalysis} onChange={(on) => void setAutoSleepAnalysis(on).catch(failed)} />
         </View>
         <View className="gap-2">
           <Text className={GROUP_LABEL}>{t("settings.chats")}</Text>

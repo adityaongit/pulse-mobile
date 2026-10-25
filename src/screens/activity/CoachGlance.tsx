@@ -1,8 +1,3 @@
-// activity-01's coach pill: "Analyzing…" while the coach reads the workout, then its one-line take; tapping opens the
-// coach and asks about this workout at once, so the full analysis follows without typing the question again. Pinned over the page's foot, full width: the screen drops its round coach button while the pill shows. One request per
-// workout per app session (kept in memory, as the web keeps it in sessionStorage); after a failure the pill only offers the question, so the page keeps a way to the coach. With
-// Coach settings › Analyze each workout off, no request is made and the pill only offers the question. Ported from pulse
-// src/app/(app)/activity/[id]/CoachGlance.tsx.
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { View } from "react-native"
@@ -15,7 +10,7 @@ import { Gradient } from "@/ui/Gradient"
 import { Icon } from "@/ui/Icon"
 import { Text } from "@/ui/Text"
 import { useTheme } from "@/ui/theme"
-import { deviceWorkoutGlance } from "@/coach/session"
+import { deviceWorkoutGlance, deviceSleepGlance } from "@/coach/session"
 import { generateId } from "ai"
 import { push } from "@/ui/navigate"
 import { Press } from "@/ui/Press";
@@ -38,17 +33,17 @@ function CoachGlyph() {
 
 type State = { text: string | null; failed: boolean }
 
-/** `auto` off (Coach settings › Workout analysis): no request as the workout opens; the pill only offers the question. */
-export function CoachGlance({ id, question, auto }: { id: string; question: string; auto: boolean }) {
+export function CoachGlance({ id, question, auto, sleepDay }: { id: string; question: string; auto: boolean; sleepDay?: string }) {
   const { t } = useTranslation("strain")
-  const ask = t("glance.ask")
-  const [s, setS] = useState<State>({ text: session.get(id) ?? null, failed: false })
+  const { t: coachT } = useTranslation("coach")
+  const ask = sleepDay ? coachT("sleep.ask") : t("glance.ask")
+  const [s, setS] = useState<State>({ text: sleepDay ? null : session.get(id) ?? null, failed: false })
   useEffect(() => {
-    if (!auto || session.has(id)) return // off, or already in the initial state
-    let live = true
-    deviceWorkoutGlance(id).then(
+    if (!auto || (!sleepDay && session.has(id))) return
+    let live = true;
+    (sleepDay ? deviceSleepGlance(sleepDay) : deviceWorkoutGlance(id)).then(
       (text) => {
-        session.set(id, text)
+        if (!sleepDay) session.set(id, text)
         if (live) setS({ text, failed: false })
       },
       () => live && setS({ text: null, failed: true }),
@@ -56,7 +51,7 @@ export function CoachGlance({ id, question, auto }: { id: string; question: stri
     return () => {
       live = false
     }
-  }, [id, auto])
+  }, [id, auto, sleepDay])
   const inset = useSafeAreaInsets().bottom
   return (
     // The web's `sticky bottom-[max(safe-area + 12, 24)]`: over the foot of the screen, full width (WHOOP's coach pill).
@@ -64,9 +59,9 @@ export function CoachGlance({ id, question, auto }: { id: string; question: stri
       <Press
         activeScale={0.98}
         accessibilityRole="link"
-        accessibilityLabel={s.text ? t("glance.spokenText", { text: s.text }) : auto && !s.failed ? t("glance.spokenAnalyzing") : ask}
+        accessibilityLabel={s.text ? (sleepDay ? coachT("sleep.spokenText", { text: s.text }) : t("glance.spokenText", { text: s.text })) : auto && !s.failed ? (sleepDay ? coachT("sleep.spokenAnalyzing") : t("glance.spokenAnalyzing")) : ask}
         onPress={() => {
-          const params = new URLSearchParams({ q: question, send: "1", workout: id, n: generateId() })
+          const params = new URLSearchParams({ q: question, send: "1", ...(sleepDay ? { sleep: sleepDay } : { workout: id }), n: generateId() })
           if (s.text) params.set("preview", s.text)
           push(`/coach?${params}`)
         }}
