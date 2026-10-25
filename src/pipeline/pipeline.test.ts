@@ -179,7 +179,8 @@ describe("parity with the web app", () => {
     // Version 29: Fitbit's HRV and resting HR are every vital's source of truth. Version 28's value was "32eeb5d9e23357a3".
     // 30: Pulse Age's VO2 max falls back to the estimate (the seed has Fitbit's, so only the version moves). Version 29's value was "22839852f7ee4661".
     // 31: Blood pressure in Health Monitor (causal spot readings persisted in health_monitor). Version 30's value was "25a36d10947fc464".
-    "daily_scores.scoring_version": "9d8a77fc84882991",
+    // 32: Feature-gated blood pressure term in Pulse Age (bpPulseAge off by default; only the version moves). Version 31's value was "9d8a77fc84882991".
+    "daily_scores.scoring_version": "ae95b29d44b502c1",
     // Version 15: Activity Strain is the session's Banister TRIMP plus its muscular load through 5.05 · ln(1 + 0.09 · T)
     // (a seeded 45-minute strength session goes from 8.2 to 9.9 on 0–21), each activity stores its `cardioTrimp` and
     // `muscularTrimp`, and its zone seconds count Zone 1 from 40 % of the reserve. Version 14's value was "cb2d75373aaf4d20".
