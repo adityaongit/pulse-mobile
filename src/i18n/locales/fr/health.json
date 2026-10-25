@@ -399,5 +399,83 @@
       "stage2": "140+ ou 90+ mmHg",
       "crisis": "> 180 et/ou > 120 mmHg"
     }
+  },
+  "vascular": {
+    "title": "Corridor Vasculaire",
+    "detailTitle": "Pression Artérielle et Charge Vasculaire",
+    "uncalibratedTitle": "Charge Vasculaire (Non calibré)",
+    "uncalibratedSubtitle": "Décalage autonome vs base 28j · Ajoutez une mesure brassard pour débloquer le corridor mmHg",
+    "calibrateCta": "Calibrer avec un brassard",
+    "recalibrateCta": "Recalibrer l'ancre brassard",
+    "logCuffCta": "Enregistrer une mesure brassard",
+    "corridorLabel": "Corridor Estimé",
+    "systolicShort": "PAS",
+    "diastolicShort": "PAD",
+    "systolicLabel": "Systolique (PAS)",
+    "diastolicLabel": "Diastolique (PAD)",
+    "pulsePressureLabel": "Pression Pulsée (PP)",
+    "mapLabel": "Pression Artérielle Moyenne (PAM)",
+    "autonomicShiftLabel": "Décalage Autonome",
+    "autonomicShiftSub": "vs base capteur 28 jours",
+    "mmHgUnit": "mmHg",
+    "calibrationStatus": {
+      "fresh": "Calibré il y a {{days}}j · ±{{halfWidth}} mmHg",
+      "aging": "Calibration ancienne ({{days}}j) · ±{{halfWidth}} mmHg",
+      "stale": "Calibration expirée (>30j) · Mode non calibré",
+      "uncalibrated": "Non calibré · Mode autonome relatif"
+    },
+    "aha": {
+      "normal": "Normale",
+      "elevated": "Élevée",
+      "stage_1": "Stade 1",
+      "stage_2": "Stade 2",
+      "crisis": "Crise Hypertensive"
+    },
+    "trend": {
+      "title": "Corridor Longitudinal",
+      "subtitleCalibrated": "Corridor PAS/PAD ombré avec ancres brassard brachial",
+      "subtitleUncalibrated": "Décalage vasculaire autonome relatif (ΔmmHg)",
+      "range7d": "7J",
+      "range30d": "30J",
+      "range90d": "90J",
+      "legendCorridor": "Corridor estimé",
+      "legendCuff": "Ancre brassard",
+      "legendDelta": "ΔPAS / ΔPAD autonome"
+    },
+    "drivers": {
+      "title": "Facteurs Autonomes et Hémodynamiques",
+      "subtitle": "Contributeurs au décalage vasculaire du jour",
+      "rhr": "Décalage FC au repos",
+      "hrv": "Décalage VFC (lnRMSSD)",
+      "sleepDebt": "Sleep Debt Load",
+      "acwr": "Training Load (ACWR)",
+      "bmi": "Indice de Masse Corporelle (IMC)",
+      "raising": "Hausse",
+      "lowering": "Baisse",
+      "neutral": "Neutre"
+    },
+    "sheet": {
+      "title": "Calibrer le Brassard Brachial",
+      "subtitle": "Reposez-vous 5 minutes au calme avec le bras soutenu au niveau du cœur avant de mesurer.",
+      "systolicField": "Systolique (mmHg)",
+      "diastolicField": "Diastolique (mmHg)",
+      "pulseField": "Pouls (bpm, optionnel)",
+      "positionField": "Position du corps",
+      "positions": {
+        "sitting": "Assis",
+        "supine": "Allongé",
+        "standing": "Debout"
+      },
+      "save": "Enregistrer la calibration",
+      "saving": "Enregistrement…",
+      "cancel": "Annuler",
+      "errorRange": "Entrez des valeurs valides : PAS (70–250), PAD (40–150), avec PAS > PAD.",
+      "historyTitle": "Historique des ancres brassard",
+      "historyEmpty": "Aucune mesure brassard enregistrée.",
+      "sourceHealthConnect": "Health Connect",
+      "sourceManual": "Brassard manuel",
+      "deleteAction": "Supprimer"
+    },
+    "disclaimer": "La charge vasculaire estime les variations autonomes autour de votre ancre brassard et ne remplace pas un tensiomètre médical."
   }
 }

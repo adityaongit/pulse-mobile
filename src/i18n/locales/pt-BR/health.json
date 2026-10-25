@@ -399,5 +399,83 @@
       "stage2": "140+ ou 90+ mmHg",
       "crisis": "> 180 e/ou > 120 mmHg"
     }
+  },
+  "vascular": {
+    "title": "Corredor Vascular",
+    "detailTitle": "Pressão Arterial e Carga Vascular",
+    "uncalibratedTitle": "Carga Vascular (Sem calibração)",
+    "uncalibratedSubtitle": "Desvio autonômico vs base de 28 dias · Adicione uma leitura de braçadeira para liberar o corredor mmHg",
+    "calibrateCta": "Calibrar com leitura de braçadeira",
+    "recalibrateCta": "Recalibrar âncora da braçadeira",
+    "logCuffCta": "Registrar leitura de braçadeira",
+    "corridorLabel": "Corredor Estimado",
+    "systolicShort": "PAS",
+    "diastolicShort": "PAD",
+    "systolicLabel": "Sistólica (PAS)",
+    "diastolicLabel": "Diastólica (PAD)",
+    "pulsePressureLabel": "Pressão de Pulso (PP)",
+    "mapLabel": "Pressão Arterial Média (PAM)",
+    "autonomicShiftLabel": "Desvio Autonômico",
+    "autonomicShiftSub": "vs base wearable de 28 dias",
+    "mmHgUnit": "mmHg",
+    "calibrationStatus": {
+      "fresh": "Calibrado há {{days}}d · ±{{halfWidth}} mmHg",
+      "aging": "Calibração antiga ({{days}}d) · ±{{halfWidth}} mmHg",
+      "stale": "Calibração expirada (>30d) · Modo sem calibração",
+      "uncalibrated": "Sem calibração · Modo autonômico relativo"
+    },
+    "aha": {
+      "normal": "Normal",
+      "elevated": "Elevada",
+      "stage_1": "Estágio 1",
+      "stage_2": "Estágio 2",
+      "crisis": "Crise Hipertensiva"
+    },
+    "trend": {
+      "title": "Corredor Longitudinal",
+      "subtitleCalibrated": "Corredor PAS/PAD sombreado com âncoras de braçadeira braquial",
+      "subtitleUncalibrated": "Desvio vascular autonômico relativo (ΔmmHg)",
+      "range7d": "7D",
+      "range30d": "30D",
+      "range90d": "90D",
+      "legendCorridor": "Corredor estimado",
+      "legendCuff": "Âncora da braçadeira",
+      "legendDelta": "ΔPAS / ΔPAD autonômico"
+    },
+    "drivers": {
+      "title": "Fatores Autonômicos e Hemodinâmicos",
+      "subtitle": "Contribuintes para o desvio vascular de hoje",
+      "rhr": "Desvio de FC em repouso",
+      "hrv": "Desvio de VFC (lnRMSSD)",
+      "sleepDebt": "Sleep Debt Load",
+      "acwr": "Training Load (ACWR)",
+      "bmi": "Índice de Massa Corporal (IMC)",
+      "raising": "Elevando",
+      "lowering": "Reduzindo",
+      "neutral": "Neutro"
+    },
+    "sheet": {
+      "title": "Calibrar Braçadeira Braquial",
+      "subtitle": "Descanse em silêncio por 5 minutos com o braço apoiado na altura do coração antes de medir.",
+      "systolicField": "Sistólica (mmHg)",
+      "diastolicField": "Diastólica (mmHg)",
+      "pulseField": "Pulso (bpm, opcional)",
+      "positionField": "Posição corporal",
+      "positions": {
+        "sitting": "Sentado",
+        "supine": "Deitado",
+        "standing": "Em pé"
+      },
+      "save": "Salvar calibração",
+      "saving": "Salvando…",
+      "cancel": "Cancelar",
+      "errorRange": "Insira valores válidos: PAS (70–250), PAD (40–150), com PAS > PAD.",
+      "historyTitle": "Histórico de âncoras da braçadeira",
+      "historyEmpty": "Nenhuma leitura de braçadeira registrada ainda.",
+      "sourceHealthConnect": "Health Connect",
+      "sourceManual": "Braçadeira manual",
+      "deleteAction": "Excluir"
+    },
+    "disclaimer": "A carga vascular estima desvios autonômicos em torno da sua âncora de braçadeira e não substitui um monitor médico de pressão arterial."
   }
 }

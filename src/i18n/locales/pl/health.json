@@ -401,5 +401,83 @@
       "stage2": "140+ lub 90+ mmHg",
       "crisis": "> 180 i/lub > 120 mmHg"
     }
+  },
+  "vascular": {
+    "title": "Korytarz Naczyniowy",
+    "detailTitle": "Ciśnienie Krwi i Obciążenie Naczyniowe",
+    "uncalibratedTitle": "Obciążenie Naczyniowe (Nieskalibrowane)",
+    "uncalibratedSubtitle": "Przesunięcie autonomiczne vs baza 28-dniowa · Dodaj pomiar mankietem, aby odblokować korytarz mmHg",
+    "calibrateCta": "Kalibruj pomiarem z mankietu",
+    "recalibrateCta": "Rekalibruj kotwicę mankietu",
+    "logCuffCta": "Zapisz pomiar mankietem",
+    "corridorLabel": "Szacowany Korytarz",
+    "systolicShort": "SBP",
+    "diastolicShort": "DBP",
+    "systolicLabel": "Skurczowe (SBP)",
+    "diastolicLabel": "Rozkurczowe (DBP)",
+    "pulsePressureLabel": "Ciśnienie Tętna (PP)",
+    "mapLabel": "Średnie Ciśnienie Tętnicze (MAP)",
+    "autonomicShiftLabel": "Przesunięcie Autonomiczne",
+    "autonomicShiftSub": "vs 28-dniowa baza opaski",
+    "mmHgUnit": "mmHg",
+    "calibrationStatus": {
+      "fresh": "Skalibrowano {{days}}d temu · ±{{halfWidth}} mmHg",
+      "aging": "Kalibracja starzeje się ({{days}}d temu) · ±{{halfWidth}} mmHg",
+      "stale": "Kalibracja wygasła (>30d) · Tryb nieskalibrowany",
+      "uncalibrated": "Nieskalibrowany · Względny tryb autonomiczny"
+    },
+    "aha": {
+      "normal": "Prawidłowe",
+      "elevated": "Podwyższone",
+      "stage_1": "Stopień 1",
+      "stage_2": "Stopień 2",
+      "crisis": "Przełom Nadciśnieniowy"
+    },
+    "trend": {
+      "title": "Korytarz Długoterminowy",
+      "subtitleCalibrated": "Cieniowany korytarz SBP/DBP z punktami mankietu naramiennego",
+      "subtitleUncalibrated": "Względne autonomiczne przesunięcie naczyniowe (ΔmmHg)",
+      "range7d": "7D",
+      "range30d": "30D",
+      "range90d": "90D",
+      "legendCorridor": "Szacowany korytarz",
+      "legendCuff": "Kotwica mankietu",
+      "legendDelta": "Autonomiczne ΔSBP / ΔDBP"
+    },
+    "drivers": {
+      "title": "Czynniki Autonomiczne i Hemodynamiczne",
+      "subtitle": "Czynniki dzisiejszego przesunięcia naczyniowego",
+      "rhr": "Przesunięcie tętna spoczynkowego",
+      "hrv": "Przesunięcie HRV (lnRMSSD)",
+      "sleepDebt": "Sleep Debt Load",
+      "acwr": "Training Load (ACWR)",
+      "bmi": "Wskaźnik Masy Ciała (BMI)",
+      "raising": "Podwyższa",
+      "lowering": "Obniża",
+      "neutral": "Neutralny"
+    },
+    "sheet": {
+      "title": "Kalibruj Mankiet Naramienny",
+      "subtitle": "Odpocznij w ciszy przez 5 minut z ramieniem podpartym na wysokości serca przed pomiarem.",
+      "systolicField": "Skurczowe (mmHg)",
+      "diastolicField": "Rozkurczowe (mmHg)",
+      "pulseField": "Tętno (bpm, opcjonalnie)",
+      "positionField": "Pozycja ciała",
+      "positions": {
+        "sitting": "Siedząca",
+        "supine": "Leżąca",
+        "standing": "Stojąca"
+      },
+      "save": "Zapisz kalibrację",
+      "saving": "Zapisywanie…",
+      "cancel": "Anuluj",
+      "errorRange": "Podaj poprawne wartości: SBP (70–250), DBP (40–150), przy SBP > DBP.",
+      "historyTitle": "Historia kotwic mankietu",
+      "historyEmpty": "Brak zapisanych pomiarów z mankietu.",
+      "sourceHealthConnect": "Health Connect",
+      "sourceManual": "Mankiet ręczny",
+      "deleteAction": "Usuń"
+    },
+    "disclaimer": "Obciążenie naczyniowe szacuje przesunięcia autonomiczne wokół kotwicy mankietu i nie zastępuje medycznego ciśnieniomierza."
   }
 }

@@ -27,6 +27,26 @@
     "short": "--",
     "long": "Brak danych"
   },
+  "missingAutonomicSignals": {
+    "short": "Brak danych autonomicznych",
+    "long": "Tętno spoczynkowe i HRV są wymagane do oszacowania obciążenia naczyniowego"
+  },
+  "baselineWarmingUp": {
+    "short": "Rozgrzewka bazy",
+    "long": "Budowanie 7-dniowej bazy autonomicznej",
+    "longNights_one": "Rozgrzewka: została {{count}} noc",
+    "longNights_few": "Rozgrzewka: zostały {{count}} noce",
+    "longNights_many": "Rozgrzewka: zostało {{count}} nocy",
+    "longNights_other": "Rozgrzewka: zostało {{count}} nocy"
+  },
+  "calibrationRequired": {
+    "short": "Wymagana kalibracja mankietem",
+    "long": "Dodaj pomiar mankietem naramiennym, aby odblokować bezwzględny korytarz ciśnienia krwi."
+  },
+  "calibrationExpired": {
+    "short": "Kalibracja wygasła",
+    "long": "Kalibracja mankietem ma ponad 30 dni. Dodaj pomiar, aby przywrócić korytarz ciśnienia krwi."
+  },
   "tag": {
     "provisionalLabel": "Wstępne",
     "provisionalExplain": "Oparte na krótkiej historii, gdy uzupełniają się Twoje wartości bazowe. Z kolejnymi dniami będzie dokładniejsze.",

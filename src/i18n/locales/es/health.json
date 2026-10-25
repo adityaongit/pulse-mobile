@@ -399,5 +399,83 @@
       "stage2": "140+ o 90+ mmHg",
       "crisis": "> 180 y/o > 120 mmHg"
     }
+  },
+  "vascular": {
+    "title": "Corredor Vascular",
+    "detailTitle": "Presión Arterial y Carga Vascular",
+    "uncalibratedTitle": "Carga Vascular (Sin calibrar)",
+    "uncalibratedSubtitle": "Cambio autonómico vs base de 28 días · Añade una lectura de brazalete para activar el corredor mmHg",
+    "calibrateCta": "Calibrar con lectura de brazalete",
+    "recalibrateCta": "Recalibrar ancla de brazalete",
+    "logCuffCta": "Registrar lectura de brazalete",
+    "corridorLabel": "Corredor Estimado",
+    "systolicShort": "PAS",
+    "diastolicShort": "PAD",
+    "systolicLabel": "Sistólica (PAS)",
+    "diastolicLabel": "Diastólica (PAD)",
+    "pulsePressureLabel": "Presión de Pulso (PP)",
+    "mapLabel": "Presión Arterial Media (PAM)",
+    "autonomicShiftLabel": "Cambio Autonómico",
+    "autonomicShiftSub": "vs base wearable de 28 días",
+    "mmHgUnit": "mmHg",
+    "calibrationStatus": {
+      "fresh": "Calibrado hace {{days}}d · ±{{halfWidth}} mmHg",
+      "aging": "Calibración envejeciendo (hace {{days}}d) · ±{{halfWidth}} mmHg",
+      "stale": "Calibración vencida (>30d) · Modo sin calibrar",
+      "uncalibrated": "Sin calibrar · Modo autonómico relativo"
+    },
+    "aha": {
+      "normal": "Normal",
+      "elevated": "Elevada",
+      "stage_1": "Nivel 1",
+      "stage_2": "Nivel 2",
+      "crisis": "Crisis Hipertensiva"
+    },
+    "trend": {
+      "title": "Corredor Longitudinal",
+      "subtitleCalibrated": "Corredor sombreado PAS/PAD con diamantes de brazalete braquial",
+      "subtitleUncalibrated": "Cambio vascular autonómico relativo (ΔmmHg)",
+      "range7d": "7D",
+      "range30d": "30D",
+      "range90d": "90D",
+      "legendCorridor": "Corredor estimado",
+      "legendCuff": "Ancla de brazalete",
+      "legendDelta": "ΔPAS / ΔPAD autonómico"
+    },
+    "drivers": {
+      "title": "Impulsores Autonómicos y Hemodinámicos",
+      "subtitle": "Factores del cambio vascular de hoy",
+      "rhr": "Cambio de FC en reposo",
+      "hrv": "Cambio de VFC (lnRMSSD)",
+      "sleepDebt": "Sleep Debt Load",
+      "acwr": "Training Load (ACWR)",
+      "bmi": "Índice de Masa Corporal (IMC)",
+      "raising": "Elevando",
+      "lowering": "Reduciendo",
+      "neutral": "Neutral"
+    },
+    "sheet": {
+      "title": "Calibrar Brazalete Braquial",
+      "subtitle": "Descanse en silencio durante 5 minutos con el brazo apoyado a la altura del corazón antes de medir.",
+      "systolicField": "Sistólica (mmHg)",
+      "diastolicField": "Diastólica (mmHg)",
+      "pulseField": "Pulso (bpm, opcional)",
+      "positionField": "Posición corporal",
+      "positions": {
+        "sitting": "Sentado",
+        "supine": "Supino",
+        "standing": "De pie"
+      },
+      "save": "Guardar calibración",
+      "saving": "Guardando…",
+      "cancel": "Cancelar",
+      "errorRange": "Ingrese PAS (70–250) y PAD (40–150) válidas, con PAS > PAD.",
+      "historyTitle": "Historial de anclas de brazalete",
+      "historyEmpty": "Aún no se han registrado lecturas de brazalete.",
+      "sourceHealthConnect": "Health Connect",
+      "sourceManual": "Brazalete manual",
+      "deleteAction": "Eliminar"
+    },
+    "disclaimer": "La carga vascular estima cambios autonómicos alrededor de su ancla de brazalete y no es un monitor de presión arterial de diagnóstico independiente."
   }
 }

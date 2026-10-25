@@ -25,6 +25,24 @@
     "short": "--",
     "long": "No data"
   },
+  "missingAutonomicSignals": {
+    "short": "No autonomic data",
+    "long": "Resting heart rate and HRV are needed to estimate your vascular load"
+  },
+  "baselineWarmingUp": {
+    "short": "Warming up",
+    "long": "Building your 7-day autonomic baseline",
+    "longNights_one": "Warming up: {{count}} night left",
+    "longNights_other": "Warming up: {{count}} nights left"
+  },
+  "calibrationRequired": {
+    "short": "Cuff calibration needed",
+    "long": "Add a brachial cuff reading to unlock your absolute blood pressure corridor."
+  },
+  "calibrationExpired": {
+    "short": "Calibration expired",
+    "long": "Your cuff calibration is over 30 days old. Add a cuff reading to restore your blood pressure corridor."
+  },
   "tag": {
     "provisionalLabel": "Provisional",
     "provisionalExplain": "Based on a short history while your baselines fill in. It firms up as more days arrive.",

@@ -397,5 +397,83 @@
       "stage2": "140+ or 90+ mmHg",
       "crisis": "> 180 and/or > 120 mmHg"
     }
+  },
+  "vascular": {
+    "title": "Vascular Corridor",
+    "detailTitle": "Blood Pressure & Vascular Load",
+    "uncalibratedTitle": "Vascular Load (Uncalibrated)",
+    "uncalibratedSubtitle": "Autonomic shift vs 28-day baseline · Add a cuff reading to unlock mmHg corridor",
+    "calibrateCta": "Calibrate with Cuff Reading",
+    "recalibrateCta": "Recalibrate Cuff Anchor",
+    "logCuffCta": "Log Cuff Reading",
+    "corridorLabel": "Estimated Corridor",
+    "systolicShort": "SBP",
+    "diastolicShort": "DBP",
+    "systolicLabel": "Systolic (SBP)",
+    "diastolicLabel": "Diastolic (DBP)",
+    "pulsePressureLabel": "Pulse Pressure (PP)",
+    "mapLabel": "Mean Arterial Pressure (MAP)",
+    "autonomicShiftLabel": "Autonomic Shift",
+    "autonomicShiftSub": "vs 28-day wearable baseline",
+    "mmHgUnit": "mmHg",
+    "calibrationStatus": {
+      "fresh": "Calibrated {{days}}d ago · ±{{halfWidth}} mmHg",
+      "aging": "Calibration aging ({{days}}d ago) · ±{{halfWidth}} mmHg",
+      "stale": "Calibration expired (>30d) · Uncalibrated mode",
+      "uncalibrated": "Uncalibrated · Relative autonomic mode"
+    },
+    "aha": {
+      "normal": "Normal",
+      "elevated": "Elevated",
+      "stage_1": "Stage 1",
+      "stage_2": "Stage 2",
+      "crisis": "Hypertensive Crisis"
+    },
+    "trend": {
+      "title": "Longitudinal Corridor",
+      "subtitleCalibrated": "Shaded SBP/DBP corridor with brachial cuff diamonds",
+      "subtitleUncalibrated": "Relative autonomic vascular shift (ΔmmHg)",
+      "range7d": "7D",
+      "range30d": "30D",
+      "range90d": "90D",
+      "legendCorridor": "Estimated corridor",
+      "legendCuff": "Cuff anchor",
+      "legendDelta": "Autonomic ΔSBP / ΔDBP"
+    },
+    "drivers": {
+      "title": "Autonomic & Hemodynamic Drivers",
+      "subtitle": "Contributors to today's vascular shift",
+      "rhr": "Resting HR Shift",
+      "hrv": "HRV Shift (lnRMSSD)",
+      "sleepDebt": "Sleep Debt Load",
+      "acwr": "Training Load (ACWR)",
+      "bmi": "Body Mass Index (BMI)",
+      "raising": "Raising",
+      "lowering": "Lowering",
+      "neutral": "Neutral"
+    },
+    "sheet": {
+      "title": "Calibrate Brachial Cuff",
+      "subtitle": "Rest quietly for 5 minutes with arm supported at heart level before measuring.",
+      "systolicField": "Systolic (mmHg)",
+      "diastolicField": "Diastolic (mmHg)",
+      "pulseField": "Pulse (bpm, optional)",
+      "positionField": "Body Position",
+      "positions": {
+        "sitting": "Sitting",
+        "supine": "Supine",
+        "standing": "Standing"
+      },
+      "save": "Save Calibration",
+      "saving": "Saving…",
+      "cancel": "Cancel",
+      "errorRange": "Enter valid SBP (70–250), DBP (40–150), with SBP > DBP.",
+      "historyTitle": "Cuff Anchor History",
+      "historyEmpty": "No cuff readings logged yet.",
+      "sourceHealthConnect": "Health Connect",
+      "sourceManual": "Manual Cuff",
+      "deleteAction": "Delete"
+    },
+    "disclaimer": "Wearable vascular load estimates autonomic shifts around your cuff anchor and is not a standalone diagnostic blood pressure monitor."
   }
 }

@@ -399,5 +399,83 @@
       "stage2": "140+ o 90+ mmHg",
       "crisis": "> 180 e/o > 120 mmHg"
     }
+  },
+  "vascular": {
+    "title": "Corridoio Vascolare",
+    "detailTitle": "Pressione Arteriosa e Carico Vascolare",
+    "uncalibratedTitle": "Carico Vascolare (Non calibrato)",
+    "uncalibratedSubtitle": "Scostamento autonomico vs base 28gg · Aggiungi una lettura a bracciale per sbloccare il corridoio mmHg",
+    "calibrateCta": "Calibra con lettura a bracciale",
+    "recalibrateCta": "Ricalibra ancoraggio bracciale",
+    "logCuffCta": "Registra lettura a bracciale",
+    "corridorLabel": "Corridoio Stimato",
+    "systolicShort": "PAS",
+    "diastolicShort": "PAD",
+    "systolicLabel": "Sistolica (PAS)",
+    "diastolicLabel": "Diastolica (PAD)",
+    "pulsePressureLabel": "Pressione Differenziale (PP)",
+    "mapLabel": "Pressione Arteriosa Media (PAM)",
+    "autonomicShiftLabel": "Scostamento Autonomico",
+    "autonomicShiftSub": "vs base wearable a 28 giorni",
+    "mmHgUnit": "mmHg",
+    "calibrationStatus": {
+      "fresh": "Calibrato {{days}}g fa · ±{{halfWidth}} mmHg",
+      "aging": "Calibrazione datata ({{days}}g fa) · ±{{halfWidth}} mmHg",
+      "stale": "Calibrazione scaduta (>30g) · Modalità non calibrata",
+      "uncalibrated": "Non calibrato · Modalità autonomica relativa"
+    },
+    "aha": {
+      "normal": "Normale",
+      "elevated": "Elevata",
+      "stage_1": "Stadio 1",
+      "stage_2": "Stadio 2",
+      "crisis": "Crisi Ipertensiva"
+    },
+    "trend": {
+      "title": "Corridoio Longitudinale",
+      "subtitleCalibrated": "Corridoio PAS/PAD ombreggiato con ancoraggi da bracciale brachiale",
+      "subtitleUncalibrated": "Scostamento vascolare autonomico relativo (ΔmmHg)",
+      "range7d": "7G",
+      "range30d": "30G",
+      "range90d": "90G",
+      "legendCorridor": "Corridoio stimato",
+      "legendCuff": "Ancoraggio bracciale",
+      "legendDelta": "ΔPAS / ΔPAD autonomico"
+    },
+    "drivers": {
+      "title": "Fattori Autonomici ed Emodinamici",
+      "subtitle": "Contributi allo scostamento vascolare di oggi",
+      "rhr": "Scostamento FC a riposo",
+      "hrv": "Scostamento HRV (lnRMSSD)",
+      "sleepDebt": "Sleep Debt Load",
+      "acwr": "Training Load (ACWR)",
+      "bmi": "Indice di Massa Corporea (BMI)",
+      "raising": "In aumento",
+      "lowering": "In riduzione",
+      "neutral": "Neutro"
+    },
+    "sheet": {
+      "title": "Calibra Bracciale Brachiale",
+      "subtitle": "Riposa in silenzio per 5 minuti con il braccio appoggiato all'altezza del cuore prima di misurare.",
+      "systolicField": "Sistolica (mmHg)",
+      "diastolicField": "Diastolica (mmHg)",
+      "pulseField": "Polso (bpm, opzionale)",
+      "positionField": "Posizione corporea",
+      "positions": {
+        "sitting": "Seduto",
+        "supine": "Supino",
+        "standing": "In piedi"
+      },
+      "save": "Salva calibrazione",
+      "saving": "Salvataggio…",
+      "cancel": "Annulla",
+      "errorRange": "Inserisci valori validi: PAS (70–250), PAD (40–150), con PAS > PAD.",
+      "historyTitle": "Storico ancoraggi bracciale",
+      "historyEmpty": "Nessuna lettura a bracciale registrata.",
+      "sourceHealthConnect": "Health Connect",
+      "sourceManual": "Bracciale manuale",
+      "deleteAction": "Elimina"
+    },
+    "disclaimer": "Il carico vascolare stima gli scostamenti autonomici attorno al tuo ancoraggio a bracciale e non sostituisce un misuratore di pressione diagnostico."
   }
 }

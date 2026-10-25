@@ -397,5 +397,83 @@
       "stage2": "140+ oder 90+ mmHg",
       "crisis": "> 180 und/oder > 120 mmHg"
     }
+  },
+  "vascular": {
+    "title": "Gefäßkorridor",
+    "detailTitle": "Blutdruck & Gefäßbelastung",
+    "uncalibratedTitle": "Gefäßbelastung (Unkalibriert)",
+    "uncalibratedSubtitle": "Autonome Verschiebung ggü. 28-Tage-Basis · Manschettenmessung hinzufügen für mmHg-Korridor",
+    "calibrateCta": "Mit Manschettenmessung kalibrieren",
+    "recalibrateCta": "Manschettenanker neu kalibrieren",
+    "logCuffCta": "Manschettenmessung eintragen",
+    "corridorLabel": "Geschätzter Korridor",
+    "systolicShort": "SBP",
+    "diastolicShort": "DBP",
+    "systolicLabel": "Systolisch (SBP)",
+    "diastolicLabel": "Diastolisch (DBP)",
+    "pulsePressureLabel": "Pulsdruck (PP)",
+    "mapLabel": "Mittlerer arterieller Druck (MAP)",
+    "autonomicShiftLabel": "Autonome Verschiebung",
+    "autonomicShiftSub": "ggü. 28-Tage-Wearable-Basis",
+    "mmHgUnit": "mmHg",
+    "calibrationStatus": {
+      "fresh": "Kalibriert vor {{days}}T · ±{{halfWidth}} mmHg",
+      "aging": "Kalibrierung altert (vor {{days}}T) · ±{{halfWidth}} mmHg",
+      "stale": "Kalibrierung abgelaufen (>30T) · Unkalibrierter Modus",
+      "uncalibrated": "Unkalibriert · Relativer autonomer Modus"
+    },
+    "aha": {
+      "normal": "Normal",
+      "elevated": "Erhöht",
+      "stage_1": "Stufe 1",
+      "stage_2": "Stufe 2",
+      "crisis": "Hypertensive Krise"
+    },
+    "trend": {
+      "title": "Langzeit-Korridor",
+      "subtitleCalibrated": "Schattierter SBP/DBP-Korridor mit Oberarm-Manschettenankern",
+      "subtitleUncalibrated": "Relative autonome Gefäßverschiebung (ΔmmHg)",
+      "range7d": "7T",
+      "range30d": "30T",
+      "range90d": "90T",
+      "legendCorridor": "Geschätzter Korridor",
+      "legendCuff": "Manschettenanker",
+      "legendDelta": "Autonomes ΔSBP / ΔDBP"
+    },
+    "drivers": {
+      "title": "Autonome & Hämodynamische Treiber",
+      "subtitle": "Einflussfaktoren der heutigen Gefäßverschiebung",
+      "rhr": "Ruhepuls-Verschiebung",
+      "hrv": "HRV-Verschiebung (lnRMSSD)",
+      "sleepDebt": "Sleep Debt Load",
+      "acwr": "Training Load (ACWR)",
+      "bmi": "Body-Mass-Index (BMI)",
+      "raising": "Steigernd",
+      "lowering": "Senkend",
+      "neutral": "Neutral"
+    },
+    "sheet": {
+      "title": "Oberarm-Manschette kalibrieren",
+      "subtitle": "Vor der Messung 5 Minuten ruhig sitzen und den Arm auf Herzhöhe abstützen.",
+      "systolicField": "Systolisch (mmHg)",
+      "diastolicField": "Diastolisch (mmHg)",
+      "pulseField": "Puls (bpm, optional)",
+      "positionField": "Körperposition",
+      "positions": {
+        "sitting": "Sitzend",
+        "supine": "Liegend",
+        "standing": "Stehend"
+      },
+      "save": "Kalibrierung speichern",
+      "saving": "Speichern…",
+      "cancel": "Abbrechen",
+      "errorRange": "Gültige Werte eingeben: SBP (70–250), DBP (40–150), mit SBP > DBP.",
+      "historyTitle": "Manschettenanker-Verlauf",
+      "historyEmpty": "Noch keine Manschettenmessungen protokolliert.",
+      "sourceHealthConnect": "Health Connect",
+      "sourceManual": "Manuelle Manschette",
+      "deleteAction": "Löschen"
+    },
+    "disclaimer": "Die Gefäßbelastung schätzt autonome Verschiebungen rund um Ihren Manschettenanker und ersetzt kein medizinisches Blutdruckmessgerät."
   }
 }
