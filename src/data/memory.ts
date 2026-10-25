@@ -2,7 +2,24 @@
 // restart. Rows are copied on the way in and out (JSON round-trip), so callers never share objects with the
 // store, as they would not with SQLite.
 import type { DayRange, JournalTagChange, JournalTagRow, LoggedEntryRow, ReportRow, ScoreRow, SeriesKind, Store } from "./store";
-import type { BloodPressureReading, DailyValue, Exercise, HealthRecord, HrSample, HrvSample, JournalEntry, Metrics, Profile, Segment, Session, StepsMinute, SyncState } from "./types";
+import type {
+  BloodPressurePosture,
+  BloodPressureReading,
+  BloodPressureReadingRow,
+  BloodPressureSource,
+  DailyValue,
+  Exercise,
+  HealthRecord,
+  HrSample,
+  HrvSample,
+  JournalEntry,
+  Metrics,
+  Profile,
+  Segment,
+  Session,
+  StepsMinute,
+  SyncState,
+} from "./types";
 import type { ActivityCostResult } from "@/core/algorithms/activityCost";
 import { minuteHr } from "@/core/engine/context";
 
@@ -174,7 +191,8 @@ export class MemoryStore implements Store {
     for (const [id, e] of this.exercises) if (inRange(e.day, range)) this.exercises.delete(id);
     for (const [k, v] of this.values) if (inRange(v.day, range)) this.values.delete(k);
     for (const [id, r] of this.records) if (inRange(r.day, range)) this.records.delete(id);
-    for (const [id, bp] of this.bloodPressure) if (inRange(bp.day, range)) this.bloodPressure.delete(id);
+    for (const [id, bp] of this.bloodPressure)
+      if (inRange(bp.day, range) && bp.source !== "manual") this.bloodPressure.delete(id);
     for (const [id, r] of this.logged) if (r.source === "health_connect" && inRange(r.day, range)) this.logged.delete(id);
     if (!opts?.keepScores) {
       for (const [d] of this.scores) if (inRange(d, range)) this.scores.delete(d);
@@ -198,10 +216,70 @@ export class MemoryStore implements Store {
     for (const r of rows) this.records.set(r.id, copy(r));
   }
   async upsertBloodPressure(rows: BloodPressureReading[]) {
-    for (const r of rows) this.bloodPressure.set(r.id, copy(r));
+    for (const r of rows) {
+      const posture: BloodPressurePosture | null =
+        r.posture ??
+        (r.bodyPosition === "sitting" || r.bodyPosition === "standing"
+          ? r.bodyPosition
+          : r.bodyPosition === "lying_down" || r.bodyPosition === "reclining"
+            ? "supine"
+            : null);
+      const source: BloodPressureSource = r.source ?? "health_connect";
+      this.bloodPressure.set(r.id, copy({ ...r, posture, source }));
+    }
   }
   async insertBloodPressure(records: BloodPressureReading[]) {
     return this.upsertBloodPressure(records);
+  }
+  async upsertBloodPressureReadings(rows: BloodPressureReadingRow[]) {
+    const nowSec = Math.floor(Date.now() / 1000);
+    for (const r of rows) {
+      const tsSec = Math.floor(r.timestampMs / 1000);
+      const bodyPosition = r.posture === "supine" ? "lying_down" : r.posture;
+      const quality: BloodPressureReading["quality"] = r.source === "manual" ? "manual" : "direct";
+      this.bloodPressure.set(r.id, {
+        id: r.id,
+        ts: tsSec,
+        day: r.date,
+        systolicMmhg: r.systolicMmHg,
+        diastolicMmhg: r.diastolicMmHg,
+        pulseBpm: r.pulseBpm ?? null,
+        posture: r.posture ?? null,
+        source: r.source,
+        bodyPosition: bodyPosition ?? null,
+        measurementLocation: null,
+        recordingMethod: r.source === "manual" ? "manual_entry" : "active",
+        sourcePlatform: r.source === "manual" ? "pulse" : "health_connect",
+        sourceApplication: null,
+        sourceDevice: null,
+        quality,
+        importedAt: nowSec,
+      });
+    }
+  }
+  async getBloodPressureReadings(upToDate?: string): Promise<BloodPressureReadingRow[]> {
+    const rows = [...this.bloodPressure.values()]
+      .filter((r) => upToDate === undefined || r.day <= upToDate)
+      .sort((a, b) => a.ts - b.ts || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+    return rows.map((r) => ({
+      id: r.id,
+      timestampMs: r.ts * 1000,
+      date: r.day,
+      systolicMmHg: r.systolicMmhg,
+      diastolicMmHg: r.diastolicMmhg,
+      pulseBpm: r.pulseBpm ?? null,
+      posture:
+        r.posture ??
+        (r.bodyPosition === "sitting" || r.bodyPosition === "standing"
+          ? r.bodyPosition
+          : r.bodyPosition === "lying_down" || r.bodyPosition === "reclining"
+            ? "supine"
+            : null),
+      source: r.source ?? "health_connect",
+    }));
+  }
+  async deleteBloodPressureReading(id: string): Promise<void> {
+    this.bloodPressure.delete(id);
   }
   async markIntradayDirty(days: string[]) {
     for (const d of days) this.dirty.add(d);

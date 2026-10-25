@@ -6,7 +6,7 @@
 import type { Store } from "./store";
 
 /** The reads worth keeping: whole tables or day ranges, the same for every query of one version. */
-const MEMO = new Set<keyof Store>(["allMetrics", "allSessions", "allExercises", "loggedEntries", "scoresIn", "dailyValues"]);
+const MEMO = new Set<keyof Store>(["allMetrics", "allSessions", "allExercises", "loggedEntries", "scoresIn", "dailyValues", "getBloodPressureReadings"]);
 
 /** `store` with the MEMO reads cached per `version`. Arrays come back as shallow copies, so a caller's sort stays its own. */
 export function memoStore(store: Store, version: () => number): Store {
