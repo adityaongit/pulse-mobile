@@ -25,6 +25,24 @@
     "short": "--",
     "long": "Keine Daten"
   },
+  "missingAutonomicSignals": {
+    "short": "Keine autonomen Daten",
+    "long": "Ruheherzfrequenz und HRV werden benötigt, um deine Gefäßbelastung zu schätzen"
+  },
+  "baselineWarmingUp": {
+    "short": "Aufbau",
+    "long": "Deine 7-Tage-Baseline wird aufgebaut",
+    "longNights_one": "Aufbau: noch {{count}} Nacht",
+    "longNights_other": "Aufbau: noch {{count}} Nächte"
+  },
+  "calibrationRequired": {
+    "short": "Manschettenkalibrierung nötig",
+    "long": "Füge eine Oberarm-Blutdruckmessung hinzu, um deinen absoluten Blutdruckkorridor freizuschalten."
+  },
+  "calibrationExpired": {
+    "short": "Kalibrierung abgelaufen",
+    "long": "Deine Manschettenkalibrierung ist älter als 30 Tage. Füge eine Messung hinzu, um den Blutdruckkorridor wiederherzustellen."
+  },
   "tag": {
     "provisionalLabel": "Vorläufig",
     "provisionalExplain": "Basiert auf einem kurzen Verlauf, während sich deine Baselines aufbauen. Mit jedem weiteren Tag wird es genauer.",

@@ -11,6 +11,10 @@ export const REASON_ICON: Record<ReasonCode, LucideIcon | null> = {
   insufficient_hr_data: Activity,
   band_not_worn: Watch,
   no_data: null,
+  missing_autonomic_signals: HeartPulse,
+  baseline_warming_up: Hourglass,
+  calibration_required: Hourglass,
+  calibration_expired: RefreshCw,
 };
 
 export type ActivityKind = "run" | "ride" | "walk" | "strength" | "workout";

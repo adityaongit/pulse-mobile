@@ -26,6 +26,8 @@ import { ErrorView } from "./ErrorView";
 import { HeartRhythm } from "./HeartRhythm";
 import { MONITOR_INFO } from "./info";
 import { VitalTiles, VitalTilesSkeleton } from "./VitalTiles";
+import { BloodPressureCard } from "./BloodPressureCard";
+import { VascularCard } from "./VascularCard";
 
 const CHIP = {
   within: { tone: "optimal", key: "monitor.within" },
@@ -135,9 +137,15 @@ export function MonitorScreen() {
       summary={vm.illness && <IllnessAlert />}
       bodySkeleton={readingsSkeleton()}
       primary={
-        <SectionShell variant="section" title={t("title.lastNight")}>
-          <VitalTiles vitals={vm.vitals} day={d} today={today} />
-        </SectionShell>
+        <View className="gap-8">
+          <SectionShell variant="section" title={t("title.lastNight")}>
+            <VitalTiles vitals={vm.vitals} day={d} today={today} />
+          </SectionShell>
+          <SectionShell variant="section" title={t("title.bloodPressure")}>
+            <BloodPressureCard summary={vm.bloodPressure} day={d} today={today} />
+          </SectionShell>
+          <VascularCard corridor={vm.vascularCorridor} day={d} />
+        </View>
       }
       footer={
         <View className="gap-8">

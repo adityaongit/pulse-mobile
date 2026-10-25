@@ -18,7 +18,15 @@ export const FEATURES = {
   /** Share of the night in high, medium and low stress. Pulse's stress model leaves sleep minutes out. */
   sleepStress: false,
   /** Health's Blood Pressure Insights (Beta). Pulse reads no blood pressure. */
-  bloodPressure: false,
+  bloodPressure: true,
+  /** Ingest and persist BloodPressure records from Health Connect into SQLite. */
+  bpIngestion: true,
+  /** Display blood pressure card, AHA/ACC classification, and trends in Health Monitor. */
+  bpHealthMonitor: true,
+  /** Feature-gated research term for Pulse Age (requires protocol-grade input). */
+  bpPulseAge: false,
+  /** Dual-mode Blood Pressure Corridor (Relative Vascular Load + Calibrated Absolute Corridor). */
+  bpDualModeCorridor: true,
   /** An activity's strain split into cardio and muscular load. Pulse measures heart rate only. */
   muscularLoad: false,
 } as const

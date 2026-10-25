@@ -26,6 +26,25 @@
     "short": "--",
     "long": "Aucune donnée"
   },
+  "missingAutonomicSignals": {
+    "short": "Pas de données autonomes",
+    "long": "La fréquence cardiaque au repos et la HRV sont nécessaires pour estimer ta charge vasculaire"
+  },
+  "baselineWarmingUp": {
+    "short": "Préparation",
+    "long": "Construction de ta référence autonome sur 7 jours",
+    "longNights_one": "Préparation : {{count}} nuit restante",
+    "longNights_many": "Préparation : {{count}} de nuits restantes",
+    "longNights_other": "Préparation : {{count}} nuits restantes"
+  },
+  "calibrationRequired": {
+    "short": "Calibrage au brassard requis",
+    "long": "Ajoute une mesure au brassard brachial pour débloquer ton corridor absolu de tension artérielle."
+  },
+  "calibrationExpired": {
+    "short": "Calibrage expiré",
+    "long": "Ton calibrage au brassard date de plus de 30 jours. Ajoute une mesure pour rétablir ton corridor de tension artérielle."
+  },
   "tag": {
     "provisionalLabel": "Provisoire",
     "provisionalExplain": "Basé sur un court historique, le temps que tes références se construisent. Il se précise au fil des jours.",

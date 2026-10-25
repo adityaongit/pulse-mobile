@@ -19,7 +19,8 @@
     "measurements": "Measurements",
     "ecgReading": "ECG reading",
     "hrvStatus": "HRV Status",
-    "timeInZones": "Time in zones"
+    "timeInZones": "Time in zones",
+    "bloodPressure": "Blood pressure"
   },
   "age": {
     "same": "Same as your age",
@@ -269,7 +270,8 @@
     "steps": "Daily steps",
     "vo2max": "VO2 max",
     "restingHr": "Resting heart rate",
-    "leanMass": "Lean body mass"
+    "leanMass": "Lean body mass",
+    "bloodPressure": "Blood pressure"
   },
   "hsText": {
     "sleepHours": "Both short and long sleep are linked to higher mortality. Around 7.5 to 9 hours a night carries the lowest risk; 7 hours costs about half a year, 6 hours or less about 2.",
@@ -280,7 +282,8 @@
     "steps": "More daily steps go with lower mortality. The reference is 8,000 a day (6,000 from 60), and credit stops at 10,000 (8,000 from 60). Days without heart rate or steps are left out, so a band left on the charger isn't read as a lazy day.",
     "vo2max": "Higher cardiorespiratory fitness is one of the strongest predictors of a longer life. The reference comes from a table for your age and sex; each ml/kg/min above it takes about 0.4 years off, each below adds about as much. From Fitbit's VO2 max readings.",
     "restingHr": "A higher resting heart rate is linked to higher mortality. The reference comes from a table for your age and sex; each 10 bpm above it adds about 1.2 years.",
-    "leanMass": "The share of your weight that isn't fat. The reference is 100 less the typical body fat for your age and sex. Falling short of it costs years, faster the further you are; from 35, beating it takes a little off, more so with age. From your body fat readings."
+    "leanMass": "The share of your weight that isn't fat. The reference is 100 less the typical body fat for your age and sex. Falling short of it costs years, faster the further you are; from 35, beating it takes a little off, more so with age. From your body fat readings.",
+    "bloodPressure": "Sustained elevated systolic blood pressure is a major driver of cardiovascular risk. The reference is 115 mmHg systolic; protocol-grade upper-arm readings across multiple days contribute a bounded additive term to Pulse Age."
   },
   "hs": {
     "source": "Population mortality studies",
@@ -293,7 +296,9 @@
     "leanMass": "{{lean}} {{unit}} lean, {{fat}} {{unit}} fat",
     "leanIndex": "FFMI {{ffmi}}, FMI {{fmi}} kg/m²",
     "leanCaption": "{{parts}}.",
-    "leanCaptionEstimated": "{{parts}}. Body fat estimated from your BMI."
+    "leanCaptionEstimated": "{{parts}}. Body fat estimated from your BMI.",
+    "bpNeeds": "Requires 12 protocol-grade readings across 3 days in the last 90 days ({{readings}}/12 readings, {{days}}/3 days). Left out of Pulse Age.",
+    "bpCaption": "Mean {{systolic}}/{{diastolic}} mmHg from {{readings}} readings across {{days}} days."
   },
   "insight": {
     "younger": "Younger than your age",
@@ -355,5 +360,120 @@
     "rem": "REM",
     "light": "Light",
     "deep": "Deep"
+  },
+  "bloodPressure": {
+    "title": "Blood pressure",
+    "detail": "Detail",
+    "noData": "No data",
+    "show": "Show",
+    "hide": "Hide",
+    "systolic": "Systolic",
+    "diastolic": "Diastolic",
+    "noReadings30d": "No blood pressure readings recorded in the last 30 days.",
+    "trendPlotSummary": "30-day blood pressure trend: systolic and diastolic readings",
+    "breakdown": "30-Day Category Breakdown ({{count}})",
+    "readingsOnDay": " · {{count}} readings on day",
+    "readingsOnDate": "Readings on {{date}}",
+    "guidelines": "AHA/ACC Classification Guidelines",
+    "disclaimer": "Pulse is not a diagnostic device. Consult a physician for diagnosis and medical management of blood pressure.",
+    "prior": "Prior: {{value}}",
+    "noReadingWithPrior": "No reading on {{date}}. Most recent: {{value}} mmHg on {{priorDate}}.",
+    "emptyDayHint": "No blood pressure reading recorded on this day. Record readings in Health Connect to track trends.",
+    "readingMeta": "{{date}} at {{time}}",
+    "ariaDetail": "Blood pressure detail: {{reading}} mmHg, {{status}}",
+    "ariaDetailNoReading": "Blood pressure detail: No reading",
+    "category": {
+      "normal": "Normal",
+      "elevated": "Elevated",
+      "stage1": "Stage 1",
+      "stage2": "Stage 2",
+      "crisis": "Crisis",
+      "hypertensiveCrisis": "Hypertensive Crisis"
+    },
+    "stageRange": {
+      "normal": "< 120 and < 80 mmHg",
+      "elevated": "120–129 and < 80 mmHg",
+      "stage1": "130–139 or 80–89 mmHg",
+      "stage2": "140+ or 90+ mmHg",
+      "crisis": "> 180 and/or > 120 mmHg"
+    }
+  },
+  "vascular": {
+    "title": "Vascular Corridor",
+    "detailTitle": "Blood Pressure & Vascular Load",
+    "uncalibratedTitle": "Vascular Load (Uncalibrated)",
+    "uncalibratedSubtitle": "Autonomic shift vs 28-day baseline · Add a cuff reading to unlock mmHg corridor",
+    "calibrateCta": "Calibrate with Cuff Reading",
+    "recalibrateCta": "Recalibrate Cuff Anchor",
+    "logCuffCta": "Log Cuff Reading",
+    "corridorLabel": "Estimated Corridor",
+    "systolicShort": "SBP",
+    "diastolicShort": "DBP",
+    "systolicLabel": "Systolic (SBP)",
+    "diastolicLabel": "Diastolic (DBP)",
+    "pulsePressureLabel": "Pulse Pressure (PP)",
+    "mapLabel": "Mean Arterial Pressure (MAP)",
+    "autonomicShiftLabel": "Autonomic Shift",
+    "autonomicShiftSub": "vs 28-day wearable baseline",
+    "mmHgUnit": "mmHg",
+    "calibrationStatus": {
+      "fresh": "Calibrated {{days}}d ago · ±{{halfWidth}} mmHg",
+      "aging": "Calibration aging ({{days}}d ago) · ±{{halfWidth}} mmHg",
+      "stale": "Calibration expired (>30d) · Uncalibrated mode",
+      "uncalibrated": "Uncalibrated · Relative autonomic mode"
+    },
+    "aha": {
+      "normal": "Normal",
+      "elevated": "Elevated",
+      "stage_1": "Stage 1",
+      "stage_2": "Stage 2",
+      "crisis": "Hypertensive Crisis"
+    },
+    "trend": {
+      "title": "Longitudinal Corridor",
+      "subtitleCalibrated": "Shaded SBP/DBP corridor with brachial cuff diamonds",
+      "subtitleUncalibrated": "Relative autonomic vascular shift (ΔmmHg)",
+      "range7d": "7D",
+      "range30d": "30D",
+      "range90d": "90D",
+      "legendCorridor": "Estimated corridor",
+      "legendCuff": "Cuff anchor",
+      "legendDelta": "Autonomic ΔSBP / ΔDBP"
+    },
+    "drivers": {
+      "title": "Autonomic & Hemodynamic Drivers",
+      "subtitle": "Contributors to today's vascular shift",
+      "rhr": "Resting HR Shift",
+      "hrv": "HRV Shift (lnRMSSD)",
+      "sleepDebt": "Sleep Debt Load",
+      "acwr": "Training Load (ACWR)",
+      "bmi": "Body Mass Index (BMI)",
+      "raising": "Raising",
+      "lowering": "Lowering",
+      "neutral": "Neutral"
+    },
+    "sheet": {
+      "title": "Calibrate Brachial Cuff",
+      "subtitle": "Rest quietly for 5 minutes with arm supported at heart level before measuring.",
+      "systolicField": "Systolic (mmHg)",
+      "diastolicField": "Diastolic (mmHg)",
+      "pulseField": "Pulse (bpm, optional)",
+      "positionField": "Body Position",
+      "positions": {
+        "sitting": "Sitting",
+        "supine": "Supine",
+        "standing": "Standing"
+      },
+      "save": "Save Calibration",
+      "saving": "Saving…",
+      "cancel": "Cancel",
+      "errorRange": "Enter valid SBP (70–250), DBP (40–150), with SBP > DBP.",
+      "historyTitle": "Cuff Anchor History",
+      "historyEmpty": "No cuff readings logged yet.",
+      "sourceHealthConnect": "Health Connect",
+      "sourceManual": "Manual Cuff",
+      "deleteAction": "Delete"
+    },
+    "disclaimer": "Wearable vascular load estimates autonomic shifts around your cuff anchor and is not a standalone diagnostic blood pressure monitor."
   }
 }

@@ -6,7 +6,9 @@ import { metricLabel } from "@/lib/metricLabels";
 import { fitnessLevel } from "@/core/algorithms/fitnessLevel";
 import { HEALTHSPAN_TERM_COUNT, healthspanConfig, type HealthspanContribution } from "@/core/algorithms/healthspan";
 import { minuteMeanHr } from "@/core/algorithms/stress";
+import { PULSE_AGE_BP_MANIFEST } from "@/core/engine/pulseAgeBp";
 import type { LoadStatus } from "@/core/engine/strain";
+import { FEATURES } from "@/lib/features";
 import { addDays, daysBetween, fractionalYears, localMidnight } from "@/lib/time";
 import { acwrTone, clock, dayLabel, formatDay, weekOf } from "./_lib";
 import {
@@ -33,6 +35,7 @@ import {
 } from "./common";
 import { illnessRaised, VITAL_LABEL } from "./home";
 import { zoneBounds, zoneNote, zoneRows } from "./strain";
+import { getBloodPressureSummary } from "./bloodPressure";
 import type {
   ChipTone,
   EcgReading,
@@ -78,7 +81,7 @@ export async function getHealthHub(ctx: QueryCtx): Promise<HealthHubVM> {
     day: today,
     healthspan: hs.value ? ok({ pulseAge: hs.value.pulseAge, deltaYears: hs.value.deltaYears, pace: hs.value.pace, paceDelta: prevPace == null || hs.value.pace == null ? null : hs.value.pace - prevPace }, hs.provisional) : none(hs.reason ?? "no_data", hs.nightsLeft),
     monitor: monitor.count.value
-      ? ok({ vitals: monitor.vitals.map((v) => ({ key: v.key, short: v.short, status: v.status })), inRange: monitor.count.value.inRange, total: VITALS.length })
+      ? ok({ vitals: monitor.vitals.map((v) => ({ key: v.key, short: v.short, status: v.status })), inRange: monitor.count.value.inRange, total: monitor.count.value.total })
       : none(monitor.count.reason ?? "no_data"),
     stress:
       st && st.average != null
@@ -96,6 +99,7 @@ export async function getHealthHub(ctx: QueryCtx): Promise<HealthHubVM> {
       ? ok({ vo2max: fit.vo2.value.value, category: fit.vo2.value.category, percentile: fit.vo2.value.percentile, acwr: tl?.acwr ?? null, acwrTone: tl?.tone ?? null })
       : none("no_data"),
     heartRate,
+    vascularCorridor: row?.vascularCorridor ?? null,
   };
 }
 
@@ -249,8 +253,24 @@ const HS_META: Record<string, Omit<HealthspanContributor, "metric" | "target" | 
       return i18n.t("health:hs.source");
     },
   },
+  bloodPressure: {
+    group: "fitness",
+    get label() {
+      return i18n.t("health:hsLabel.bloodPressure");
+    },
+    unit: "mmHg",
+    domain: [90, 180],
+    higherIsBetter: false,
+    get explanation() {
+      return i18n.t("health:hsText.bloodPressure");
+    },
+    get source() {
+      return i18n.t("health:hs.source");
+    },
+  },
 };
 const HS_ORDER = ["sleepHours", "sri", "zone13", "zone45", "strength", "steps", "vo2max", "restingHr", "leanMass"];
+const HS_ORDER_WITH_BP = [...HS_ORDER, "bloodPressure"];
 
 const VO2_CAPTION = { run: "vo2Run", daily: "vo2Daily", estimate: "vo2Estimate" } as const;
 
@@ -277,11 +297,13 @@ export async function getHealthspan(day: string, ctx: QueryCtx): Promise<Healths
   const current = hs && hs.reason === null && hs.paceDays !== undefined;
   const contributions = hs && hs.reason === null ? hs.contributions.filter((c) => c.key in HS_META && (current || c.key !== "leanMass")) : [];
   const body = current ? hs.bodyComposition : null;
-  const contributors: HealthspanContributor[] = HS_ORDER.map((key) => {
+  const bpStatus = hs && hs.reason === null ? hs.bloodPressureStatus ?? null : null;
+  const order = FEATURES.bpPulseAge ? HS_ORDER_WITH_BP : HS_ORDER;
+  const contributors: HealthspanContributor[] = order.map((key) => {
     const meta = HS_META[key];
     const c = contributions.find((x) => x.key === key);
     const display = (v: number) => (key === "sri" ? Math.max(0, v) : v);
-    const target = c ? display(c.reference) : 0;
+    const target = c ? display(c.reference) : key === "bloodPressure" ? PULSE_AGE_BP_MANIFEST.referenceSbp : 0;
     const caption =
       key === "vo2max" && hs?.reason === null && hs.vo2maxSource
         ? i18n.t(`health:hs.${VO2_CAPTION[hs.vo2maxSource]}`)
@@ -289,7 +311,16 @@ export async function getHealthspan(day: string, ctx: QueryCtx): Promise<Healths
           ? c
             ? leanCaption(c, body, hs?.reason === null ? hs.age : 0)
             : i18n.t("health:hs.leanNeeds")
-          : undefined;
+          : key === "bloodPressure"
+            ? c && bpStatus?.eligible
+              ? i18n.t("health:hs.bpCaption", {
+                  systolic: localeFixed(bpStatus.systolicMean ?? c.value, 0),
+                  diastolic: localeFixed(bpStatus.diastolicMean ?? 0, 0),
+                  readings: bpStatus.readingCount,
+                  days: bpStatus.dayCount,
+                })
+              : i18n.t("health:hs.bpNeeds", { readings: bpStatus?.readingCount ?? 0, days: bpStatus?.dayCount ?? 0 })
+            : undefined;
     const domain: [number, number] = key === "leanMass" && c ? [target - 25, target + 10] : meta.domain;
     return {
       key,
@@ -369,6 +400,7 @@ function healthspanInsight(pace: number | null, deltaYears: number, cs: Healthsp
 
 const VITALS: { key: VitalKey; short: string; unit: string; signed?: boolean; pick: (r: DayRow) => number | null | undefined }[] = [
   { key: "resp", short: "Resp", unit: "rpm", pick: (r) => r.metrics?.respBpm },
+  { key: "spo2", short: "SpO2", unit: "%", pick: (r) => r.metrics?.spo2Pct },
   // The engine's night values, the ones Health Monitor's band and Recovery use (the daily ones before a scored night).
   { key: "restingHr", short: "RHR", unit: "bpm", pick: (r) => r.rhr },
   { key: "hrv", short: "HRV", unit: "ms", pick: (r) => r.metrics?.hrvMs },
@@ -384,10 +416,11 @@ const num = (v: number, dp: number, signed = false) => {
 export async function getMonitor(day: string, ctx: QueryCtx, preloaded?: Map<string, DayRow>): Promise<MonitorVM> {
   const today = todayOf(ctx);
   const isToday = day === today;
-  const [rows, rhythm, measured] = await Promise.all([
+  const [rows, rhythm, measured, bpSummary] = await Promise.all([
     preloaded?.has(addDays(day, -29)) ? preloaded : loadDays(ctx, addDays(day, -29), day),
     heartRhythm(ctx, day),
     measurements(ctx, day, today),
+    getBloodPressureSummary(day, ctx),
   ]);
   const row = rows.get(day);
   const hm = row?.healthMonitor;
@@ -429,19 +462,101 @@ export async function getMonitor(day: string, ctx: QueryCtx, preloaded?: Map<str
     };
   });
 
+  const bpVal = bpSummary.latest.value;
+  let bpVital: Vital;
+  if (bpVal) {
+    let chipTone: ChipTone = "optimal";
+    let chipText = "Normal";
+    let status: Vital["status"] = "in_range";
+    switch (bpVal.category) {
+      case "normal":
+        chipTone = "optimal";
+        chipText = i18n.t("health:bloodPressure.category.normal");
+        status = "in_range";
+        break;
+      case "elevated":
+        chipTone = "warning";
+        chipText = i18n.t("health:bloodPressure.category.elevated");
+        status = "high";
+        break;
+      case "stage1":
+        chipTone = "warning";
+        chipText = i18n.t("health:bloodPressure.category.stage1");
+        status = "high";
+        break;
+      case "stage2":
+        chipTone = "alert";
+        chipText = i18n.t("health:bloodPressure.category.stage2");
+        status = "high";
+        break;
+      case "crisis":
+        chipTone = "alert";
+        chipText = i18n.t("health:bloodPressure.category.crisis");
+        status = "high";
+        break;
+    }
+    bpVital = {
+      key: "bp",
+      label: i18n.t("health:title.bloodPressure"),
+      short: "BP",
+      unit: "mmHg",
+      customValue: `${bpVal.systolic}/${bpVal.diastolic}`,
+      metric: ok(bpVal.systolic),
+      range: { low: 90, high: 120 },
+      status,
+      chip: { tone: chipTone, text: chipText },
+      trend: {
+        points: bpSummary.history.map((h) => ({ day: h.day, value: h.systolic })),
+        baseline: bpSummary.baseline ? { mean: bpSummary.baseline.avgSystolic, sd: 0 } : null,
+      },
+      bp: {
+        systolic: bpVal.systolic,
+        diastolic: bpVal.diastolic,
+        category: bpVal.category,
+      },
+    };
+  } else {
+    const priorChip = bpSummary.latestPrior
+      ? { tone: "neutral" as const, text: i18n.t("health:bloodPressure.prior", { value: `${bpSummary.latestPrior.systolic}/${bpSummary.latestPrior.diastolic}` }) }
+      : null;
+    bpVital = {
+      key: "bp",
+      label: i18n.t("health:title.bloodPressure"),
+      short: "BP",
+      unit: "mmHg",
+      metric: none("no_data"),
+      range: { low: 90, high: 120 },
+      status: "no_data",
+      chip: priorChip,
+      trend: {
+        points: bpSummary.history.map((h) => ({ day: h.day, value: h.systolic })),
+        baseline: null,
+      },
+      bp: null,
+    };
+  }
+
+  const allVitals = [...vitals, bpVital];
+
   let count: MonitorVM["count"];
   if (!hm) count = none(isToday ? "awaiting_sleep_sync" : "band_not_worn");
   else if (hm.reason !== null) count = none(nightReason(hm.reason, isToday));
   else {
     const raised = illnessRaised(hm);
-    count = ok({ inRange: hm.inRange, total: VITALS.length, outOfRange: hm.flagged, status: raised ? "illness" : hm.flagged ? "out" : "within" });
+    // The count is over the vitals the screen shows (the band's five plus the BP row), so the number, the chips and
+    // the list always agree.
+    const inRange = allVitals.filter((v) => v.status === "in_range").length;
+    const outOfRange = allVitals.filter((v) => v.status === "high" || v.status === "low").length;
+    count = ok({ inRange, total: allVitals.length, outOfRange, status: raised ? "illness" : outOfRange ? "out" : "within" });
   }
   return {
     day,
     isToday,
     count,
     illness: hm && hm.reason === null && illnessRaised(hm) ? { level: hm.illness.level, score: hm.illness.score } : null,
-    vitals,
+    vitals: allVitals,
+    bloodPressure: bpSummary,
+    vascularCorridor: row?.vascularCorridor ?? null,
     heartRhythm: rhythm,
     measurements: measured,
   };

@@ -26,6 +26,25 @@
     "short": "--",
     "long": "Sin datos"
   },
+  "missingAutonomicSignals": {
+    "short": "Sin datos autonómicos",
+    "long": "Se necesitan frecuencia cardíaca en reposo y HRV para estimar tu carga vascular"
+  },
+  "baselineWarmingUp": {
+    "short": "Preparando base",
+    "long": "Construyendo tu referencia autonómica de 7 días",
+    "longNights_one": "Preparando base: queda {{count}} noche",
+    "longNights_many": "Preparando base: quedan {{count}} de noches",
+    "longNights_other": "Preparando base: quedan {{count}} noches"
+  },
+  "calibrationRequired": {
+    "short": "Calibración con brazalete necesaria",
+    "long": "Añade una lectura de brazalete braquial para desbloquear tu corredor absoluto de presión arterial."
+  },
+  "calibrationExpired": {
+    "short": "Calibración vencida",
+    "long": "Tu calibración con brazalete tiene más de 30 días. Añade una lectura para restaurar el corredor de presión arterial."
+  },
   "tag": {
     "provisionalLabel": "Preliminar",
     "provisionalExplain": "Se basa en un historial corto mientras se completan tus valores de referencia. Se afina a medida que llegan más días.",

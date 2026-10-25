@@ -100,10 +100,10 @@ const STEPS_FROM_60 = lnHr([[2841, 1], [5217, 0.62], [7116, 0.52], [10501, 0.43]
 /** The curve for `key` at `age`: steps use Paluch's age-specific curves (age interaction p = 0.012). */
 const curveOf = (key: keyof typeof curves, age: number): Knots => (key === "steps" && age >= 60 ? STEPS_FROM_60 : curves[key]);
 
-export type HealthspanInput = keyof typeof curves | "leanMass";
+export type HealthspanInput = keyof typeof curves | "leanMass" | "bloodPressure";
 
-/** Pulse Age's nine inputs, in contribution order. */
-const TERMS: readonly HealthspanInput[] = [...(Object.keys(curves) as (keyof typeof curves)[]), "leanMass"];
+/** Pulse Age's nine base inputs, in contribution order. */
+const TERMS: readonly Exclude<HealthspanInput, "bloodPressure">[] = [...(Object.keys(curves) as (keyof typeof curves)[]), "leanMass"];
 /** How many terms Pulse Age has in all (9). */
 export const HEALTHSPAN_TERM_COUNT = TERMS.length;
 
@@ -176,7 +176,7 @@ const byAge = (age: number, r: { at: number[]; minutes: number[] }) =>
   piecewiseLinear([[r.at[0], r.minutes[0]], [r.at[1], r.minutes[1]]], age);
 
 /** The profile that scores Pulse Age = chronological age. `leanMass` is lean mass %, 100 − the body-fat reference. */
-export function referenceProfile(age: number, sex: Sex): Record<HealthspanInput, number> {
+export function referenceProfile(age: number, sex: Sex): Record<Exclude<HealthspanInput, "bloodPressure">, number> {
   const r = healthspanConfig.reference;
   return {
     vo2max: piecewiseLinear(WHOOP_VO2MAX_REFERENCE[sex].map((v, i) => [20 + 5 * i, v] as const), age),
@@ -248,7 +248,7 @@ export interface HealthspanResult {
 }
 
 type Term = { value: number; weight: number; estimated: boolean };
-type Summary = Partial<Record<HealthspanInput, Term>>;
+type Summary = Partial<Record<Exclude<HealthspanInput, "bloodPressure">, Term>>;
 /** How the 6-month window got its VO2max and body fat; the 30-day window reads the same sources. */
 type Sources = { vo2: Vo2maxSource | null; bodyFat: "measured" | "bmi" | null };
 
@@ -301,7 +301,7 @@ function bodyFatOf(days: HealthspanDay[], p: HealthspanProfile, mode: Sources["b
 }
 
 /** Unclamped Δage and its per-input years, or null below minTerms. A missing term adds nothing. */
-function deltaAge(s: Summary, p: HealthspanProfile, ref: Record<HealthspanInput, number>) {
+function deltaAge(s: Summary, p: HealthspanProfile, ref: Record<Exclude<HealthspanInput, "bloodPressure">, number>) {
   const cfg = healthspanConfig;
   const present = TERMS.filter((k) => s[k] != null);
   if (present.length < cfg.minTerms) return null;

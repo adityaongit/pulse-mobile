@@ -3,11 +3,15 @@
 // § Composite. Nutrition, alcohol, smoking and blood (PhenoAge) are left out: Health Connect has no data for them.
 // Fix 9: the source summed the factors present and let missing ones count as zero; the Pulse engine scales the sum to
 // all nine (the mean present factor stands in for each missing one) and shows nothing below five factors.
+import { FEATURES } from "@/lib/features";
+import type { BloodPressureProtocolResult } from "./bloodPressureProtocol";
 import { clamp, mean } from "./math";
+import { calculateBpYears, PULSE_AGE_BP_MANIFEST } from "./pulseAgeBp";
 import type { Sex } from "./sleep";
 
 export const PULSE_AGE_FACTORS = ["sleepHours", "sri", "steps", "zone13", "zone45", "strength", "restingHr", "vo2max", "leanMass"] as const;
 export type PulseAgeFactor = (typeof PULSE_AGE_FACTORS)[number];
+export type PulseAgeFactorKey = PulseAgeFactor | "bloodPressure";
 export const MIN_FACTORS = 5;
 export const WINDOW_DAYS = 28;
 
@@ -103,7 +107,7 @@ export function hazard(f: PulseAgeFactor, x: number, age: number, sex: Sex): num
   }
 }
 
-export type FactorResult = { key: PulseAgeFactor; value: number | null; hazard: number | null; years: number | null; confidence: number };
+export type FactorResult = { key: PulseAgeFactorKey; value: number | null; hazard: number | null; years: number | null; confidence: number };
 
 export type PulseAge = { pulseAge: number; deltaYears: number; confidence: number; present: number; factors: FactorResult[] };
 
@@ -111,7 +115,15 @@ export type PulseAge = { pulseAge: number; deltaYears: number; confidence: numbe
  * Pulse Age for the week starting W, from the 28 days before W (`days`, any order) and the VO2 max and lean-mass %
  * readings in them. `age` is chronological age at W in years (365.25-day years). Null below MIN_FACTORS factors.
  */
-export function pulseAge(a: { age: number; sex: Sex; days: readonly PulseAgeDay[]; vo2: readonly number[]; leanPct: readonly number[] }): PulseAge | null {
+export function pulseAge(a: {
+  age: number;
+  sex: Sex;
+  days: readonly PulseAgeDay[];
+  vo2: readonly number[];
+  leanPct: readonly number[];
+  bp?: BloodPressureProtocolResult | null;
+  bpEnabled?: boolean;
+}): PulseAge | null {
   const daily = (k: keyof PulseAgeDay) => a.days.map((d) => d[k]).filter((v): v is number => v != null && Number.isFinite(v));
   // Weekly minutes: the 28-day sum × 0.25 (minutes per week), over the days with a value.
   const weekly = (k: keyof PulseAgeDay) => {
@@ -141,18 +153,34 @@ export function pulseAge(a: { age: number; sex: Sex; days: readonly PulseAgeDay[
   inputs.vo2max = { x: vo2, conf: vo2 == null ? 0 : 1 };
   inputs.leanMass = { x: lean, conf: lean == null ? 0 : 1 };
 
-  const factors: FactorResult[] = PULSE_AGE_FACTORS.map((key) => {
+  const baseFactors: FactorResult[] = PULSE_AGE_FACTORS.map((key) => {
     const { x, conf } = inputs[key];
     const hr = x == null ? null : hazard(key, x, a.age, a.sex);
     return { key, value: x, hazard: hr, years: hr == null ? null : 10 * Math.log(hr), confidence: conf };
   });
-  const present = factors.filter((f) => f.years != null);
+  const present = baseFactors.filter((f) => f.years != null);
   if (present.length < MIN_FACTORS) return null;
   const scale = PULSE_AGE_FACTORS.length / present.length;
   for (const f of present) f.years = f.years! * scale;
-  const delta = present.reduce((s, f) => s + f.years!, 0);
+  const baseDelta = present.reduce((s, f) => s + f.years!, 0);
+
+  const bpOn = a.bpEnabled ?? FEATURES.bpPulseAge;
+  const bpInput = bpOn && a.bp?.eligible ? a.bp : null;
+  const bpYears = bpInput ? calculateBpYears(bpInput, PULSE_AGE_BP_MANIFEST, a.age, a.sex) : 0;
+  const factors: FactorResult[] = [...baseFactors];
+  if (bpOn) {
+    factors.push({
+      key: "bloodPressure",
+      value: bpInput ? bpInput.systolicMean : null,
+      hazard: bpInput ? Math.exp(bpYears / 10) : null,
+      years: bpInput ? bpYears : null,
+      confidence: bpInput ? 1 : 0,
+    });
+  }
+
+  const delta = baseDelta + bpYears;
   const pulse = clamp(a.age + delta, 0, 150);
-  return { pulseAge: pulse, deltaYears: pulse - a.age, confidence: mean(factors.map((f) => f.confidence))!, present: present.length, factors };
+  return { pulseAge: pulse, deltaYears: pulse - a.age, confidence: mean(baseFactors.map((f) => f.confidence))!, present: present.length, factors };
 }
 
 /** The projection rate: Pulse Age over age, within 0.6–1.6 (display only, the study's projection). */

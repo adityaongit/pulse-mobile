@@ -192,7 +192,8 @@
     "fat": "Gordura dos alimentos que você registrou.",
     "glucose": "Leituras de glicose no sangue de um medidor conectado ou de um registro manual.",
     "core_temp": "Leituras da temperatura corporal central de um sensor conectado.",
-    "swim_strokes": "Braçadas contadas durante nados na piscina."
+    "swim_strokes": "Braçadas contadas durante nados na piscina.",
+    "bp": "Medições de pressão arterial do Health Connect ou de um monitor conectado. A pressão normal é sistólica abaixo de 120 mmHg e diastólica abaixo de 80 mmHg."
   },
   "metricSource": {
     "activity": "O resumo diário do seu app de saúde, contado pela sua pulseira ou pelo celular. O Pulse mostra os valores como chegam e não os pontua.",

@@ -4,8 +4,27 @@
 // row per 1 Hz sample is far too slow over months. Every batch write runs in one exclusive transaction.
 import { deleteDatabaseAsync, openDatabaseAsync, type SQLiteDatabase } from "expo-sqlite";
 import { isDeadConnection } from "./deadConnection";
+import { postureOf } from "./types";
 import type { CoachChatRow, DayRange, EntrySource, JournalTagChange, JournalTagRow, LoggedEntryRow, ReportRow, ScoreRow, SeriesKind, Store } from "./store";
-import type { DailyValue, Exercise, HealthRecord, HrSample, HrvSample, JournalEntry, Metrics, Profile, Segment, Session, StepsMinute, SyncState } from "./types";
+import type {
+  BloodPressurePosture,
+  BloodPressureQuality,
+  BloodPressureReading,
+  BloodPressureReadingRow,
+  BloodPressureSource,
+  DailyValue,
+  Exercise,
+  HealthRecord,
+  HrSample,
+  HrvSample,
+  JournalEntry,
+  Metrics,
+  Profile,
+  Segment,
+  Session,
+  StepsMinute,
+  SyncState,
+} from "./types";
 import type { ActivityCostResult } from "@/core/algorithms/activityCost";
 import { minuteHr } from "@/core/engine/context";
 import { slice } from "@/lib/yield";
@@ -44,7 +63,8 @@ create table if not exists intraday_dirty (day text primary key);
 create table if not exists daily_scores (
   day text primary key, scoring_version integer not null, strain text, activities text, session_rhr_bpm real,
   recovery text, sleep text, training_load text, strain_target text, sleep_planner text, energy_bank text, stress text,
-  health_monitor text, healthspan text, fitness text, journal_impact text, detected text, hrv_status text, training text
+  health_monitor text, healthspan text, fitness text, journal_impact text, detected text, hrv_status text, training text,
+  vascular_corridor text
 );
 create table if not exists intraday_series (day text not null, kind text not null, data text not null, primary key (day, kind));
 create table if not exists reports (period text primary key, data text not null);
@@ -61,6 +81,15 @@ create table if not exists logged_entries (
 create index if not exists logged_entries_ts on logged_entries (ts);
 create table if not exists health_records (id text primary key, kind text not null, ts integer not null, day text not null, data text not null);
 create index if not exists health_records_day on health_records (day);
+create table if not exists blood_pressure_readings (
+  id text primary key, ts integer not null, day text not null, systolic_mmhg real not null, diastolic_mmhg real not null,
+  pulse_bpm real, posture text, source text,
+  body_position text, measurement_location text, recording_method text, source_platform text, source_application text,
+  source_device text, quality text not null, imported_at integer not null
+);
+create index if not exists blood_pressure_day on blood_pressure_readings (day);
+create index if not exists blood_pressure_ts on blood_pressure_readings (ts);
+create view if not exists blood_pressure as select * from blood_pressure_readings;
 create table if not exists coach_chats (id text primary key, title text not null, messages text not null, created_at integer not null, updated_at integer not null);
 create index if not exists coach_chats_recent on coach_chats (updated_at desc, id desc);
 `;
@@ -85,6 +114,15 @@ const MIGRATIONS = [
   "alter table hr_days add column minute integer not null default 0",
   // Units and the clock, JSON { units, hours } (Settings › App).
   "alter table profile add column display text",
+  // Blood pressure readings (Health Connect).
+  "create table if not exists blood_pressure_readings (id text primary key, ts integer not null, day text not null, systolic_mmhg real not null, diastolic_mmhg real not null, pulse_bpm real, posture text, source text, body_position text, measurement_location text, recording_method text, source_platform text, source_application text, source_device text, quality text not null, imported_at integer not null)",
+  "create index if not exists blood_pressure_day on blood_pressure_readings (day)",
+  "create index if not exists blood_pressure_ts on blood_pressure_readings (ts)",
+  "create view if not exists blood_pressure as select * from blood_pressure_readings",
+  "alter table daily_scores add column vascular_corridor text",
+  "alter table blood_pressure_readings add column pulse_bpm real",
+  "alter table blood_pressure_readings add column posture text",
+  "alter table blood_pressure_readings add column source text",
 ];
 
 const DAY = 86_400;
@@ -112,11 +150,29 @@ type SessionRow = {
 type SegmentRow = { session_id: string; start_ts: number; end_ts: number; stage: Segment["stage"] };
 type ExerciseRow = { id: string; day: string; start_ts: number; end_ts: number; type: string; name: string | null; calories: number | null; distance_m: number | null };
 type BucketRow = { bucket: number; offsets: string; vals: string };
+type BloodPressureRow = {
+  id: string;
+  ts: number;
+  day: string;
+  systolic_mmhg: number;
+  diastolic_mmhg: number;
+  pulse_bpm: number | null;
+  posture: string | null;
+  source: string | null;
+  body_position: string | null;
+  measurement_location: string | null;
+  recording_method: string | null;
+  source_platform: string | null;
+  source_application: string | null;
+  source_device: string | null;
+  quality: BloodPressureQuality;
+  imported_at: number;
+};
 type ScoresRow = {
   day: string; scoring_version: number; strain: string | null; activities: string | null; session_rhr_bpm: number | null;
   recovery: string | null; sleep: string | null; training_load: string | null; strain_target: string | null; sleep_planner: string | null;
   energy_bank: string | null; stress: string | null; health_monitor: string | null; healthspan: string | null; fitness: string | null;
-  journal_impact: string | null; detected: string | null; hrv_status: string | null; training: string | null;
+  journal_impact: string | null; detected: string | null; hrv_status: string | null; training: string | null; vascular_corridor: string | null;
 };
 
 const metricsOf = (r: MetricsRow): Metrics => ({
@@ -176,8 +232,38 @@ const exerciseOf = (r: ExerciseRow): Exercise => ({
   calories: r.calories,
   distanceM: r.distance_m,
 });
+const bloodPressureOf = (r: BloodPressureRow): BloodPressureReading => ({
+  id: r.id,
+  ts: r.ts,
+  day: r.day,
+  systolicMmhg: r.systolic_mmhg,
+  diastolicMmhg: r.diastolic_mmhg,
+  pulseBpm: r.pulse_bpm ?? null,
+  posture: (r.posture as BloodPressurePosture | null) ?? null,
+  source: (r.source as BloodPressureSource | null) ?? null,
+  bodyPosition: r.body_position,
+  measurementLocation: r.measurement_location,
+  recordingMethod: r.recording_method,
+  sourcePlatform: r.source_platform,
+  sourceApplication: r.source_application,
+  sourceDevice: r.source_device,
+  quality: r.quality,
+  importedAt: r.imported_at,
+});
 
-const SCORE_JSON = ["strain", "activities", "recovery", "sleep", "training_load", "strain_target", "sleep_planner", "energy_bank", "stress", "health_monitor", "healthspan", "fitness", "journal_impact", "detected", "hrv_status", "training"] as const;
+const bloodPressureReadingRowOf = (r: BloodPressureRow): BloodPressureReadingRow => ({
+  id: r.id,
+  timestampMs: r.ts * 1000,
+  date: r.day,
+  systolicMmHg: r.systolic_mmhg,
+  diastolicMmHg: r.diastolic_mmhg,
+  pulseBpm: r.pulse_bpm ?? null,
+  posture: postureOf(r.posture as BloodPressurePosture | null, r.body_position),
+  source:
+    (r.source as BloodPressureSource | null) ?? "health_connect",
+});
+
+const SCORE_JSON = ["strain", "activities", "recovery", "sleep", "training_load", "strain_target", "sleep_planner", "energy_bank", "stress", "health_monitor", "healthspan", "fitness", "journal_impact", "detected", "hrv_status", "training", "vascular_corridor"] as const;
 const scoreOf = (r: ScoresRow): ScoreRow => ({
   day: r.day,
   scoringVersion: r.scoring_version,
@@ -198,6 +284,7 @@ const scoreOf = (r: ScoresRow): ScoreRow => ({
   detected: parse(r.detected),
   hrv_status: parse(r.hrv_status),
   training: parse(r.training),
+  vascular_corridor: parse(r.vascular_corridor),
 });
 const SCORES_SQL = `insert or replace into daily_scores (day, scoring_version, session_rhr_bpm, ${SCORE_JSON.join(", ")}) values (${Array(3 + SCORE_JSON.length).fill("?").join(", ")})`;
 
@@ -414,6 +501,7 @@ class SqliteStore implements Store {
       await db.runAsync("delete from exercises where day >= ? and day <= ?", days);
       await db.runAsync("delete from daily_values where day >= ? and day <= ?", days);
       await db.runAsync("delete from health_records where day >= ? and day <= ?", days);
+      await db.runAsync("delete from blood_pressure_readings where day >= ? and day <= ? and (source is null or source != 'manual')", days);
       await db.runAsync("delete from logged_entries where source = 'health_connect' and day >= ? and day <= ?", days);
       if (!opts?.keepScores) {
         await db.runAsync("delete from daily_scores where day >= ? and day <= ?", days);
@@ -506,6 +594,103 @@ class SqliteStore implements Store {
     );
   }
 
+  async upsertBloodPressure(rows: BloodPressureReading[]) {
+    if (!rows.length) return;
+    await this.tx((db) =>
+      this.many(
+        db,
+        `insert or replace into blood_pressure_readings (
+          id, ts, day, systolic_mmhg, diastolic_mmhg, pulse_bpm, posture, source,
+          body_position, measurement_location,
+          recording_method, source_platform, source_application, source_device, quality, imported_at
+        ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        rows.map((r) => {
+          const posture = postureOf(r.posture, r.bodyPosition);
+              const source: BloodPressureSource = r.source ?? "health_connect";
+          return [
+            r.id,
+            r.ts,
+            r.day,
+            r.systolicMmhg,
+            r.diastolicMmhg,
+            r.pulseBpm ?? null,
+            posture,
+            source,
+            r.bodyPosition ?? null,
+            r.measurementLocation ?? null,
+            r.recordingMethod ?? null,
+            r.sourcePlatform ?? null,
+            r.sourceApplication ?? null,
+            r.sourceDevice ?? null,
+            r.quality,
+            r.importedAt,
+          ];
+        }),
+      ),
+    );
+  }
+
+  async insertBloodPressure(records: BloodPressureReading[]) {
+    return this.upsertBloodPressure(records);
+  }
+
+  async upsertBloodPressureReadings(rows: BloodPressureReadingRow[]) {
+    if (!rows.length) return;
+    const nowSec = Math.floor(Date.now() / 1000);
+    await this.tx((db) =>
+      this.many(
+        db,
+        `insert or replace into blood_pressure_readings (
+          id, ts, day, systolic_mmhg, diastolic_mmhg, pulse_bpm, posture, source,
+          body_position, measurement_location,
+          recording_method, source_platform, source_application, source_device, quality, imported_at
+        ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        rows.map((r) => {
+          const tsSec = Math.floor(r.timestampMs / 1000);
+          const bodyPosition = r.posture === "supine" ? "lying_down" : r.posture;
+          const quality: BloodPressureQuality = r.source === "manual" ? "manual" : "direct";
+          return [
+            r.id,
+            tsSec,
+            r.date,
+            r.systolicMmHg,
+            r.diastolicMmHg,
+            r.pulseBpm ?? null,
+            r.posture ?? null,
+            r.source,
+            bodyPosition ?? null,
+            null,
+            r.source === "manual" ? "manual_entry" : "active",
+            r.source === "manual" ? "pulse" : "health_connect",
+            null,
+            null,
+            quality,
+            nowSec,
+          ];
+        }),
+      ),
+    );
+  }
+
+  async getBloodPressureReadings(upToDate?: string): Promise<BloodPressureReadingRow[]> {
+    const rows =
+      upToDate === undefined
+        ? await this.db.getAllAsync<BloodPressureRow>(
+            "select * from blood_pressure_readings order by ts asc, id asc",
+          )
+        : await this.db.getAllAsync<BloodPressureRow>(
+            "select * from blood_pressure_readings where day <= ? order by ts asc, id asc",
+            [upToDate],
+          );
+    return rows.map(bloodPressureReadingRowOf);
+  }
+
+  async deleteBloodPressureReading(id: string): Promise<void> {
+    await this.tx((db) =>
+      db.runAsync("delete from blood_pressure_readings where id = ?", [id]),
+    );
+  }
+
   async markIntradayDirty(days: string[]) {
     if (!days.length) return;
     await this.tx((db) => this.many(db, "insert or ignore into intraday_dirty (day) values (?)", days.map((d) => [d])));
@@ -559,6 +744,38 @@ class SqliteStore implements Store {
       toDay === undefined ? [] : [toDay],
     );
     return rows.map((r): HealthRecord => ({ id: r.id, kind: r.kind, ts: r.ts, day: r.day, data: JSON.parse(r.data) as Record<string, unknown> }));
+  }
+
+  async allBloodPressure(): Promise<BloodPressureReading[]> {
+    const rows = await this.db.getAllAsync<BloodPressureRow>("select * from blood_pressure_readings order by ts desc, id desc");
+    return rows.map(bloodPressureOf);
+  }
+
+  async bloodPressureIn(range: DayRange): Promise<BloodPressureReading[]> {
+    const rows = await this.db.getAllAsync<BloodPressureRow>(
+      "select * from blood_pressure_readings where day >= ? and day <= ? order by ts desc, id desc",
+      [range.from, range.to],
+    );
+    return rows.map(bloodPressureOf);
+  }
+
+  async readBloodPressure(fromTs: number, toTs: number): Promise<BloodPressureReading[]> {
+    const rows = await this.db.getAllAsync<BloodPressureRow>(
+      "select * from blood_pressure_readings where ts >= ? and ts < ? order by ts asc",
+      [fromTs, toTs],
+    );
+    return rows.map(bloodPressureOf);
+  }
+
+  async getBloodPressure(day?: string): Promise<BloodPressureReading[]> {
+    if (day !== undefined) {
+      const rows = await this.db.getAllAsync<BloodPressureRow>(
+        "select * from blood_pressure_readings where day = ? order by ts desc, id desc",
+        [day],
+      );
+      return rows.map(bloodPressureOf);
+    }
+    return this.allBloodPressure();
   }
 
   /** Samples with lo <= ts < hi from the buckets they can fall in, in time order. */
@@ -772,7 +989,7 @@ type SampleTable = "hr_days" | "steps_days" | "hrv_days";
 const TABLES = [
   "profile", "sync_state", "daily_metrics", "sleep_sessions", "sleep_segments", "exercises", "hr_days", "steps_days", "hrv_days", "daily_values",
   "journal_entries", "intraday_dirty", "daily_scores", "intraday_series", "reports", "activity_cost", "pipeline_checkpoint",
-  "journal_tags", "logged_entries", "health_records",
+  "journal_tags", "logged_entries", "health_records", "blood_pressure_readings",
 ];
 
 /** Opens (and migrates) the database. WAL with synchronous=normal: durable across crashes, no fsync per autocommit write. */

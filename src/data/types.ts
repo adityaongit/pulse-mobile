@@ -124,6 +124,69 @@ export type HrvSample = { ts: number; ms: number };
 /** Steps in the minute starting at `ts` (a whole minute, unix seconds). */
 export type StepsMinute = { ts: number; v: number };
 
+export type BloodPressureQuality = "direct" | "manual" | "derived" | "unknown";
+
+export type BloodPressurePosture = "sitting" | "supine" | "standing";
+
+/** The reading's posture: the explicit field wins, else the Health Connect body position mapped onto it. */
+export function postureOf(
+  posture: BloodPressurePosture | null | undefined,
+  bodyPosition: string | null | undefined,
+): BloodPressurePosture | null {
+  if (posture != null) return posture;
+  if (bodyPosition === "sitting" || bodyPosition === "standing") return bodyPosition;
+  if (bodyPosition === "lying_down" || bodyPosition === "reclining") return "supine";
+  return null;
+}
+
+export type BloodPressureSource = "health_connect" | "manual";
+
+export type VascularCorridorMode = "calibrated" | "uncalibrated";
+
+export type VascularCalibrationStatus = "fresh" | "aging" | "expired" | "uncalibrated";
+
+export type BloodPressureAhaCategory =
+  | "normal"
+  | "elevated"
+  | "stage1_hypertension"
+  | "stage2_hypertension"
+  | "hypertensive_crisis"
+  | "hypotension";
+
+export type BloodPressureReading = {
+  id: string;
+  ts: number;
+  day: string;
+  systolicMmhg: number;
+  diastolicMmhg: number;
+  pulseBpm?: number | null;
+  posture?: BloodPressurePosture | null;
+  source?: BloodPressureSource | null;
+  bodyPosition?: string | null;
+  measurementLocation?: string | null;
+  recordingMethod?: string | null;
+  sourcePlatform?: string | null;
+  sourceApplication?: string | null;
+  sourceDevice?: string | null;
+  quality: BloodPressureQuality;
+  importedAt: number;
+};
+
+/** Alias for BloodPressureReading mirroring the Health Connect record naming. */
+export type BloodPressureRecord = BloodPressureReading;
+
+/** PR-14 cuff reading contract for the Vascular Corridor engine and manual calibration action. */
+export type BloodPressureReadingRow = {
+  id: string;
+  timestampMs: number;
+  date: string;
+  systolicMmHg: number;
+  diastolicMmHg: number;
+  pulseBpm: number | null;
+  posture: BloodPressurePosture | null;
+  source: BloodPressureSource;
+};
+
 /** "Shown, never scored" extras keyed like Pulse's daily_values (e.g. "distance_m", "floors", "height_cm" on day "latest"). */
 export type DailyValue = { day: string; key: string; value: number };
 

@@ -26,6 +26,25 @@
     "short": "--",
     "long": "Sem dados"
   },
+  "missingAutonomicSignals": {
+    "short": "Sem dados autonômicos",
+    "long": "Frequência cardíaca em repouso e HRV são necessárias para estimar sua carga vascular"
+  },
+  "baselineWarmingUp": {
+    "short": "Aquecendo base",
+    "long": "Construindo sua referência autonômica de 7 dias",
+    "longNights_one": "Aquecendo: falta {{count}} noite",
+    "longNights_many": "Aquecendo: faltam {{count}} de noites",
+    "longNights_other": "Aquecendo: faltam {{count}} noites"
+  },
+  "calibrationRequired": {
+    "short": "Calibração com manguito necessária",
+    "long": "Adicione uma leitura de manguito braquial para desbloquear seu corredor absoluto de pressão arterial."
+  },
+  "calibrationExpired": {
+    "short": "Calibração expirada",
+    "long": "Sua calibração com manguito tem mais de 30 dias. Adicione uma leitura para restaurar o corredor de pressão arterial."
+  },
   "tag": {
     "provisionalLabel": "Provisório",
     "provisionalExplain": "Com base em um histórico curto, enquanto suas referências se formam. Fica mais preciso conforme chegam mais dias.",

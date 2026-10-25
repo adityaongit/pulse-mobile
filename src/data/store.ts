@@ -1,6 +1,6 @@
 // The storage contract every layer talks to: the importer writes rows, the pipeline reads rows and writes scores,
 // the screen queries read both. One implementation on expo-sqlite (db.ts); tests may use an in-memory one.
-import type { DailyValue, Exercise, HealthRecord, HrSample, HrvSample, JournalEntry, Metrics, Profile, Segment, Session, StepsMinute, SyncState } from "./types";
+import type { BloodPressureReading, BloodPressureReadingRow, DailyValue, Exercise, HealthRecord, HrSample, HrvSample, JournalEntry, Metrics, Profile, Segment, Session, StepsMinute, SyncState } from "./types";
 import type { Stage1Activity, Stage1Day, Stage2Row } from "@/pipeline/types";
 import type { Report } from "@/core/algorithms/reports";
 import type { ActivityCostResult } from "@/core/algorithms/activityCost";
@@ -48,6 +48,10 @@ export interface Store {
   deleteExercises(ids: string[]): Promise<void>;
   /** ECG readings and irregular-rhythm notifications (Google Health only), upserted by id. */
   upsertHealthRecords(rows: HealthRecord[]): Promise<void>;
+  /** Paired blood pressure readings, upserted by id. */
+  upsertBloodPressure(rows: BloodPressureReading[]): Promise<void>;
+  /** Alias for upsertBloodPressure. */
+  insertBloodPressure(records: BloodPressureReading[]): Promise<void>;
   /** Days whose intraday samples changed since the pipeline last ran (stage 1 reruns them). */
   markIntradayDirty(days: string[]): Promise<void>;
   takeIntradayDirty(): Promise<string[]>;
@@ -61,6 +65,20 @@ export interface Store {
   dailyValues(range?: DayRange): Promise<DailyValue[]>;
   /** Health records with day <= `toDay` (every one without), newest first. */
   healthRecords(toDay?: string): Promise<HealthRecord[]>;
+  /** All blood pressure readings, newest first. */
+  allBloodPressure(): Promise<BloodPressureReading[]>;
+  /** Blood pressure readings with day in range, newest first. */
+  bloodPressureIn(range: DayRange): Promise<BloodPressureReading[]>;
+  /** Blood pressure readings with fromTs <= ts < toTs, ascending. */
+  readBloodPressure(fromTs: number, toTs: number): Promise<BloodPressureReading[]>;
+  /** Blood pressure readings for a day, or all if omitted, newest first. */
+  getBloodPressure(day?: string): Promise<BloodPressureReading[]>;
+  /** Upserts PR-14 cuff readings into blood_pressure_readings. */
+  upsertBloodPressureReadings(rows: BloodPressureReadingRow[]): Promise<void>;
+  /** Reads PR-14 cuff readings up to upToDate (YYYY-MM-DD), sorted chronologically ascending by timestampMs. */
+  getBloodPressureReadings(upToDate?: string): Promise<BloodPressureReadingRow[]>;
+  /** Deletes a blood pressure reading by id. */
+  deleteBloodPressureReading(id: string): Promise<void>;
   /** HR with lo <= ts < hi, ascending. */
   readHr(lo: number, hi: number): Promise<HrSample[]>;
   readSteps(lo: number, hi: number): Promise<StepsMinute[]>;
@@ -186,4 +204,6 @@ export type ScoreRow = {
   /** Version 19; absent on rows stored before. */
   hrv_status?: Stage2Row["hrv_status"] | null;
   training?: Stage2Row["training"] | null;
+  /** Version 33; dual-mode blood pressure vascular corridor. */
+  vascular_corridor?: Stage2Row["vascular_corridor"] | null;
 };

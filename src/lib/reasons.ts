@@ -10,6 +10,10 @@ export const REASON_CODES = [
   "insufficient_hr_data",
   "band_not_worn",
   "no_data",
+  "missing_autonomic_signals",
+  "baseline_warming_up",
+  "calibration_required",
+  "calibration_expired",
 ] as const;
 export type ReasonCode = (typeof REASON_CODES)[number];
 
@@ -70,6 +74,37 @@ export const REASONS: Record<ReasonCode, ReasonEntry> = {
       return i18n.t("reasons:noData.short");
     },
     long: () => i18n.t("reasons:noData.long"),
+  },
+  missing_autonomic_signals: {
+    icon: HeartPulse,
+    get short() {
+      return i18n.t("reasons:missingAutonomicSignals.short");
+    },
+    long: () => i18n.t("reasons:missingAutonomicSignals.long"),
+  },
+  baseline_warming_up: {
+    icon: Hourglass,
+    get short() {
+      return i18n.t("reasons:baselineWarmingUp.short");
+    },
+    long: (n) =>
+      n === undefined
+        ? i18n.t("reasons:baselineWarmingUp.long")
+        : i18n.t("reasons:baselineWarmingUp.longNights", { count: n }),
+  },
+  calibration_required: {
+    icon: HeartPulse,
+    get short() {
+      return i18n.t("reasons:calibrationRequired.short");
+    },
+    long: () => i18n.t("reasons:calibrationRequired.long"),
+  },
+  calibration_expired: {
+    icon: RefreshCw,
+    get short() {
+      return i18n.t("reasons:calibrationExpired.short");
+    },
+    long: () => i18n.t("reasons:calibrationExpired.long"),
   },
 };
 

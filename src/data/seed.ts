@@ -13,7 +13,7 @@ import { hash, mulberry32 } from "@/core/algorithms/journalImpact";
 import { addDays, localDay, localMidnight } from "@/lib/time";
 import { resolveMaxHr } from "@/pipeline/index";
 import type { Store } from "./store";
-import type { DailyValue, Exercise, HrvSample, Metrics, Profile, Segment, Session } from "./types";
+import type { BloodPressureReadingRow, DailyValue, Exercise, HrvSample, Metrics, Profile, Segment, Session } from "./types";
 
 // ---------------------------------------------------------------------------------------------
 // The demo person's story (scenario.ts). Day indices are 0-based from the first seeded day (the anchor), so the
@@ -807,6 +807,33 @@ export async function seedDemo(store: Store, opts: SeedOptions): Promise<Profile
     const batch = Array.from({ length: Math.min(BATCH_DAYS, days - i) }, (_, k) => generateDay(ctx, i + k));
     await writeDays(store, batch, now, checkedIn);
   }
+  const cuffRows: BloodPressureReadingRow[] = [];
+  for (const offset of [60, 30, 5] as const) {
+    if (offset >= days) continue;
+    const anchorDay = days > 180 ? addDays(ctx.anchor, 179 - offset) : addDays(today, -offset);
+    const tsSec = localMidnight(anchorDay, timeZone) + 8 * 3600;
+    if (tsSec > now) continue;
+    let sbp = 118;
+    let dbp = 76;
+    if (offset === 60) {
+      sbp = 119;
+      dbp = 77;
+    } else if (offset === 30) {
+      sbp = 121;
+      dbp = 78;
+    }
+    cuffRows.push({
+      id: `seed-bp-${anchorDay}`,
+      timestampMs: tsSec * 1000,
+      date: anchorDay,
+      systolicMmHg: sbp,
+      diastolicMmHg: dbp,
+      pulseBpm: 58,
+      posture: "sitting",
+      source: "health_connect",
+    });
+  }
+  if (cuffRows.length) await store.upsertBloodPressureReadings(cuffRows);
   await store.setProfile(profile);
   await store.setSyncState({ lastSyncTs: now, firstDay: ctx.anchor, lastError: null });
   return profile;

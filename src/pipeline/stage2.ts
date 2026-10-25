@@ -46,6 +46,7 @@ import {
   scoreEngineStress,
   scoreEngineStrainTarget,
 } from "./engine";
+import { computeVascularCorridorSeries, type VascularDailyFeatureInput } from "@/core/engine/vascular";
 import { resume, snapshot } from "./checkpoint";
 
 export async function stage2(store: Store, data: Data, opts: PipelineOptions, onProgress?: Progress, rerun: string[] = []) {
@@ -65,6 +66,7 @@ export async function stage2(store: Store, data: Data, opts: PipelineOptions, on
   // Stress and Energy Bank series go out in batches during the fold rather than all at the end, so memory
   // doesn't grow with history. They are idempotent upserts.
   let pending: { day: string; stress: (number | null)[]; energy: (number | null)[] | null }[] = [];
+  const cuffRows = await store.getBloodPressureReadings(data.last);
   const flush = async () => {
     const batch = pending;
     pending = [];
@@ -132,6 +134,17 @@ export async function stage2(store: Store, data: Data, opts: PipelineOptions, on
       fitness,
       hrv_status: hrvStatusRow,
       training,
+      vascular_corridor: {
+        mode: "uncalibrated",
+        systolic: { value: null, lower: null, upper: null, reason: "baseline_warming_up", provisional: true },
+        diastolic: { value: null, lower: null, upper: null, reason: "baseline_warming_up", provisional: true },
+        pulsePressure: { value: null, reason: "baseline_warming_up", provisional: true },
+        meanArterialPressure: { value: null, reason: "baseline_warming_up", provisional: true },
+        autonomicDelta: { sbpDeltaMmHg: null, dbpDeltaMmHg: null, reason: "baseline_warming_up", provisional: true },
+        calibration: { status: "uncalibrated", lastCalibratedAtMs: null, daysSinceCalibration: null, halfWidthMmHg: null, anchorSystolicMmHg: null, anchorDiastolicMmHg: null },
+        drivers: { rhrDeltaBpm: null, lnRmssdDelta: null, sleepDebtHours: null, acwr: null, bmi: null },
+        ahaCategory: null,
+      },
     });
 
     // Fold today's nightly values into the baselines (after scoring today).
@@ -145,6 +158,41 @@ export async function stage2(store: Store, data: Data, opts: PipelineOptions, on
     f.prevAcwr = trainingLoad.acwr;
   }
   await flush();
+  let lastKnownWeightKg: number | null = null;
+  const vascularFeatures: VascularDailyFeatureInput[] = days.map((day) => {
+    const dm = data.metrics.get(day);
+    if (dm?.weightKg != null) lastKnownWeightKg = dm.weightKg;
+    const cur = out.get(day);
+    const prev = storedRows.get(day);
+    const rec = cur?.recovery ?? prev?.recovery ?? null;
+    const slp = cur?.sleep ?? prev?.sleep ?? null;
+    const st1 = inputs.cached.get(day)?.s1 ?? prev?.strain ?? null;
+    const h = opts.profile.heightCm;
+    const bmi =
+      lastKnownWeightKg != null && h != null && h > 0
+        ? lastKnownWeightKg / Math.pow(h / 100, 2)
+        : null;
+    const sleepEfficiencyPct =
+      slp?.main != null ? slp.main.efficiency * 100 : null;
+    const asleepMin = slp?.creditedMin ?? slp?.main?.asleepMin ?? null;
+    return {
+      date: day,
+      rhrBpm: rec?.inputs.rhr ?? dm?.rhrBpm ?? null,
+      hrvRmssdMs: rec?.inputs.hrv ?? dm?.hrvMs ?? null,
+      sleepDurationHours: asleepMin != null ? asleepMin / 60 : null,
+      sleepEfficiencyPct,
+      sleepDebtHours: slp?.debtMin != null ? slp.debtMin / 60 : null,
+      strainPct: st1?.engine?.strain?.value ?? null,
+      respiratoryRateBrpm: rec?.inputs.resp ?? dm?.respBpm ?? null,
+      skinTempDeltaC: dm?.nightlyTempC ?? null,
+      bmi,
+    };
+  });
+  const vascularByDay = computeVascularCorridorSeries(vascularFeatures, cuffRows);
+  for (const [day, row] of out) {
+    const vc = vascularByDay.get(day);
+    if (vc) row.vascular_corridor = vc;
+  }
   onProgress?.("stage2", days.length, days.length);
   const recovery = new Map<string, number>();
   for (const day of days.slice(0, start)) {

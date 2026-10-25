@@ -14,6 +14,8 @@
 //   log     → water, food and cycle records as read-only logged entries ("Logged in Fitbit")
 import type { ReadType } from "@/health/connect";
 import type {
+  BloodPressureBodyPosition as LibBloodPressureBodyPosition,
+  BloodPressureMeasurementLocation as LibBloodPressureMeasurementLocation,
   ExerciseType as LibExerciseType,
   MealType as LibMealType,
   MenstruationFlow as LibMenstruationFlow,
@@ -24,10 +26,11 @@ import type {
 } from "react-native-health-connect";
 
 import type { LoggedEntryRow } from "@/data/store";
-import type { DailyValue, Exercise, HrSample, HrvSample, Metrics, Segment, Session, Stage, StepsMinute } from "@/data/types";
+import type { BloodPressurePosture, BloodPressureQuality, BloodPressureReading, BloodPressureReadingRow, DailyValue, Exercise, HrSample, HrvSample, Metrics, Segment, Session, Stage, StepsMinute } from "@/data/types";
 import { emptyMetrics } from "@/data/types";
 import { addDays, localDay, localMidnight } from "@/lib/time";
 import { finish, PAUSE_EVERY, type Steps } from "@/lib/yield";
+import { DEVICE_TYPE, RECORDING_METHOD } from "./origins";
 
 // ───────────────────────────── enum tables (copied; tsc checks they match the library) ─────────────────────────────
 
@@ -40,6 +43,27 @@ export const SleepStageType = {
   DEEP: 5,
   REM: 6,
 } as const;
+
+export const BloodPressureBodyPosition = {
+  UNKNOWN: 0,
+  STANDING_UP: 1,
+  SITTING_DOWN: 2,
+  LYING_DOWN: 3,
+  RECLINING: 4,
+} as const;
+
+export const BloodPressureMeasurementLocation = {
+  UNKNOWN: 0,
+  LEFT_WRIST: 1,
+  RIGHT_WRIST: 2,
+  LEFT_UPPER_ARM: 3,
+  RIGHT_UPPER_ARM: 4,
+} as const;
+
+const _bpBodyPositionMatch: typeof LibBloodPressureBodyPosition = BloodPressureBodyPosition;
+const _bpMeasurementLocationMatch: typeof LibBloodPressureMeasurementLocation = BloodPressureMeasurementLocation;
+void _bpBodyPositionMatch;
+void _bpMeasurementLocationMatch;
 
 export const ExerciseType = {
   OTHER_WORKOUT: 0,
@@ -215,7 +239,34 @@ export type ElevationGainedRecord = RecordResult<"ElevationGained">;
 export type HydrationRecord = RecordResult<"Hydration">;
 export type NutritionRecord = RecordResult<"Nutrition">;
 export type BloodGlucoseRecord = RecordResult<"BloodGlucose">;
+export type BloodPressureRecord = RecordResult<"BloodPressure">;
 export type BodyTemperatureRecord = RecordResult<"BodyTemperature">;
+
+export type BloodPressureInputRecord = Omit<Partial<BloodPressureRecord>, "systolic" | "diastolic" | "bodyPosition" | "measurementLocation" | "metadata"> & {
+  id?: string;
+  time?: string;
+  startTime?: string;
+  systolic?: number | { inMillimetersOfMercury?: number; value?: number };
+  diastolic?: number | { inMillimetersOfMercury?: number; value?: number };
+  bodyPosition?: number | string | null;
+  measurementLocation?: number | string | null;
+  recordingMethod?: number | string | null;
+  quality?: BloodPressureQuality;
+  sourcePlatform?: string | null;
+  sourceApplication?: string | null;
+  sourceDevice?: string | null;
+  metadata?: {
+    id?: string;
+    clientRecordId?: string | null;
+    dataOrigin?: string;
+    recordingMethod?: number;
+    device?: {
+      manufacturer?: string | null;
+      model?: string | null;
+      type?: number | string | null;
+    };
+  };
+};
 /**
  * The library types it as instantaneous (`time`), but Health Connect's MenstruationPeriodRecord is an interval and the
  * native bridge sends `startTime`/`endTime`; both shapes are read.
@@ -247,6 +298,7 @@ export type HealthInput = {
   Hydration?: HydrationRecord[];
   Nutrition?: NutritionRecord[];
   BloodGlucose?: BloodGlucoseRecord[];
+  BloodPressure?: (BloodPressureRecord | BloodPressureInputRecord)[];
   BodyTemperature?: BodyTemperatureRecord[];
   MenstruationPeriod?: MenstruationPeriodRecord[];
   MenstruationFlow?: MenstruationFlowRecord[];
@@ -265,6 +317,7 @@ export type MappedRecords = {
   dailyValues: DailyValue[];
   /** Water, food and cycle records as read-only log entries (`source: "health_connect"`). */
   externalEntries: LoggedEntryRow[];
+  bloodPressure: BloodPressureReading[];
 };
 
 // ───────────────────────────── helpers ─────────────────────────────
@@ -916,5 +969,272 @@ export function mapRecords(input: HealthInput, tz: string): MappedRecords {
   const dailyValues = mapDailyValues(input, tz);
   const metrics = mapMetrics(input, sessions, stepsByDay, tz);
   const externalEntries = mapExternalEntries(input, tz);
-  return { metrics, sessions, segments, exercises, hr, hrv, steps, dailyValues, externalEntries };
+  const bloodPressure = mapBloodPressure(input.BloodPressure ?? [], tz);
+  return { metrics, sessions, segments, exercises, hr, hrv, steps, dailyValues, externalEntries, bloodPressure };
+}
+
+// ───────────────────────────── blood pressure ─────────────────────────────
+
+export type BloodPressureRejectionReason =
+  | "invalid_timestamp"
+  | "missing_values"
+  | "non_finite"
+  | "out_of_range"
+  | "inverted_pressures";
+
+export type BloodPressureDiagnostics = {
+  total: number;
+  accepted: number;
+  rejected: number;
+  rejectedReasons: Record<BloodPressureRejectionReason, number>;
+};
+
+export function createBloodPressureDiagnostics(): BloodPressureDiagnostics {
+  return {
+    total: 0,
+    accepted: 0,
+    rejected: 0,
+    rejectedReasons: {
+      invalid_timestamp: 0,
+      missing_values: 0,
+      non_finite: 0,
+      out_of_range: 0,
+      inverted_pressures: 0,
+    },
+  };
+}
+
+const BODY_POSITION_MAP: Record<number, string> = {
+  [BloodPressureBodyPosition.UNKNOWN]: "unknown",
+  [BloodPressureBodyPosition.STANDING_UP]: "standing_up",
+  [BloodPressureBodyPosition.SITTING_DOWN]: "sitting_down",
+  [BloodPressureBodyPosition.LYING_DOWN]: "lying_down",
+  [BloodPressureBodyPosition.RECLINING]: "reclining",
+};
+
+const MEASUREMENT_LOCATION_MAP: Record<number, string> = {
+  [BloodPressureMeasurementLocation.UNKNOWN]: "unknown",
+  [BloodPressureMeasurementLocation.LEFT_WRIST]: "left_wrist",
+  [BloodPressureMeasurementLocation.RIGHT_WRIST]: "right_wrist",
+  [BloodPressureMeasurementLocation.LEFT_UPPER_ARM]: "left_upper_arm",
+  [BloodPressureMeasurementLocation.RIGHT_UPPER_ARM]: "right_upper_arm",
+};
+
+function formatBodyPosition(pos: unknown): string | null {
+  if (typeof pos === "number") return BODY_POSITION_MAP[pos] ?? String(pos);
+  if (typeof pos === "string" && pos.trim().length > 0) return pos.trim();
+  return null;
+}
+
+function formatMeasurementLocation(loc: unknown): string | null {
+  if (typeof loc === "number") return MEASUREMENT_LOCATION_MAP[loc] ?? String(loc);
+  if (typeof loc === "string" && loc.trim().length > 0) return loc.trim();
+  return null;
+}
+
+function extractPressure(val: unknown): number {
+  if (typeof val === "number") return val;
+  if (typeof val === "object" && val !== null) {
+    if ("inMillimetersOfMercury" in val && typeof (val as { inMillimetersOfMercury: unknown }).inMillimetersOfMercury === "number") {
+      return (val as { inMillimetersOfMercury: number }).inMillimetersOfMercury;
+    }
+    if ("value" in val && typeof (val as { value: unknown }).value === "number") {
+      return (val as { value: number }).value;
+    }
+  }
+  return NaN;
+}
+
+function mapPostureFromBodyPosition(bodyPosition: string | null): BloodPressurePosture | null {
+  if (!bodyPosition) return null;
+  const p = bodyPosition.toLowerCase();
+  if (p === "sitting" || p === "sitting_down") return "sitting";
+  if (p === "standing" || p === "standing_up") return "standing";
+  if (p === "lying_down" || p === "reclining" || p === "supine") return "supine";
+  return null;
+}
+
+export function mapBloodPressure(
+  records: (BloodPressureRecord | BloodPressureInputRecord)[],
+  tz: string,
+  nowTs?: number,
+  diagnostics?: BloodPressureDiagnostics,
+): BloodPressureReading[] {
+  const out: BloodPressureReading[] = [];
+  const diag = diagnostics ?? createBloodPressureDiagnostics();
+
+  for (const raw of records) {
+    const r = raw as BloodPressureInputRecord & Partial<BloodPressureRecord>;
+    diag.total++;
+    const timeStr = r.time ?? r.startTime;
+    if (!timeStr) {
+      diag.rejected++;
+      diag.rejectedReasons.invalid_timestamp++;
+      continue;
+    }
+    const ms = Date.parse(timeStr);
+    if (!Number.isFinite(ms)) {
+      diag.rejected++;
+      diag.rejectedReasons.invalid_timestamp++;
+      continue;
+    }
+    const recordTs = Math.floor(ms / 1000);
+
+    if (r.systolic === undefined || r.diastolic === undefined || r.systolic === null || r.diastolic === null) {
+      diag.rejected++;
+      diag.rejectedReasons.missing_values++;
+      continue;
+    }
+
+    const systolic = extractPressure(r.systolic);
+    const diastolic = extractPressure(r.diastolic);
+
+    if (!Number.isFinite(systolic) || !Number.isFinite(diastolic)) {
+      diag.rejected++;
+      diag.rejectedReasons.non_finite++;
+      continue;
+    }
+
+    // Plausibility envelope: 40-300 mmHg systolic, 20-200 mmHg diastolic.
+    if (systolic < 40 || systolic > 300 || diastolic < 20 || diastolic > 200) {
+      diag.rejected++;
+      diag.rejectedReasons.out_of_range++;
+      continue;
+    }
+
+    // Systolic must exceed diastolic (never swap!).
+    if (systolic <= diastolic) {
+      diag.rejected++;
+      diag.rejectedReasons.inverted_pressures++;
+      continue;
+    }
+
+    diag.accepted++;
+
+    const day = localDay(recordTs, tz);
+    const bodyPosition = formatBodyPosition(r.bodyPosition);
+    const posture = mapPostureFromBodyPosition(bodyPosition);
+    const measurementLocation = formatMeasurementLocation(r.measurementLocation);
+
+    const sourcePlatform = r.sourcePlatform ?? "health_connect";
+    const sourceApplication = r.metadata?.dataOrigin ?? r.sourceApplication ?? null;
+    const device = r.metadata?.device;
+    const sourceDevice = device
+      ? [device.manufacturer, device.model].filter(Boolean).join(" ") || null
+      : (r.sourceDevice ?? null);
+
+    const recMethodNum = r.metadata?.recordingMethod;
+    let recordingMethod: string | null = null;
+    if (recMethodNum === RECORDING_METHOD.RECORDING_METHOD_MANUAL_ENTRY) {
+      recordingMethod = "manual";
+    } else if (recMethodNum === RECORDING_METHOD.RECORDING_METHOD_ACTIVELY_RECORDED) {
+      recordingMethod = "actively_recorded";
+    } else if (recMethodNum === RECORDING_METHOD.RECORDING_METHOD_AUTOMATICALLY_RECORDED) {
+      recordingMethod = "automatically_recorded";
+    } else if (recMethodNum === RECORDING_METHOD.RECORDING_METHOD_UNKNOWN) {
+      recordingMethod = "unknown";
+    } else if (r.recordingMethod != null) {
+      recordingMethod = String(r.recordingMethod);
+    }
+
+    let quality: BloodPressureQuality;
+    if (r.quality) {
+      quality = r.quality;
+    } else if (recordingMethod === "manual" || recMethodNum === RECORDING_METHOD.RECORDING_METHOD_MANUAL_ENTRY) {
+      quality = "manual";
+    } else {
+      const devType = device?.type as number | undefined;
+      const isWearable =
+        devType === DEVICE_TYPE.TYPE_WATCH ||
+        devType === DEVICE_TYPE.TYPE_FITNESS_BAND ||
+        devType === DEVICE_TYPE.TYPE_RING ||
+        devType === DEVICE_TYPE.TYPE_CHEST_STRAP;
+
+      if (isWearable) {
+        quality = "derived";
+      } else if (
+        recMethodNum === RECORDING_METHOD.RECORDING_METHOD_ACTIVELY_RECORDED ||
+        recordingMethod === "actively_recorded"
+      ) {
+        quality = "direct";
+      } else {
+        quality = "unknown";
+      }
+    }
+
+    const id =
+      r.metadata?.id ??
+      r.metadata?.clientRecordId ??
+      r.id ??
+      `bp_${recordTs}_${systolic}_${diastolic}_${sourceApplication ?? ""}_${sourceDevice ?? ""}`;
+
+    out.push({
+      id,
+      ts: recordTs,
+      day,
+      systolicMmhg: systolic,
+      diastolicMmhg: diastolic,
+      pulseBpm: null,
+      posture,
+      source: "health_connect",
+      bodyPosition,
+      measurementLocation,
+      recordingMethod,
+      sourcePlatform,
+      sourceApplication,
+      sourceDevice,
+      quality,
+      importedAt: nowTs ?? Math.floor(Date.now() / 1000),
+    });
+  }
+
+  return out;
+}
+
+/**
+ * PR-14 mapper: maps Health Connect BloodPressure records into BloodPressureReadingRow[],
+ * enforcing strict physiological bounds (systolic 60-260, diastolic 30-160, systolic > diastolic).
+ */
+export function mapBloodPressureRecords(
+  records: (BloodPressureRecord | BloodPressureInputRecord)[],
+  tz: string,
+): BloodPressureReadingRow[] {
+  const out: BloodPressureReadingRow[] = [];
+  for (const raw of records) {
+    const r = raw as BloodPressureInputRecord & Partial<BloodPressureRecord>;
+    const timeStr = r.time ?? r.startTime;
+    if (!timeStr) continue;
+    const ms = Date.parse(timeStr);
+    if (!Number.isFinite(ms)) continue;
+    if (r.systolic === undefined || r.diastolic === undefined || r.systolic === null || r.diastolic === null) {
+      continue;
+    }
+    const systolic = extractPressure(r.systolic);
+    const diastolic = extractPressure(r.diastolic);
+    if (!Number.isFinite(systolic) || !Number.isFinite(diastolic)) continue;
+    if (systolic < 60 || systolic > 260 || diastolic < 30 || diastolic > 160) continue;
+    if (systolic <= diastolic) continue;
+
+    const recordTs = Math.floor(ms / 1000);
+    const date = localDay(recordTs, tz);
+    const bodyPosition = formatBodyPosition(r.bodyPosition);
+    const posture = mapPostureFromBodyPosition(bodyPosition);
+    const id =
+      r.metadata?.id ??
+      r.metadata?.clientRecordId ??
+      r.id ??
+      `hc-bp-${ms}-${Math.round(systolic)}-${Math.round(diastolic)}`;
+
+    out.push({
+      id,
+      timestampMs: ms,
+      date,
+      systolicMmHg: systolic,
+      diastolicMmHg: diastolic,
+      pulseBpm: null,
+      posture,
+      source: "health_connect",
+    });
+  }
+  return out;
 }

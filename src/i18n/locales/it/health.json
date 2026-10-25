@@ -19,7 +19,8 @@
     "measurements": "Misurazioni",
     "ecgReading": "Lettura ECG",
     "hrvStatus": "HRV Status",
-    "timeInZones": "Tempo nelle zone"
+    "timeInZones": "Tempo nelle zone",
+    "bloodPressure": "Pressione arteriosa"
   },
   "age": {
     "same": "Uguale alla tua età",
@@ -270,7 +271,8 @@
     "steps": "Passi giornalieri",
     "vo2max": "VO2 max",
     "restingHr": "Frequenza cardiaca a riposo",
-    "leanMass": "Massa magra"
+    "leanMass": "Massa magra",
+    "bloodPressure": "Pressione arteriosa"
   },
   "hsText": {
     "sleepHours": "Sia il sonno breve sia quello lungo sono legati a una mortalità più alta. Circa 7,5-9 ore a notte comportano il rischio più basso; 7 ore costano circa mezzo anno, 6 ore o meno circa 2.",
@@ -281,7 +283,8 @@
     "steps": "Più passi al giorno vanno con una mortalità più bassa. Il riferimento è 8.000 al giorno (6.000 dai 60 anni) e il merito si ferma a 10.000 (8.000 dai 60). I giorni senza frequenza cardiaca o passi sono esclusi, così una fascia lasciata in carica non è letta come una giornata pigra.",
     "vo2max": "Una fitness cardiorespiratoria più alta è uno dei più forti indicatori di una vita più lunga. Il riferimento viene da una tabella per la tua età e il tuo sesso; ogni ml/kg/min sopra toglie circa 0,4 anni, ogni ml/kg/min sotto ne aggiunge altrettanti. Dalle letture del VO2 max di Fitbit.",
     "restingHr": "Una frequenza cardiaca a riposo più alta è legata a una mortalità più alta. Il riferimento viene da una tabella per la tua età e il tuo sesso; ogni 10 bpm sopra aggiunge circa 1,2 anni.",
-    "leanMass": "La parte del tuo peso che non è grasso. Il riferimento è 100 meno il grasso corporeo tipico per la tua età e il tuo sesso. Restarne sotto costa anni, più in fretta quanto più sei lontano; dai 35 anni, superarlo ne toglie un po’, di più con l’età. Dalle tue letture del grasso corporeo."
+    "leanMass": "La parte del tuo peso che non è grasso. Il riferimento è 100 meno il grasso corporeo tipico per la tua età e il tuo sesso. Restarne sotto costa anni, più in fretta quanto più sei lontano; dai 35 anni, superarlo ne toglie un po’, di più con l’età. Dalle tue letture del grasso corporeo.",
+    "bloodPressure": "Una pressione arteriosa sistolica stabilmente elevata è un fattore importante di rischio cardiovascolare. Il riferimento è 115 mmHg sistolica; le misurazioni al braccio secondo protocollo su più giorni forniscono un contributo additivo limitato a Pulse Age."
   },
   "hs": {
     "source": "Studi di mortalità sulla popolazione",
@@ -294,7 +297,9 @@
     "leanMass": "{{lean}} {{unit}} di massa magra, {{fat}} {{unit}} di grasso",
     "leanIndex": "FFMI {{ffmi}}, FMI {{fmi}} kg/m²",
     "leanCaption": "{{parts}}.",
-    "leanCaptionEstimated": "{{parts}}. Grasso corporeo stimato dal tuo BMI."
+    "leanCaptionEstimated": "{{parts}}. Grasso corporeo stimato dal tuo BMI.",
+    "bpNeeds": "Richiede 12 letture secondo protocollo in 3 giorni negli ultimi 90 giorni ({{readings}}/12 letture, {{days}}/3 giorni). Escluso da Pulse Age.",
+    "bpCaption": "Media {{systolic}}/{{diastolic}} mmHg da {{readings}} letture in {{days}} giorni."
   },
   "insight": {
     "younger": "Più giovane della tua età",
@@ -357,5 +362,120 @@
     "rem": "REM",
     "light": "Leggero",
     "deep": "Profondo"
+  },
+  "bloodPressure": {
+    "title": "Pressione arteriosa",
+    "detail": "Dettaglio",
+    "noData": "Nessun dato",
+    "show": "Mostra",
+    "hide": "Nascondi",
+    "systolic": "Sistolica",
+    "diastolic": "Diastolica",
+    "noReadings30d": "Nessuna misurazione della pressione arteriosa registrata negli ultimi 30 giorni.",
+    "trendPlotSummary": "Tendenza della pressione arteriosa a 30 giorni: letture sistoliche e diastoliche",
+    "breakdown": "Ripartizione per categoria a 30 giorni ({{count}})",
+    "readingsOnDay": " · {{count}} misurazioni nel giorno",
+    "readingsOnDate": "Misurazioni del {{date}}",
+    "guidelines": "Linee guida di classificazione AHA/ACC",
+    "disclaimer": "Pulse non è un dispositivo diagnostico. Consultare un medico per la diagnosi e la gestione medica della pressione arteriosa.",
+    "prior": "Precedente: {{value}}",
+    "noReadingWithPrior": "Nessuna misurazione il {{date}}. Più recente: {{value}} mmHg il {{priorDate}}.",
+    "emptyDayHint": "Nessuna misurazione della pressione arteriosa registrata in questo giorno. Registra le misurazioni in Health Connect per monitorare le tendenze.",
+    "readingMeta": "{{date}} alle {{time}}",
+    "ariaDetail": "Dettaglio pressione arteriosa: {{reading}} mmHg, {{status}}",
+    "ariaDetailNoReading": "Dettaglio pressione arteriosa: Nessuna misurazione",
+    "category": {
+      "normal": "Normale",
+      "elevated": "Elevata",
+      "stage1": "Stadio 1",
+      "stage2": "Stadio 2",
+      "crisis": "Crisi",
+      "hypertensiveCrisis": "Crisi ipertensiva"
+    },
+    "stageRange": {
+      "normal": "< 120 e < 80 mmHg",
+      "elevated": "120–129 e < 80 mmHg",
+      "stage1": "130–139 o 80–89 mmHg",
+      "stage2": "140+ o 90+ mmHg",
+      "crisis": "> 180 e/o > 120 mmHg"
+    }
+  },
+  "vascular": {
+    "title": "Corridoio Vascolare",
+    "detailTitle": "Pressione Arteriosa e Carico Vascolare",
+    "uncalibratedTitle": "Carico Vascolare (Non calibrato)",
+    "uncalibratedSubtitle": "Scostamento autonomico vs base 28gg · Aggiungi una lettura a bracciale per sbloccare il corridoio mmHg",
+    "calibrateCta": "Calibra con lettura a bracciale",
+    "recalibrateCta": "Ricalibra ancoraggio bracciale",
+    "logCuffCta": "Registra lettura a bracciale",
+    "corridorLabel": "Corridoio Stimato",
+    "systolicShort": "PAS",
+    "diastolicShort": "PAD",
+    "systolicLabel": "Sistolica (PAS)",
+    "diastolicLabel": "Diastolica (PAD)",
+    "pulsePressureLabel": "Pressione Differenziale (PP)",
+    "mapLabel": "Pressione Arteriosa Media (PAM)",
+    "autonomicShiftLabel": "Scostamento Autonomico",
+    "autonomicShiftSub": "vs base wearable a 28 giorni",
+    "mmHgUnit": "mmHg",
+    "calibrationStatus": {
+      "fresh": "Calibrato {{days}}g fa · ±{{halfWidth}} mmHg",
+      "aging": "Calibrazione datata ({{days}}g fa) · ±{{halfWidth}} mmHg",
+      "stale": "Calibrazione scaduta (>30g) · Modalità non calibrata",
+      "uncalibrated": "Non calibrato · Modalità autonomica relativa"
+    },
+    "aha": {
+      "normal": "Normale",
+      "elevated": "Elevata",
+      "stage_1": "Stadio 1",
+      "stage_2": "Stadio 2",
+      "crisis": "Crisi Ipertensiva"
+    },
+    "trend": {
+      "title": "Corridoio Longitudinale",
+      "subtitleCalibrated": "Corridoio PAS/PAD ombreggiato con ancoraggi da bracciale brachiale",
+      "subtitleUncalibrated": "Scostamento vascolare autonomico relativo (ΔmmHg)",
+      "range7d": "7G",
+      "range30d": "30G",
+      "range90d": "90G",
+      "legendCorridor": "Corridoio stimato",
+      "legendCuff": "Ancoraggio bracciale",
+      "legendDelta": "ΔPAS / ΔPAD autonomico"
+    },
+    "drivers": {
+      "title": "Fattori Autonomici ed Emodinamici",
+      "subtitle": "Contributi allo scostamento vascolare di oggi",
+      "rhr": "Scostamento FC a riposo",
+      "hrv": "Scostamento HRV (lnRMSSD)",
+      "sleepDebt": "Sleep Debt Load",
+      "acwr": "Training Load (ACWR)",
+      "bmi": "Indice di Massa Corporea (BMI)",
+      "raising": "In aumento",
+      "lowering": "In riduzione",
+      "neutral": "Neutro"
+    },
+    "sheet": {
+      "title": "Calibra Bracciale Brachiale",
+      "subtitle": "Riposa in silenzio per 5 minuti con il braccio appoggiato all'altezza del cuore prima di misurare.",
+      "systolicField": "Sistolica (mmHg)",
+      "diastolicField": "Diastolica (mmHg)",
+      "pulseField": "Polso (bpm, opzionale)",
+      "positionField": "Posizione corporea",
+      "positions": {
+        "sitting": "Seduto",
+        "supine": "Supino",
+        "standing": "In piedi"
+      },
+      "save": "Salva calibrazione",
+      "saving": "Salvataggio…",
+      "cancel": "Annulla",
+      "errorRange": "Inserisci valori validi: PAS (70–250), PAD (40–150), con PAS > PAD.",
+      "historyTitle": "Storico ancoraggi bracciale",
+      "historyEmpty": "Nessuna lettura a bracciale registrata.",
+      "sourceHealthConnect": "Health Connect",
+      "sourceManual": "Bracciale manuale",
+      "deleteAction": "Elimina"
+    },
+    "disclaimer": "Il carico vascolare stima gli scostamenti autonomici attorno al tuo ancoraggio a bracciale e non sostituisce un misuratore di pressione diagnostico."
   }
 }

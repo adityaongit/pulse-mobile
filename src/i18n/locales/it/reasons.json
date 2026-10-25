@@ -26,6 +26,25 @@
     "short": "--",
     "long": "Nessun dato"
   },
+  "missingAutonomicSignals": {
+    "short": "Dati autonomici assenti",
+    "long": "Servono frequenza cardiaca a riposo e HRV per stimare il carico vascolare"
+  },
+  "baselineWarmingUp": {
+    "short": "In preparazione",
+    "long": "Costruzione della tua base autonomica di 7 giorni",
+    "longNights_one": "In preparazione: manca {{count}} notte",
+    "longNights_many": "In preparazione: mancano {{count}} di notti",
+    "longNights_other": "In preparazione: mancano {{count}} notti"
+  },
+  "calibrationRequired": {
+    "short": "Calibrazione con bracciale richiesta",
+    "long": "Aggiungi una misurazione con bracciale brachiale per sbloccare il corridoio pressorio assoluto."
+  },
+  "calibrationExpired": {
+    "short": "Calibrazione scaduta",
+    "long": "La calibrazione con bracciale ha più di 30 giorni. Aggiungi una misurazione per ripristinare il corridoio pressorio."
+  },
   "tag": {
     "provisionalLabel": "Provvisorio",
     "provisionalExplain": "Basato su uno storico breve mentre le tue basi di riferimento si formano. Diventa più solido con il passare dei giorni.",
