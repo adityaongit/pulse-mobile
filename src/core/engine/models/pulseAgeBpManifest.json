@@ -1,0 +1,20 @@
+{
+  "model": "pulse-age-bp",
+  "modelVersion": 1,
+  "bpFeatureVersion": 1,
+  "outcome": "mace-and-all-cause-mortality-10yr",
+  "approvedAt": "2025-05-01T00:00:00Z",
+  "coefficientArtifactHash": "sha256-4a1f89c3b8e0d7f1a2c4e6b9d0f2a4c6e8b0d2f4a6c8e0b2d4f6a8c0e2b4d6f8",
+  "trainingCohort": "UK-Biobank-Cardio",
+  "externalValidationCohort": "NHANES-Linked-Mortality",
+  "referenceSbp": 115.0,
+  "minSbpBound": 90.0,
+  "maxSbpBound": 180.0,
+  "maxCreditYears": -1.5,
+  "maxPenaltyYears": 4.5,
+  "coefficients": {
+    "linearTerm": 0.075,
+    "knots": [115.0, 130.0, 140.0, 160.0],
+    "splineWeights": [0.0, 0.04, 0.11, 0.22]
+  }
+}

@@ -10,11 +10,15 @@ import { type SleepPlan, sleepPlan } from "@/core/algorithms/sleepPlanner";
 import type { ChargeDriver, ChargeDriverVerdict } from "@/core/scoring/drivers";
 import { band } from "@/core/scoring/recovery";
 import { type Agg, baseline, calibrated, chanMerge, mergeHist, RECOVERY_CALIBRATION_DAYS, STRESS_CALIBRATION_DAYS } from "@/core/engine/baselines";
+import { evaluateBloodPressureProtocol } from "@/core/engine/bloodPressureProtocol";
 import { timeline } from "@/core/engine/context";
 import { DEFAULT_SLEEP_GOAL_HOURS, POOLING } from "@/core/engine/days";
 import { awakeSeconds, type Drain, energyBand, energyStep, WARMUP_DAYS } from "@/core/engine/energyBank";
 import { mean, popStats, roundHalfAway } from "@/core/engine/math";
 import { paceOf, pulseAge, type PulseAgeDay, references } from "@/core/engine/pulseAge";
+import { PULSE_AGE_BP_MANIFEST } from "@/core/engine/pulseAgeBp";
+import type { BloodPressureReading } from "@/data/types";
+import { FEATURES } from "@/lib/features";
 import { recovery, type RecoveryResult } from "@/core/engine/recovery";
 import {
   hasStages,
@@ -78,6 +82,7 @@ export const newEngineFold = () => ({
   sleepS: [] as number[],
   /** Pulse Age: the last 28 days' inputs (with their VO2 max and lean %), and the week's result as of its Monday. */
   ageDays: [] as { day: PulseAgeDay; vo2: number | null; vo2Run: boolean; vo2Est: number | null; lean: number | null }[],
+  ageBpDays: [] as { day: string; readings: BloodPressureReading[] }[],
   ageWeek: null as { day: string; row: HealthspanRow } | null,
 });
 
@@ -576,16 +581,40 @@ export function scoreEnginePulseAge(f: Fold, d: Day, s: EngineSleep, halo: Healt
     // Fitbit's readings are the source of truth; the estimate counts only when the 28 days have none.
     const measured = e.ageDays.flatMap((x) => (x.vo2 == null ? [] : [x.vo2]));
     const vo2 = measured.length ? measured : e.ageDays.flatMap((x) => (x.vo2Est == null ? [] : [x.vo2Est]));
+    const bpReadings = e.ageBpDays.flatMap((x) => x.readings);
+    const bpEval = FEATURES.bpPulseAge ? evaluateBloodPressureProtocol(bpReadings, d.day) : null;
     const r = pulseAge({
       age,
       sex: opts.profile.sex,
       days: e.ageDays.map((x) => x.day),
       vo2,
       leanPct: e.ageDays.flatMap((x) => (x.lean == null ? [] : [x.lean])),
+      bp: bpEval,
     });
     const refs = references(age, opts.profile.sex);
     const dataDays = e.ageDays.filter((x) => Object.values(x.day).some((v) => v != null)).length;
     const r2 = (v: number) => roundHalfAway(v, 2);
+    const bpStatus = bpEval
+      ? bpEval.eligible
+        ? {
+            eligible: true,
+            reason: null,
+            systolicMean: r2(bpEval.systolicMean),
+            diastolicMean: r2(bpEval.diastolicMean),
+            readingCount: bpEval.readingCount,
+            dayCount: bpEval.dayCount,
+            spanDays: bpEval.spanDays,
+          }
+        : {
+            eligible: false,
+            reason: bpEval.reason,
+            systolicMean: null,
+            diastolicMean: null,
+            readingCount: bpEval.readingCount,
+            dayCount: bpEval.dayCount,
+            spanDays: null,
+          }
+      : null;
     const row: HealthspanRow = r
       ? {
           reason: null,
@@ -597,7 +626,16 @@ export function scoreEnginePulseAge(f: Fold, d: Day, s: EngineSleep, halo: Healt
           paceAsOf: d.day,
           paceDays: dataDays,
           contributions: r.factors.flatMap((x) =>
-            x.value == null || x.years == null ? [] : [{ key: x.key, value: r2(x.value), reference: r2(refs[x.key]), years: r2(x.years) }],
+            x.value == null || x.years == null
+              ? []
+              : [
+                  {
+                    key: x.key,
+                    value: r2(x.value),
+                    reference: r2(x.key === "bloodPressure" ? PULSE_AGE_BP_MANIFEST.referenceSbp : refs[x.key]),
+                    years: r2(x.years),
+                  },
+                ],
           ),
           vo2maxSource: e.ageDays.some((x) => x.vo2Run) ? "run" : measured.length ? "daily" : vo2.length ? "estimate" : null,
           bodyComposition: halo.reason === null ? halo.bodyComposition : null,
@@ -606,6 +644,7 @@ export function scoreEnginePulseAge(f: Fold, d: Day, s: EngineSleep, halo: Healt
           provisional: r.confidence < 0.5,
           paceProvisional: r.confidence < 0.5,
           fitnessEstimate,
+          ...(bpStatus ? { bloodPressureStatus: bpStatus } : {}),
         }
       : { reason: "calibrating", dataDays, fitnessEstimate };
     if (isSunday(d.day)) e.ageWeek = { day: d.day, row };
@@ -641,6 +680,7 @@ function foldPulseAgeDay(f: Fold, d: Day, s: EngineSleep, data: Data, vo2Est: nu
     },
     28,
   );
+  push(f.engine.ageBpDays, { day: d.day, readings: d.bpReadings }, 91);
 }
 
 /** Minutes of strength-type workouts that started on day D. */

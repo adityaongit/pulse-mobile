@@ -45,9 +45,9 @@ import { recentEntries } from "./log";
 import { trendMetric } from "./trends";
 import type { KeyStat, Metric } from "./types";
 
-export type VitalDetailKey = "hrv" | "rhr" | "resp" | "spo2" | "skin";
+export type VitalDetailKey = "hrv" | "rhr" | "resp" | "spo2" | "skin" | "bp";
 export type DetailKey = "steps" | "calories" | VitalDetailKey | BodyKey | ExtraKey;
-export const DETAIL_KEYS: readonly DetailKey[] = ["steps", "calories", "hrv", "rhr", "resp", "spo2", "skin", "weight", "body_fat", ...EXTRA_KEYS];
+export const DETAIL_KEYS: readonly DetailKey[] = ["steps", "calories", "hrv", "rhr", "resp", "spo2", "skin", "bp", "weight", "body_fat", ...EXTRA_KEYS];
 export const isDetailKey = (k: string): k is DetailKey => (DETAIL_KEYS as readonly string[]).includes(k);
 
 type Group = "activity" | "body" | "nutrition" | "vitals";
@@ -85,6 +85,7 @@ const CONFIG: Record<DetailKey, Config> = {
   resp: { group: "vitals", baseline: true, sections: ["outliers"] },
   spo2: { group: "vitals", baseline: true, sections: ["outliers"] },
   skin: { group: "vitals", baseline: true, sections: ["outliers"] },
+  bp: { group: "vitals", reading: true, baseline: true, sections: ["outliers"] },
   weight: { group: "body", reading: true, sections: ["readings"] },
   body_fat: { group: "body", reading: true, sections: ["readings"] },
   distance: { group: "activity", total: true, stack: "distance", sections: ["weekday"] },

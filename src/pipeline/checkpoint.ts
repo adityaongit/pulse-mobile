@@ -4,7 +4,9 @@
 // input of a day up to C + 1 changed. Each run keeps that fold for a day near the end, with a key per day of that day's
 // inputs, in the Store (one JSON row), so a background run or the first run after a launch resumes too; the next run
 // starts from it when the keys match, and replays every day otherwise.
+import { PULSE_AGE_BP_MANIFEST } from "@/core/engine/pulseAgeBp";
 import type { Store } from "@/data/store";
+import { FEATURES } from "@/lib/features";
 import { addDays } from "@/lib/time";
 import { type Data, sha } from "./data";
 import { type Fold, type Inputs, newFold } from "./scores";
@@ -60,9 +62,16 @@ function dayKeys(data: Data, inputs: Inputs, journal: Map<string, unknown[]>) {
   return new Map(
     data.days.map((d) => {
       const c = inputs.cached.get(d);
-      const sessions = (data.sessionsByDay.get(d) ?? []).map((s) => [s, inputs.segments.get(s.id) ?? null]);
-      const parts = [data.metrics.get(d) ?? null, sessions, data.exercisesByDay.get(d) ?? [], c ? [c.s1, c.activities, c.sessionRhr] : null, journal.get(d) ?? []];
-      return [d, sha(JSON.stringify(parts))];
+    const sessions = (data.sessionsByDay.get(d) ?? []).map((s) => [s, inputs.segments.get(s.id) ?? null]);
+    const parts = [
+      data.metrics.get(d) ?? null,
+      sessions,
+      data.exercisesByDay.get(d) ?? [],
+      data.bloodPressureByDay.get(d) ?? [],
+      c ? [c.s1, c.activities, c.sessionRhr] : null,
+      journal.get(d) ?? [],
+    ];
+    return [d, sha(JSON.stringify(parts))];
     }),
   );
 }
@@ -72,7 +81,7 @@ function dayKeys(data: Data, inputs: Inputs, journal: Map<string, unknown[]>) {
  * stage 1 redid, whose per-minute series may have changed. Clears the checkpoint: `keep` sets the next one.
  */
 export async function resume(store: Store, data: Data, inputs: Inputs, journal: Map<string, unknown[]>, opts: PipelineOptions, rerun: string[]) {
-  const key = sha(JSON.stringify([SCORING_VERSION, opts, data.first]));
+  const key = sha(JSON.stringify([SCORING_VERSION, FEATURES.bpPulseAge, PULSE_AGE_BP_MANIFEST.modelVersion, PULSE_AGE_BP_MANIFEST.bpFeatureVersion, opts, data.first]));
   const keys = dayKeys(data, inputs, journal);
   const cp = await load(store);
   const kept = cp && new Map(cp.days);

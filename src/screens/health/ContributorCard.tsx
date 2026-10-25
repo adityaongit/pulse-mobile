@@ -6,7 +6,7 @@ import { View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import Animated, { FadeIn, FadeOut, LinearTransition, useAnimatedStyle, useReducedMotion, withTiming } from "react-native-reanimated";
-import { ChevronDown, CircleGauge, Dumbbell, Footprints, Heart, Moon, Timer } from "lucide-react-native";
+import { Activity, ChevronDown, CircleGauge, Dumbbell, Footprints, Heart, Moon, Timer } from "lucide-react-native";
 import { formatValue, isSymbolUnit, NBSP, type FormatKey, unitLabel } from "@/lib/format";
 import type { HealthspanContributor } from "@/queries/types";
 import { cn } from "@/ui/cn";
@@ -34,6 +34,7 @@ const HS_TREND: Record<string, string> = {
   vo2max: "vo2max",
   restingHr: "rhr",
   leanMass: "lean_mass",
+  bloodPressure: "bp",
 };
 
 const ICON: Record<string, ReactNode> = {
@@ -45,6 +46,7 @@ const ICON: Record<string, ReactNode> = {
   steps: glyph(Footprints),
   vo2max: glyph(CircleGauge),
   restingHr: glyph(Heart),
+  bloodPressure: glyph(Activity),
 };
 
 const SHOW: Record<string, { format: FormatKey; unit?: string; scale?: number }> = {
@@ -58,6 +60,7 @@ const SHOW: Record<string, { format: FormatKey; unit?: string; scale?: number }>
   restingHr: { format: "int", unit: "bpm" },
   // Lean mass as a share of body weight, the engine’s term (health.ts HS_META), not kilograms.
   leanMass: { format: "decimal1", unit: "%" },
+  bloodPressure: { format: "int", unit: "mmHg" },
 };
 
 const withUnit = (text: string, unit?: string) => (unit ? `${text}${isSymbolUnit(unit) ? "" : NBSP}${unitLabel(unit)}` : text);

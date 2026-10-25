@@ -2,13 +2,13 @@
 // Ported from Pulse's src/server/pipeline/data.ts: the Postgres reads are Store calls, the row types live in
 // src/data/types.ts, and the hash is src/pipeline/hash.ts.
 import type { Store } from "@/data/store";
-import type { Exercise, Metrics, Segment, Session } from "@/data/types";
+import type { BloodPressureReading, Exercise, Metrics, Segment, Session } from "@/data/types";
 import { addDays, daysBetween, localDay, localMidnight } from "@/lib/time";
 import type { PipelineOptions } from "./types";
 import { metricsWithLoggedBody } from "@/data/body";
 import { primaryOf } from "@/core/engine/context";
 
-export type { Exercise, Metrics, Segment, Session };
+export type { BloodPressureReading, Exercise, Metrics, Segment, Session };
 export { sha } from "./hash";
 
 export type Data = NonNullable<Awaited<ReturnType<typeof load>>>;
@@ -28,19 +28,22 @@ export function groupBy<T>(xs: T[], key: (x: T) => string) {
 export const byteOrder = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0);
 
 export async function load(store: Store, { timeZone: tz }: PipelineOptions) {
-  const [metricRows, sessionRows, exerciseRows, hrSpan] = await Promise.all([
+  const [metricRows, sessionRows, exerciseRows, hrSpan, bpRows] = await Promise.all([
     metricsWithLoggedBody(store),
     store.allSessions(),
     store.allExercises(),
     store.hrBounds(),
+    store.allBloodPressure(),
   ]);
   const metrics = metricRows.slice().sort((a, b) => byteOrder(a.day, b.day));
   const sessions = sessionRows.slice().sort((a, b) => a.startTs - b.startTs || byteOrder(a.id, b.id));
   const exercises = exerciseRows.slice().sort((a, b) => a.startTs - b.startTs || byteOrder(a.id, b.id));
+  const bloodPressure = bpRows.slice().sort((a, b) => a.ts - b.ts || byteOrder(a.id, b.id));
   const candidates = [
     ...metrics.map((m) => m.day),
     ...sessions.map((s) => s.day),
     ...exercises.map((x) => x.day),
+    ...bloodPressure.map((b) => b.day),
     ...(hrSpan ? [localDay(hrSpan.first, tz), localDay(hrSpan.last, tz)] : []),
   ].sort();
   if (!candidates.length) return null;
@@ -68,6 +71,8 @@ export async function load(store: Store, { timeZone: tz }: PipelineOptions) {
     mainOf,
     exercises,
     exercisesByDay: groupBy(exercises, (x) => x.day),
+    bloodPressure,
+    bloodPressureByDay: groupBy(bloodPressure, (b) => b.day),
   };
 }
 

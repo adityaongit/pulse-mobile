@@ -88,6 +88,12 @@ export {
 } from "./metric";
 export { getCalendarMonth, MONTH } from "./calendar";
 export {
+  type BloodPressureItem,
+  type BloodPressurePoint,
+  type BloodPressureSummary,
+  getBloodPressureSummary,
+} from "./bloodPressure";
+export {
   type DashboardKey,
   type BodyKey,
   type ExtraKey,

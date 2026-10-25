@@ -3,6 +3,6 @@
 import { dayHref, metricHref } from "@/lib/url";
 import type { VitalKey } from "@/queries/types";
 
-const DETAIL_KEY: Record<VitalKey, string> = { resp: "resp", spo2: "spo2", restingHr: "rhr", hrv: "hrv", skinTempDev: "skin" };
+const DETAIL_KEY: Record<VitalKey, string> = { resp: "resp", spo2: "spo2", restingHr: "rhr", hrv: "hrv", skinTempDev: "skin", bp: "bp" };
 
 export const vitalHref = (key: VitalKey, day: string, today: string) => dayHref(metricHref(DETAIL_KEY[key]), day, today);

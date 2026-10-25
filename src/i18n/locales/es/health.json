@@ -19,7 +19,8 @@
     "measurements": "Mediciones",
     "ecgReading": "Lectura de ECG",
     "hrvStatus": "HRV Status",
-    "timeInZones": "Tiempo en zonas"
+    "timeInZones": "Tiempo en zonas",
+    "bloodPressure": "Presión arterial"
   },
   "age": {
     "same": "Igual que tu edad",
@@ -270,7 +271,8 @@
     "steps": "Pasos diarios",
     "vo2max": "VO2 max",
     "restingHr": "Frecuencia cardíaca en reposo",
-    "leanMass": "Masa corporal magra"
+    "leanMass": "Masa corporal magra",
+    "bloodPressure": "Presión arterial"
   },
   "hsText": {
     "sleepHours": "Dormir poco y dormir mucho se asocian con mayor mortalidad. Alrededor de 7.5 a 9 horas por noche tiene el menor riesgo; 7 horas cuestan cerca de medio año y 6 horas o menos cerca de 2.",
@@ -281,7 +283,8 @@
     "steps": "Más pasos diarios van de la mano con menor mortalidad. La referencia es de 8,000 al día (6,000 desde los 60) y el crédito termina en 10,000 (8,000 desde los 60). Los días sin frecuencia cardíaca ni pasos se excluyen, así que una pulsera olvidada en el cargador no se toma como un día de pereza.",
     "vo2max": "Una mayor condición cardiorrespiratoria es uno de los mejores predictores de una vida más larga. La referencia sale de una tabla para tu edad y sexo; cada ml/kg/min por encima resta unos 0.4 años y cada uno por debajo suma casi lo mismo. Viene de las lecturas de VO2 max de Fitbit.",
     "restingHr": "Una frecuencia cardíaca en reposo más alta se asocia con mayor mortalidad. La referencia sale de una tabla para tu edad y sexo; cada 10 bpm por encima suma cerca de 1.2 años.",
-    "leanMass": "La parte de tu peso que no es grasa. La referencia es 100 menos la grasa corporal típica para tu edad y sexo. Quedarte por debajo cuesta años, más rápido cuanto más te alejes; desde los 35, superarla resta un poco, más con la edad. Viene de tus lecturas de grasa corporal."
+    "leanMass": "La parte de tu peso que no es grasa. La referencia es 100 menos la grasa corporal típica para tu edad y sexo. Quedarte por debajo cuesta años, más rápido cuanto más te alejes; desde los 35, superarla resta un poco, más con la edad. Viene de tus lecturas de grasa corporal.",
+    "bloodPressure": "La presión arterial sistólica elevada de forma sostenida es un impulsor importante del riesgo cardiovascular. La referencia es 115 mmHg sistólica; las lecturas de brazo con protocolo en varios días aportan un término aditivo acotado a Pulse Age."
   },
   "hs": {
     "source": "Estudios de mortalidad poblacional",
@@ -294,7 +297,9 @@
     "leanMass": "{{lean}} {{unit}} de masa magra, {{fat}} {{unit}} de grasa",
     "leanIndex": "FFMI {{ffmi}}, FMI {{fmi}} kg/m²",
     "leanCaption": "{{parts}}.",
-    "leanCaptionEstimated": "{{parts}}. Grasa corporal estimada a partir de tu IMC."
+    "leanCaptionEstimated": "{{parts}}. Grasa corporal estimada a partir de tu IMC.",
+    "bpNeeds": "Requiere 12 lecturas con protocolo en 3 días durante los últimos 90 días ({{readings}}/12 lecturas, {{days}}/3 días). Se excluye de Pulse Age.",
+    "bpCaption": "Promedio {{systolic}}/{{diastolic}} mmHg de {{readings}} lecturas en {{days}} días."
   },
   "insight": {
     "younger": "Más joven que tu edad",
@@ -357,5 +362,42 @@
     "rem": "REM",
     "light": "Ligero",
     "deep": "Profundo"
+  },
+  "bloodPressure": {
+    "title": "Presión arterial",
+    "detail": "Detalle",
+    "noData": "Sin datos",
+    "show": "Mostrar",
+    "hide": "Ocultar",
+    "systolic": "Sistólica",
+    "diastolic": "Diastólica",
+    "noReadings30d": "No se registraron lecturas de presión arterial en los últimos 30 días.",
+    "trendPlotSummary": "Tendencia de presión arterial de 30 días: lecturas sistólicas y diastólicas",
+    "breakdown": "Desglose por categorías a 30 días ({{count}})",
+    "readingsOnDay": " · {{count}} lecturas en el día",
+    "readingsOnDate": "Lecturas del {{date}}",
+    "guidelines": "Pautas de clasificación AHA/ACC",
+    "disclaimer": "Pulse no es un dispositivo de diagnóstico. Consulte a un médico para el diagnóstico y control médico de la presión arterial.",
+    "prior": "Anterior: {{value}}",
+    "noReadingWithPrior": "Sin lecturas el {{date}}. Más reciente: {{value}} mmHg el {{priorDate}}.",
+    "emptyDayHint": "No se registraron lecturas de presión arterial este día. Registre lecturas en Health Connect para realizar un seguimiento de las tendencias.",
+    "readingMeta": "{{date}} a las {{time}}",
+    "ariaDetail": "Detalle de presión arterial: {{reading}} mmHg, {{status}}",
+    "ariaDetailNoReading": "Detalle de presión arterial: Sin lectura",
+    "category": {
+      "normal": "Normal",
+      "elevated": "Elevada",
+      "stage1": "Nivel 1",
+      "stage2": "Nivel 2",
+      "crisis": "Crisis",
+      "hypertensiveCrisis": "Crisis hipertensiva"
+    },
+    "stageRange": {
+      "normal": "< 120 y < 80 mmHg",
+      "elevated": "120–129 y < 80 mmHg",
+      "stage1": "130–139 u 80–89 mmHg",
+      "stage2": "140+ o 90+ mmHg",
+      "crisis": "> 180 y/o > 120 mmHg"
+    }
   }
 }
