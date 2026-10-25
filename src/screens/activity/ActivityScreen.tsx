@@ -33,8 +33,9 @@ import { useScreen } from "@/screens/useScreen"
 import { TrainingEffectCard } from "@/screens/strain/TrainingCards"
 import { ActivityCostCard } from "./ActivityCost"
 import { ActivityMenu } from "./ActivityMenu"
-import { CoachGlance } from "./CoachGlance"
-import { useCoachSetup, useHasCoachKey } from "@/coach/session"
+import { ActivityCoach } from "../coach/ActivityCoach"
+import { coachReady } from "@/coach/providers"
+import { useCoachSetup } from "@/coach/session"
 
 const STAT_LABEL = "text-xs leading-4 font-bold tracking-[0.1em] text-foreground-secondary uppercase"
 /** The profile, where max heart rate (and so the zones) is set. */
@@ -58,8 +59,8 @@ export function ActivityScreen() {
     return { vm: vm && { ...vm, ...extras }, today: todayOf(ctx), timeZone: ctx.timeZone }
   }, ["activity", id])
   // The coach is set up: a provider key saved (pulse's coachReady).
-  const coach = useHasCoachKey()
-  const autoAnalysis = useCoachSetup()?.autoAnalysis ?? true
+  const setup = useCoachSetup()
+  const coach = coachReady(setup)
 
   if (!data) return error ? <ScreenError retry={reload} /> : <ActivitySkeleton />
   const { vm, today, timeZone } = data
@@ -121,7 +122,7 @@ export function ActivityScreen() {
         // With the coach set up, its pill takes the insight's place (activity-01, spec §11 R44); without it, the templated insight.
         footer={!coach && vm.insight ? <InsightCard body={vm.insight} /> : null}
       />
-      {coach && <CoachGlance key={vm.id} id={vm.id} question={question} auto={autoAnalysis} />}
+      {coach && <ActivityCoach activity={{ kind: "workout", id: vm.id }} question={question} setup={setup} />}
     </View>
   )
 }

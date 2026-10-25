@@ -7,7 +7,9 @@ import type { Profile } from "@/data/types";
 import { runPipeline } from "@/pipeline";
 import type { QueryCtx } from "@/queries/ctx";
 import { coachTools } from "./tools";
-import { workoutGlance } from "./workout";
+import { createActivityGlance, type GlanceDeps } from "./activity";
+
+const workoutGlance = (deps: GlanceDeps, id: string) => createActivityGlance()(deps, { kind: "workout", id });
 
 const TZ = "Asia/Kolkata";
 const TODAY = "2026-10-02";
@@ -39,7 +41,8 @@ describe("workout glance", () => {
     expect(text).toBe("Harder than your usual ride.");
     expect(prompts).toHaveLength(1);
     expect(prompts[0]).toContain("one sentence of at most 20 words");
-    expect(prompts[0]).toContain("Strain: ");
+    expect(prompts[0]).toContain(id);
+    expect(prompts[0]).toContain("strainAverage");
     expect(prompts[0]).toContain("You are Pulse's recovery and performance coach");
   });
 
@@ -51,10 +54,11 @@ describe("workout glance", () => {
     });
     const deps = { ctx: () => ctx, model: async () => ({ model: failing, provider: "openai", instructions: null }), allow: () => true };
     await expect(workoutGlance({ ...deps, model: async () => null }, "x")).rejects.toThrow("key");
-    await expect(workoutGlance({ ...deps, allow: () => false }, "x")).rejects.toThrow("limit");
     await expect(workoutGlance(deps, "nope")).rejects.toThrow("not_found");
     const list = await coachTools(ctx).get_activities.execute!({ days: 14 }, { toolCallId: "t", messages: [] } as never);
-    await expect(workoutGlance(deps, (list as { workouts: { id: string }[] }).workouts[0].id)).rejects.toThrow("provider");
+    const id = (list as { workouts: { id: string }[] }).workouts[0].id;
+    await expect(workoutGlance({ ...deps, allow: () => false }, id)).rejects.toThrow("limit");
+    await expect(workoutGlance(deps, id)).rejects.toThrow("provider");
   });
 });
 

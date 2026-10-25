@@ -108,12 +108,12 @@
     "notSaved": "Nicht gespeichert",
     "change": "Ändern",
     "cancel": "Abbrechen",
-    "workouts": "Workouts",
-    "analyze": "Jedes Workout analysieren",
-    "analyzeHint": "Eine Einschätzung in einer Zeile von deinem Anbieter, sobald ein Workout geöffnet wird. Aus: Der Coach antwortet nur, wenn du tippst.",
+    "analyze": "Jede Aktivität analysieren",
+    "analyzeHint": "Eine KI-Zusammenfassung beim Öffnen einer Aktivität, einschließlich Training, Schlaf und Nickerchen. Ausgeschaltet antwortet Coach nur beim Tippen.",
     "chats": "Chats",
     "chatsHint": "Auf diesem Handy gespeichert, nur für dich sichtbar.",
-    "saving": "Wird gespeichert…"
+    "saving": "Wird gespeichert…",
+    "activities": "Aktivitäten"
   },
   "setup": {
     "consentTitle": "Bevor du loslegst",
@@ -190,17 +190,15 @@
     "reportPartial": "Bericht · {{start}} bis {{end}} · Teilweise",
     "profile": "Dein Profil"
   },
-  "workout": {
-    "expand": "Erkläre diese Trainingsanalyse genauer."
-  },
   "sleep": {
-    "settingsTitle": "Schlafanalyse",
-    "analyze": "Jede Nacht analysieren",
-    "analyzeHint": "Beim Öffnen einer Nacht automatisch eine Schlafzusammenfassung mit deinem KI-Anbieter erstellen. Ausgeschaltet startet die Analyse nur beim Tippen.",
-    "ask": "Coach zu dieser Nacht fragen",
-    "question": "Analysiere meinen Schlaf mit Aufwachdatum {{day}}.",
-    "expand": "Erweitere diese Schlafanalyse.",
-    "spokenText": "Coach zu dieser Nacht fragen. {{text}}",
-    "spokenAnalyzing": "Coach analysiert diese Nacht. Tippen, um den Chat zu öffnen."
+    "question": "Analysiere meinen Schlaf mit Aufwachdatum {{day}}."
+  },
+  "activity": {
+    "ask": "Coach zu dieser Aktivität fragen",
+    "analyzing": "Wird analysiert…",
+    "spokenText": "Coach: {{text}} Frage zu dieser Aktivität.",
+    "spokenAnalyzing": "Coach analysiert diese Aktivität. Tippen, um den Chat zu öffnen.",
+    "expand": "Erweitere diese Aktivitätsanalyse.",
+    "napQuestion": "Analysiere mein Nickerchen am {{day}} ab {{time}}."
   }
 }

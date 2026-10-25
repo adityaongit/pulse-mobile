@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { AccessibilityInfo, ScrollView, Share, TextInput, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useChat } from "@ai-sdk/react";
+import type { CoachActivity } from "@/coach/activity";
 import type { UIMessage } from "ai";
 import { Activity, ArrowUp, ChevronRight, Dumbbell, Moon, NotebookPen, RefreshCw, RotateCcw, Share2, Square, type LucideIcon } from "lucide-react-native";
 import type { CoachSuggestion as CoreSuggestion } from "@/core/algorithms/coachSuggestions";
@@ -187,8 +188,7 @@ export type CoachProps = {
   prefill: string;
   /** Sends `prefill` at once (`?brief=1`, `?send=1`). */
   auto: boolean;
-  workoutId?: string;
-  sleepDay?: string;
+  activity?: CoachActivity;
   providerLabel: string;
   suggestions: CoachSuggestion[];
   today: string;
@@ -196,7 +196,7 @@ export type CoachProps = {
   onSaved: (id: string) => void;
 };
 
-export function Coach({ id, initial, prefill, auto, workoutId, sleepDay, providerLabel, suggestions, today, onSaved }: CoachProps) {
+export function Coach({ id, initial, prefill, auto, activity, providerLabel, suggestions, today, onSaved }: CoachProps) {
   const { t } = useTranslation("coach");
   const { c } = useTheme();
   const bottom = Math.max(useSafeAreaInsets().bottom, COMPOSER_GAP);
@@ -214,7 +214,7 @@ export function Coach({ id, initial, prefill, auto, workoutId, sleepDay, provide
     onFinish: ({ message }) => {
       const words = plainText(message);
       if (words) AccessibilityInfo.announceForAccessibility(words);
-      if (initial.length === 0 || workoutId || sleepDay) onSaved(id);
+      if (initial.length === 0 || activity) onSaved(id);
     },
   });
   const busy = status === "submitted" || status === "streaming";
@@ -227,7 +227,7 @@ export function Coach({ id, initial, prefill, auto, workoutId, sleepDay, provide
     if (!t || busy) return;
     setError(null);
     setInput("");
-    void sendMessage({ text: t, ...((workoutId || sleepDay) && { metadata: { ...(workoutId && { workoutId }), ...(sleepDay && { sleepDay }) } }) });
+    void sendMessage({ text: t, ...(activity && { metadata: { activity } }) });
   };
   // An at-once question (`?brief=1`, `?send=1`) is asked once.
   const asked = useRef(false);

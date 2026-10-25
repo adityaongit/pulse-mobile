@@ -1,13 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { selectedWorkout, workoutChatSeed } from "./workoutChat";
+import { selectedWorkout } from "./workoutChat";
 
-describe("opening workout analysis", () => {
-  it("continues the existing preview with its selected workout", () => {
-    const seed = workoutChatSeed("ride-1", "Tell me about my ride", "A steady ride.");
-    expect(seed.map((m) => m.role)).toEqual(["user", "assistant"]);
-    expect(seed[1].parts).toEqual([{ type: "text", text: "A steady ride." }]);
-    expect(selectedWorkout(seed)).toBe("ride-1");
-    expect(workoutChatSeed("ride-1", "Tell me about my ride", undefined)).toEqual([]);
-    expect(workoutChatSeed(undefined, "Hello", "Preview")).toEqual([]);
+describe("stored workout chat selection", () => {
+  it("reads the persisted workout ID from user metadata", () => {
+    expect(selectedWorkout([{ id: "old-question", role: "user", parts: [], metadata: { workoutId: "ride-1" } }])).toBe("ride-1");
+    expect(selectedWorkout([{ id: "answer", role: "assistant", parts: [], metadata: { workoutId: "ride-1" } }])).toBeNull();
   });
 });

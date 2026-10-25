@@ -15,16 +15,14 @@ export type CoachSetup = {
   last4: string | null;
   consent: boolean;
   instructions: string | null;
-  /** The workout pill asks the provider for a one-line take as a workout opens; off, it asks only when tapped. */
   autoAnalysis: boolean;
-  autoSleepAnalysis: boolean;
   /** The person's own server (provider "custom"): its OpenAI-compatible URL. */
   baseUrl: string | null;
 };
 
 const SETUP_KEY = "pulse.coach.setup";
 const API_KEY = "pulse.coach.apiKey";
-const EMPTY: CoachSetup = { provider: null, model: null, last4: null, consent: false, instructions: null, autoAnalysis: true, autoSleepAnalysis: true, baseUrl: null };
+const EMPTY: CoachSetup = { provider: null, model: null, last4: null, consent: false, instructions: null, autoAnalysis: true, baseUrl: null };
 
 const listeners = new Set<() => void>();
 const emit = () => listeners.forEach((f) => f());
@@ -60,7 +58,6 @@ export const setConsent = (on: boolean) => patchSetup({ consent: on });
 export const setInstructions = (notes: string | null) => patchSetup({ instructions: notes?.trim() || null });
 
 export const setAutoAnalysis = (on: boolean) => patchSetup({ autoAnalysis: on });
-export const setAutoSleepAnalysis = (on: boolean) => patchSetup({ autoSleepAnalysis: on });
 
 /**
  * Stores the provider, model and server URL, and the key in secure storage (call only after the test request worked).

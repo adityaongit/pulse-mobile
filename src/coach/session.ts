@@ -1,6 +1,3 @@
-// The coach wired to the phone: the saved provider, model and key (storage.ts) over expo/fetch (net.ts), the chats in
-// the app's Store, the person's query context from the app state, and the hooks the screens and the tab bar read. Not
-// loaded by tests (native modules); transport.ts, tools.ts, workout.ts and validate.ts carry the logic and are tested.
 import * as React from "react";
 import type { QueryCtx } from "@/queries/ctx";
 import { queryCtx } from "@/state/app";
@@ -9,8 +6,7 @@ import { coachReady, modelFor } from "./providers";
 import { apiKey, chatCount, coachSetup, loadChat, saveChat, subscribe, type CoachSetup } from "./storage";
 import { CoachTransport, type CoachModel } from "./transport";
 import { testKey, type ProviderInput } from "./validate";
-import { createSleepGlance } from "./sleep";
-import { workoutGlance } from "./workout";
+import { createActivityGlance, type CoachActivity } from "./activity";
 
 /** The model for a turn: consent, a provider and model, and a key the keystore can read; else null. */
 export async function deviceModel(): Promise<CoachModel | null> {
@@ -40,11 +36,8 @@ export function deviceTransport(): CoachTransport {
   });
 }
 
-/** The coach's one-line take on a workout, from the phone (the activity screen's pill). */
-export const deviceWorkoutGlance = (id: string) => workoutGlance({ ctx: currentCtx, model: deviceModel }, id);
-
-const sleepGlance = createSleepGlance();
-export const deviceSleepGlance = (day: string) => sleepGlance({ ctx: currentCtx, model: deviceModel }, day);
+const activityGlance = createActivityGlance();
+export const deviceActivityGlance = (activity: CoachActivity) => activityGlance({ ctx: currentCtx, model: deviceModel }, activity);
 
 /** The tiny test request, from the phone. */
 export const testDeviceKey = (input: ProviderInput) => testKey(input, deviceFetch);

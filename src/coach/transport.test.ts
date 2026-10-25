@@ -92,6 +92,20 @@ describe("coach turn", () => {
     expect(JSON.stringify(prompts.at(-1))).toContain("2026-10-01");
   });
 
+  it("keeps a selected nap separate from the main night on saved follow-ups", async () => {
+    const store = new MemoryStore();
+    await store.upsertSessions([{ id: "selected-nap", day: ctx.today, startTs: ctx.now - 1800, endTs: ctx.now, isMain: false, processed: true, stagesStatus: null, asleepMin: 22, awakeMin: null, deepMin: null, lightMin: null, remMin: null }], []);
+    const { model, prompts } = scripted();
+    const d = deps({ ctx: () => ({ ...ctx, store }), model: async () => ({ model, provider: "anthropic", instructions: null }) });
+    const first = { ...user("nap-question", "Analyze this activity"), metadata: { activity: { kind: "nap", id: "selected-nap" } } };
+    await last(await coachTurn(d, "nap-chat", [first]));
+    expect(JSON.stringify(prompts[0])).toContain("selected-nap");
+    expect(JSON.stringify(prompts[0])).toContain("asleepMinutes");
+    const saved = d.saved.get("nap-chat")!;
+    await last(await coachTurn(d, "nap-chat", [...saved.map((m) => ({ ...m, metadata: undefined })), user("nap-follow", "And duration?")]));
+    expect(JSON.stringify(prompts.at(-1))).toContain("selected-nap");
+  });
+
   it("streams a tool card then the answer, and saves the whole chat", async () => {
     const { model, prompts } = scripted();
     const d = deps({ model: async () => ({ model, provider: "anthropic", instructions: "Short and direct." }) });

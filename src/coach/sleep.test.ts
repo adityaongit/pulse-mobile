@@ -6,7 +6,12 @@ import type { Profile } from "@/data/types";
 import { runPipeline } from "@/pipeline";
 import type { QueryCtx } from "@/queries/ctx";
 
-import { createSleepGlance } from "./sleep";
+import { createActivityGlance, type GlanceDeps } from "./activity";
+
+const createSleepGlance = () => {
+  const glance = createActivityGlance();
+  return (deps: GlanceDeps, day: string) => glance(deps, { kind: "sleep", id: day });
+};
 
 const TZ = "Asia/Kolkata";
 const TODAY = "2026-10-02";

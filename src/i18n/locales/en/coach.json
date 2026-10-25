@@ -108,12 +108,12 @@
     "notSaved": "Not saved",
     "change": "Change",
     "cancel": "Cancel",
-    "workouts": "Workouts",
-    "analyze": "Analyze each workout",
-    "analyzeHint": "A one-line take from your provider as a workout opens. Off, the coach answers only when you tap.",
+    "analyze": "Analyze each activity",
+    "analyzeHint": "A summary from your AI provider when you open an activity, including workouts, sleep and naps. Off, Coach answers only when tapped.",
     "chats": "Chats",
     "chatsHint": "Saved on this phone, visible only to you.",
-    "saving": "Saving…"
+    "saving": "Saving…",
+    "activities": "Activities"
   },
   "setup": {
     "consentTitle": "Before you start",
@@ -190,17 +190,15 @@
     "reportPartial": "Report · {{start}} to {{end}} · Partial",
     "profile": "Your profile"
   },
-  "workout": {
-    "expand": "Expand this workout analysis."
-  },
   "sleep": {
-    "settingsTitle": "Sleep analysis",
-    "analyze": "Analyze each night",
-    "analyzeHint": "Show an automatic sleep summary when opening a night. Uses your AI provider. Off, analysis runs only when tapped.",
-    "ask": "Ask Coach about this night",
-    "question": "Analyze my sleep ending on {{day}}.",
-    "expand": "Expand this sleep analysis.",
-    "spokenText": "Ask Coach about this night. {{text}}",
-    "spokenAnalyzing": "Coach is analyzing this night. Tap to open the chat."
+    "question": "Analyze my sleep ending on {{day}}."
+  },
+  "activity": {
+    "ask": "Ask Coach about this activity",
+    "analyzing": "Analyzing…",
+    "spokenText": "Coach: {{text}} Ask about this activity.",
+    "spokenAnalyzing": "Coach is analyzing this activity. Tap to open the chat.",
+    "expand": "Expand this activity analysis.",
+    "napQuestion": "Analyze my nap on {{day}} starting at {{time}}."
   }
 }

@@ -108,12 +108,12 @@
     "notSaved": "Non enregistrée",
     "change": "Modifier",
     "cancel": "Annuler",
-    "workouts": "Séances",
-    "analyze": "Analyser chaque séance",
-    "analyzeHint": "Un avis d’une ligne de ton fournisseur à l’ouverture d’une séance. Désactivé, le Coach ne répond que quand tu touches.",
+    "analyze": "Analyser chaque activité",
+    "analyzeHint": "Un résumé IA à l’ouverture d’une activité, dont les entraînements, le sommeil et les siestes. Sinon, Coach répond uniquement au toucher.",
     "chats": "Discussions",
     "chatsHint": "Enregistrées sur ce téléphone, visibles par toi seul.",
-    "saving": "Enregistrement…"
+    "saving": "Enregistrement…",
+    "activities": "Activités"
   },
   "setup": {
     "consentTitle": "Avant de commencer",
@@ -190,17 +190,15 @@
     "reportPartial": "Rapport · {{start}} à {{end}} · Partiel",
     "profile": "Ton profil"
   },
-  "workout": {
-    "expand": "Développe cette analyse de séance."
-  },
   "sleep": {
-    "settingsTitle": "Analyse du sommeil",
-    "analyze": "Analyser chaque nuit",
-    "analyzeHint": "Afficher un résumé automatique à l’ouverture d’une nuit avec votre fournisseur IA. Sinon, l’analyse démarre uniquement au toucher.",
-    "ask": "Interroger Coach sur cette nuit",
-    "question": "Analyse mon sommeil se terminant le {{day}}.",
-    "expand": "Développe cette analyse du sommeil.",
-    "spokenText": "Interroger Coach sur cette nuit. {{text}}",
-    "spokenAnalyzing": "Coach analyse cette nuit. Touchez pour ouvrir la discussion."
+    "question": "Analyse mon sommeil se terminant le {{day}}."
+  },
+  "activity": {
+    "ask": "Interroger Coach sur cette activité",
+    "analyzing": "Analyse en cours…",
+    "spokenText": "Coach : {{text}} Interroger sur cette activité.",
+    "spokenAnalyzing": "Coach analyse cette activité. Touchez pour ouvrir la discussion.",
+    "expand": "Développe cette analyse d’activité.",
+    "napQuestion": "Analyse ma sieste du {{day}} commençant à {{time}}."
   }
 }

@@ -108,12 +108,12 @@
     "notSaved": "Sin guardar",
     "change": "Cambiar",
     "cancel": "Cancelar",
-    "workouts": "Entrenamientos",
-    "analyze": "Analizar cada entrenamiento",
-    "analyzeHint": "Una opinión de una línea de tu proveedor al abrir un entrenamiento. Desactivado, el Coach responde solo cuando tocas.",
+    "analyze": "Analizar cada actividad",
+    "analyzeHint": "Un resumen de IA al abrir una actividad, incluidos entrenamientos, sueño y siestas. Desactivado, Coach solo responde al tocar.",
     "chats": "Chats",
     "chatsHint": "Se guardan en este teléfono y solo tú los ves.",
-    "saving": "Guardando…"
+    "saving": "Guardando…",
+    "activities": "Actividades"
   },
   "setup": {
     "consentTitle": "Antes de empezar",
@@ -190,17 +190,15 @@
     "reportPartial": "Informe · {{start}} a {{end}} · Parcial",
     "profile": "Tu perfil"
   },
-  "workout": {
-    "expand": "Amplía este análisis del entrenamiento."
-  },
   "sleep": {
-    "settingsTitle": "Análisis del sueño",
-    "analyze": "Analizar cada noche",
-    "analyzeHint": "Mostrar un resumen automático al abrir una noche usando tu proveedor de IA. Desactivado, el análisis solo se inicia al tocar.",
-    "ask": "Preguntar a Coach sobre esta noche",
-    "question": "Analiza mi sueño que termina el {{day}}.",
-    "expand": "Amplía este análisis del sueño.",
-    "spokenText": "Preguntar a Coach sobre esta noche. {{text}}",
-    "spokenAnalyzing": "Coach está analizando esta noche. Toca para abrir el chat."
+    "question": "Analiza mi sueño que termina el {{day}}."
+  },
+  "activity": {
+    "ask": "Preguntar a Coach sobre esta actividad",
+    "analyzing": "Analizando…",
+    "spokenText": "Coach: {{text}} Preguntar sobre esta actividad.",
+    "spokenAnalyzing": "Coach está analizando esta actividad. Toca para abrir el chat.",
+    "expand": "Amplía este análisis de actividad.",
+    "napQuestion": "Analiza mi siesta del {{day}} que empieza a las {{time}}."
   }
 }

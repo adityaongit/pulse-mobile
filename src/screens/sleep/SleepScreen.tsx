@@ -2,7 +2,7 @@
 // (`FEATURES.sleepStress`, off).
 import { useCoachSetup } from "@/coach/session";
 import { coachReady } from "@/coach/providers";
-import { CoachGlance } from "../activity/CoachGlance";
+import { ActivityCoach } from "../coach/ActivityCoach";
 import { Fragment } from "react";
 import { View } from "react-native";
 import { Trans, useTranslation } from "react-i18next";
@@ -28,7 +28,7 @@ import { useShellCalendar } from "@/ui/shells/ShellStatus";
 import { Text } from "@/ui/Text";
 import { SLEEP_INFO, TONIGHT_INFO } from "../_lib/info";
 import { statProps } from "../_lib/view";
-import { useScreen, useDataVersion } from "../useScreen";
+import { useScreen } from "../useScreen";
 import { cardInfoFor } from "./cardInfoFor";
 import { HoursVsNeed, SleepConsistency, SleepEfficiency } from "./SleepCards";
 import { WeeklyTrends } from "../trends/WeeklyTrends";
@@ -71,10 +71,9 @@ export function SleepScreen() {
 }
 
 function Sleep({ vm, weekly, timeZone }: { vm: SleepPageVM; weekly: TrendViewVM[]; timeZone: string }) {
-  const { t, i18n } = useTranslation("sleep");
+  const { t } = useTranslation("sleep");
   const { t: coachT } = useTranslation("coach");
   const setup = useCoachSetup();
-  const version = useDataVersion();
   const coach = coachReady(setup) && vm.hours.value !== null;
   const { today } = useShellCalendar();
   const d = vm.day;
@@ -140,7 +139,7 @@ function Sleep({ vm, weekly, timeZone }: { vm: SleepPageVM; weekly: TrendViewVM[
         ]}
         footer={<WeeklyTrends cards={weekly} d={d} today={today} />}
       />
-    {coach && <CoachGlance key={JSON.stringify([d, version, i18n.language, setup])} id={d} sleepDay={d} question={coachT("sleep.question", { day: d })} auto={setup?.autoSleepAnalysis ?? true} />}
+      {coach && <ActivityCoach activity={{ kind: "sleep", id: d }} question={coachT("sleep.question", { day: d })} setup={setup} />}
     </View>
   );
 }

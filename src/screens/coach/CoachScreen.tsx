@@ -12,8 +12,8 @@ import { providerLabel } from "@/coach/providers";
 import { useChatCount, useCoachSetup } from "@/coach/session";
 import { loadChat } from "@/coach/storage";
 import { coachSuggestions } from "@/coach/suggestions";
-import { sleepChatSeed } from "@/coach/sleepChat";
-import { workoutChatSeed } from "@/coach/workoutChat";
+import { activityChatSeed } from "@/coach/activityChat";
+import type { CoachActivity } from "@/coach/activity";
 import { todayOf } from "@/queries/common";
 import { Button } from "@/ui/Button";
 import { Icon } from "@/ui/Icon";
@@ -61,7 +61,7 @@ export function CoachScreen() {
   const { t } = useTranslation("coach");
   const setup = useCoachSetup();
   const chatCount = useChatCount();
-  const params = useLocalSearchParams<{ c?: string; q?: string; brief?: string; send?: string; n?: string; workout?: string; sleep?: string; preview?: string }>();
+  const params = useLocalSearchParams<{ c?: string; q?: string; brief?: string; send?: string; n?: string; workout?: string; sleep?: string; nap?: string; preview?: string }>();
   const c = param(params.c) && CHAT_ID.test(param(params.c)!) ? param(params.c)! : null;
   const brief = param(params.brief) === "1";
   const sendNow = param(params.send) === "1";
@@ -69,9 +69,16 @@ export function CoachScreen() {
   const fresh = useMemo(() => generateId(), [n]); // eslint-disable-line react-hooks/exhaustive-deps
   const workoutId = param(params.workout);
   const sleepDay = param(params.sleep);
+  const napId = param(params.nap);
+  const activity = useMemo<CoachActivity | undefined>(() => {
+    if (napId) return { kind: "nap", id: napId };
+    if (sleepDay) return { kind: "sleep", id: sleepDay };
+    if (workoutId) return { kind: "workout", id: workoutId };
+    return undefined;
+  }, [napId, sleepDay, workoutId]);
   const preview = param(params.preview)?.slice(0, 2000);
   const question = (param(params.q) ?? "").slice(0, 500);
-  const seed = useMemo(() => sleepDay ? sleepChatSeed(sleepDay, question, preview) : workoutChatSeed(workoutId, question, preview), [sleepDay, workoutId, question, preview]);
+  const seed = useMemo(() => activityChatSeed(activity, question, preview), [activity, question, preview]);
   const { data } = useScreen(async (ctx) => ({ suggestions: await coachSuggestions(ctx), today: todayOf(ctx) }), ["coach"]);
   const [headerH, setHeaderH] = useState(0);
   // The chat on screen. No `?c=`: a fresh one (a new one per `?n=`). `?c=` naming the chat on screen keeps it running
@@ -95,7 +102,7 @@ export function CoachScreen() {
   if (setup === undefined) return <DetailShell title={t("title")} loading primary={<ChatSkeleton />} />;
   if (!setup.consent || !setup.provider) return <DetailShell title={t("title")} primary={!setup.consent ? <Consent /> : <ConnectProvider current={setup} />} />;
 
-  const newChat = () => router.setParams({ c: undefined, q: undefined, brief: undefined, send: undefined, workout: undefined, sleep: undefined, preview: undefined, n: generateId() });
+  const newChat = () => router.setParams({ c: undefined, q: undefined, brief: undefined, send: undefined, workout: undefined, sleep: undefined, nap: undefined, preview: undefined, n: generateId() });
   return (
     <View className="flex-1 bg-background">
       <DetailHeader title={t("title")} action={<BarActions chatCount={chatCount ?? 0} chatOpen={!!c} onNew={newChat} />} onHeight={setHeaderH} />
@@ -105,14 +112,13 @@ export function CoachScreen() {
             key={chat.id}
             id={chat.id}
             initial={chat.messages}
-            prefill={brief && !c ? t("suggestions.brief") : !c && seed.length ? t(sleepDay ? "sleep.expand" : "workout.expand") : question}
+            prefill={brief && !c ? t("suggestions.brief") : !c && seed.length ? t("activity.expand") : question}
             auto={(brief || sendNow) && !c}
-            workoutId={workoutId}
-            sleepDay={sleepDay}
+            activity={activity}
             providerLabel={providerLabel(setup.provider)}
             suggestions={data.suggestions}
             today={data.today}
-            onSaved={(id) => router.setParams({ c: id, q: undefined, brief: undefined, send: undefined, workout: undefined, sleep: undefined, preview: undefined })}
+            onSaved={(id) => router.setParams({ c: id, q: undefined, brief: undefined, send: undefined, workout: undefined, sleep: undefined, nap: undefined, preview: undefined })}
           />
         ) : (
           <ChatSkeleton />
