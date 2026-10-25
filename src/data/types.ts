@@ -128,6 +128,17 @@ export type BloodPressureQuality = "direct" | "manual" | "derived" | "unknown";
 
 export type BloodPressurePosture = "sitting" | "supine" | "standing";
 
+/** The reading's posture: the explicit field wins, else the Health Connect body position mapped onto it. */
+export function postureOf(
+  posture: BloodPressurePosture | null | undefined,
+  bodyPosition: string | null | undefined,
+): BloodPressurePosture | null {
+  if (posture != null) return posture;
+  if (bodyPosition === "sitting" || bodyPosition === "standing") return bodyPosition;
+  if (bodyPosition === "lying_down" || bodyPosition === "reclining") return "supine";
+  return null;
+}
+
 export type BloodPressureSource = "health_connect" | "manual";
 
 export type VascularCorridorMode = "calibrated" | "uncalibrated";

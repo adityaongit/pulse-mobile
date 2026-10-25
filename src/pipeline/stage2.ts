@@ -174,11 +174,12 @@ export async function stage2(store: Store, data: Data, opts: PipelineOptions, on
         : null;
     const sleepEfficiencyPct =
       slp?.main != null ? slp.main.efficiency * 100 : null;
+    const asleepMin = slp?.creditedMin ?? slp?.main?.asleepMin ?? null;
     return {
       date: day,
       rhrBpm: rec?.inputs.rhr ?? dm?.rhrBpm ?? null,
       hrvRmssdMs: rec?.inputs.hrv ?? dm?.hrvMs ?? null,
-      sleepDurationHours: slp?.creditedMin != null ? slp.creditedMin / 60 : slp?.main != null ? slp.main.asleepMin / 60 : null,
+      sleepDurationHours: asleepMin != null ? asleepMin / 60 : null,
       sleepEfficiencyPct,
       sleepDebtHours: slp?.debtMin != null ? slp.debtMin / 60 : null,
       strainPct: st1?.engine?.strain?.value ?? null,

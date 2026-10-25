@@ -401,7 +401,7 @@ export const stepLabel = (step: string): string => {
 };
 
 /** Logs a manual brachial cuff calibration reading, runs the pipeline, and bumps `dataVersion`. */
-export async function saveManualBloodPressure(input: BloodPressureCalibrationInput) {
+export function saveManualBloodPressure(input: BloodPressureCalibrationInput) {
   const ctx = actionCtx();
   return logBloodPressureCalibration(input, { store: ctx.store, profile: ctx.profile, onChanged: dataChanged });
 }

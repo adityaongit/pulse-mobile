@@ -3,7 +3,6 @@
 // store, as they would not with SQLite.
 import type { DayRange, JournalTagChange, JournalTagRow, LoggedEntryRow, ReportRow, ScoreRow, SeriesKind, Store } from "./store";
 import type {
-  BloodPressurePosture,
   BloodPressureReading,
   BloodPressureReadingRow,
   BloodPressureSource,
@@ -21,6 +20,7 @@ import type {
   SyncState,
 } from "./types";
 import type { ActivityCostResult } from "@/core/algorithms/activityCost";
+import { postureOf } from "./types";
 import { minuteHr } from "@/core/engine/context";
 
 const copy = <T>(x: T): T => JSON.parse(JSON.stringify(x)) as T;
@@ -217,13 +217,7 @@ export class MemoryStore implements Store {
   }
   async upsertBloodPressure(rows: BloodPressureReading[]) {
     for (const r of rows) {
-      const posture: BloodPressurePosture | null =
-        r.posture ??
-        (r.bodyPosition === "sitting" || r.bodyPosition === "standing"
-          ? r.bodyPosition
-          : r.bodyPosition === "lying_down" || r.bodyPosition === "reclining"
-            ? "supine"
-            : null);
+      const posture = postureOf(r.posture, r.bodyPosition);
       const source: BloodPressureSource = r.source ?? "health_connect";
       this.bloodPressure.set(r.id, copy({ ...r, posture, source }));
     }
@@ -260,7 +254,7 @@ export class MemoryStore implements Store {
   async getBloodPressureReadings(upToDate?: string): Promise<BloodPressureReadingRow[]> {
     const rows = [...this.bloodPressure.values()]
       .filter((r) => upToDate === undefined || r.day <= upToDate)
-      .sort((a, b) => a.ts - b.ts || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+      .sort((a, b) => a.ts - b.ts || a.id.localeCompare(b.id));
     return rows.map((r) => ({
       id: r.id,
       timestampMs: r.ts * 1000,
@@ -268,13 +262,7 @@ export class MemoryStore implements Store {
       systolicMmHg: r.systolicMmhg,
       diastolicMmHg: r.diastolicMmhg,
       pulseBpm: r.pulseBpm ?? null,
-      posture:
-        r.posture ??
-        (r.bodyPosition === "sitting" || r.bodyPosition === "standing"
-          ? r.bodyPosition
-          : r.bodyPosition === "lying_down" || r.bodyPosition === "reclining"
-            ? "supine"
-            : null),
+      posture: postureOf(r.posture, r.bodyPosition),
       source: r.source ?? "health_connect",
     }));
   }

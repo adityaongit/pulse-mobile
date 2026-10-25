@@ -4,6 +4,7 @@
 // row per 1 Hz sample is far too slow over months. Every batch write runs in one exclusive transaction.
 import { deleteDatabaseAsync, openDatabaseAsync, type SQLiteDatabase } from "expo-sqlite";
 import { isDeadConnection } from "./deadConnection";
+import { postureOf } from "./types";
 import type { CoachChatRow, DayRange, EntrySource, JournalTagChange, JournalTagRow, LoggedEntryRow, ReportRow, ScoreRow, SeriesKind, Store } from "./store";
 import type {
   BloodPressurePosture,
@@ -257,13 +258,7 @@ const bloodPressureReadingRowOf = (r: BloodPressureRow): BloodPressureReadingRow
   systolicMmHg: r.systolic_mmhg,
   diastolicMmHg: r.diastolic_mmhg,
   pulseBpm: r.pulse_bpm ?? null,
-  posture:
-    (r.posture as BloodPressurePosture | null) ??
-    (r.body_position === "sitting" || r.body_position === "standing"
-      ? r.body_position
-      : r.body_position === "lying_down" || r.body_position === "reclining"
-        ? "supine"
-        : null),
+  posture: postureOf(r.posture as BloodPressurePosture | null, r.body_position),
   source:
     (r.source as BloodPressureSource | null) ?? "health_connect",
 });
@@ -610,13 +605,7 @@ class SqliteStore implements Store {
           recording_method, source_platform, source_application, source_device, quality, imported_at
         ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         rows.map((r) => {
-          const posture: BloodPressurePosture | null =
-            r.posture ??
-            (r.bodyPosition === "sitting" || r.bodyPosition === "standing"
-              ? r.bodyPosition
-              : r.bodyPosition === "lying_down" || r.bodyPosition === "reclining"
-                ? "supine"
-                : null);
+          const posture = postureOf(r.posture, r.bodyPosition);
               const source: BloodPressureSource = r.source ?? "health_connect";
           return [
             r.id,

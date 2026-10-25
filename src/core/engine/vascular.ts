@@ -84,12 +84,9 @@ export function calibrationHalfWidthMmHg(daysSinceCalibration: number): {
 } {
   const t = Math.max(0, daysSinceCalibration);
   const halfWidthMmHg = Math.min(14, roundHalfAway(4 + (t / VASCULAR_CALIBRATION_EXPIRY_DAYS) * 6, 0));
-  const status: VascularCalibrationStatus =
-    t <= VASCULAR_CALIBRATION_FRESH_DAYS
-      ? "fresh"
-      : t <= VASCULAR_CALIBRATION_EXPIRY_DAYS
-        ? "aging"
-        : "expired";
+  let status: VascularCalibrationStatus = "expired";
+  if (t <= VASCULAR_CALIBRATION_FRESH_DAYS) status = "fresh";
+  else if (t <= VASCULAR_CALIBRATION_EXPIRY_DAYS) status = "aging";
   return { status, halfWidthMmHg };
 }
 
@@ -126,6 +123,13 @@ function acwrPressorTerms(acwr: number | null): { gammaSbp: number; gammaDbp: nu
   return { gammaSbp: 0, gammaDbp: 0 };
 }
 
+/** Lexicographic string order, for date and id tie-breaks in the corridor sorts. */
+function compareStrings(a: string, b: string): number {
+  if (a < b) return -1;
+  if (a > b) return 1;
+  return 0;
+}
+
 interface DayAutonomicFeatures {
   validBaseline: boolean;
   provisionalBaseline: boolean;
@@ -157,15 +161,14 @@ function computeAutonomicFeaturesAtDay(
     }
   }
 
+  const curRhr =
+    cur.rhrBpm != null && Number.isFinite(cur.rhrBpm) && cur.rhrBpm > 0 ? cur.rhrBpm : null;
+  const curLnHrv =
+    cur.hrvRmssdMs != null && Number.isFinite(cur.hrvRmssdMs) && cur.hrvRmssdMs > 0
+      ? Math.log(cur.hrvRmssdMs)
+      : null;
   const validCount = Math.min(priorRhr.length, priorLnHrv.length);
-  const validBaseline =
-    validCount >= VASCULAR_WARMUP_MIN_DAYS &&
-    cur.rhrBpm != null &&
-    Number.isFinite(cur.rhrBpm) &&
-    cur.rhrBpm > 0 &&
-    cur.hrvRmssdMs != null &&
-    Number.isFinite(cur.hrvRmssdMs) &&
-    cur.hrvRmssdMs > 0;
+  const validBaseline = validCount >= VASCULAR_WARMUP_MIN_DAYS && curRhr !== null && curLnHrv !== null;
   const provisionalBaseline = validCount < VASCULAR_BASELINE_WINDOW_DAYS;
 
   const sleepDebtHours =
@@ -175,7 +178,9 @@ function computeAutonomicFeaturesAtDay(
   const acwr = computeAcwrAtIndex(days, index);
   const bmi = cur.bmi != null && Number.isFinite(cur.bmi) ? roundHalfAway(cur.bmi, 1) : null;
 
-  if (!validBaseline) {
+  const rhrStats = popStats(priorRhr);
+  const lnHrvStats = popStats(priorLnHrv);
+  if (!validBaseline || curRhr === null || curLnHrv === null || rhrStats === null || lnHrvStats === null) {
     return {
       validBaseline: false,
       provisionalBaseline: true,
@@ -189,10 +194,8 @@ function computeAutonomicFeaturesAtDay(
     };
   }
 
-  const rhrStats = popStats(priorRhr)!;
-  const lnHrvStats = popStats(priorLnHrv)!;
-  const rhrDelta = clamp(cur.rhrBpm! - rhrStats.mean, -15, 15);
-  const lnRmssdDelta = clamp(Math.log(cur.hrvRmssdMs!) - lnHrvStats.mean, -0.8, 0.8);
+  const rhrDelta = clamp(curRhr - rhrStats.mean, -15, 15);
+  const lnRmssdDelta = clamp(curLnHrv - lnHrvStats.mean, -0.8, 0.8);
   const debtVal = sleepDebtHours ?? 0;
   const { gammaSbp, gammaDbp } = acwrPressorTerms(acwr);
 
@@ -258,8 +261,11 @@ function resolveCausalAnchor(
     (r) => Math.abs(r.timestampMs - latestReading.timestampMs) <= windowMs,
   );
   const sample = cluster.length > 0 ? cluster : [latestReading];
-  const anchorSbp = roundHalfAway(mean(sample.map((r) => r.systolicMmHg))!, 1);
-  const anchorDbp = roundHalfAway(mean(sample.map((r) => r.diastolicMmHg))!, 1);
+  const sampleSbp = mean(sample.map((r) => r.systolicMmHg));
+  const sampleDbp = mean(sample.map((r) => r.diastolicMmHg));
+  if (sampleSbp === null || sampleDbp === null) return null;
+  const anchorSbp = roundHalfAway(sampleSbp, 1);
+  const anchorDbp = roundHalfAway(sampleDbp, 1);
 
   return {
     date: latestDate,
@@ -278,16 +284,13 @@ export function computeVascularCorridorSeries(
   days: readonly VascularDailyFeatureInput[],
   cuffReadings: readonly BloodPressureReadingRow[],
 ): Map<string, VascularCorridorDay> {
-  const sortedDays = days.slice().sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
-  const sortedCuffs = cuffReadings
-    .slice()
-    .sort((a, b) =>
-      a.date < b.date
-        ? -1
-        : a.date > b.date
-          ? 1
-          : a.timestampMs - b.timestampMs || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0),
-    );
+  const sortedDays = [...days].sort((a, b) => compareStrings(a.date, b.date));
+  const sortedCuffs = [...cuffReadings].sort((a, b) => {
+    const byDate = compareStrings(a.date, b.date);
+    if (byDate !== 0) return byDate;
+    const byTs = a.timestampMs - b.timestampMs;
+    return byTs !== 0 ? byTs : compareStrings(a.id, b.id);
+  });
 
   const dayIndexByDate = new Map<string, number>();
   sortedDays.forEach((d, idx) => dayIndexByDate.set(d.date, idx));
@@ -308,10 +311,12 @@ export function computeVascularCorridorSeries(
       bmi: feat.bmi,
     };
 
+    const sbpOff = feat.sbpAutonomicOffset ?? 0;
+    const dbpOff = feat.dbpAutonomicOffset ?? 0;
     const autonomicDelta: VascularCorridorDay["autonomicDelta"] = feat.validBaseline
       ? {
-          sbpDeltaMmHg: roundHalfAway(feat.sbpAutonomicOffset!, 1),
-          dbpDeltaMmHg: roundHalfAway(feat.dbpAutonomicOffset!, 1),
+          sbpDeltaMmHg: roundHalfAway(sbpOff, 1),
+          dbpDeltaMmHg: roundHalfAway(dbpOff, 1),
           reason: null,
           provisional: feat.provisionalBaseline,
         }
@@ -373,10 +378,10 @@ export function computeVascularCorridorSeries(
     let deltaSbp = 0;
     let deltaDbp = 0;
     if (d.date !== anchor.date && feat.validBaseline) {
-      const baseSbp = anchorFeat?.validBaseline ? anchorFeat.sbpAutonomicOffset! : 0;
-      const baseDbp = anchorFeat?.validBaseline ? anchorFeat.dbpAutonomicOffset! : 0;
-      deltaSbp = feat.sbpAutonomicOffset! - baseSbp;
-      deltaDbp = feat.dbpAutonomicOffset! - baseDbp;
+      const baseSbp = anchorFeat?.validBaseline ? (anchorFeat.sbpAutonomicOffset ?? 0) : 0;
+      const baseDbp = anchorFeat?.validBaseline ? (anchorFeat.dbpAutonomicOffset ?? 0) : 0;
+      deltaSbp = sbpOff - baseSbp;
+      deltaDbp = dbpOff - baseDbp;
       if (feat.bmi != null && anchorFeat?.bmi != null) {
         const bmiDiff = clamp(feat.bmi - anchorFeat.bmi, -5, 5);
         deltaSbp += BETA_SBP_BMI * bmiDiff;

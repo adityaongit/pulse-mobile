@@ -813,8 +813,15 @@ export async function seedDemo(store: Store, opts: SeedOptions): Promise<Profile
     const anchorDay = days > 180 ? addDays(ctx.anchor, 179 - offset) : addDays(today, -offset);
     const tsSec = localMidnight(anchorDay, timeZone) + 8 * 3600;
     if (tsSec > now) continue;
-    const sbp = offset === 60 ? 119 : offset === 30 ? 121 : 118;
-    const dbp = offset === 60 ? 77 : offset === 30 ? 78 : 76;
+    let sbp = 118;
+    let dbp = 76;
+    if (offset === 60) {
+      sbp = 119;
+      dbp = 77;
+    } else if (offset === 30) {
+      sbp = 121;
+      dbp = 78;
+    }
     cuffRows.push({
       id: `seed-bp-${anchorDay}`,
       timestampMs: tsSec * 1000,
