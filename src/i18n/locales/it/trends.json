@@ -198,7 +198,9 @@
     "activity": "Il riepilogo giornaliero della tua app di salute, contato dalla tua fascia o dal telefono. Pulse lo mostra così com’è e non lo valuta.",
     "body": "Letture sincronizzate dalla tua app di salute. Un giorno senza lettura mostra l’ultima precedente.",
     "nutrition": "Il totale giornaliero dei tuoi inserimenti nella tua app di salute, più ciò che registri nel Diario di Pulse. Un pasto registrato sia in Pulse sia in Fitbit conta una volta.",
-    "vitals": "Il valore giornaliero della tua app di salute, dalla tua fascia o da un dispositivo collegato. Pulse ombreggia il tuo intervallo abituale degli ultimi 90 giorni."
+    "vitals": "Il valore giornaliero della tua app di salute, dalla tua fascia o da un dispositivo collegato. Pulse ombreggia il tuo intervallo abituale degli ultimi 90 giorni.",
+    "monitor": "Da Health Connect. L’intervallo ombreggiato corrisponde a Health Monitor: la tua media ± 1 SD nelle ultime 30 notti, inclusa la notte selezionata.",
+    "monitorUnavailable": "Da Health Connect. Per questo giorno non è disponibile un intervallo di Health Monitor."
   },
   "stat": {
     "zones13": "Zone leggera e moderata",

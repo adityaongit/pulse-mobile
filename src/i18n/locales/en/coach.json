@@ -189,5 +189,8 @@
     "reportTitle": "Report · {{start}} to {{end}}",
     "reportPartial": "Report · {{start}} to {{end}} · Partial",
     "profile": "Your profile"
+  },
+  "workout": {
+    "expand": "Expand this workout analysis."
   }
 }

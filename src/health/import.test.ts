@@ -365,8 +365,30 @@ describe("metrics", () => {
 });
 
 describe("exercises and daily values", () => {
+  it("does not lose an eligible workout to a titled copy below the minimum duration", () => {
+    const startTime = at("2026-10-02", "07:00:00");
+    const { exercises } = mapRecords({ ExerciseSession: [
+      { metadata: meta("valid", "com.fitbit"), startTime, endTime: at("2026-10-02", "07:02:00"), exerciseType: ExerciseType.BIKING },
+      { metadata: meta("short", "com.samsung"), startTime, endTime: at("2026-10-02", "07:01:59"), exerciseType: ExerciseType.BIKING, title: "Ride" },
+    ] }, TZ);
+    expect(exercises.map((e) => e.id)).toEqual(["valid"]);
+  });
+
   const len = (m: number) => ({ inMeters: m, inKilometers: m / 1000, inMiles: m / 1609.344, inInches: m * 39.3701, inFeet: m * 3.28084 });
   const energy = (v: number) => ({ inKilocalories: v, inCalories: v * 1000, inJoules: v * 4184, inKilojoules: v * 4.184 });
+
+  it("imports a cross-source copy once without adding both sessions' calories or distance", () => {
+    const span = { startTime: at("2026-10-02", "07:00:00"), endTime: at("2026-10-02", "07:30:00") };
+    const { exercises } = mapRecords({
+      ExerciseSession: [
+        { metadata: meta("a", "com.fitbit"), ...span, exerciseType: ExerciseType.BIKING },
+        { metadata: meta("b", "com.samsung"), ...span, exerciseType: ExerciseType.BIKING, title: "Morning ride" },
+      ],
+      ActiveCaloriesBurned: [{ metadata: meta("c"), ...span, energy: energy(150) }],
+      Distance: [{ metadata: meta("d"), ...span, distance: len(5000) }],
+    }, TZ);
+    expect(exercises).toEqual([expect.objectContaining({ id: "b", name: "Morning ride", calories: 150, distanceM: 5000 })]);
+  });
 
   it("names the type, sums overlapping active kcal and distance, and drops sessions under 2 minutes", () => {
     const { exercises, dailyValues } = mapRecords(

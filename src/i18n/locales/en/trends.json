@@ -198,7 +198,9 @@
     "activity": "Your health app's daily roll-up, counted by your band or your phone. Pulse shows it as it comes and does not score it.",
     "body": "Readings synced from your health app. A day without a reading shows the latest one before it.",
     "nutrition": "Your health app's daily total of your logs, plus what you log in Pulse's Journal. A meal logged in both Pulse and Fitbit counts once.",
-    "vitals": "Your health app's daily value, from your band or a connected device. Pulse shades your usual range from the last 90 days."
+    "vitals": "Your health app's daily value, from your band or a connected device. Pulse shades your usual range from the last 90 days.",
+    "monitor": "From Health Connect. The shaded range matches Health Monitor: your average ± 1 SD over the last 30 nights, including the selected night.",
+    "monitorUnavailable": "From Health Connect. No Health Monitor range is available for this day."
   },
   "stat": {
     "zones13": "Light and moderate zones",

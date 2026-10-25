@@ -189,5 +189,8 @@
     "reportTitle": "Rapport · {{start}} à {{end}}",
     "reportPartial": "Rapport · {{start}} à {{end}} · Partiel",
     "profile": "Ton profil"
+  },
+  "workout": {
+    "expand": "Développe cette analyse de séance."
   }
 }

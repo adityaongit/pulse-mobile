@@ -12,6 +12,7 @@ import { providerLabel } from "@/coach/providers";
 import { useChatCount, useCoachSetup } from "@/coach/session";
 import { loadChat } from "@/coach/storage";
 import { coachSuggestions } from "@/coach/suggestions";
+import { workoutChatSeed } from "@/coach/workoutChat";
 import { todayOf } from "@/queries/common";
 import { Button } from "@/ui/Button";
 import { Icon } from "@/ui/Icon";
@@ -59,18 +60,22 @@ export function CoachScreen() {
   const { t } = useTranslation("coach");
   const setup = useCoachSetup();
   const chatCount = useChatCount();
-  const params = useLocalSearchParams<{ c?: string; q?: string; brief?: string; send?: string; n?: string }>();
+  const params = useLocalSearchParams<{ c?: string; q?: string; brief?: string; send?: string; n?: string; workout?: string; preview?: string }>();
   const c = param(params.c) && CHAT_ID.test(param(params.c)!) ? param(params.c)! : null;
   const brief = param(params.brief) === "1";
   const sendNow = param(params.send) === "1";
   const n = param(params.n);
   const fresh = useMemo(() => generateId(), [n]); // eslint-disable-line react-hooks/exhaustive-deps
+  const workoutId = param(params.workout);
+  const preview = param(params.preview)?.slice(0, 2000);
+  const question = (param(params.q) ?? "").slice(0, 500);
+  const seed = useMemo(() => workoutChatSeed(workoutId, question, preview), [workoutId, question, preview]);
   const { data } = useScreen(async (ctx) => ({ suggestions: await coachSuggestions(ctx), today: todayOf(ctx) }), ["coach"]);
   const [headerH, setHeaderH] = useState(0);
   // The chat on screen. No `?c=`: a fresh one (a new one per `?n=`). `?c=` naming the chat on screen keeps it running
   // (a new chat records its id after its first answer); naming another loads it from the Store first.
-  const [shown, setShown] = useState<{ id: string; messages: UIMessage[] } | undefined>(c ? undefined : { id: fresh, messages: [] });
-  if (!c && shown?.id !== fresh) setShown({ id: fresh, messages: [] });
+  const [shown, setShown] = useState<{ id: string; messages: UIMessage[] } | undefined>(c ? undefined : { id: fresh, messages: seed });
+  if (!c && shown?.id !== fresh) setShown({ id: fresh, messages: seed });
   const loading = !!c && shown?.id !== c;
   useEffect(() => {
     if (!loading || !c) return;
@@ -88,7 +93,7 @@ export function CoachScreen() {
   if (setup === undefined) return <DetailShell title={t("title")} loading primary={<ChatSkeleton />} />;
   if (!setup.consent || !setup.provider) return <DetailShell title={t("title")} primary={!setup.consent ? <Consent /> : <ConnectProvider current={setup} />} />;
 
-  const newChat = () => router.setParams({ c: undefined, q: undefined, brief: undefined, send: undefined, n: generateId() });
+  const newChat = () => router.setParams({ c: undefined, q: undefined, brief: undefined, send: undefined, workout: undefined, preview: undefined, n: generateId() });
   return (
     <View className="flex-1 bg-background">
       <DetailHeader title={t("title")} action={<BarActions chatCount={chatCount ?? 0} chatOpen={!!c} onNew={newChat} />} onHeight={setHeaderH} />
@@ -98,12 +103,13 @@ export function CoachScreen() {
             key={chat.id}
             id={chat.id}
             initial={chat.messages}
-            prefill={brief && !c ? t("suggestions.brief") : (param(params.q) ?? "").slice(0, 500)}
+            prefill={brief && !c ? t("suggestions.brief") : !c && seed.length ? t("workout.expand") : question}
             auto={(brief || sendNow) && !c}
+            workoutId={workoutId}
             providerLabel={providerLabel(setup.provider)}
             suggestions={data.suggestions}
             today={data.today}
-            onSaved={(id) => router.setParams({ c: id, q: undefined, brief: undefined, send: undefined })}
+            onSaved={(id) => router.setParams({ c: id, q: undefined, brief: undefined, send: undefined, workout: undefined, preview: undefined })}
           />
         ) : (
           <ChatSkeleton />

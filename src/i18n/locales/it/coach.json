@@ -189,5 +189,8 @@
     "reportTitle": "Rapporto · dal {{start}} al {{end}}",
     "reportPartial": "Rapporto · dal {{start}} al {{end}} · Parziale",
     "profile": "Il tuo profilo"
+  },
+  "workout": {
+    "expand": "Approfondisci questa analisi dell’allenamento."
   }
 }

@@ -191,5 +191,8 @@
     "reportTitle": "Raport · {{start}} do {{end}}",
     "reportPartial": "Raport · {{start}} do {{end}} · Niepełny",
     "profile": "Twój profil"
+  },
+  "workout": {
+    "expand": "Rozwiń tę analizę treningu."
   }
 }

@@ -16,6 +16,7 @@ import { Icon } from "@/ui/Icon"
 import { Text } from "@/ui/Text"
 import { useTheme } from "@/ui/theme"
 import { deviceWorkoutGlance } from "@/coach/session"
+import { generateId } from "ai"
 import { push } from "@/ui/navigate"
 import { Press } from "@/ui/Press";
 import { RADIUS } from "@/ui/radius";
@@ -64,7 +65,11 @@ export function CoachGlance({ id, question, auto }: { id: string; question: stri
         activeScale={0.98}
         accessibilityRole="link"
         accessibilityLabel={s.text ? t("glance.spokenText", { text: s.text }) : auto && !s.failed ? t("glance.spokenAnalyzing") : ask}
-        onPress={() => push(`/coach?q=${encodeURIComponent(question)}&send=1`)}
+        onPress={() => {
+          const params = new URLSearchParams({ q: question, send: "1", workout: id, n: generateId() })
+          if (s.text) params.set("preview", s.text)
+          push(`/coach?${params}`)
+        }}
       >
         <Glass radius={RADIUS["4xl"]} className="min-h-14 flex-row items-center gap-3 py-2 pl-2 pr-3">
           <CoachGlyph />

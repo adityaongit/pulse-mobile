@@ -28,6 +28,7 @@ import type { DailyValue, Exercise, HrSample, HrvSample, Metrics, Segment, Sessi
 import { emptyMetrics } from "@/data/types";
 import { addDays, localDay, localMidnight } from "@/lib/time";
 import { finish, PAUSE_EVERY, type Steps } from "@/lib/yield";
+import { MIN_EXERCISE_SEC, uniqueExercises } from "./exerciseDedup";
 
 // ───────────────────────────── enum tables (copied; tsc checks they match the library) ─────────────────────────────
 
@@ -273,7 +274,7 @@ export type MappedRecords = {
 export const ts = (iso: string) => Math.floor(Date.parse(iso) / 1000);
 
 export const MIN_SLEEP_SEC = 20 * 60;
-export const MIN_EXERCISE_SEC = 2 * 60;
+export { MIN_EXERCISE_SEC } from "./exerciseDedup";
 
 type Interval = { startTs: number; endTs: number };
 
@@ -554,7 +555,7 @@ export function* mapExercisesSteps(
 ): Steps<Exercise[]> {
   const out: Exercise[] = [];
   let n = 0;
-  for (const r of sessions) {
+  for (const r of yield* uniqueExercises(sessions)) {
     const w = interval(r);
     if (w.endTs - w.startTs < MIN_EXERCISE_SEC) continue;
     // The workout's share of each record, summed within a source; the largest source wins (band and phone both measure).

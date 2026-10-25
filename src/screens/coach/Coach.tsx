@@ -194,6 +194,7 @@ export type CoachProps = {
   prefill: string;
   /** Sends `prefill` at once (`?brief=1`, `?send=1`). */
   auto: boolean;
+  workoutId?: string;
   providerLabel: string;
   suggestions: CoachSuggestion[];
   today: string;
@@ -201,7 +202,7 @@ export type CoachProps = {
   onSaved: (id: string) => void;
 };
 
-export function Coach({ id, initial, prefill, auto, providerLabel, suggestions, today, onSaved }: CoachProps) {
+export function Coach({ id, initial, prefill, auto, workoutId, providerLabel, suggestions, today, onSaved }: CoachProps) {
   const { t } = useTranslation("coach");
   const { c } = useTheme();
   const bottom = Math.max(useSafeAreaInsets().bottom, COMPOSER_GAP);
@@ -219,7 +220,7 @@ export function Coach({ id, initial, prefill, auto, providerLabel, suggestions, 
     onFinish: ({ message }) => {
       const words = plainText(message);
       if (words) AccessibilityInfo.announceForAccessibility(words);
-      if (initial.length === 0) onSaved(id);
+      if (initial.length === 0 || workoutId) onSaved(id);
     },
   });
   const busy = status === "submitted" || status === "streaming";
@@ -232,7 +233,7 @@ export function Coach({ id, initial, prefill, auto, providerLabel, suggestions, 
     if (!t || busy) return;
     setError(null);
     setInput("");
-    void sendMessage({ text: t });
+    void sendMessage({ text: t, ...(workoutId && { metadata: { workoutId } }) });
   };
   // An at-once question (`?brief=1`, `?send=1`) is asked once.
   const asked = useRef(false);

@@ -198,7 +198,9 @@
     "activity": "O resumo diário do seu app de saúde, contado pela sua pulseira ou pelo celular. O Pulse mostra os valores como chegam e não os pontua.",
     "body": "Leituras sincronizadas do seu app de saúde. Um dia sem leitura mostra a última anterior.",
     "nutrition": "O total diário dos seus registros no app de saúde, mais o que você registra no Diário do Pulse. Uma refeição registrada no Pulse e no Fitbit conta uma vez.",
-    "vitals": "O valor diário do seu app de saúde, da sua pulseira ou de um dispositivo conectado. O Pulse destaca com sombreado a sua faixa habitual dos últimos 90 dias."
+    "vitals": "O valor diário do seu app de saúde, da sua pulseira ou de um dispositivo conectado. O Pulse destaca com sombreado a sua faixa habitual dos últimos 90 dias.",
+    "monitor": "Do Health Connect. A faixa sombreada corresponde ao Health Monitor: sua média ± 1 SD nas últimas 30 noites, incluindo a noite selecionada.",
+    "monitorUnavailable": "Do Health Connect. Não há uma faixa do Health Monitor disponível para este dia."
   },
   "stat": {
     "zones13": "Zonas leve e moderada",

@@ -122,7 +122,8 @@ export function buildModel(p: TrendViewChartProps, fmt: (v: number) => string): 
     const hi = Math.max(...xs);
     const pad = Math.max((hi - lo) * 0.25, Math.abs(hi) * 0.02, 1);
     // A pair labels its lower line under the points, so it keeps twice the room at the bottom.
-    return [Math.max(0, Math.floor(lo - (p.chart === "pair" ? 2 : 1) * pad)), Math.ceil(hi + pad)];
+    const lower = Math.floor(lo - (p.chart === "pair" ? 2 : 1) * pad);
+    return [lo < 0 ? lower : Math.max(0, lower), Math.ceil(hi + pad)];
   };
   const spans = rows.flatMap((r) => (r.span ? [r.span] : []));
   const rangeDomain: [number, number] = [

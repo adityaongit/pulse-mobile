@@ -121,7 +121,7 @@ export function ActivityScreen() {
         // With the coach set up, its pill takes the insight's place (activity-01, spec §11 R44); without it, the templated insight.
         footer={!coach && vm.insight ? <InsightCard body={vm.insight} /> : null}
       />
-      {coach && <CoachGlance id={vm.id} question={question} auto={autoAnalysis} />}
+      {coach && <CoachGlance key={vm.id} id={vm.id} question={question} auto={autoAnalysis} />}
     </View>
   )
 }

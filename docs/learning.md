@@ -894,3 +894,7 @@ Pulse uses `i18next` + `react-i18next` with every language bundled and `initAsyn
 ## Staying in sync with Health Connect: edits replace by id, deletions replace the window
 
 Health Connect's change feed (`getChanges`) says which records were written (with their time) and which were deleted (a record id only, no day). An edited record comes back as a write with the same id, so rows keyed by id (sleep sessions, workouts, logged entries) are overwritten, and the sync re-reads from the earliest changed record. A deletion names no day, so a sync that finds one re-imports the whole history window (`windowPlan({ deleted })` in `src/health/sync.ts`), the same clear-and-rewrite as a policy change. Summed daily totals (calories eaten, water, distance) are replaced over the window per type that was read (`replaceDailyValues`, `SOURCE_DAILY_KEYS`), so a day with no records left loses its total. A type that was not granted or could not be read keeps what is stored.
+
+## Opening a workout in Coach
+
+Each workout link starts a fresh Expo Router chat using `n`, carries the workout ID, and keeps the preview as the opening exchange. The ID is saved in message metadata so follow-up questions still refer to that workout after reopening the chat. Route parameters are cleared after the first full answer. Hash-only links do not scroll native stat rows; zone rows use their explicit trend routes.

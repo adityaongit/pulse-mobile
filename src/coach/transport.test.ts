@@ -62,6 +62,23 @@ async function last(stream: ReadableStream<never> | ReadableStream<unknown>) {
 }
 
 describe("coach turn", () => {
+  it("keeps the selected workout in context on the first turn and saved follow-ups", async () => {
+    const store = new MemoryStore();
+    await store.upsertExercises([
+      { id: "selected-ride", day: ctx.today, startTs: ctx.now - 3600, endTs: ctx.now - 1800, type: "BIKING", name: "Selected ride", calories: 250, distanceM: 8000 },
+      { id: "other-ride", day: ctx.today, startTs: ctx.now - 7200, endTs: ctx.now - 5400, type: "BIKING", name: "Other ride", calories: 200, distanceM: 7000 },
+    ]);
+    const { model, prompts } = scripted();
+    const d = deps({ ctx: () => ({ ...ctx, store }), model: async () => ({ model, provider: "anthropic", instructions: null }) });
+    const first = { ...user("selected-question", "Analyze this workout"), metadata: { workoutId: "selected-ride" } };
+    await last(await coachTurn(d, "selected-chat", [first]));
+    expect(JSON.stringify(prompts[0])).toContain("selected-ride");
+    expect(JSON.stringify(prompts[0])).not.toContain("other-ride");
+    const saved = d.saved.get("selected-chat")!;
+    await last(await coachTurn(d, "selected-chat", [...saved.map((m) => ({ ...m, metadata: undefined })), user("follow-up", "And my heart rate?")]));
+    expect(JSON.stringify(prompts.at(-1))).toContain("selected-ride");
+  });
+
   it("streams a tool card then the answer, and saves the whole chat", async () => {
     const { model, prompts } = scripted();
     const d = deps({ model: async () => ({ model, provider: "anthropic", instructions: "Short and direct." }) });

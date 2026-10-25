@@ -189,5 +189,8 @@
     "reportTitle": "Informe · {{start}} a {{end}}",
     "reportPartial": "Informe · {{start}} a {{end}} · Parcial",
     "profile": "Tu perfil"
+  },
+  "workout": {
+    "expand": "Amplía este análisis del entrenamiento."
   }
 }
