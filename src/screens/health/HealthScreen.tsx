@@ -30,6 +30,7 @@ import { categoryTone, categoryWord, ordinal } from "./format";
 import { LastReading } from "./LastReading";
 import { Fast, Slow } from "./pace";
 import { HrvStatusCard } from "./HrvStatusCard";
+import { VascularCard } from "./VascularCard";
 import { INSET_ROW } from "@/ui/Card";
 
 const TILE = "font-numeric text-4xl leading-10 font-bold tracking-[-0.01em]";
@@ -268,6 +269,7 @@ export function HealthScreen() {
         <SectionShell variant="card" title="Health Monitor" info={false} href="/health/monitor">
           <Monitor m={vm.monitor} />
         </SectionShell>
+        <VascularCard corridor={vm.vascularCorridor} />
         <HrvStatusCard />
         <SectionShell variant="card" title={t("title.fitness")} info={cardInfo("Fitness")} href="/health/fitness">
           <Fitness m={vm.fitness} />
