@@ -4,6 +4,7 @@ import type { ChargeDriver } from "@/core/scoring/drivers";
 import type { RecoveryForecast } from "@/core/scoring/forecast";
 import type { HrRecoveryResult } from "@/core/scoring/hrRecovery";
 import type { BaselineState } from "@/core/scoring/types";
+import type { BloodPressureProtocolReason } from "@/core/engine/bloodPressureProtocol";
 import type { Drain, EnergyBand } from "@/core/engine/energyBank";
 import type { FitnessCategory, FitnessEstimate } from "@/core/algorithms/fitnessLevel";
 import type { HealthMonitorResult } from "@/core/algorithms/healthMonitor";
@@ -82,8 +83,9 @@ import type { LoadStatus } from "@/core/engine/strain";
  * the sleep-session estimate) instead of the engine's own aggregates of the night's samples.
  * 30: Pulse Age's VO2 max falls back to Pulse's own daily estimate when the 28 days have no Fitbit VO2 max.
  * 31: Blood pressure in Health Monitor (causal spot readings persisted in health_monitor, AHA/ACC classifications).
+ * 32: Feature-gated blood pressure term in Pulse Age (protocol-grade evaluation over 90 days, manifest-driven spline).
  */
-export const SCORING_VERSION = 31;
+export const SCORING_VERSION = 32;
 
 export type PipelineOptions = {
   timeZone: string;
@@ -366,12 +368,28 @@ export type HealthMonitorRow =
   | (HealthMonitorResult & { reason: null; stale: string[]; bloodPressure?: HealthMonitorBP | null })
   | { reason: ReasonCode; bloodPressure?: HealthMonitorBP | null };
 
+export type HealthspanBloodPressureStatus = {
+  eligible: boolean;
+  reason?: BloodPressureProtocolReason | null;
+  systolicMean?: number | null;
+  diastolicMean?: number | null;
+  readingCount: number;
+  dayCount: number;
+  spanDays?: number | null;
+};
+
 /**
  * `fitnessEstimate` (mobile): Fitness Age and Pulse's own VO2max estimate for the day, shown on Fitness. Since version 18
  * `paceOfAging` is the weekly value (published on Mondays, with 21 of the last 31 days scored for Recovery; `paceDays`
  * counts those days), `paceDaily` the day's own and `paceAsOf` the Monday it was published.
  */
-export type HealthspanRow = ((HealthspanResult & { reason: null; age: number; paceDaily?: number | null; paceAsOf?: string | null }) | { reason: ReasonCode; dataDays: number }) & {
+export type HealthspanRow = ((HealthspanResult & {
+  reason: null;
+  age: number;
+  paceDaily?: number | null;
+  paceAsOf?: string | null;
+  bloodPressureStatus?: HealthspanBloodPressureStatus | null;
+}) | { reason: ReasonCode; dataDays: number }) & {
   fitnessEstimate?: FitnessEstimate | null;
 };
 
