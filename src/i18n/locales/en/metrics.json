@@ -40,7 +40,8 @@
     "fat": "Fat",
     "glucose": "Blood glucose",
     "core_temp": "Core temperature",
-    "swim_strokes": "Swim strokes"
+    "swim_strokes": "Swim strokes",
+    "bp": "Blood pressure"
   },
   "group": {
     "recovery": "Recovery & sleep",

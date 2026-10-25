@@ -40,7 +40,8 @@
     "fat": "Lipides",
     "glucose": "Glycémie",
     "core_temp": "Température centrale",
-    "swim_strokes": "Mouvements de nage"
+    "swim_strokes": "Mouvements de nage",
+    "bp": "Pression artérielle"
   },
   "group": {
     "recovery": "Recovery et sommeil",

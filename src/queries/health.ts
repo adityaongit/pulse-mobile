@@ -441,33 +441,33 @@ export async function getMonitor(day: string, ctx: QueryCtx, preloaded?: Map<str
     switch (bpVal.category) {
       case "normal":
         chipTone = "optimal";
-        chipText = "Normal";
+        chipText = i18n.t("health:bloodPressure.category.normal");
         status = "in_range";
         break;
       case "elevated":
         chipTone = "warning";
-        chipText = "Elevated";
+        chipText = i18n.t("health:bloodPressure.category.elevated");
         status = "high";
         break;
       case "stage1":
         chipTone = "warning";
-        chipText = "Stage 1";
+        chipText = i18n.t("health:bloodPressure.category.stage1");
         status = "high";
         break;
       case "stage2":
         chipTone = "alert";
-        chipText = "Stage 2";
+        chipText = i18n.t("health:bloodPressure.category.stage2");
         status = "high";
         break;
       case "crisis":
         chipTone = "alert";
-        chipText = "Crisis";
+        chipText = i18n.t("health:bloodPressure.category.crisis");
         status = "high";
         break;
     }
     bpVital = {
       key: "bp",
-      label: "Blood pressure",
+      label: i18n.t("health:title.bloodPressure"),
       short: "BP",
       unit: "mmHg",
       customValue: `${bpVal.systolic}/${bpVal.diastolic}`,
@@ -487,11 +487,11 @@ export async function getMonitor(day: string, ctx: QueryCtx, preloaded?: Map<str
     };
   } else {
     const priorChip = bpSummary.latestPrior
-      ? { tone: "neutral" as const, text: `Prior: ${bpSummary.latestPrior.systolic}/${bpSummary.latestPrior.diastolic}` }
+      ? { tone: "neutral" as const, text: i18n.t("health:bloodPressure.prior", { value: `${bpSummary.latestPrior.systolic}/${bpSummary.latestPrior.diastolic}` }) }
       : null;
     bpVital = {
       key: "bp",
-      label: "Blood pressure",
+      label: i18n.t("health:title.bloodPressure"),
       short: "BP",
       unit: "mmHg",
       metric: none("no_data"),

@@ -19,7 +19,8 @@
     "measurements": "Medições",
     "ecgReading": "Leitura de ECG",
     "hrvStatus": "HRV Status",
-    "timeInZones": "Tempo nas zonas"
+    "timeInZones": "Tempo nas zonas",
+    "bloodPressure": "Pressão arterial"
   },
   "age": {
     "same": "Igual à sua idade",
@@ -357,5 +358,42 @@
     "rem": "REM",
     "light": "Leve",
     "deep": "Profundo"
+  },
+  "bloodPressure": {
+    "title": "Pressão arterial",
+    "detail": "Detalhes",
+    "noData": "Sem dados",
+    "show": "Mostrar",
+    "hide": "Ocultar",
+    "systolic": "Sistólica",
+    "diastolic": "Diastólica",
+    "noReadings30d": "Nenhuma medição de pressão arterial registrada nos últimos 30 dias.",
+    "trendPlotSummary": "Tendência de pressão arterial de 30 dias: leituras sistólicas e diastólicas",
+    "breakdown": "Divisão por categoria em 30 dias ({{count}})",
+    "readingsOnDay": " · {{count}} medições no dia",
+    "readingsOnDate": "Leituras em {{date}}",
+    "guidelines": "Diretrizes de classificação AHA/ACC",
+    "disclaimer": "Pulse não é um dispositivo de diagnóstico. Consulte um médico para diagnóstico e controle médico da pressão arterial.",
+    "prior": "Anterior: {{value}}",
+    "noReadingWithPrior": "Nenhuma medição em {{date}}. Mais recente: {{value}} mmHg em {{priorDate}}.",
+    "emptyDayHint": "Nenhuma medição de pressão arterial registrada neste dia. Registre medições no Health Connect para acompanhar as tendências.",
+    "readingMeta": "{{date}} às {{time}}",
+    "ariaDetail": "Detalhes da pressão arterial: {{reading}} mmHg, {{status}}",
+    "ariaDetailNoReading": "Detalhes da pressão arterial: Sem medição",
+    "category": {
+      "normal": "Normal",
+      "elevated": "Elevada",
+      "stage1": "Estágio 1",
+      "stage2": "Estágio 2",
+      "crisis": "Crise",
+      "hypertensiveCrisis": "Crise hipertensiva"
+    },
+    "stageRange": {
+      "normal": "< 120 e < 80 mmHg",
+      "elevated": "120–129 e < 80 mmHg",
+      "stage1": "130–139 ou 80–89 mmHg",
+      "stage2": "140+ ou 90+ mmHg",
+      "crisis": "> 180 e/ou > 120 mmHg"
+    }
   }
 }

@@ -40,7 +40,8 @@
     "fat": "Tłuszcz",
     "glucose": "Glukoza we krwi",
     "core_temp": "Temperatura głęboka",
-    "swim_strokes": "Ruchy pływackie"
+    "swim_strokes": "Ruchy pływackie",
+    "bp": "Ciśnienie krwi"
   },
   "group": {
     "recovery": "Recovery i sen",

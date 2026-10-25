@@ -19,7 +19,8 @@
     "measurements": "Messungen",
     "ecgReading": "EKG-Messung",
     "hrvStatus": "HRV Status",
-    "timeInZones": "Zeit in Zonen"
+    "timeInZones": "Zeit in Zonen",
+    "bloodPressure": "Blutdruck"
   },
   "age": {
     "same": "Gleich wie dein Alter",
@@ -355,5 +356,42 @@
     "rem": "REM",
     "light": "Leicht",
     "deep": "Tief"
+  },
+  "bloodPressure": {
+    "title": "Blutdruck",
+    "detail": "Details",
+    "noData": "Keine Daten",
+    "show": "Einblenden",
+    "hide": "Ausblenden",
+    "systolic": "Systolisch",
+    "diastolic": "Diastolisch",
+    "noReadings30d": "In den letzten 30 Tagen wurden keine Blutdruckmessungen aufgezeichnet.",
+    "trendPlotSummary": "30-Tage-Blutdrucktrend: systolische und diastolische Messwerte",
+    "breakdown": "30-Tage-Kategorieaufschlüsselung ({{count}})",
+    "readingsOnDay": " · {{count}} Messungen am Tag",
+    "readingsOnDate": "Messwerte am {{date}}",
+    "guidelines": "AHA/ACC-Klassifikationsrichtlinien",
+    "disclaimer": "Pulse ist kein Diagnosegerät. Wenden Sie sich für die Diagnose und medizinische Behandlung von Blutdruck an einen Arzt.",
+    "prior": "Vorher: {{value}}",
+    "noReadingWithPrior": "Keine Messung am {{date}}. Letzte Messung: {{value}} mmHg am {{priorDate}}.",
+    "emptyDayHint": "An diesem Tag wurde keine Blutdruckmessung aufgezeichnet. Erfassen Sie Messwerte in Health Connect, um Trends zu verfolgen.",
+    "readingMeta": "{{date}} um {{time}}",
+    "ariaDetail": "Blutdruckdetails: {{reading}} mmHg, {{status}}",
+    "ariaDetailNoReading": "Blutdruckdetails: Keine Messung",
+    "category": {
+      "normal": "Normal",
+      "elevated": "Erhöht",
+      "stage1": "Stufe 1",
+      "stage2": "Stufe 2",
+      "crisis": "Krise",
+      "hypertensiveCrisis": "Hypertensive Krise"
+    },
+    "stageRange": {
+      "normal": "< 120 und < 80 mmHg",
+      "elevated": "120–129 und < 80 mmHg",
+      "stage1": "130–139 oder 80–89 mmHg",
+      "stage2": "140+ oder 90+ mmHg",
+      "crisis": "> 180 und/oder > 120 mmHg"
+    }
   }
 }

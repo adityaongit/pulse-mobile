@@ -140,7 +140,7 @@ export function MonitorScreen() {
           <SectionShell variant="section" title={t("title.lastNight")}>
             <VitalTiles vitals={vm.vitals} day={d} today={today} />
           </SectionShell>
-          <SectionShell variant="section" title={t("bloodPressure.title")}>
+          <SectionShell variant="section" title={t("title.bloodPressure")}>
             <BloodPressureCard summary={vm.bloodPressure} day={d} today={today} />
           </SectionShell>
         </View>

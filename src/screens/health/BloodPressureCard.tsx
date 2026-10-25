@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { View } from "react-native";
+import { useTranslation } from "react-i18next";
 import { ChevronRight, Info, Stethoscope } from "lucide-react-native";
 import { Circle, Group, Path } from "@shopify/react-native-skia";
 import type { BloodPressureCategory } from "@/core/scoring/bloodPressure";
@@ -16,12 +17,12 @@ import { Text } from "@/ui/Text";
 import { useTheme } from "@/ui/theme";
 import { vitalHref } from "./vitals";
 
-const CATEGORY_CHIP: Record<BloodPressureCategory, { tone: "optimal" | "warning" | "alert"; text: string }> = {
-  normal: { tone: "optimal", text: "Normal" },
-  elevated: { tone: "warning", text: "Elevated" },
-  stage1: { tone: "warning", text: "Stage 1" },
-  stage2: { tone: "alert", text: "Stage 2" },
-  crisis: { tone: "alert", text: "Crisis" },
+const CATEGORY_TONE: Record<BloodPressureCategory, "optimal" | "warning" | "alert"> = {
+  normal: "optimal",
+  elevated: "warning",
+  stage1: "warning",
+  stage2: "alert",
+  crisis: "alert",
 };
 
 const CATEGORY_DOT: Record<BloodPressureCategory, string> = {
@@ -32,13 +33,8 @@ const CATEGORY_DOT: Record<BloodPressureCategory, string> = {
   crisis: "#dc2626",
 };
 
-const STAGES: { cat: BloodPressureCategory; label: string; range: string }[] = [
-  { cat: "normal", label: "Normal", range: "< 120 and < 80 mmHg" },
-  { cat: "elevated", label: "Elevated", range: "120–129 and < 80 mmHg" },
-  { cat: "stage1", label: "Stage 1", range: "130–139 or 80–89 mmHg" },
-  { cat: "stage2", label: "Stage 2", range: "140+ or 90+ mmHg" },
-  { cat: "crisis", label: "Hypertensive Crisis", range: "> 180 and/or > 120 mmHg" },
-];
+const STAGE_KEYS: BloodPressureCategory[] = ["normal", "elevated", "stage1", "stage2", "crisis"];
+const UNIT_MMHG = "mmHg";
 
 const CHART_H = 140;
 const PAD_X = 28;
@@ -46,6 +42,7 @@ const PAD_Y = 16;
 
 /** Dual-value 30-day systolic and diastolic trend chart with 120 / 80 mmHg reference lines. */
 function TrendPlot({ history }: { history: BloodPressurePoint[] }) {
+  const { t } = useTranslation("health");
   const { c } = useTheme();
 
   const pointsWithData = history.filter((p) => p.systolic !== null && p.diastolic !== null);
@@ -53,14 +50,14 @@ function TrendPlot({ history }: { history: BloodPressurePoint[] }) {
     return (
       <View className="h-28 items-center justify-center rounded-lg bg-secondary/30 px-4">
         <Text className="text-center text-xs font-medium text-muted-foreground">
-          No blood pressure readings recorded in the last 30 days.
+          {t("bloodPressure.noReadings30d")}
         </Text>
       </View>
     );
   }
 
   return (
-    <ChartFigure summary="30-day blood pressure trend: systolic and diastolic readings" height={CHART_H}>
+    <ChartFigure summary={t("bloodPressure.trendPlotSummary")} height={CHART_H}>
       {({ width, height }) => {
         const plotW = width - PAD_X * 2;
 
@@ -159,9 +156,11 @@ export function BloodPressureCard({
   day: string;
   today: string;
 }) {
+  const { t } = useTranslation(["health", "common"]);
   const [showGuidelines, setShowGuidelines] = useState(false);
   const latest = summary.latest.value;
-  const chip = latest ? CATEGORY_CHIP[latest.category] : null;
+  const categoryLabel = (cat: BloodPressureCategory) => t(`bloodPressure.category.${cat}`);
+  const chip = latest ? { tone: CATEGORY_TONE[latest.category], text: categoryLabel(latest.category) } : null;
   const detailUrl = vitalHref("bp", day, today);
 
   const totalInWindow = Object.values(summary.distribution).reduce((a, b) => a + b, 0);
@@ -172,18 +171,25 @@ export function BloodPressureCard({
       <Press
         activeScale={0.98}
         accessibilityRole="button"
-        accessibilityLabel={`Blood pressure detail: ${latest ? `${latest.systolic}/${latest.diastolic} mmHg, ${chip?.text}` : "No reading"}`}
+        accessibilityLabel={
+          latest
+            ? t("bloodPressure.ariaDetail", {
+                reading: `${latest.systolic}/${latest.diastolic}`,
+                status: chip?.text ?? "",
+              })
+            : t("bloodPressure.ariaDetailNoReading")
+        }
         onPress={() => push(detailUrl)}
         className="flex-row items-center justify-between"
       >
         <View className="flex-row items-center gap-2">
           <Icon icon={Stethoscope} size={20} tone="muted-foreground" strokeWidth={1.75} />
           <Text className="text-xs font-bold uppercase tracking-[0.1em] text-foreground-secondary">
-            Blood Pressure
+            {t("title.bloodPressure")}
           </Text>
         </View>
         <View className="flex-row items-center gap-1">
-          <Text className="text-xs font-medium text-muted-foreground">Detail</Text>
+          <Text className="text-xs font-medium text-muted-foreground">{t("bloodPressure.detail")}</Text>
           <Icon icon={ChevronRight} size={16} tone="muted-foreground" />
         </View>
       </Press>
@@ -194,7 +200,7 @@ export function BloodPressureCard({
           <View className="flex-row items-baseline justify-between">
             <ValueUnit
               value={`${latest.systolic}/${latest.diastolic}`}
-              unit="mmHg"
+              unit={UNIT_MMHG}
               className="font-numeric text-4xl font-bold leading-10 tracking-[-0.01em]"
               unitClassName="text-sm font-medium leading-5 text-foreground-secondary"
             />
@@ -207,10 +213,13 @@ export function BloodPressureCard({
 
           {/* Reading metadata */}
           <Text className="text-xs font-medium leading-4 text-muted-foreground">
-            {summary.isToday ? "Today" : formatDay(day, DAY.short)} at {latest.time}
+            {t("bloodPressure.readingMeta", {
+              date: summary.isToday ? t("common:today") : formatDay(day, DAY.short),
+              time: latest.time,
+            })}
             {latest.bodyPosition ? ` · ${latest.bodyPosition}` : ""}
             {latest.measurementLocation ? ` · ${latest.measurementLocation}` : ""}
-            {summary.readings.length > 1 ? ` · ${summary.readings.length} readings on day` : ""}
+            {summary.readings.length > 1 ? t("bloodPressure.readingsOnDay", { count: summary.readings.length }) : ""}
           </Text>
         </View>
       ) : (
@@ -219,18 +228,24 @@ export function BloodPressureCard({
             <Text className="font-numeric text-3xl font-bold text-muted-foreground">--/--</Text>
             {summary.latestPrior ? (
               <StatusChip tone="neutral" textClassName="text-xs">
-                Prior: {summary.latestPrior.systolic}/{summary.latestPrior.diastolic}
+                {t("bloodPressure.prior", {
+                  value: `${summary.latestPrior.systolic}/${summary.latestPrior.diastolic}`,
+                })}
               </StatusChip>
             ) : (
               <StatusChip tone="neutral" textClassName="text-xs">
-                No data
+                {t("bloodPressure.noData")}
               </StatusChip>
             )}
           </View>
           <Text className="text-xs font-medium leading-4 text-muted-foreground">
             {summary.latestPrior
-              ? `No reading on ${formatDay(day, DAY.short)}. Most recent: ${summary.latestPrior.systolic}/${summary.latestPrior.diastolic} mmHg on ${formatDay(summary.latestPrior.day, DAY.short)}.`
-              : "No blood pressure reading recorded on this day. Record readings in Health Connect to track trends."}
+              ? t("bloodPressure.noReadingWithPrior", {
+                  date: formatDay(day, DAY.short),
+                  value: `${summary.latestPrior.systolic}/${summary.latestPrior.diastolic}`,
+                  priorDate: formatDay(summary.latestPrior.day, DAY.short),
+                })
+              : t("bloodPressure.emptyDayHint")}
           </Text>
         </View>
       )}
@@ -239,16 +254,20 @@ export function BloodPressureCard({
       <View className="gap-2">
         <View className="flex-row items-center justify-between">
           <Text className="text-xs font-bold uppercase tracking-[0.08em] text-foreground-secondary">
-            30-Day Trend
+            {t("title.trend30")}
           </Text>
           <View className="flex-row items-center gap-3">
             <View className="flex-row items-center gap-1">
               <View className="size-2 rounded-full bg-[#f43f5e]" />
-              <Text className="text-[10px] font-semibold text-muted-foreground">Systolic</Text>
+              <Text className="text-[10px] font-semibold text-muted-foreground">
+                {t("bloodPressure.systolic")}
+              </Text>
             </View>
             <View className="flex-row items-center gap-1">
               <View className="size-2 rounded-full bg-[#3b82f6]" />
-              <Text className="text-[10px] font-semibold text-muted-foreground">Diastolic</Text>
+              <Text className="text-[10px] font-semibold text-muted-foreground">
+                {t("bloodPressure.diastolic")}
+              </Text>
             </View>
           </View>
         </View>
@@ -260,32 +279,32 @@ export function BloodPressureCard({
       {totalInWindow > 0 && (
         <View className="gap-1.5 rounded-lg bg-secondary/30 p-2.5">
           <Text className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-            30-Day Category Breakdown ({totalInWindow} {totalInWindow === 1 ? "reading" : "readings"})
+            {t("bloodPressure.breakdown", { count: totalInWindow })}
           </Text>
           <View className="flex-row flex-wrap gap-2 pt-1">
             {summary.distribution.normal > 0 && (
               <Text className="text-xs font-medium text-optimal-text">
-                {summary.distribution.normal} Normal
+                {`${summary.distribution.normal} ${categoryLabel("normal")}`}
               </Text>
             )}
             {summary.distribution.elevated > 0 && (
               <Text className="text-xs font-medium text-warning-text">
-                {summary.distribution.elevated} Elevated
+                {`${summary.distribution.elevated} ${categoryLabel("elevated")}`}
               </Text>
             )}
             {summary.distribution.stage1 > 0 && (
               <Text className="text-xs font-medium text-warning-text">
-                {summary.distribution.stage1} Stage 1
+                {`${summary.distribution.stage1} ${categoryLabel("stage1")}`}
               </Text>
             )}
             {summary.distribution.stage2 > 0 && (
               <Text className="text-xs font-medium text-alert-text">
-                {summary.distribution.stage2} Stage 2
+                {`${summary.distribution.stage2} ${categoryLabel("stage2")}`}
               </Text>
             )}
             {summary.distribution.crisis > 0 && (
               <Text className="text-xs font-medium text-recovery-red-text">
-                {summary.distribution.crisis} Crisis
+                {`${summary.distribution.crisis} ${categoryLabel("crisis")}`}
               </Text>
             )}
           </View>
@@ -296,21 +315,23 @@ export function BloodPressureCard({
       {summary.readings.length > 1 && (
         <View className="gap-2 border-t border-border pt-3">
           <Text className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-            Readings on {formatDay(day, DAY.short)}
+            {t("bloodPressure.readingsOnDate", { date: formatDay(day, DAY.short) })}
           </Text>
           <View className="gap-1.5">
             {summary.readings.map((r) => {
-              const rChip = CATEGORY_CHIP[r.category];
+              const rTone = CATEGORY_TONE[r.category];
+              const rLabel = categoryLabel(r.category);
               return (
                 <View key={r.id} className="flex-row items-center justify-between py-1">
                   <View className="flex-row items-center gap-2">
                     <Text className="font-numeric text-sm font-semibold">{r.time}</Text>
                     <Text className="font-numeric text-base font-bold text-foreground">
-                      {r.systolic}/{r.diastolic} <Text className="text-xs font-normal text-muted-foreground">mmHg</Text>
+                      {`${r.systolic}/${r.diastolic} `}
+                      <Text className="text-xs font-normal text-muted-foreground">{UNIT_MMHG}</Text>
                     </Text>
                   </View>
-                  <StatusChip tone={rChip.tone} textClassName="text-[10px]">
-                    {rChip.text}
+                  <StatusChip tone={rTone} textClassName="text-[10px]">
+                    {rLabel}
                   </StatusChip>
                 </View>
               );
@@ -328,22 +349,26 @@ export function BloodPressureCard({
           className="flex-row items-center justify-between py-1"
         >
           <Text className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-            AHA/ACC Classification Guidelines
+            {t("bloodPressure.guidelines")}
           </Text>
           <Text className="text-xs font-medium text-foreground-secondary">
-            {showGuidelines ? "Hide" : "Show"}
+            {showGuidelines ? t("bloodPressure.hide") : t("bloodPressure.show")}
           </Text>
         </Press>
 
         {showGuidelines && (
           <View className="gap-2 rounded-lg bg-secondary/30 p-3">
-            {STAGES.map((s) => (
-              <View key={s.cat} className="flex-row items-center justify-between py-1 border-b border-border/50">
+            {STAGE_KEYS.map((cat) => (
+              <View key={cat} className="flex-row items-center justify-between py-1 border-b border-border/50">
                 <View className="flex-row items-center gap-2">
-                  <View className="size-2 rounded-full" style={{ backgroundColor: CATEGORY_DOT[s.cat] }} />
-                  <Text className="text-xs font-semibold">{s.label}</Text>
+                  <View className="size-2 rounded-full" style={{ backgroundColor: CATEGORY_DOT[cat] }} />
+                  <Text className="text-xs font-semibold">
+                    {cat === "crisis" ? t("bloodPressure.category.hypertensiveCrisis") : categoryLabel(cat)}
+                  </Text>
                 </View>
-                <Text className="font-numeric text-xs text-muted-foreground">{s.range}</Text>
+                <Text className="font-numeric text-xs text-muted-foreground">
+                  {t(`bloodPressure.stageRange.${cat}`)}
+                </Text>
               </View>
             ))}
           </View>
@@ -356,7 +381,7 @@ export function BloodPressureCard({
           <Icon icon={Info} size={15} tone="muted-foreground" />
         </View>
         <Text className="flex-1 text-[11px] leading-4 text-muted-foreground">
-          Pulse is not a diagnostic device. Consult a physician for diagnosis and medical management of blood pressure.
+          {t("bloodPressure.disclaimer")}
         </Text>
       </View>
     </Card>
