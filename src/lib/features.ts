@@ -19,6 +19,12 @@ export const FEATURES = {
   sleepStress: false,
   /** Health's Blood Pressure Insights (Beta). Pulse reads no blood pressure. */
   bloodPressure: false,
+  /** Ingest and persist BloodPressure records from Health Connect into SQLite. */
+  bpIngestion: true,
+  /** Display blood pressure card, AHA/ACC classification, and trends in Health Monitor. */
+  bpHealthMonitor: true,
+  /** Feature-gated research term for Pulse Age (requires protocol-grade input). */
+  bpPulseAge: false,
   /** An activity's strain split into cardio and muscular load. Pulse measures heart rate only. */
   muscularLoad: false,
 } as const
