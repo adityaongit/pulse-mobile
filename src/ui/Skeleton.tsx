@@ -1,4 +1,4 @@
-import { View, type ViewProps } from "react-native";
+import { View, type ViewProps, type ViewStyle } from "react-native";
 import Animated, { useReducedMotion } from "react-native-reanimated";
 import { cn } from "./cn";
 
@@ -19,7 +19,7 @@ const PULSE = {
 
 function Bar({ className, style, ...props }: ViewProps) {
   const still = useReducedMotion();
-  return <Animated.View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" className={cn(BAR, className)} style={[!still && PULSE, style]} {...props} />;
+  return <Animated.View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" className={cn(BAR, className)} style={[!still && (PULSE as unknown as ViewStyle), style]} {...props} />;
 }
 
 export function Skeleton(props: ViewProps) {
