@@ -6,7 +6,9 @@ import { metricLabel } from "@/lib/metricLabels";
 import { fitnessLevel } from "@/core/algorithms/fitnessLevel";
 import { HEALTHSPAN_TERM_COUNT, healthspanConfig, type HealthspanContribution } from "@/core/algorithms/healthspan";
 import { minuteMeanHr } from "@/core/algorithms/stress";
+import { PULSE_AGE_BP_MANIFEST } from "@/core/engine/pulseAgeBp";
 import type { LoadStatus } from "@/core/engine/strain";
+import { FEATURES } from "@/lib/features";
 import { addDays, daysBetween, fractionalYears, localMidnight } from "@/lib/time";
 import { acwrTone, clock, dayLabel, formatDay, weekOf } from "./_lib";
 import {
@@ -250,8 +252,24 @@ const HS_META: Record<string, Omit<HealthspanContributor, "metric" | "target" | 
       return i18n.t("health:hs.source");
     },
   },
+  bloodPressure: {
+    group: "fitness",
+    get label() {
+      return i18n.t("health:hsLabel.bloodPressure");
+    },
+    unit: "mmHg",
+    domain: [90, 180],
+    higherIsBetter: false,
+    get explanation() {
+      return i18n.t("health:hsText.bloodPressure");
+    },
+    get source() {
+      return i18n.t("health:hs.source");
+    },
+  },
 };
 const HS_ORDER = ["sleepHours", "sri", "zone13", "zone45", "strength", "steps", "vo2max", "restingHr", "leanMass"];
+const HS_ORDER_WITH_BP = [...HS_ORDER, "bloodPressure"];
 
 const VO2_CAPTION = { run: "vo2Run", daily: "vo2Daily", estimate: "vo2Estimate" } as const;
 
@@ -278,11 +296,13 @@ export async function getHealthspan(day: string, ctx: QueryCtx): Promise<Healths
   const current = hs && hs.reason === null && hs.paceDays !== undefined;
   const contributions = hs && hs.reason === null ? hs.contributions.filter((c) => c.key in HS_META && (current || c.key !== "leanMass")) : [];
   const body = current ? hs.bodyComposition : null;
-  const contributors: HealthspanContributor[] = HS_ORDER.map((key) => {
+  const bpStatus = hs && hs.reason === null ? hs.bloodPressureStatus ?? null : null;
+  const order = FEATURES.bpPulseAge ? HS_ORDER_WITH_BP : HS_ORDER;
+  const contributors: HealthspanContributor[] = order.map((key) => {
     const meta = HS_META[key];
     const c = contributions.find((x) => x.key === key);
     const display = (v: number) => (key === "sri" ? Math.max(0, v) : v);
-    const target = c ? display(c.reference) : 0;
+    const target = c ? display(c.reference) : key === "bloodPressure" ? PULSE_AGE_BP_MANIFEST.referenceSbp : 0;
     const caption =
       key === "vo2max" && hs?.reason === null && hs.vo2maxSource
         ? i18n.t(`health:hs.${VO2_CAPTION[hs.vo2maxSource]}`)
@@ -290,7 +310,16 @@ export async function getHealthspan(day: string, ctx: QueryCtx): Promise<Healths
           ? c
             ? leanCaption(c, body, hs?.reason === null ? hs.age : 0)
             : i18n.t("health:hs.leanNeeds")
-          : undefined;
+          : key === "bloodPressure"
+            ? c && bpStatus?.eligible
+              ? i18n.t("health:hs.bpCaption", {
+                  systolic: localeFixed(bpStatus.systolicMean ?? c.value, 0),
+                  diastolic: localeFixed(bpStatus.diastolicMean ?? 0, 0),
+                  readings: bpStatus.readingCount,
+                  days: bpStatus.dayCount,
+                })
+              : i18n.t("health:hs.bpNeeds", { readings: bpStatus?.readingCount ?? 0, days: bpStatus?.dayCount ?? 0 })
+            : undefined;
     const domain: [number, number] = key === "leanMass" && c ? [target - 25, target + 10] : meta.domain;
     return {
       key,

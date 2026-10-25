@@ -272,18 +272,20 @@
     "steps": "Dzienne kroki",
     "vo2max": "VO2 max",
     "restingHr": "Tętno spoczynkowe",
-    "leanMass": "Beztłuszczowa masa ciała"
+    "leanMass": "Beztłuszczowa masa ciała",
+    "bloodPressure": "Ciśnienie krwi"
   },
   "hsText": {
     "sleepHours": "Zarówno krótki, jak i długi sen wiążą się z wyższą śmiertelnością. Najniższe ryzyko to około 7,5 do 9 godzin na noc; 7 godzin kosztuje około pół roku, 6 godzin lub mniej około 2 lat.",
-    "sri": "Spanie o tych samych porach każdego dnia wiąże się z dłuższym życiem, niezależnie od długości snu. Punkt odniesienia to regularność 70: poniżej niej lata ubywają szybko, powyżej niewiele się odejmuje. To ta sama regularność snu co na ekranie snu, uśredniona z okna.",
+    "sri": "Spanie o tych samych porach każdego dnia wiążą się z dłuższym życiem, niezależnie od długości snu. Punkt odniesienia to regularność 70: poniżej niej lata ubywają szybko, powyżej niewiele się odejmuje. To ta sama regularność snu co na ekranie snu, uśredniona z okna.",
     "zone13": "Umiarkowana aktywność wiąże się z wyraźnie niższą śmiertelnością; punkt odniesienia to 150 minut tygodniowo, a korzyść wypłaszcza się znacznie powyżej. Pulse liczy ją z Twojego tętna w Zone 2 i Zone 3 (60 do 80% tętna maksymalnego), jako tygodniową średnią z 28 dni.",
     "zone45": "Intensywna aktywność dodaje korzyść ponad umiarkowaną. Punkt odniesienia to 10 minut tygodniowo; trochę więcej pomaga, a korzyść szybko się wypłaszcza. Liczona z Twojego tętna w Zone 4 i Zone 5.",
     "strength": "Ćwiczenia wzmacniające mięśnie (trening siłowy, ciężary, kalistenika lub HIIT) wiążą się z niższą śmiertelnością. Punkt odniesienia to 10 minut tygodniowo, a korzyść wypłaszcza się powyżej około 40.",
     "steps": "Więcej kroków dziennie wiąże się z niższą śmiertelnością. Punkt odniesienia to 8 000 dziennie (6 000 od 60. roku życia), a zaliczanie kończy się na 10 000 (8 000 od 60). Dni bez tętna lub kroków są pomijane, więc opaska zostawiona na ładowarce nie jest odczytywana jako leniwy dzień.",
     "vo2max": "Wyższa wydolność krążeniowo-oddechowa to jeden z najsilniejszych predyktorów dłuższego życia. Punkt odniesienia pochodzi z tabeli dla Twojego wieku i płci; każdy ml/kg/min powyżej odejmuje około 0,4 roku, każdy poniżej dodaje tyle samo. Z odczytów VO2 max z Fitbit.",
     "restingHr": "Wyższe tętno spoczynkowe wiąże się z wyższą śmiertelnością. Punkt odniesienia pochodzi z tabeli dla Twojego wieku i płci; każde 10 bpm powyżej dodaje około 1,2 roku.",
-    "leanMass": "Część Twojej wagi, która nie jest tłuszczem. Punkt odniesienia to 100 minus typowa zawartość tłuszczu dla Twojego wieku i płci. Zejście poniżej kosztuje lata, tym szybciej, im dalej jesteś; od 35. roku życia przekroczenie go trochę odejmuje, bardziej z wiekiem. Z Twoich odczytów tkanki tłuszczowej."
+    "leanMass": "Część Twojej wagi, która nie jest tłuszczem. Punkt odniesienia to 100 minus typowa zawartość tłuszczu dla Twojego wieku i płci. Zejście poniżej kosztuje lata, tym szybciej, im dalej jesteś; od 35. roku życia przekroczenie go trochę odejmuje, bardziej z wiekiem. Z Twoich odczytów tkanki tłuszczowej.",
+    "bloodPressure": "Utrzymujące się podwyższone skurczowe ciśnienie krwi jest głównym czynnikiem ryzyka sercowo-naczyniowego. Punkt odniesienia to 115 mmHg skurczowego; pomiary naramienne zgodne z protokołem z wielu dni dają ograniczony wkład addytywny do Pulse Age."
   },
   "hs": {
     "source": "Populacyjne badania śmiertelności",
@@ -296,7 +298,9 @@
     "leanMass": "{{lean}} {{unit}} beztłuszczowej, {{fat}} {{unit}} tłuszczu",
     "leanIndex": "FFMI {{ffmi}}, FMI {{fmi}} kg/m²",
     "leanCaption": "{{parts}}.",
-    "leanCaptionEstimated": "{{parts}}. Tkanka tłuszczowa oszacowana z Twojego BMI."
+    "leanCaptionEstimated": "{{parts}}. Tkanka tłuszczowa oszacowana z Twojego BMI.",
+    "bpNeeds": "Wymaga 12 pomiarów zgodnych z protokołem z 3 dni w ciągu ostatnich 90 dni ({{readings}}/12 pomiarów, {{days}}/3 dni). Pominięte w Pulse Age.",
+    "bpCaption": "Średnia {{systolic}}/{{diastolic}} mmHg z {{readings}} pomiarów w ciągu {{days}} dni."
   },
   "insight": {
     "younger": "Młodziej niż Twój wiek",

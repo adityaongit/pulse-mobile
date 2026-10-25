@@ -271,7 +271,8 @@
     "steps": "Pas quotidiens",
     "vo2max": "VO2 max",
     "restingHr": "Fréquence cardiaque au repos",
-    "leanMass": "Masse maigre"
+    "leanMass": "Masse maigre",
+    "bloodPressure": "Tension artérielle"
   },
   "hsText": {
     "sleepHours": "Un sommeil court comme long est lié à une mortalité plus élevée. Environ 7,5 à 9 heures par nuit portent le risque le plus bas ; 7 heures coûtent environ six mois, 6 heures ou moins environ 2 ans.",
@@ -282,7 +283,8 @@
     "steps": "Plus de pas par jour va de pair avec une mortalité plus basse. La référence est de 8 000 par jour (6 000 à partir de 60 ans), et le crédit s’arrête à 10 000 (8 000 à partir de 60 ans). Les jours sans fréquence cardiaque ni pas sont exclus, donc un bracelet resté sur son chargeur n’est pas lu comme une journée paresseuse.",
     "vo2max": "Une meilleure condition cardiorespiratoire est l’un des meilleurs prédicteurs d’une vie plus longue. La référence vient d’un tableau pour ton âge et ton sexe ; chaque ml/kg/min au-dessus retire environ 0,4 an, chacun en dessous en ajoute autant. D’après les relevés de VO2 max de Fitbit.",
     "restingHr": "Une fréquence cardiaque au repos plus élevée est liée à une mortalité plus élevée. La référence vient d’un tableau pour ton âge et ton sexe ; chaque tranche de 10 bpm au-dessus ajoute environ 1,2 an.",
-    "leanMass": "La part de ton poids qui n’est pas de la graisse. La référence est 100 moins la masse grasse typique pour ton âge et ton sexe. Rester en dessous coûte des années, d’autant plus vite qu’on s’en éloigne ; à partir de 35 ans, la dépasser en retire un peu, davantage avec l’âge. D’après tes relevés de masse grasse."
+    "leanMass": "La part de ton poids qui n’est pas de la graisse. La référence est 100 moins la masse grasse typique pour ton âge et ton sexe. Rester en dessous coûte des années, d’autant plus vite qu’on s’en éloigne ; à partir de 35 ans, la dépasser en retire un peu, davantage avec l’âge. D’après tes relevés de masse grasse.",
+    "bloodPressure": "Une tension artérielle systolique durablement élevée est un facteur majeur de risque cardiovasculaire. La référence est de 115 mmHg systolique ; les mesures au bras suivant le protocole sur plusieurs jours apportent un terme additif borné à Pulse Age."
   },
   "hs": {
     "source": "Études de mortalité en population",
@@ -295,7 +297,9 @@
     "leanMass": "{{lean}} {{unit}} de masse maigre, {{fat}} {{unit}} de graisse",
     "leanIndex": "FFMI {{ffmi}}, FMI {{fmi}} kg/m²",
     "leanCaption": "{{parts}}.",
-    "leanCaptionEstimated": "{{parts}}. Masse grasse estimée à partir de ton IMC."
+    "leanCaptionEstimated": "{{parts}}. Masse grasse estimée à partir de ton IMC.",
+    "bpNeeds": "Nécessite 12 mesures conformes au protocole sur 3 jours au cours des 90 derniers jours ({{readings}}/12 mesures, {{days}}/3 jours). Exclu de Pulse Age.",
+    "bpCaption": "Moyenne {{systolic}}/{{diastolic}} mmHg sur {{readings}} mesures en {{days}} jours."
   },
   "insight": {
     "younger": "Plus jeune que ton âge",

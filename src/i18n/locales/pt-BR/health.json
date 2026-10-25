@@ -271,7 +271,8 @@
     "steps": "Passos diários",
     "vo2max": "VO2 max",
     "restingHr": "Frequência cardíaca em repouso",
-    "leanMass": "Massa magra"
+    "leanMass": "Massa magra",
+    "bloodPressure": "Pressão arterial"
   },
   "hsText": {
     "sleepHours": "Tanto o sono curto quanto o longo estão ligados a maior mortalidade. Dormir de 7,5 a 9 horas por noite traz o menor risco; 7 horas custam cerca de meio ano, 6 horas ou menos cerca de 2 anos.",
@@ -282,7 +283,8 @@
     "steps": "Mais passos por dia estão associados a menor mortalidade. A referência é 8.000 por dia (6.000 a partir dos 60), e o benefício para em 10.000 (8.000 a partir dos 60). Dias sem frequência cardíaca ou passos ficam de fora, então uma pulseira esquecida no carregador não é lida como um dia preguiçoso.",
     "vo2max": "Um condicionamento cardiorrespiratório maior é um dos preditores mais fortes de uma vida mais longa. A referência vem de uma tabela para a sua idade e sexo; cada ml/kg/min acima dela tira cerca de 0,4 ano, cada um abaixo soma o mesmo tanto. Com base nas leituras de VO2 max do Fitbit.",
     "restingHr": "Uma frequência cardíaca em repouso mais alta está ligada a maior mortalidade. A referência vem de uma tabela para a sua idade e sexo; cada 10 bpm acima dela soma cerca de 1,2 ano.",
-    "leanMass": "A parte do seu peso que não é gordura. A referência é 100 menos a gordura corporal típica para a sua idade e sexo. Ficar abaixo dela custa anos, mais rápido quanto mais longe você está; a partir dos 35, superá-la tira um pouco, mais com a idade. A partir das suas leituras de gordura corporal."
+    "leanMass": "A parte do seu peso que não é gordura. A referência é 100 menos a gordura corporal típica para a sua idade e sexo. Ficar abaixo dela custa anos, mais rápido quanto mais longe você está; a partir dos 35, superá-la tira um pouco, mais com a idade. A partir das suas leituras de gordura corporal.",
+    "bloodPressure": "A pressão arterial sistólica sustentadamente elevada é um fator importante de risco cardiovascular. A referência é 115 mmHg sistólica; leituras de braço dentro do protocolo em vários dias entram como um termo aditivo limitado no Pulse Age."
   },
   "hs": {
     "source": "Estudos populacionais de mortalidade",
@@ -295,7 +297,9 @@
     "leanMass": "{{lean}} {{unit}} de massa magra, {{fat}} {{unit}} de gordura",
     "leanIndex": "FFMI {{ffmi}}, FMI {{fmi}} kg/m²",
     "leanCaption": "{{parts}}.",
-    "leanCaptionEstimated": "{{parts}}. Gordura corporal estimada a partir do seu IMC."
+    "leanCaptionEstimated": "{{parts}}. Gordura corporal estimada a partir do seu IMC.",
+    "bpNeeds": "Requer 12 leituras pelo protocolo em 3 dias nos últimos 90 dias ({{readings}}/12 leituras, {{days}}/3 dias). Fica de fora do Pulse Age.",
+    "bpCaption": "Média de {{systolic}}/{{diastolic}} mmHg em {{readings}} leituras ao longo de {{days}} dias."
   },
   "insight": {
     "younger": "Mais jovem que a sua idade",
