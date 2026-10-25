@@ -180,7 +180,8 @@ describe("parity with the web app", () => {
     // 30: Pulse Age's VO2 max falls back to the estimate (the seed has Fitbit's, so only the version moves). Version 29's value was "22839852f7ee4661".
     // 31: Blood pressure in Health Monitor (causal spot readings persisted in health_monitor). Version 30's value was "25a36d10947fc464".
     // 32: Feature-gated blood pressure term in Pulse Age (bpPulseAge off by default; only the version moves). Version 31's value was "9d8a77fc84882991".
-    "daily_scores.scoring_version": "ae95b29d44b502c1",
+    // 33: Dual-Mode Blood Pressure & Vascular Corridor (vascular_corridor column in daily_scores, seeded cuff anchors). Version 32's value was "ae95b29d44b502c1".
+    "daily_scores.scoring_version": "d67ef409b32b162f",
     // Version 15: Activity Strain is the session's Banister TRIMP plus its muscular load through 5.05 · ln(1 + 0.09 · T)
     // (a seeded 45-minute strength session goes from 8.2 to 9.9 on 0–21), each activity stores its `cardioTrimp` and
     // `muscularTrimp`, and its zone seconds count Zone 1 from 40 % of the reserve. Version 14's value was "cb2d75373aaf4d20".
@@ -248,7 +249,8 @@ describe("parity with the web app", () => {
     // value was "3a2163c7f92d4dab".
     // Version 29: HRV and resting HR are Fitbit's, the values every screen shows. Version 28's value was "47289fc792ec11ef".
     // 31: Health Monitor persists causal daily blood pressure spot reading (`bloodPressure`). Version 30's value was "4d132dadfd15bf77".
-    "daily_scores.health_monitor": "c17d856a2509354f",
+    // 33: seedDemo seeds 3 cuff calibration anchors (days -60, -30, -5), which Health Monitor's bloodPressure spot field reflects on those 3 days. Version 32's value was "c17d856a2509354f".
+    "daily_scores.health_monitor": "cdb855022fce17ab",
     // Mobile rebuilds Pulse Age on WHOOP's Healthspan method (src/core/algorithms/healthspan.ts): 6.0 years per ln HR
     // (WHOOP's 10 × an overlap factor of 0.6) with no 9/n rescaling (a missing term counts 0), WHOOP's references and
     // curves (sleep from 7 h, Arem and Ahmadi zone curves, strength flat after 40 min, lean mass as body fat %), zone time
@@ -682,7 +684,7 @@ describe("incremental runs", () => {
       ts: midTs + 18 * 3600,
     });
     // Day without BP has null bloodPressure
-    const prevDayScored = (await store.getScores(dayAt(149)))!.health_monitor as HealthMonitorRow;
+    const prevDayScored = (await store.getScores(dayAt(148)))!.health_monitor as HealthMonitorRow;
     expect(prevDayScored.bloodPressure).toBeNull();
   });
 

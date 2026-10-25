@@ -21,6 +21,7 @@ import type { RestingHrSource } from "./restingHr";
 import type { RecoveryBand } from "@/core/scoring/recovery";
 import type { DayAggs } from "@/core/engine/days";
 import type { LoadStatus } from "@/core/engine/strain";
+import type { BloodPressureAhaCategory, VascularCalibrationStatus, VascularCorridorMode } from "@/data/types";
 
 /**
  * Bump on any scoring change; a mismatch at startup reruns both stages for every day.
@@ -84,8 +85,9 @@ import type { LoadStatus } from "@/core/engine/strain";
  * 30: Pulse Age's VO2 max falls back to Pulse's own daily estimate when the 28 days have no Fitbit VO2 max.
  * 31: Blood pressure in Health Monitor (causal spot readings persisted in health_monitor, AHA/ACC classifications).
  * 32: Feature-gated blood pressure term in Pulse Age (protocol-grade evaluation over 90 days, manifest-driven spline).
+ * 33: Dual-mode Blood Pressure Corridor (vascular_corridor: relative vascular load delta + calibrated cuff corridor).
  */
-export const SCORING_VERSION = 32;
+export const SCORING_VERSION = 33;
 
 export type PipelineOptions = {
   timeZone: string;
@@ -430,6 +432,58 @@ export type TrainingRow = {
   status: ({ reason: null } & TrainingStatus) | { reason: ReasonCode };
 };
 
+export type VascularCorridorRow = {
+  mode: VascularCorridorMode;
+  systolic: {
+    value: number | null;
+    lower: number | null;
+    upper: number | null;
+    reason: ReasonCode | null;
+    provisional: boolean;
+  };
+  diastolic: {
+    value: number | null;
+    lower: number | null;
+    upper: number | null;
+    reason: ReasonCode | null;
+    provisional: boolean;
+  };
+  pulsePressure: {
+    value: number | null;
+    reason: ReasonCode | null;
+    provisional: boolean;
+  };
+  meanArterialPressure: {
+    value: number | null;
+    reason: ReasonCode | null;
+    provisional: boolean;
+  };
+  autonomicDelta: {
+    sbpDeltaMmHg: number | null;
+    dbpDeltaMmHg: number | null;
+    reason: ReasonCode | null;
+    provisional: boolean;
+  };
+  calibration: {
+    status: VascularCalibrationStatus;
+    lastCalibratedAtMs: number | null;
+    daysSinceCalibration: number | null;
+    halfWidthMmHg: number | null;
+    anchorSystolicMmHg: number | null;
+    anchorDiastolicMmHg: number | null;
+  };
+  drivers: {
+    rhrDeltaBpm: number | null;
+    lnRmssdDelta: number | null;
+    sleepDebtHours: number | null;
+    acwr: number | null;
+    bmi: number | null;
+  };
+  ahaCategory: BloodPressureAhaCategory | null;
+};
+
+export type VascularCorridorDay = VascularCorridorRow;
+
 /** One day's stage-2 columns, keyed by their daily_scores column name. */
 export type Stage2Row = {
   recovery: RecoveryRow;
@@ -445,6 +499,7 @@ export type Stage2Row = {
   journal_impact: JournalImpactRow;
   hrv_status: HrvStatusRow;
   training: TrainingRow;
+  vascular_corridor: VascularCorridorRow;
 };
 
 /** Every Stage2Row key, once: `satisfies` fails the build when a column is added to one and not the other. */
@@ -462,4 +517,5 @@ export const STAGE2_COLUMNS = Object.keys({
   journal_impact: 1,
   hrv_status: 1,
   training: 1,
+  vascular_corridor: 1,
 } satisfies Record<keyof Stage2Row, 1>) as (keyof Stage2Row)[];
