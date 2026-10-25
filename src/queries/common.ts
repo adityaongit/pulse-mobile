@@ -22,6 +22,7 @@ import type {
   StrainTargetRow,
   StressRow,
   TrainingLoadRow,
+  VascularCorridorRow,
 } from "@/pipeline/types";
 import type { SeriesKind } from "@/data/store";
 import { type ExtraKey, recoveryBand, stressLevel } from "./_lib";
@@ -79,6 +80,7 @@ export type DayRow = {
   /** Version 19: HRV Status and the Garmin-style training row; null on older rows. */
   hrvStatus: HrvStatusRow | null;
   training: TrainingRow | null;
+  vascularCorridor: VascularCorridorRow | null;
   metrics: MetricsRow | null;
   /** Shown-only daily roll-ups (`_lib.ts` EXTRA_METRICS); a key is absent when that day has none. */
   extra: Partial<Record<ExtraKey, number>>;
@@ -143,6 +145,7 @@ export async function loadDays(ctx: QueryCtx, from: string, to: string): Promise
       fitness: r?.fitness ?? null,
       hrvStatus: r?.hrv_status ?? null,
       training: r?.training ?? null,
+      vascularCorridor: r?.vascular_corridor ?? null,
       metrics: metrics.get(d) ?? null,
       extra: extra.get(d) ?? {},
     });

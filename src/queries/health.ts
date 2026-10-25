@@ -81,7 +81,7 @@ export async function getHealthHub(ctx: QueryCtx): Promise<HealthHubVM> {
     day: today,
     healthspan: hs.value ? ok({ pulseAge: hs.value.pulseAge, deltaYears: hs.value.deltaYears, pace: hs.value.pace, paceDelta: prevPace == null || hs.value.pace == null ? null : hs.value.pace - prevPace }, hs.provisional) : none(hs.reason ?? "no_data", hs.nightsLeft),
     monitor: monitor.count.value
-      ? ok({ vitals: monitor.vitals.map((v) => ({ key: v.key, short: v.short, status: v.status })), inRange: monitor.count.value.inRange, total: VITALS.length })
+      ? ok({ vitals: monitor.vitals.map((v) => ({ key: v.key, short: v.short, status: v.status })), inRange: monitor.count.value.inRange, total: monitor.count.value.total })
       : none(monitor.count.reason ?? "no_data"),
     stress:
       st && st.average != null
@@ -99,6 +99,7 @@ export async function getHealthHub(ctx: QueryCtx): Promise<HealthHubVM> {
       ? ok({ vo2max: fit.vo2.value.value, category: fit.vo2.value.category, percentile: fit.vo2.value.percentile, acwr: tl?.acwr ?? null, acwrTone: tl?.tone ?? null })
       : none("no_data"),
     heartRate,
+    vascularCorridor: row?.vascularCorridor ?? null,
   };
 }
 
@@ -542,7 +543,11 @@ export async function getMonitor(day: string, ctx: QueryCtx, preloaded?: Map<str
   else if (hm.reason !== null) count = none(nightReason(hm.reason, isToday));
   else {
     const raised = illnessRaised(hm);
-    count = ok({ inRange: hm.inRange, total: VITALS.length, outOfRange: hm.flagged, status: raised ? "illness" : hm.flagged ? "out" : "within" });
+    // The count is over the vitals the screen shows (the band's five plus the BP row), so the number, the chips and
+    // the list always agree.
+    const inRange = allVitals.filter((v) => v.status === "in_range").length;
+    const outOfRange = allVitals.filter((v) => v.status === "high" || v.status === "low").length;
+    count = ok({ inRange, total: allVitals.length, outOfRange, status: raised ? "illness" : outOfRange ? "out" : "within" });
   }
   return {
     day,
@@ -551,6 +556,7 @@ export async function getMonitor(day: string, ctx: QueryCtx, preloaded?: Map<str
     illness: hm && hm.reason === null && illnessRaised(hm) ? { level: hm.illness.level, score: hm.illness.score } : null,
     vitals: allVitals,
     bloodPressure: bpSummary,
+    vascularCorridor: row?.vascularCorridor ?? null,
     heartRhythm: rhythm,
     measurements: measured,
   };

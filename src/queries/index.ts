@@ -94,6 +94,11 @@ export {
   getBloodPressureSummary,
 } from "./bloodPressure";
 export {
+  type VascularDriverKey,
+  getVascular,
+  getVascularViewModel,
+} from "./vascular";
+export {
   type DashboardKey,
   type BodyKey,
   type ExtraKey,

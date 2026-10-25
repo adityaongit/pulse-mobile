@@ -6,9 +6,29 @@ import type { ChipTone, DashboardKey, FormatKey, GoodDirection, RecoveryBand as 
 import type { Metric, MetricTag, ReasonCode } from "@/lib/reasons";
 import type { EnergyBand } from "@/core/engine/energyBank";
 import type { BloodPressureCategory } from "@/core/scoring/bloodPressure";
+import type { VascularCorridorRow } from "@/pipeline/types";
 import type { BloodPressureSummary } from "./bloodPressure";
+import type {
+  VascularDriverContributor,
+  VascularTrendPoint,
+  VascularTrendRange,
+  VascularViewModel,
+} from "./vascular";
 
-export type { Band, ChipTone, GoodDirection, Metric, MetricTag, ReasonCode, StressLevel };
+export type {
+  Band,
+  ChipTone,
+  GoodDirection,
+  Metric,
+  MetricTag,
+  ReasonCode,
+  StressLevel,
+  VascularCorridorRow,
+  VascularDriverContributor,
+  VascularTrendPoint,
+  VascularTrendRange,
+  VascularViewModel,
+};
 export type SleepStatus = "poor" | "sufficient" | "optimal";
 export type ActivityKind = "run" | "ride" | "walk" | "strength" | "workout";
 
@@ -369,6 +389,8 @@ export type HealthHubVM = {
   fitness: Metric<{ vo2max: number; category: string; percentile: number; acwr: number | null; acwrTone: ChipTone | null }>;
   /** The newest band reading (epoch ms), today or not. */
   heartRate: { t: number; bpm: number } | null;
+  /** Today's Dual-Mode Blood Pressure & Vascular Load Corridor summary. */
+  vascularCorridor?: VascularCorridorRow | null;
 };
 /** Alias: the task's name for the Health hub view model. */
 export type HealthVM = HealthHubVM;
@@ -427,6 +449,7 @@ export type MonitorVM = {
   illness: { level: string; score: number } | null;
   vitals: Vital[];
   bloodPressure: BloodPressureSummary;
+  vascularCorridor?: VascularCorridorRow | null;
   heartRhythm: HeartRhythm;
   /** Weight and body fat always; blood glucose and core temperature only once the owner has ever had one. */
   measurements: Measurement[];
