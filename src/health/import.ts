@@ -26,7 +26,7 @@ import type {
 } from "react-native-health-connect";
 
 import type { LoggedEntryRow } from "@/data/store";
-import type { BloodPressureQuality, BloodPressureReading, DailyValue, Exercise, HrSample, HrvSample, Metrics, Segment, Session, Stage, StepsMinute } from "@/data/types";
+import type { BloodPressurePosture, BloodPressureQuality, BloodPressureReading, BloodPressureReadingRow, DailyValue, Exercise, HrSample, HrvSample, Metrics, Segment, Session, Stage, StepsMinute } from "@/data/types";
 import { emptyMetrics } from "@/data/types";
 import { addDays, localDay, localMidnight } from "@/lib/time";
 import { finish, PAUSE_EVERY, type Steps } from "@/lib/yield";
@@ -1045,6 +1045,15 @@ function extractPressure(val: unknown): number {
   return NaN;
 }
 
+function mapPostureFromBodyPosition(bodyPosition: string | null): BloodPressurePosture | null {
+  if (!bodyPosition) return null;
+  const p = bodyPosition.toLowerCase();
+  if (p === "sitting" || p === "sitting_down") return "sitting";
+  if (p === "standing" || p === "standing_up") return "standing";
+  if (p === "lying_down" || p === "reclining" || p === "supine") return "supine";
+  return null;
+}
+
 export function mapBloodPressure(
   records: (BloodPressureRecord | BloodPressureInputRecord)[],
   tz: string,
@@ -1104,6 +1113,7 @@ export function mapBloodPressure(
 
     const day = localDay(recordTs, tz);
     const bodyPosition = formatBodyPosition(r.bodyPosition);
+    const posture = mapPostureFromBodyPosition(bodyPosition);
     const measurementLocation = formatMeasurementLocation(r.measurementLocation);
 
     const sourcePlatform = r.sourcePlatform ?? "health_connect";
@@ -1164,6 +1174,9 @@ export function mapBloodPressure(
       day,
       systolicMmhg: systolic,
       diastolicMmhg: diastolic,
+      pulseBpm: null,
+      posture,
+      source: "health_connect",
       bodyPosition,
       measurementLocation,
       recordingMethod,
@@ -1175,5 +1188,53 @@ export function mapBloodPressure(
     });
   }
 
+  return out;
+}
+
+/**
+ * PR-14 mapper: maps Health Connect BloodPressure records into BloodPressureReadingRow[],
+ * enforcing strict physiological bounds (systolic 60-260, diastolic 30-160, systolic > diastolic).
+ */
+export function mapBloodPressureRecords(
+  records: (BloodPressureRecord | BloodPressureInputRecord)[],
+  tz: string,
+): BloodPressureReadingRow[] {
+  const out: BloodPressureReadingRow[] = [];
+  for (const raw of records) {
+    const r = raw as BloodPressureInputRecord & Partial<BloodPressureRecord>;
+    const timeStr = r.time ?? r.startTime;
+    if (!timeStr) continue;
+    const ms = Date.parse(timeStr);
+    if (!Number.isFinite(ms)) continue;
+    if (r.systolic === undefined || r.diastolic === undefined || r.systolic === null || r.diastolic === null) {
+      continue;
+    }
+    const systolic = extractPressure(r.systolic);
+    const diastolic = extractPressure(r.diastolic);
+    if (!Number.isFinite(systolic) || !Number.isFinite(diastolic)) continue;
+    if (systolic < 60 || systolic > 260 || diastolic < 30 || diastolic > 160) continue;
+    if (systolic <= diastolic) continue;
+
+    const recordTs = Math.floor(ms / 1000);
+    const date = localDay(recordTs, tz);
+    const bodyPosition = formatBodyPosition(r.bodyPosition);
+    const posture = mapPostureFromBodyPosition(bodyPosition);
+    const id =
+      r.metadata?.id ??
+      r.metadata?.clientRecordId ??
+      r.id ??
+      `hc-bp-${ms}-${Math.round(systolic)}-${Math.round(diastolic)}`;
+
+    out.push({
+      id,
+      timestampMs: ms,
+      date,
+      systolicMmHg: systolic,
+      diastolicMmHg: diastolic,
+      pulseBpm: null,
+      posture,
+      source: "health_connect",
+    });
+  }
   return out;
 }

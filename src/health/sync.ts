@@ -52,9 +52,10 @@ export { forgetChanges };
  * record is left out instead of failing the sync. 6: a sync replaces the window's source-derived daily totals (calories
  * eaten, water, distance and the rest), so a record deleted in Health Connect no longer leaves its day's total behind,
  * and a sync that finds deletions replaces the window it re-reads (see replaceWindow). 7: the source policy is gone; every
- * app's records are kept, the largest source per day for measured totals. 8: blood pressure readings ingested.
+ * app's records are kept, the largest source per day for measured totals. 8: blood pressure readings ingested. 9: blood
+ * pressure posture and source mapping for Vascular Corridor.
  */
-export const IMPORT_VERSION = 8;
+export const IMPORT_VERSION = 9;
 
 /**
  * How far before the window's first local midnight the reads start. Health Connect returns a record only to a read whose

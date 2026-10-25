@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { MemoryStore } from "@/data/memory";
 import type { BloodPressureReading } from "@/data/types";
-import { BloodPressureBodyPosition, BloodPressureMeasurementLocation, createBloodPressureDiagnostics, mapBloodPressure, mapRecords } from "./import";
+import { BloodPressureBodyPosition, BloodPressureMeasurementLocation, createBloodPressureDiagnostics, mapBloodPressure, mapBloodPressureRecords, mapRecords } from "./import";
 import { DEVICE_TYPE, RECORDING_METHOD } from "./origins";
 
 const TZ = "America/New_York";
@@ -393,5 +393,51 @@ describe("BloodPressure Store Operations", () => {
     // clearAll removes everything
     await store.clearAll();
     expect(await store.allBloodPressure()).toEqual([]);
+  });
+
+  it("maps Health Connect records to BloodPressureReadingRow with strict 60-260 / 30-160 bounds", () => {
+    const rows = mapBloodPressureRecords(
+      [
+        {
+          metadata: { id: "cuff-ok" },
+          time: at("2026-04-10", "08:00:00"),
+          systolic: { inMillimetersOfMercury: 121 },
+          diastolic: { inMillimetersOfMercury: 79 },
+          bodyPosition: BloodPressureBodyPosition.SITTING_DOWN,
+        },
+        {
+          metadata: { id: "cuff-low" },
+          time: at("2026-04-10", "08:01:00"),
+          systolic: { inMillimetersOfMercury: 55 },
+          diastolic: { inMillimetersOfMercury: 35 },
+        },
+        {
+          metadata: { id: "cuff-high" },
+          time: at("2026-04-10", "08:02:00"),
+          systolic: { inMillimetersOfMercury: 265 },
+          diastolic: { inMillimetersOfMercury: 120 },
+        },
+        {
+          metadata: { id: "cuff-inverted" },
+          time: at("2026-04-10", "08:03:00"),
+          systolic: { inMillimetersOfMercury: 80 },
+          diastolic: { inMillimetersOfMercury: 90 },
+        },
+      ],
+      TZ,
+    );
+
+    expect(rows).toEqual([
+      {
+        id: "cuff-ok",
+        timestampMs: Date.parse(at("2026-04-10", "08:00:00")),
+        date: "2026-04-10",
+        systolicMmHg: 121,
+        diastolicMmHg: 79,
+        pulseBpm: null,
+        posture: "sitting",
+        source: "health_connect",
+      },
+    ]);
   });
 });
