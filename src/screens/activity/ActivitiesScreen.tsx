@@ -1,13 +1,11 @@
-// Activities `/activities`: the workout journal behind Home's "Today's activities". Day groups newest first, each row
-// the same timeline row as Home, a sport filter, and "Show older" a month at a time. Ported from pulse
-// src/app/(app)/activities/{page,loading}.tsx. The web keeps `days` and `kind` in the URL; here they are route params.
 import type { ReactNode } from "react"
 import { Pressable, ScrollView, View } from "react-native"
 import { Trans, useTranslation } from "react-i18next"
 import { router, useLocalSearchParams } from "expo-router"
 import { dayLabel, formatValue, hmm } from "@/lib/format"
-import { activityHref } from "@/lib/url"
+import { activityHref, dayHref, napHref } from "@/lib/url"
 import { ACTIVITY_PAGE_DAYS, getActivities } from "@/queries/activities"
+import { SleepCard } from "@/ui/metrics/SleepCard"
 import type { ActivitiesVM } from "@/queries/types"
 import { i18n } from "@/i18n/config"
 import { cn } from "@/ui/cn"
@@ -23,7 +21,11 @@ import { useScreen } from "@/screens/useScreen"
 import { Press } from "@/ui/Press";
 import { ActivityCostList, DetectedNote, DetectedRow } from "./ActivityCost"
 
-const KIND_LABEL: Record<ActivityKind, () => string> = {
+type Kind = ActivityKind | "sleep" | "nap"
+const itemKind = (a: Group["items"][number]): Kind => a.kind === "activity" ? a.activityKind : a.kind
+const KIND_LABEL: Record<Kind, () => string> = {
+  sleep: () => i18n.t("ui:timeline.sleep"),
+  nap: () => i18n.t("ui:timeline.nap"),
   run: () => i18n.t("strain:activities.kindRun"),
   ride: () => i18n.t("strain:activities.kindRide"),
   walk: () => i18n.t("strain:activities.kindWalk"),
@@ -37,7 +39,7 @@ const PILL_TEXT = "text-xs font-bold tracking-[0.1em] uppercase"
 type Group = ActivitiesVM["groups"][number]
 
 /** The route params as the web's query: `days` (`?days=`, only past one page) and `kind` ("" is none, as the date's "" is today). */
-const setQuery = ({ days, kind }: { days: number; kind: ActivityKind | null }) =>
+const setQuery = ({ days, kind }: { days: number; kind: Kind | null }) =>
   router.setParams({ days: days > ACTIVITY_PAGE_DAYS ? String(days) : "", kind: kind ?? "" })
 
 export function ActivitiesScreen() {
@@ -49,11 +51,11 @@ export function ActivitiesScreen() {
 
   if (!data) return error ? <ScreenError retry={reload} /> : <ActivitiesSkeleton />
   const { vm, timeZone } = data
-  const kinds = [...new Set(vm.groups.flatMap((g) => g.items.map((a) => a.activityKind)))]
+  const kinds = [...new Set(vm.groups.flatMap((g) => g.items.map(itemKind)))]
   const kind = kinds.find((k) => k === sp.kind) ?? null
   const groups = vm.groups
     // Detected activities have no sport to filter by: they show under "All" only.
-    .map((g) => (kind ? { ...g, items: g.items.filter((a) => a.activityKind === kind), detected: [] } : g))
+    .map((g) => (kind ? { ...g, items: g.items.filter((a) => itemKind(a) === kind), detected: [] } : g))
     .filter((g) => g.items.length || (!kind && (g.detected.length || g.day === vm.today)))
   const items = groups.flatMap((g) => g.items)
   const costs = vm.cost?.items.filter((x) => !kind || x.kind === kind) ?? []
@@ -110,7 +112,7 @@ export function ActivitiesScreen() {
 function Summary({ items, days }: { items: Group["items"]; days: number }) {
   const { t } = useTranslation("strain")
   const minutes = items.reduce((m, a) => m + (a.end - a.start) / 60_000, 0)
-  const strains = items.flatMap((a) => (a.strain.value === null ? [] : [a.strain.value]))
+  const strains = items.flatMap((a) => (a.kind !== "activity" || a.strain.value === null ? [] : [a.strain.value]))
   const avg = strains.length ? strains.reduce((a, b) => a + b, 0) / strains.length : null
   const stat = (value: ReactNode, label: string) => (
     <View className="min-w-0 flex-1 gap-1">
@@ -149,12 +151,10 @@ function Day({ g, today, timeZone }: { g: Group; today: string; timeZone: string
         </Text>
       </View>
       {g.items.length || g.detected.length ? (
-        // 6 px inset in a 16 px card around the rows' 10 px radius, as on Home (spec §2.4). Recorded and detected rows
-        // in one time order, newest first.
         <Card className="p-1.5">
           <View className="gap-1.5">
             {[
-              ...g.items.map((a) => ({ start: a.start, row: <ActivityCard key={a.id} name={a.name} kind={a.activityKind} strain={a.strain} start={a.start} end={a.end} distanceKm={a.distanceKm} paceS={a.paceS} href={activityHref(a.id)} timeZone={timeZone} /> })),
+              ...g.items.map((a) => ({ start: a.start, row: a.kind === "activity" ? <ActivityCard key={`activity-${a.id}`} name={a.name} kind={a.activityKind} strain={a.strain} start={a.start} end={a.end} distanceKm={a.distanceKm} paceS={a.paceS} href={activityHref(a.id)} timeZone={timeZone} /> : <SleepCard key={`${a.kind}-${a.id}`} kind={a.kind} minutes={a.minutes} start={a.start} end={a.end} href={a.kind === "nap" ? napHref(a.id) : dayHref("/sleep", g.day, today)} timeZone={timeZone} /> })),
               ...g.detected.map((d) => ({ start: d.start, row: <DetectedRow key={`detected-${d.start}`} item={d} timeZone={timeZone} /> })),
             ]
               .sort((a, b) => b.start - a.start)

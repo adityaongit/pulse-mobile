@@ -226,13 +226,13 @@ export type ActivityCostVM = {
   items: ActivityCostEntry[];
 };
 
-/** `/activities`: one group per day with a workout (today always), newest first. */
+/** `/activities`: recorded activity and sleep grouped by day, newest first. */
 export type ActivitiesVM = {
   today: string;
   /** How many days back the list reaches. */
   days: number;
-  groups: { day: string; items: ActivityItem[]; minutes: number; steps: number | null; dayStrain: number | null; detected: DetectedItem[] }[];
-  /** True when workouts exist before the window, so "Show older" has something to load. */
+  groups: { day: string; items: TimelineItem[]; minutes: number; steps: number | null; dayStrain: number | null; detected: DetectedItem[] }[];
+  /** True when workouts or sleep exist before the window, so "Show older" has something to load. */
   older: boolean;
   /** Mobile: Activity Cost for every kind; null before the pipeline has stored it. */
   cost: ActivityCostVM | null;

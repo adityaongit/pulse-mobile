@@ -4,8 +4,9 @@ import { seedDemo } from "@/data/seed";
 import { emptyMetrics, type Exercise, type Profile } from "@/data/types";
 import { runPipeline } from "@/pipeline";
 import { DEFAULT_DISPLAY, setDisplayPrefs } from "@/lib/units";
+import { getActivities } from "./activities";
 import { getActivity } from "./activity";
-import { activityItem, loadDays } from "./common";
+import { activityItem, loadDays, timelineOf } from "./common";
 import type { QueryCtx } from "./ctx";
 import { getMonitor } from "./health";
 import { getMetricDetail } from "./metric";
@@ -84,4 +85,35 @@ describe("imported workout titles", () => {
       expect(item.name).toBe(name ?? "Running");
     });
   }
+});
+
+describe("expanded activity sleep timeline", () => {
+  it("includes main sleep and naps with the same values as Home, newest first", async () => {
+    const vm = await getActivities(180, ctx);
+    const rows = await loadDays(ctx, "2026-04-06", today);
+    const exercises = await ctx.store.allExercises();
+    const expected = [...rows].flatMap(([day, row]) => timelineOf(row, day, exercises.filter((e) => e.day === day)));
+    const actual = vm.groups.flatMap((g) => g.items);
+    expect(actual.filter((i) => i.kind === "sleep").length).toBeGreaterThan(0);
+    expect(actual.filter((i) => i.kind === "nap").length).toBeGreaterThan(0);
+    expect(actual).toHaveLength(expected.length);
+    for (const g of vm.groups) {
+      expect(g.items).toEqual(timelineOf(rows.get(g.day), g.day, exercises.filter((e) => e.day === g.day)));
+    }
+  });
+
+  it("keeps sleep-only days and offers older pages without workouts", async () => {
+    const store = new MemoryStore();
+    const scores = await ctx.store.scoresIn({ from: "2026-04-06", to: today });
+    for (const score of scores) await store.putScores({ ...score, activities: [], detected: [] });
+    await store.upsertSessions(await ctx.store.allSessions(), []);
+    const sleepCtx = { ...ctx, store };
+    const page = await getActivities(30, sleepCtx);
+    expect(page.older).toBe(true);
+    expect(page.groups.some((g) => g.day !== today && g.items.some((i) => i.kind === "sleep"))).toBe(true);
+    expect(page.groups.flatMap((g) => g.items).every((i) => i.kind !== "activity")).toBe(true);
+    const expanded = await getActivities(180, sleepCtx);
+    expect(expanded.groups.length).toBeGreaterThan(page.groups.length);
+    expect(expanded.older).toBe(false);
+  });
 });
