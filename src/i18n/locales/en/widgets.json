@@ -1,0 +1,45 @@
+{
+  "title": "Home screen widgets",
+  "about": "See your last synced Pulse metrics without opening the app. Widgets display health information on your home screen; add them only where you are comfortable showing it.",
+  "sizes": {
+    "small": "Small \u00b7 one metric",
+    "medium": "Medium \u00b7 three metrics",
+    "large": "Large \u00b7 six metrics + heart rate"
+  },
+  "add": "Add widget",
+  "added": "Confirm the widget on your home screen, then choose its metrics.",
+  "manual": "Your launcher does not offer in-app pinning. Long-press your home screen, choose Widgets, then Pulse.",
+  "rebuild": "This app build does not include widgets yet. Install a build with the widget module to use them.",
+  "refresh": "Widgets update after Pulse syncs in the app or through its existing background sync. Android controls background timing; widgets are not live sensor readings.",
+  "configure": "Choose metrics",
+  "choose": "Choose up to %1$d metrics. Reconfigure later by long-pressing the widget on a supported launcher.",
+  "save": "Save widget",
+  "cancel": "Cancel",
+  "emptySelection": "Choose at least one metric.",
+  "tooMany": "Choose no more than %1$d metrics.",
+  "description": "Your last synced Pulse health summary. Tap a metric to open its details.",
+  "state": {
+    "demo": "Sample data",
+    "updated": "Synced",
+    "stale": "Older sync \u00b7 open Pulse",
+    "open": "Open Pulse and sync to see your data",
+    "today": "Open Pulse for today's data",
+    "provisional": "Estimate",
+    "reading": "Reading",
+    "oldReading": "Older reading",
+    "noReading": "No heart-rate reading",
+    "heartWindow": "30 min before reading"
+  },
+  "chooseLarge": "Choose up to %1$d metrics. Heart rate is always included in the large widget.",
+  "labels": {
+    "sleep": "Sleep",
+    "recovery": "Recovery",
+    "strain": "Strain",
+    "steps": "Steps",
+    "calories": "Calories",
+    "hrv": "HRV",
+    "rhr": "Resting HR",
+    "stress": "Stress",
+    "heart_rate": "Heart rate"
+  }
+}
