@@ -19,6 +19,7 @@ import { checkForUpdate, getUpdate, setUpdateCheck, useUpdate } from "@/state/up
 import { cn } from "@/ui/cn";
 import { Text } from "@/ui/Text";
 import { toast } from "@/ui/Toast";
+import { WidgetSettings } from "./WidgetSettings";
 import { ROW, ROW_LABEL, ROW_RULE, ROW_VALUE, SelectRow, SmallButton, SwitchRow, type SelectOption } from "./controls";
 
 // The labels resolve when a row draws (never at import), so a language switch reaches them.
@@ -125,6 +126,7 @@ export function AppSettings() {
       <SectionShell variant="card" title={t("app.display")}>
         <DisplayRows initialTheme={theme} />
       </SectionShell>
+      <WidgetSettings />
       <Updates />
       <LinkList title={t("app.group")} rows={[{ icon: Bell, label: t("app.notificationsLink"), href: "/settings?s=notifications" }]} />
     </>

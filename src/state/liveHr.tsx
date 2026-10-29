@@ -7,6 +7,9 @@ import { useEffect, useSyncExternalStore } from "react";
 import { AppState } from "react-native";
 import type { HrSample } from "@/data/types";
 import { refreshRecentHeartRate, storedRecentHeartRate } from "@/health/live";
+import { widgetEpoch } from "../../modules/pulse-widgets";
+import { refreshWidgets } from "@/widgets/publish";
+import { localDay } from "@/lib/time";
 import { appState, isSyncing, useApp } from "./app";
 
 export type LiveHr = {
@@ -46,10 +49,15 @@ export async function refreshLiveHr(): Promise<void> {
   if (!store || !source || isSyncing() || busy) return;
   busy = true;
   try {
+    const epoch = await Promise.resolve().then(widgetEpoch).catch(() => null);
     const r = await refreshRecentHeartRate(store, { source, timeZone: profile?.timeZone });
     const prev = value.liveHr.latest;
     const moved = r.added > 0 || r.latest?.ts !== prev?.ts || r.latest?.bpm !== prev?.bpm;
     value = { liveHr: { latest: r.latest, recent: r.samples, updatedAt: Date.now(), error: r.error ?? null }, liveVersion: moved ? value.liveVersion + 1 : value.liveVersion };
+    if (moved && profile && epoch !== null) {
+      const now = Math.floor(Date.now() / 1000);
+      void refreshWidgets({ store, profile, timeZone: profile.timeZone, today: localDay(now, profile.timeZone), now, sync: appState().sync }, source, { epoch });
+    }
   } catch (e) {
     value = { ...value, liveHr: { ...value.liveHr, updatedAt: Date.now(), error: e instanceof Error ? e.message : String(e) } };
   } finally {
