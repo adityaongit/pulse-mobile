@@ -1,3 +1,5 @@
+import { i18n } from "@/i18n/config";
+import { push } from "@/ui/navigate";
 // First run `/onboarding` (docs/onboarding.md). Welcome (connect Health Connect or explore with sample data), then the
 // profile, then the explainer before Health Connect's permission sheet, then the first import with its progress. The
 // profile step is pulse's src/app/onboarding/Onboarding.tsx on the AuthShell frame: birth date, sex and the time zone
@@ -90,6 +92,7 @@ function Welcome({ onConnect }: { onConnect: () => void }) {
             )}
             <ConnectButton onPress={onConnect} />
             <TextButton label={t("welcome.exploreSample")} onPress={explore} />
+            <TextButton label={i18n.t("workouts:recorder.start")} onPress={() => push("/workout-live")} />
             <View className="mt-2 flex-row items-center justify-center gap-1.5">
               <Icon icon={Lock} size={13} tone="muted-foreground" strokeWidth={2} />
               <Text className="text-[13px] leading-[18px] text-muted-foreground">{t("welcome.private")}</Text>

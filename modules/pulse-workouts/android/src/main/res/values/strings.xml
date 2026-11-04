@@ -1,0 +1,10 @@
+<resources>
+  <string name="pulse_workout_channel">Workout recording</string>
+  <string name="pulse_workout_title">Pulse workout</string>
+  <string name="pulse_workout_recording">Recording</string>
+  <string name="pulse_workout_paused">Paused</string>
+  <string name="pulse_workout_waiting">Waiting for heart rate</string>
+  <string name="pulse_workout_pause">Pause</string>
+  <string name="pulse_workout_resume">Resume</string>
+  <string name="pulse_workout_finish">Finish</string>
+</resources>

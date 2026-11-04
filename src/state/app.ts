@@ -1,3 +1,4 @@
+import { workoutNative, workoutNativeAvailable } from "../../modules/pulse-workouts";
 import { i18n } from "@/i18n/config";
 // App-wide state: the Store, the profile, where data comes from (Health Connect, or the demo generator for "Explore
 // with sample data"), the sync + scoring run, and the query context the screens read with. Follows halo's
@@ -186,6 +187,11 @@ export async function boot(applyTheme: (theme: string) => void): Promise<void> {
   try {
     await applyLanguage(await readChoice());
     const st = await openStore();
+    // Finish a requested full reset before importing any surviving native journal.
+    if (workoutNativeAvailable && await workoutNative.resetPending()) {
+      await st.workouts.clear();
+      await workoutNative.finishReset();
+    }
     // The background task reuses this connection when it fires while the app is up; the task registration and the
     // check-in reminder are made to match the saved settings.
     registerAppStore(st);
@@ -366,6 +372,11 @@ export async function reimport(): Promise<void> {
 export async function reset(): Promise<void> {
   const { store } = state;
   if (running) await running.catch(() => {});
+  if (workoutNativeAvailable) await workoutNative.beginReset();
+  if (store) await store.workouts.clear();
+  if (workoutNativeAvailable) await workoutNative.finishReset();
+  (await import("@/live/workoutRecorder")).workoutRecorder.clearView();
+  await AsyncStorage.removeItem(SOURCE_KEY);
   if (store) await store.clearAll();
   deleteAllPhotos();
   await AsyncStorage.multiRemove([SOURCE_KEY, OWN_PROFILE_KEY]).catch(() => {});

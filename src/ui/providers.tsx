@@ -1,4 +1,5 @@
-import { useState, type ReactNode } from "react";
+import { workoutRecorder } from "@/live/workoutRecorder";
+import { useEffect, useState, type ReactNode } from "react";
 import { StyleSheet } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -18,6 +19,7 @@ import { ToastHost } from "./Toast";
  * - LiveHrTicker: the minute-by-minute Health Connect heart-rate read (src/state/liveHr.tsx); renders nothing.
  */
 export function AppProviders({ children }: { children: ReactNode }) {
+  useEffect(() => workoutRecorder.mount(), []);
   const [calendar] = useState(() => ({ today: todayIn() }));
   return (
     <GestureHandlerRootView style={styles.root}>

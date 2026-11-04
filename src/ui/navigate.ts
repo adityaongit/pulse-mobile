@@ -24,8 +24,8 @@ export function goBack() {
   else router.replace("/");
 }
 
-/** A tab root ("/", "/health", "/journal", "/more"), with or without a query. */
-export const isTabRoot = (path: string) => ["/", "/health", "/journal", "/more"].includes(path.split("?")[0]);
+/** A tab root, with or without a query. Keep aligned with the tab bar's destinations. */
+export const isTabRoot = (path: string) => ["/", "/health", "/workout", "/journal", "/more"].includes(path.split("?")[0]);
 
 /**
  * Opens a link from outside a tap (a notification, a launcher shortcut, another app). A tab root first closes what is

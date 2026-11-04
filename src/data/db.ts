@@ -1,3 +1,4 @@
+import { SqliteWorkoutStore } from "./workoutDb";
 // The Store on expo-sqlite. The schema mirrors Pulse's Postgres one (src/server/db/schema.ts) minus user ids:
 // one person per database. JSON columns hold the score and series blobs; heart rate and steps are bucketed per
 // UTC day like Pulse's hr_days / steps_days (parallel JSON arrays of second-of-day offsets and values), since a
@@ -216,6 +217,7 @@ const LOGGED_INSERT = `insert or replace into logged_entries (${LOGGED_COLUMNS})
 const loggedParams = (r: LoggedEntryRow, source: EntrySource): Param[] => [r.id, r.type, r.ts, r.day, JSON.stringify(r.data), r.createdAt, source];
 
 class SqliteStore implements Store {
+  readonly workouts = new SqliteWorkoutStore();
   constructor(private db: SQLiteDatabase) {}
 
   /** Swaps in a freshly opened connection (see `healing` below); the write queue carries on. */

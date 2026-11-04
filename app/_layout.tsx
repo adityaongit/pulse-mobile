@@ -135,7 +135,7 @@ function Screens({ onboarded }: { onboarded: boolean }) {
           <Stack.Screen name="strain" />
           <Stack.Screen name="trend/[key]" />
           <Stack.Screen name="trends" />
-          <Stack.Screen name="workout-live" />
+          <Stack.Screen name="workout-coach" />
           <Stack.Screen name="dev/kit" />
           <Stack.Screen name="dev/kit/charts" />
           <Stack.Screen name="dev/kit/detail" />
@@ -156,6 +156,7 @@ function Screens({ onboarded }: { onboarded: boolean }) {
           <Stack.Screen name="journal/impact" />
           <Stack.Screen name="dev/task" />
         </Stack.Protected>
+        <Stack.Screen name="workout-live" />
       </Stack>
     </ThemeProvider>
   );
