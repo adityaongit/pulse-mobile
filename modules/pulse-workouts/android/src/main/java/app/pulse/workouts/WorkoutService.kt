@@ -43,6 +43,11 @@ class WorkoutService : Service() {
       return result
     }
     fun active(ctx: Context): String? = snapshot ?: WorkoutJournal.active(ctx)?.toString()
+    /** A destroyed instance clears the shared state only while it still owns it: a new Start may have claimed it. */
+    @Synchronized fun release(id: String?) {
+      if (id != null && runningId == id) { runningId = null; snapshot = null }
+    }
+    @Synchronized fun claim(id: String) { runningId = id }
   }
 
   private lateinit var worker: Handler
@@ -105,8 +110,9 @@ class WorkoutService : Service() {
         .put("endedAt", JSONObject.NULL).put("updatedAt", now).put("activeMs", 0)
         .put("revision", 0).put("seq", 0).put("epoch", 0).put("link", "connecting")
         .put("lastBpm", JSONObject.NULL).put("lastSampleAt", JSONObject.NULL).put("error", JSONObject.NULL)
-      runningId = body.getString("id")
+      claim(body.getString("id"))
       runAt = SystemClock.elapsedRealtime()
+      WorkoutJournal.forgetActive(this)
       openLog()
       checkpoint()
       WorkoutJournal.setActive(this, runningId)
@@ -120,7 +126,7 @@ class WorkoutService : Service() {
     if (meta == null) {
       meta = WorkoutJournal.read(this, id)
       epoch = requireNotNull(meta).optInt("epoch") + 1
-      runningId = id
+      claim(id)
       openLog()
       worker.post(tick)
     }
@@ -202,7 +208,7 @@ class WorkoutService : Service() {
     checkpointAt = SystemClock.elapsedRealtime()
   }
   private fun publish() {
-    meta?.let { snapshot = JSONObject(it.toString()).put("seq", it.optLong("committedSeq")).toString() }
+    meta?.takeIf { it.optString("id") == runningId }?.let { snapshot = JSONObject(it.toString()).put("seq", it.optLong("committedSeq")).toString() }
   }
   private val tick = object : Runnable {
     override fun run() {
@@ -366,8 +372,7 @@ class WorkoutService : Service() {
       disconnect()
       releaseWake()
       try { log?.close() } catch (_: Exception) { }
-      runningId = null
-      snapshot = null
+      release(meta?.optString("id"))
       thread.quitSafely()
     }
     super.onDestroy()

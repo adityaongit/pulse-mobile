@@ -33,17 +33,20 @@ class WorkoutRecorder {
   private async ingest(session: RecordedWorkout): Promise<void> {
     const store = appStore().workouts;
     let offset = await store.cursor(session.id);
+    let drained = false;
     for (;;) {
       const page = JSON.parse(await workoutNative.samples(session.id, offset)) as Page;
       if (!Number.isSafeInteger(page.offset) || page.offset < offset || !Array.isArray(page.samples)) throw new Error("invalidCursor");
       const samples = page.samples.map(parseWorkoutSample);
       await store.ingest(session, samples, page.offset);
       if (session.id === this.owner) for (const point of samples) this.activeSamples.set(point.seq, point);
+      drained = !page.more;
       if (!page.more || page.offset === offset) break;
       offset = page.offset;
       await new Promise<void>((resolve) => setTimeout(resolve, 0));
     }
-    if (session.status === "completed") await workoutNative.acknowledge(session.id, session.revision);
+    // Acknowledging deletes the native journal, so only once every committed sample is in the Store.
+    if (session.status === "completed" && drained) await workoutNative.acknowledge(session.id, session.revision);
   }
   refresh = (): Promise<void> => {
     if (this.polling) return this.polling;
