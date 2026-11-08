@@ -329,7 +329,7 @@ describe("BloodPressure Ingestion & Validation", () => {
 });
 
 describe("BloodPressure Store Operations", () => {
-  it("supports upsert, query by day, query by day range, and timestamp range", async () => {
+  it("upserts, reads newest first and clears with the imported days", async () => {
     const store = new MemoryStore();
     const r1: BloodPressureReading = {
       id: "r1",
@@ -365,30 +365,10 @@ describe("BloodPressure Store Operations", () => {
     const all = await store.allBloodPressure();
     expect(all.map((r) => r.id)).toEqual(["r3", "r2", "r1"]);
 
-    // getBloodPressure for specific day
-    const day10 = await store.getBloodPressure("2026-04-10");
-    expect(day10.map((r) => r.id)).toEqual(["r2", "r1"]);
-
-    // bloodPressureIn range
-    const range = await store.bloodPressureIn({ from: "2026-04-11", to: "2026-04-12" });
-    expect(range.map((r) => r.id)).toEqual(["r3"]);
-
-    // readBloodPressure by ts [fromTs, toTs) ascending
-    const between = await store.readBloodPressure(1775800000, 1775850000);
-    expect(between.map((r) => r.id)).toEqual(["r1", "r2"]);
-
     // clearImported removes records within cleared day range
     await store.clearImported({ from: "2026-04-10", to: "2026-04-10" }, 1775700000, 1776000000);
     const remaining = await store.allBloodPressure();
     expect(remaining.map((r) => r.id)).toEqual(["r3"]);
-
-    // getBloodPressure without day returns all remaining
-    const withoutDay = await store.getBloodPressure();
-    expect(withoutDay.map((r) => r.id)).toEqual(["r3"]);
-
-    // readBloodPressure outside range
-    const empty = await store.readBloodPressure(1775000000, 1775100000);
-    expect(empty).toEqual([]);
 
     // clearAll removes everything
     await store.clearAll();

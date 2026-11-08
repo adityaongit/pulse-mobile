@@ -149,7 +149,7 @@ function Tile({ p, c }: { p: KeyStatRowProps; c: Computed }) {
     ? ""
     : c.reason
       ? `${p.label}: ${c.reason}`
-      : [statSentence({ label: p.label, valueText: c.valueText, unit: p.unit, averageText: p.chip ? undefined : c.avgText, averageLabel: p.averageLabel, dir: c.dir, tone: c.tone }), p.chip?.text].filter(Boolean).join(", ");
+      : [statSentence({ label: p.label, valueText: c.valueText, unit: p.unit, averageText: p.chip ? undefined : c.avgText, averageLabel: p.averageLabel, dir: c.dir, tone: c.tone }), p.chip?.text, p.caption].filter(Boolean).join(", ");
   const shadow = useCardStyle(flagged && ring(colors["warning-ring"]));
   return (
     <Frame
@@ -199,6 +199,7 @@ function Tile({ p, c }: { p: KeyStatRowProps; c: Computed }) {
                     </StatusChip>
                   )
                 ))}
+              {!!p.caption && <Text className={CAPTION}>{p.caption}</Text>}
             </>
           )}
         </View>

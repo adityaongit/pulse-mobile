@@ -19,6 +19,9 @@ describe("widget native configuration", () => {
     expect(manifest.manifest.application[0].activity[0]).toEqual(activity);
     expect(manifest.manifest.application[0].receiver).toHaveLength(4);
     expect(manifest.manifest.application[0].activity).toHaveLength(2);
+    expect(manifest.manifest.application[0].activity[1].$).toMatchObject({
+      "android:taskAffinity": "", "android:excludeFromRecents": "true", "android:theme": "@style/PulseWidgetConfigure",
+    });
   });
   it("keeps packaged native text in sync with English translation keys", () => {
     expect(readFileSync("modules/pulse-widgets/android/src/main/res/values/strings.xml", "utf8")).toBe(widgetStrings());

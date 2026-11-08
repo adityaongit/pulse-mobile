@@ -47,6 +47,7 @@ export function VitalTiles({ vitals, day, today }: { vitals: Vital[]; day: strin
             icon={ICON(x.key)}
             label={x.key === "restingHr" || x.key === "hrv" || x.key === "bp" ? x.short : x.label}
             customValue={x.customValue}
+            caption={x.caption}
             metric={x.metric}
             unit={x.unit}
             format={FORMAT[x.key]}

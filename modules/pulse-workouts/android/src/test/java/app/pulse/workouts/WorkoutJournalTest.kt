@@ -61,7 +61,52 @@ class WorkoutJournalTest {
     assertEquals(1, org.json.JSONArray(WorkoutJournal.pending(ctx)).length())
     WorkoutJournal.acknowledge(ctx, "test-1", 1)
     assertEquals(0, org.json.JSONArray(WorkoutJournal.pending(ctx)).length())
-    assertEquals("completed", WorkoutJournal.read(ctx, "test-1").getString("status"))
+  }
+  @Test fun anAcknowledgedSessionIsPrunedAndStaysGone() {
+    val folder = File(File(ctx.filesDir, "workout-journal"), "test-1")
+    WorkoutJournal.sampleFile(ctx, "test-1").writeText("{\"seq\":1,\"bpm\":100}\n")
+    WorkoutJournal.save(ctx, meta("paused"))
+    WorkoutJournal.acknowledge(ctx, "test-1", 1)
+    assertTrue("an unfinished session is never pruned", folder.exists())
+    WorkoutJournal.save(ctx, meta("completed").put("revision", 2))
+    WorkoutJournal.setActive(ctx, "test-1") // a finish interrupted before it cleared the pointer
+    WorkoutJournal.acknowledge(ctx, "test-1", 2)
+    assertFalse(folder.exists())
+    // A poll racing the acknowledge reads nothing and brings no folder back.
+    WorkoutJournal.acknowledge(ctx, "test-1", 2)
+    assertNull(WorkoutJournal.active(ctx))
+    assertEquals(0, org.json.JSONArray(WorkoutJournal.pending(ctx)).length())
+    val page = JSONObject(WorkoutJournal.page(ctx, "test-1", 0))
+    assertEquals(0, page.getJSONArray("samples").length())
+    assertFalse(page.getBoolean("more"))
+    assertFalse(folder.exists())
+  }
+  @Test fun anEmptyPointerMeansNoSessionWithoutAScan() {
+    WorkoutJournal.save(ctx, meta())
+    WorkoutJournal.setActive(ctx, null)
+    assertNull(WorkoutJournal.active(ctx))
+    // A start clears the pointer before its first metadata, so an interrupted pointer write is still recovered.
+    WorkoutJournal.forgetActive(ctx)
+    assertEquals("test-1", WorkoutJournal.active(ctx)!!.getString("id"))
+  }
+  @Test fun aScanThatFindsNothingRecordsNoSession() {
+    assertNull(WorkoutJournal.active(ctx))
+    assertEquals("", File(File(ctx.filesDir, "workout-journal"), "active").readText())
+  }
+  @Test fun aScanDuringAStartLeavesThePointerUnknown() {
+    WorkoutService.runningId = "test-1"
+    assertNull(WorkoutJournal.active(ctx))
+    assertFalse(File(File(ctx.filesDir, "workout-journal"), "active").exists())
+  }
+  @Test fun anOldServiceNeverClearsANewSessionsState() {
+    WorkoutService.runningId = "new"
+    WorkoutService.snapshot = "{}"
+    WorkoutService.release("old")
+    assertEquals("new", WorkoutService.runningId)
+    assertEquals("{}", WorkoutService.snapshot)
+    WorkoutService.release("new")
+    assertNull(WorkoutService.runningId)
+    assertNull(WorkoutService.snapshot)
   }
   @Test fun pathTraversalIsRejected() {
     assertThrows(IllegalArgumentException::class.java) { WorkoutJournal.page(ctx, "../outside", 0) }

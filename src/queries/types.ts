@@ -352,6 +352,8 @@ export type Vital = {
   trend: Trend;
   /** Formatted custom display for dual-scalar vitals e.g. "120/80" for BP */
   customValue?: string;
+  /** A short note under the chip, e.g. that BP's category rests on one reading. */
+  caption?: string;
   /** Optional paired vital payload for blood pressure */
   bp?: {
     systolic: number;

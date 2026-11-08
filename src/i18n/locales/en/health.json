@@ -369,6 +369,7 @@
     "trendPlotSummary": "30-day blood pressure trend: systolic and diastolic readings",
     "breakdown": "30-Day Category Breakdown ({{count}})",
     "readingsOnDay": " · {{count}} readings on day",
+    "singleReading": "Based on one reading",
     "readingsOnDate": "Readings on {{date}}",
     "guidelines": "AHA/ACC Classification Guidelines",
     "disclaimer": "Pulse is not a diagnostic device. Consult a physician for diagnosis and medical management of blood pressure.",

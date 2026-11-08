@@ -11,9 +11,10 @@ import java.io.RandomAccessFile
 /** Private append-only sensor journal. SQLite is owned exclusively by src/data. */
 object WorkoutJournal {
   private fun root(ctx: Context) = File(ctx.filesDir, "workout-journal").apply { mkdirs() }
-  private fun dir(ctx: Context, id: String): File {
+  /** Only writers create a session folder; readers must not bring back one acknowledge pruned. */
+  private fun dir(ctx: Context, id: String, create: Boolean = false): File {
     require(id.matches(Regex("[a-zA-Z0-9-]{1,80}"))) { "invalidSession" }
-    return File(root(ctx), id).apply { mkdirs() }
+    return File(root(ctx), id).apply { if (create) mkdirs() }
   }
   private fun atomic(file: File, body: String) {
     val atomic = AtomicFile(file)
@@ -28,26 +29,37 @@ object WorkoutJournal {
     }
   }
   @Synchronized fun save(ctx: Context, meta: JSONObject) {
-    val folder = dir(ctx, meta.getString("id"))
+    val folder = dir(ctx, meta.getString("id"), create = true)
     atomic(File(folder, "meta.json"), meta.toString())
     File(folder, "pending").let { if (!it.exists()) it.writeText("") }
   }
   @Synchronized fun read(ctx: Context, id: String): JSONObject =
     JSONObject(AtomicFile(File(dir(ctx, id), "meta.json")).openRead().bufferedReader().use { it.readText() })
+  private fun exists(ctx: Context, id: String) = File(dir(ctx, id), "meta.json").exists()
+  private fun pointer(ctx: Context) = File(root(ctx), "active")
+  /** An empty pointer records "no session"; a missing one means unknown, and active() scans for an orphan. */
   @Synchronized fun setActive(ctx: Context, id: String?) {
-    atomic(File(root(ctx), "active"), id ?: "")
+    atomic(pointer(ctx), id ?: "")
+  }
+  /** Called before a start commits its first metadata, so a crash before setActive still finds the session. */
+  @Synchronized fun forgetActive(ctx: Context) {
+    AtomicFile(pointer(ctx)).delete()
   }
   @Synchronized fun active(ctx: Context): JSONObject? {
-    val file = File(root(ctx), "active")
-    var id = if (file.exists()) AtomicFile(file).openRead().bufferedReader().use { it.readText() } else ""
-    if (id.isBlank()) {
+    val file = pointer(ctx)
+    var id = if (file.exists()) AtomicFile(file).openRead().bufferedReader().use { it.readText() } else null
+    if (id == null) {
       // Recover the tiny window between committing the first metadata and its active pointer.
       val orphan = root(ctx).listFiles()?.filter { it.isDirectory && File(it, "meta.json").exists() }
         ?.sortedByDescending { File(it, "meta.json").lastModified() }
         ?.firstOrNull { read(ctx, it.name).getString("status") != "completed" }
-      id = orphan?.name ?: return null
+      // While a start is under way its metadata may not be committed yet; leave the pointer unknown for it.
+      if (orphan == null) { if (WorkoutService.runningId == null) setActive(ctx, null); return null }
+      id = orphan.name
       setActive(ctx, id)
     }
+    if (id.isBlank()) return null
+    if (!exists(ctx, id)) { setActive(ctx, null); return null }
     val meta = read(ctx, id)
     if (meta.getString("status") == "completed") { setActive(ctx, null); return null }
     if (meta.getString("status") == "recording" && WorkoutService.runningId != id) {
@@ -65,10 +77,15 @@ object WorkoutJournal {
     }
     return result.toString()
   }
+  /**
+   * The Store holds this completed revision, samples included, so the journal is no longer needed and is deleted.
+   * Idempotent: a second acknowledge of a pruned session is a no-op.
+   */
   @Synchronized fun acknowledge(ctx: Context, id: String, revision: Long) {
+    if (!exists(ctx, id)) return
     val meta = read(ctx, id)
     if (meta.getString("status") == "completed" && meta.getLong("revision") == revision) {
-      check(File(dir(ctx, id), "pending").delete() || !File(dir(ctx, id), "pending").exists())
+      check(dir(ctx, id).deleteRecursively()) { "storage" }
     }
   }
   /**
@@ -100,16 +117,15 @@ object WorkoutJournal {
     check(root(ctx).deleteRecursively()) { "storage" }
     check(resetFile(ctx).delete() || !resetFile(ctx).exists()) { "storage" }
   }
-  fun sampleFile(ctx: Context, id: String) = File(dir(ctx, id), "samples.jsonl")
+  fun sampleFile(ctx: Context, id: String) = File(dir(ctx, id, create = true), "samples.jsonl")
   /** Byte cursor stops before an incomplete final line. Duplicate replay is safe in the Store. */
   @Synchronized fun page(ctx: Context, id: String, offset: Long): String {
     val result = JSONArray()
-    val file = sampleFile(ctx, id)
+    val file = File(dir(ctx, id), "samples.jsonl")
     var next = offset
     var more = false
     if (file.exists()) RandomAccessFile(file, "r").use { input ->
-      val metaFile = File(dir(ctx, id), "meta.json")
-      val committed = if (metaFile.exists()) read(ctx, id).optLong("committedOffset", input.length()) else input.length()
+      val committed = if (exists(ctx, id)) read(ctx, id).optLong("committedOffset", input.length()) else input.length()
       val end = minOf(committed, input.length())
       require(offset >= 0 && offset <= end) { "invalidCursor" }
       input.seek(offset)

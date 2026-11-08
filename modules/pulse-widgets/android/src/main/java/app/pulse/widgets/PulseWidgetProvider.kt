@@ -25,6 +25,8 @@ open class PulseWidgetProvider : AppWidgetProvider() {
   override fun onUpdate(context: Context, manager: AppWidgetManager, ids: IntArray) { ids.forEach { renderWidget(context, manager, it) } }
   override fun onAppWidgetOptionsChanged(context: Context, manager: AppWidgetManager, id: Int, options: Bundle) { renderWidget(context, manager, id) }
   override fun onDeleted(context: Context, ids: IntArray) { WidgetCache.remove(context, ids) }
+  // A backup restore gives every widget a new id; carry each one's metric choice over to it.
+  override fun onRestored(context: Context, oldIds: IntArray, newIds: IntArray) { WidgetCache.restore(context, oldIds, newIds) }
 }
 class PulseSmallWidgetProvider : PulseWidgetProvider()
 class PulseMediumWidgetProvider : PulseWidgetProvider()

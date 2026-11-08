@@ -202,9 +202,6 @@ export class MemoryStore implements Store {
   async upsertBloodPressure(rows: BloodPressureReading[]) {
     for (const r of rows) this.bloodPressure.set(r.id, copy(r));
   }
-  async insertBloodPressure(records: BloodPressureReading[]) {
-    return this.upsertBloodPressure(records);
-  }
   async markIntradayDirty(days: string[]) {
     for (const d of days) this.dirty.add(d);
   }
@@ -238,30 +235,6 @@ export class MemoryStore implements Store {
   }
   async allBloodPressure(): Promise<BloodPressureReading[]> {
     return copy([...this.bloodPressure.values()].sort((a, b) => b.ts - a.ts || (a.id < b.id ? 1 : a.id > b.id ? -1 : 0)));
-  }
-  async bloodPressureIn(range: DayRange): Promise<BloodPressureReading[]> {
-    return copy(
-      [...this.bloodPressure.values()]
-        .filter((r) => inRange(r.day, range))
-        .sort((a, b) => b.ts - a.ts || (a.id < b.id ? 1 : a.id > b.id ? -1 : 0)),
-    );
-  }
-  async readBloodPressure(fromTs: number, toTs: number): Promise<BloodPressureReading[]> {
-    return copy(
-      [...this.bloodPressure.values()]
-        .filter((r) => r.ts >= fromTs && r.ts < toTs)
-        .sort((a, b) => a.ts - b.ts),
-    );
-  }
-  async getBloodPressure(day?: string): Promise<BloodPressureReading[]> {
-    if (day !== undefined) {
-      return copy(
-        [...this.bloodPressure.values()]
-          .filter((r) => r.day === day)
-          .sort((a, b) => b.ts - a.ts || (a.id < b.id ? 1 : a.id > b.id ? -1 : 0)),
-      );
-    }
-    return this.allBloodPressure();
   }
   async readHr(lo: number, hi: number) {
     return this.hr.read(lo, hi).map((s) => ({ ts: s.ts, bpm: s.v }));

@@ -17,7 +17,8 @@ export const FEATURES = {
   sleepAlarm: false,
   /** Share of the night in high, medium and low stress. Pulse's stress model leaves sleep minutes out. */
   sleepStress: false,
-  /** Health's Blood Pressure Insights (Beta). Pulse reads no blood pressure. */
+  /** Health's Blood Pressure Insights (Beta), an estimate from wearable signals. Pulse shows cuff readings from Health
+   * Connect (Health Monitor) but estimates nothing. */
   bloodPressure: false,
   /** An activity's strain split into cardio and muscular load. Pulse measures heart rate only. */
   muscularLoad: false,

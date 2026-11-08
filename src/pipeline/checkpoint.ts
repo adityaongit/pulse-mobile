@@ -55,13 +55,17 @@ function clone<T>(v: T): T {
   return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, clone(x)])) as T;
 }
 
-/** What stage 2 reads for one day, as a key: its daily row, sessions with their stages, workouts, stage 1 row and journal. */
+/**
+ * What stage 2 reads for one day, as a key: its daily row, sessions with their stages, workouts, stage 1 row, journal and
+ * blood pressure readings (the fields Health Monitor stores, not `importedAt`, which every sync rewrites).
+ */
 function dayKeys(data: Data, inputs: Inputs, journal: Map<string, unknown[]>) {
   return new Map(
     data.days.map((d) => {
       const c = inputs.cached.get(d);
       const sessions = (data.sessionsByDay.get(d) ?? []).map((s) => [s, inputs.segments.get(s.id) ?? null]);
-      const parts = [data.metrics.get(d) ?? null, sessions, data.exercisesByDay.get(d) ?? [], c ? [c.s1, c.activities, c.sessionRhr] : null, journal.get(d) ?? []];
+      const bp = (data.bloodPressureByDay.get(d) ?? []).map((b) => [b.id, b.ts, b.systolicMmhg, b.diastolicMmhg]);
+      const parts = [data.metrics.get(d) ?? null, sessions, data.exercisesByDay.get(d) ?? [], c ? [c.s1, c.activities, c.sessionRhr] : null, journal.get(d) ?? [], bp];
       return [d, sha(JSON.stringify(parts))];
     }),
   );

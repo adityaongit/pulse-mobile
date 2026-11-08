@@ -69,7 +69,6 @@ create table if not exists blood_pressure_readings (
 );
 create index if not exists blood_pressure_day on blood_pressure_readings (day);
 create index if not exists blood_pressure_ts on blood_pressure_readings (ts);
-create view if not exists blood_pressure as select * from blood_pressure_readings;
 create table if not exists coach_chats (id text primary key, title text not null, messages text not null, created_at integer not null, updated_at integer not null);
 create index if not exists coach_chats_recent on coach_chats (updated_at desc, id desc);
 `;
@@ -98,7 +97,8 @@ const MIGRATIONS = [
   "create table if not exists blood_pressure_readings (id text primary key, ts integer not null, day text not null, systolic_mmhg real not null, diastolic_mmhg real not null, body_position text, measurement_location text, recording_method text, source_platform text, source_application text, source_device text, quality text not null, imported_at integer not null)",
   "create index if not exists blood_pressure_day on blood_pressure_readings (day)",
   "create index if not exists blood_pressure_ts on blood_pressure_readings (ts)",
-  "create view if not exists blood_pressure as select * from blood_pressure_readings",
+  // An unused view an earlier build created.
+  "drop view if exists blood_pressure",
 ];
 
 const DAY = 86_400;
@@ -580,10 +580,6 @@ class SqliteStore implements Store {
     );
   }
 
-  async insertBloodPressure(records: BloodPressureReading[]) {
-    return this.upsertBloodPressure(records);
-  }
-
   async markIntradayDirty(days: string[]) {
     if (!days.length) return;
     await this.tx((db) => this.many(db, "insert or ignore into intraday_dirty (day) values (?)", days.map((d) => [d])));
@@ -642,33 +638,6 @@ class SqliteStore implements Store {
   async allBloodPressure(): Promise<BloodPressureReading[]> {
     const rows = await this.db.getAllAsync<BloodPressureRow>("select * from blood_pressure_readings order by ts desc, id desc");
     return rows.map(bloodPressureOf);
-  }
-
-  async bloodPressureIn(range: DayRange): Promise<BloodPressureReading[]> {
-    const rows = await this.db.getAllAsync<BloodPressureRow>(
-      "select * from blood_pressure_readings where day >= ? and day <= ? order by ts desc, id desc",
-      [range.from, range.to],
-    );
-    return rows.map(bloodPressureOf);
-  }
-
-  async readBloodPressure(fromTs: number, toTs: number): Promise<BloodPressureReading[]> {
-    const rows = await this.db.getAllAsync<BloodPressureRow>(
-      "select * from blood_pressure_readings where ts >= ? and ts < ? order by ts asc",
-      [fromTs, toTs],
-    );
-    return rows.map(bloodPressureOf);
-  }
-
-  async getBloodPressure(day?: string): Promise<BloodPressureReading[]> {
-    if (day !== undefined) {
-      const rows = await this.db.getAllAsync<BloodPressureRow>(
-        "select * from blood_pressure_readings where day = ? order by ts desc, id desc",
-        [day],
-      );
-      return rows.map(bloodPressureOf);
-    }
-    return this.allBloodPressure();
   }
 
   /** Samples with lo <= ts < hi from the buckets they can fall in, in time order. */

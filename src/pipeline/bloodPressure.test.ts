@@ -12,7 +12,7 @@ describe("Pipeline blood pressure scoring", () => {
     const day = "2026-05-10";
 
     // Insert blood pressure reading
-    await store.insertBloodPressure([
+    await store.upsertBloodPressure([
       {
         id: "bp-1",
         ts: Date.parse(`${day}T08:30:00Z`) / 1000,
@@ -46,7 +46,7 @@ describe("Pipeline blood pressure scoring", () => {
     const day = "2026-05-11";
 
     // Insert two readings at different times
-    await store.insertBloodPressure([
+    await store.upsertBloodPressure([
       {
         id: "bp-morning",
         ts: Date.parse(`${day}T07:30:00Z`) / 1000,

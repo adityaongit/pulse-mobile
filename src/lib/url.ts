@@ -97,14 +97,15 @@ export const napHref = (id: string) => `/sleep/nap/${encodeURIComponent(id)}`;
 
 // --- Navigation structure (spec §4.2, §4.5) ---
 
-export type Tab = "home" | "health" | "journal" | "more";
-export const TAB_ROOT: Record<Tab, string> = { home: "/", health: "/health", journal: "/journal", more: "/more" };
+export type Tab = "home" | "health" | "workout" | "journal" | "more";
+export const TAB_ROOT: Record<Tab, string> = { home: "/", health: "/health", workout: "/workout", journal: "/journal", more: "/more" };
 
 /** The tab a route belongs to. Detail routes map to their parent tab. */
 export function tabForPath(pathname: string): Tab {
   const first = pathname.split("/")[1] ?? "";
   if (first === "health") return "health";
   if (first === "journal") return "journal";
+  if (first === "workout" || first === "workout-coach") return "workout";
   if (["more", "settings", "reports", "trends"].includes(first)) return "more";
   return "home";
 }

@@ -142,8 +142,6 @@ export type BloodPressureReading = {
   importedAt: number;
 };
 
-/** Alias for BloodPressureReading mirroring the Health Connect record naming. */
-export type BloodPressureRecord = BloodPressureReading;
 
 /** "Shown, never scored" extras keyed like Pulse's daily_values (e.g. "distance_m", "floors", "height_cm" on day "latest"). */
 export type DailyValue = { day: string; key: string; value: number };

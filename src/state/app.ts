@@ -29,6 +29,7 @@ import type { DisplayPrefs } from "@/lib/units";
 import type { QueryCtx } from "@/queries/ctx";
 import { ensureDefaultTags } from "@/queries/journal";
 import { applyDisplay } from "./display";
+import { SOURCE_KEY } from "./source";
 import { checkForUpdate } from "./update";
 
 export type { Source };
@@ -54,7 +55,6 @@ export type AppInfo = {
   theme: "system" | "light" | "dark";
 };
 
-const SOURCE_KEY = "pulse.source";
 const OWN_PROFILE_KEY = "pulse.ownProfile";
 
 export const THEME_KEY = "pulse.theme";
