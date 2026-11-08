@@ -69,6 +69,9 @@ export const VITAL_LABEL: Record<VitalKey, string> = {
   get skinTempDev() {
     return i18n.t("home:vital.skinTempDev");
   },
+  get bp() {
+    return i18n.t("home:vital.bp");
+  },
 };
 
 /** A drain's name: the engine stores "Stress", "Activity" or the workout's name in English; those three map to keys, a named workout shows as stored. */

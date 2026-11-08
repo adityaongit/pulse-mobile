@@ -19,7 +19,8 @@
     "measurements": "Pomiary",
     "ecgReading": "Odczyt EKG",
     "hrvStatus": "HRV Status",
-    "timeInZones": "Czas w strefach"
+    "timeInZones": "Czas w strefach",
+    "bloodPressure": "Ciśnienie krwi"
   },
   "age": {
     "same": "Tyle, ile Twój wiek",
@@ -359,5 +360,42 @@
     "rem": "REM",
     "light": "Płytki",
     "deep": "Głęboki"
+  },
+  "bloodPressure": {
+    "title": "Ciśnienie krwi",
+    "detail": "Szczegóły",
+    "noData": "Brak danych",
+    "show": "Pokaż",
+    "hide": "Ukryj",
+    "systolic": "Skurczowe",
+    "diastolic": "Rozkurczowe",
+    "noReadings30d": "Brak pomiarów ciśnienia krwi zarejestrowanych w ciągu ostatnich 30 dni.",
+    "trendPlotSummary": "30-dniowy trend ciśnienia krwi: pomiary skurczowe i rozkurczowe",
+    "breakdown": "30-dniowy podział na kategorie ({{count}})",
+    "readingsOnDay": " · {{count}} pomiarów w ciągu dnia",
+    "readingsOnDate": "Pomiary z dnia {{date}}",
+    "guidelines": "Wytyczne klasyfikacji AHA/ACC",
+    "disclaimer": "Pulse nie jest urządzeniem diagnostycznym. Skonsultuj się z lekarzem w celu diagnozy i leczenia ciśnienia krwi.",
+    "prior": "Poprzedni: {{value}}",
+    "noReadingWithPrior": "Brak pomiaru w dniu {{date}}. Ostatni: {{value}} mmHg w dniu {{priorDate}}.",
+    "emptyDayHint": "Brak pomiaru ciśnienia krwi w tym dniu. Zapisuj pomiary w Health Connect, aby śledzić trendy.",
+    "readingMeta": "{{date}} o {{time}}",
+    "ariaDetail": "Szczegóły ciśnienia krwi: {{reading}} mmHg, {{status}}",
+    "ariaDetailNoReading": "Szczegóły ciśnienia krwi: Brak pomiaru",
+    "category": {
+      "normal": "Prawidłowe",
+      "elevated": "Podwyższone",
+      "stage1": "Stopień 1",
+      "stage2": "Stopień 2",
+      "crisis": "Kryzys",
+      "hypertensiveCrisis": "Przełom nadciśnieniowy"
+    },
+    "stageRange": {
+      "normal": "< 120 i < 80 mmHg",
+      "elevated": "120–129 i < 80 mmHg",
+      "stage1": "130–139 lub 80–89 mmHg",
+      "stage2": "140+ lub 90+ mmHg",
+      "crisis": "> 180 i/lub > 120 mmHg"
+    }
   }
 }

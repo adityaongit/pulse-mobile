@@ -192,7 +192,8 @@
     "fat": "Tłuszcz z zapisanego jedzenia.",
     "glucose": "Odczyty glukozy we krwi z podłączonego glukometru lub ręcznego zapisu.",
     "core_temp": "Odczyty temperatury głębokiej ciała z podłączonego czujnika.",
-    "swim_strokes": "Ruchy pływackie liczone podczas pływania na basenie."
+    "swim_strokes": "Ruchy pływackie liczone podczas pływania na basenie.",
+    "bp": "Pomiary ciśnienia krwi z Health Connect lub połączonego ciśnieniomierza. Prawidłowe ciśnienie krwi to skurczowe poniżej 120 mmHg i rozkurczowe poniżej 80 mmHg."
   },
   "metricSource": {
     "activity": "Dzienne podsumowanie Twojej aplikacji zdrowotnej, liczone przez opaskę lub telefon. Pulse pokazuje je tak, jak przychodzi, i go nie ocenia.",

@@ -16,7 +16,8 @@
     "spo2": "Tlen we krwi",
     "restingHr": "Tętno spoczynkowe",
     "hrv": "Zmienność rytmu serca",
-    "skinTempDev": "Temperatura skóry"
+    "skinTempDev": "Temperatura skóry",
+    "bp": "Ciśnienie krwi"
   },
   "section": {
     "myDay": "Mój dzień",

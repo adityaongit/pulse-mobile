@@ -40,7 +40,8 @@
     "fat": "Grassi",
     "glucose": "Glicemia",
     "core_temp": "Temperatura corporea centrale",
-    "swim_strokes": "Bracciate a nuoto"
+    "swim_strokes": "Bracciate a nuoto",
+    "bp": "Pressione arteriosa"
   },
   "group": {
     "recovery": "Recovery e sonno",

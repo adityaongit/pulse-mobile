@@ -16,7 +16,8 @@
     "spo2": "Blood oxygen",
     "restingHr": "Resting heart rate",
     "hrv": "Heart rate variability",
-    "skinTempDev": "Skin temperature"
+    "skinTempDev": "Skin temperature",
+    "bp": "Blood pressure"
   },
   "section": {
     "myDay": "My Day",

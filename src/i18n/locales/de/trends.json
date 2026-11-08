@@ -192,7 +192,8 @@
     "fat": "Fett aus dem Essen, das du erfasst hast.",
     "glucose": "Blutzuckerwerte von einem verbundenen Messgerät oder einem manuellen Eintrag.",
     "core_temp": "Kerntemperaturwerte von einem verbundenen Sensor.",
-    "swim_strokes": "Beim Schwimmen im Becken gezählte Züge."
+    "swim_strokes": "Beim Schwimmen im Becken gezählte Züge.",
+    "bp": "Blutdruckmesswerte aus Health Connect oder einem verbundenen Messgerät. Normaler Blutdruck liegt bei systolisch unter 120 mmHg und diastolisch unter 80 mmHg."
   },
   "metricSource": {
     "activity": "Die Tagessumme deiner Health-App, von deinem Band oder Handy gezählt. Pulse zeigt sie, wie sie kommt, und bewertet sie nicht.",

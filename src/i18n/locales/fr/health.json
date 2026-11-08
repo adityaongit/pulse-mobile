@@ -19,7 +19,8 @@
     "measurements": "Mesures",
     "ecgReading": "Relevé ECG",
     "hrvStatus": "HRV Status",
-    "timeInZones": "Temps par zone"
+    "timeInZones": "Temps par zone",
+    "bloodPressure": "Pression artérielle"
   },
   "age": {
     "same": "Comme ton âge",
@@ -357,5 +358,42 @@
     "rem": "REM",
     "light": "Léger",
     "deep": "Profond"
+  },
+  "bloodPressure": {
+    "title": "Pression artérielle",
+    "detail": "Détail",
+    "noData": "Aucune donnée",
+    "show": "Afficher",
+    "hide": "Masquer",
+    "systolic": "Systolique",
+    "diastolic": "Diastolique",
+    "noReadings30d": "Aucune mesure de pression artérielle enregistrée au cours des 30 derniers jours.",
+    "trendPlotSummary": "Tendance de la pression artérielle sur 30 jours : mesures systoliques et diastoliques",
+    "breakdown": "Répartition par catégorie sur 30 jours ({{count}})",
+    "readingsOnDay": " · {{count}} mesures dans la journée",
+    "readingsOnDate": "Mesures du {{date}}",
+    "guidelines": "Directives de classification AHA/ACC",
+    "disclaimer": "Pulse n'est pas un appareil de diagnostic. Consultez un médecin pour le diagnostic et la prise en charge médicale de la pression artérielle.",
+    "prior": "Précédent : {{value}}",
+    "noReadingWithPrior": "Aucune mesure le {{date}}. Plus récente : {{value}} mmHg le {{priorDate}}.",
+    "emptyDayHint": "Aucune mesure de pression artérielle enregistrée ce jour-là. Enregistrez des mesures dans Health Connect pour suivre les tendances.",
+    "readingMeta": "{{date}} à {{time}}",
+    "ariaDetail": "Détail de la pression artérielle : {{reading}} mmHg, {{status}}",
+    "ariaDetailNoReading": "Détail de la pression artérielle : Aucune mesure",
+    "category": {
+      "normal": "Normale",
+      "elevated": "Élevée",
+      "stage1": "Stade 1",
+      "stage2": "Stade 2",
+      "crisis": "Crise",
+      "hypertensiveCrisis": "Crise hypertensive"
+    },
+    "stageRange": {
+      "normal": "< 120 et < 80 mmHg",
+      "elevated": "120–129 et < 80 mmHg",
+      "stage1": "130–139 ou 80–89 mmHg",
+      "stage2": "140+ ou 90+ mmHg",
+      "crisis": "> 180 et/ou > 120 mmHg"
+    }
   }
 }

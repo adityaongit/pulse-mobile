@@ -192,7 +192,8 @@
     "fat": "Grassi del cibo che hai registrato.",
     "glucose": "Letture della glicemia da un misuratore collegato o da un inserimento manuale.",
     "core_temp": "Letture della temperatura corporea centrale da un sensore collegato.",
-    "swim_strokes": "Bracciate contate durante le nuotate in piscina."
+    "swim_strokes": "Bracciate contate durante le nuotate in piscina.",
+    "bp": "Misurazioni della pressione arteriosa da Health Connect o da un misuratore connesso. La pressione normale è sistolica inferiore a 120 mmHg e diastolica inferiore a 80 mmHg."
   },
   "metricSource": {
     "activity": "Il riepilogo giornaliero della tua app di salute, contato dalla tua fascia o dal telefono. Pulse lo mostra così com’è e non lo valuta.",

@@ -16,7 +16,8 @@
     "spo2": "Ossigeno nel sangue",
     "restingHr": "Frequenza cardiaca a riposo",
     "hrv": "Variabilità della frequenza cardiaca",
-    "skinTempDev": "Temperatura della pelle"
+    "skinTempDev": "Temperatura della pelle",
+    "bp": "Pressione arteriosa"
   },
   "section": {
     "myDay": "La mia giornata",

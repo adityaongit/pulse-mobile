@@ -16,7 +16,8 @@
     "spo2": "Blutsauerstoff",
     "restingHr": "Ruheherzfrequenz",
     "hrv": "Herzfrequenzvariabilität",
-    "skinTempDev": "Hauttemperatur"
+    "skinTempDev": "Hauttemperatur",
+    "bp": "Blutdruck"
   },
   "section": {
     "myDay": "Mein Tag",

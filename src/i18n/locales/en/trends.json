@@ -192,7 +192,8 @@
     "fat": "Fat from the food you logged.",
     "glucose": "Blood glucose readings from a connected meter or a manual log.",
     "core_temp": "Core body temperature readings from a connected sensor.",
-    "swim_strokes": "Strokes counted during pool swims."
+    "swim_strokes": "Strokes counted during pool swims.",
+    "bp": "Blood pressure readings from Health Connect or a connected monitor. Normal blood pressure is systolic below 120 mmHg and diastolic below 80 mmHg."
   },
   "metricSource": {
     "activity": "Your health app's daily roll-up, counted by your band or your phone. Pulse shows it as it comes and does not score it.",

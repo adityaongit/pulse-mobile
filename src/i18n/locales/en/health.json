@@ -19,7 +19,8 @@
     "measurements": "Measurements",
     "ecgReading": "ECG reading",
     "hrvStatus": "HRV Status",
-    "timeInZones": "Time in zones"
+    "timeInZones": "Time in zones",
+    "bloodPressure": "Blood pressure"
   },
   "age": {
     "same": "Same as your age",
@@ -355,5 +356,42 @@
     "rem": "REM",
     "light": "Light",
     "deep": "Deep"
+  },
+  "bloodPressure": {
+    "title": "Blood pressure",
+    "detail": "Detail",
+    "noData": "No data",
+    "show": "Show",
+    "hide": "Hide",
+    "systolic": "Systolic",
+    "diastolic": "Diastolic",
+    "noReadings30d": "No blood pressure readings recorded in the last 30 days.",
+    "trendPlotSummary": "30-day blood pressure trend: systolic and diastolic readings",
+    "breakdown": "30-Day Category Breakdown ({{count}})",
+    "readingsOnDay": " · {{count}} readings on day",
+    "readingsOnDate": "Readings on {{date}}",
+    "guidelines": "AHA/ACC Classification Guidelines",
+    "disclaimer": "Pulse is not a diagnostic device. Consult a physician for diagnosis and medical management of blood pressure.",
+    "prior": "Prior: {{value}}",
+    "noReadingWithPrior": "No reading on {{date}}. Most recent: {{value}} mmHg on {{priorDate}}.",
+    "emptyDayHint": "No blood pressure reading recorded on this day. Record readings in Health Connect to track trends.",
+    "readingMeta": "{{date}} at {{time}}",
+    "ariaDetail": "Blood pressure detail: {{reading}} mmHg, {{status}}",
+    "ariaDetailNoReading": "Blood pressure detail: No reading",
+    "category": {
+      "normal": "Normal",
+      "elevated": "Elevated",
+      "stage1": "Stage 1",
+      "stage2": "Stage 2",
+      "crisis": "Crisis",
+      "hypertensiveCrisis": "Hypertensive Crisis"
+    },
+    "stageRange": {
+      "normal": "< 120 and < 80 mmHg",
+      "elevated": "120–129 and < 80 mmHg",
+      "stage1": "130–139 or 80–89 mmHg",
+      "stage2": "140+ or 90+ mmHg",
+      "crisis": "> 180 and/or > 120 mmHg"
+    }
   }
 }

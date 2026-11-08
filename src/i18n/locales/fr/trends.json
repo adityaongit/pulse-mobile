@@ -192,7 +192,8 @@
     "fat": "Lipides des aliments que tu as enregistrés.",
     "glucose": "Relevés de glycémie d’un lecteur connecté ou d’un relevé manuel.",
     "core_temp": "Relevés de température corporelle centrale d’un capteur connecté.",
-    "swim_strokes": "Mouvements de nage comptés pendant les séances en piscine."
+    "swim_strokes": "Mouvements de nage comptés pendant les séances en piscine.",
+    "bp": "Mesures de pression artérielle issues de Health Connect ou d'un tensiomètre connecté. Une pression normale est une systolique inférieure à 120 mmHg et une diastolique inférieure à 80 mmHg."
   },
   "metricSource": {
     "activity": "Le cumul quotidien de ton app santé, compté par ton bracelet ou ton téléphone. Pulse l’affiche tel quel et ne le note pas.",
