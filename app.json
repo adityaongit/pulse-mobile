@@ -85,6 +85,7 @@
       "./plugins/withHighRefreshRate.js",
       "./plugins/withAppShortcuts.js",
       "./plugins/withWidgets.js",
+      "./plugins/withSentryUpload.js",
       "react-native-health-connect",
       [
         "react-native-ble-plx",

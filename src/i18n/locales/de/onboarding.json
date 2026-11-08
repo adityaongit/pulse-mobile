@@ -3,7 +3,7 @@
     "title": "Dein Fitbit, jeden Morgen bewertet",
     "subtitle": "Schlaf, Recovery und Strain aus Health Connect, auf diesem Handy berechnet.",
     "exploreSample": "Mit Beispieldaten erkunden",
-    "private": "Bleibt auf diesem Handy. Kein Konto, kein Server.",
+    "private": "Deine Gesundheitsdaten bleiben auf diesem Handy, ohne Konto. Fehlerberichte enthalten nichts davon; in den Einstellungen kannst du sie ausschalten.",
     "sampleFailed": "Die Beispieldaten konnten nicht erstellt werden. Versuch es noch einmal."
   },
   "progress": {

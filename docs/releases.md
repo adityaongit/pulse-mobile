@@ -34,6 +34,14 @@ for p in preview:arm64 preview-armv7:armv7 preview-x86_64:x86_64; do
 done
 ```
 
+## Telemetry and source maps
+
+`eas.json` gives the `preview` and `production` profiles `EXPO_PUBLIC_SENTRY_DSN`, `SENTRY_ORG` and `SENTRY_PROJECT`, so
+the APKs people install send error reports (`docs/telemetry.md`); `development` builds send nothing. Readable crash
+stacks also need the source maps uploaded, which takes `SENTRY_AUTH_TOKEN` (a Sentry organization auth token for
+`pulse-w6`) in the shell that runs `eas build --local`. Without it the build still succeeds and skips the upload
+(`plugins/withSentryUpload.js`); reports then arrive with minified stacks.
+
 ## Publish
 
 ```sh
@@ -46,7 +54,7 @@ The release is `v<version>`, titled "Pulse Mobile <version>", with assets `pulse
 ## How installed phones hear of a release
 
 Once a day, as the app opens or comes back to the front, Pulse asks GitHub's latest-release endpoint
-(`src/state/update.ts`). It is the one request Pulse makes on its own, and it carries nothing about the person;
+(`src/state/update.ts`). Besides error reports (`docs/telemetry.md`, off in Settings), it is the one request Pulse makes on its own, and it carries nothing about the person;
 Settings › App › Updates turns it off and has Check now. When the release is newer than the installed version and has
 an APK for the phone's CPU (`src/lib/release.ts` reads the assets this page's script uploads), every tab root shows an
 Update available card. Update downloads that APK into the app's cache and opens Android's installer on it; the person

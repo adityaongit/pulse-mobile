@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { View } from "react-native";
 import { router, type ErrorBoundaryProps } from "expo-router";
 import { CircleAlert } from "lucide-react-native";
+import { reportCrash } from "@/lib/telemetry";
 import { Button } from "@/ui/Button";
 import { Icon } from "@/ui/Icon";
 import { Text } from "@/ui/Text";
@@ -13,7 +14,10 @@ import { Text } from "@/ui/Text";
 export function ScreenError({ error, retry }: ErrorBoundaryProps) {
   const { t } = useTranslation(["errors", "common"]);
   // The message and the stack name the code that failed; they never carry health records.
-  useEffect(() => console.error("Screen error:", error.message, error.stack), [error]);
+  useEffect(() => {
+    console.error("Screen error:", error.message, error.stack);
+    void reportCrash(error);
+  }, [error]);
   return (
     <View accessibilityRole="alert" className="flex-1 items-center justify-center gap-3 bg-background px-8">
       <Icon icon={CircleAlert} size={28} tone="muted-foreground" />

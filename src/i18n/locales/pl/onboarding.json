@@ -3,7 +3,7 @@
     "title": "Twój Fitbit, oceniany każdego ranka",
     "subtitle": "Sen, Recovery i Strain z Health Connect, obliczane na tym telefonie.",
     "exploreSample": "Wypróbuj na danych przykładowych",
-    "private": "Zostaje na tym telefonie. Bez konta, bez serwera.",
+    "private": "Twoje dane o zdrowiu zostają na tym telefonie, bez konta. Raporty o błędach ich nie zawierają; możesz je wyłączyć w Ustawieniach.",
     "sampleFailed": "Nie udało się utworzyć danych przykładowych. Spróbuj ponownie."
   },
   "progress": {

@@ -4,7 +4,7 @@ import { getNap, getActivityExtras } from "@/queries/mobileExtras";
 import { coachInstructions } from "./instructions";
 import { coachTools, sleepDigest } from "./tools";
 import { defaultTexts } from "./texts";
-import { allowRequest, type CoachModel } from "./transport";
+import { allowRequest, reportCoach, type CoachModel } from "./transport";
 
 export type CoachActivity = { kind: "workout" | "sleep" | "nap"; id: string };
 export type GlanceDeps = { ctx: () => QueryCtx | null; model: () => Promise<CoachModel | null>; allow?: () => boolean };
@@ -85,6 +85,7 @@ export function createActivityGlance() {
     }).then(({ text }) => text.trim()).catch((e: unknown) => {
       cache.delete(key);
       console.warn(`[coach] activity glance via ${model.provider} failed: ${e instanceof Error ? e.name : "error"}`);
+      reportCoach("glance_failed", model.provider, e);
       throw new Error("provider");
     });
     cache.set(key, request);

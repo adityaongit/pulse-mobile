@@ -3,7 +3,7 @@
     "title": "Ton Fitbit, noté chaque matin",
     "subtitle": "Sleep, Recovery et Strain depuis Health Connect, calculés sur ce téléphone.",
     "exploreSample": "Explorer avec des données d’exemple",
-    "private": "Reste sur ce téléphone. Pas de compte, pas de serveur.",
+    "private": "Tes données de santé restent sur ce téléphone, sans compte. Les rapports d’erreur n’en contiennent rien ; tu peux les désactiver dans les Réglages.",
     "sampleFailed": "Impossible de créer les données d’exemple. Réessaie."
   },
   "progress": {

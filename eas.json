@@ -2,10 +2,10 @@
   "cli": { "version": ">= 16.0.0", "appVersionSource": "remote" },
   "build": {
     "development": { "developmentClient": true, "distribution": "internal" },
-    "preview": { "distribution": "internal", "android": { "buildType": "apk" }, "env": { "ORG_GRADLE_PROJECT_reactNativeArchitectures": "arm64-v8a", "ORG_GRADLE_PROJECT_expo.useLegacyPackaging": "true" } },
+    "preview": { "distribution": "internal", "android": { "buildType": "apk" }, "env": { "EXPO_PUBLIC_SENTRY_DSN": "https://9da13ebdcc64495bd7c265f71219759e@o4512397626900480.ingest.de.sentry.io/4512397698662480", "SENTRY_ORG": "pulse-w6", "SENTRY_PROJECT": "pulse-mobile", "ORG_GRADLE_PROJECT_reactNativeArchitectures": "arm64-v8a", "ORG_GRADLE_PROJECT_expo.useLegacyPackaging": "true" } },
     "preview-armv7": { "extends": "preview", "env": { "ORG_GRADLE_PROJECT_reactNativeArchitectures": "armeabi-v7a" } },
     "preview-x86_64": { "extends": "preview", "env": { "ORG_GRADLE_PROJECT_reactNativeArchitectures": "x86_64" } },
-    "production": { "autoIncrement": true }
+    "production": { "autoIncrement": true, "env": { "EXPO_PUBLIC_SENTRY_DSN": "https://9da13ebdcc64495bd7c265f71219759e@o4512397626900480.ingest.de.sentry.io/4512397698662480", "SENTRY_ORG": "pulse-w6", "SENTRY_PROJECT": "pulse-mobile" } }
   },
   "submit": { "production": {} }
 }

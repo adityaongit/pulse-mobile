@@ -3,7 +3,7 @@
     "title": "Tu Fitbit, puntuado cada mañana",
     "subtitle": "Sleep, Recovery y Strain desde Health Connect, calculados en este teléfono.",
     "exploreSample": "Explorar con datos de ejemplo",
-    "private": "Se queda en este teléfono. Sin cuenta, sin servidor.",
+    "private": "Tus datos de salud se quedan en este teléfono, sin cuenta. Los informes de errores no incluyen nada de ellos; puedes desactivarlos en Ajustes.",
     "sampleFailed": "No se pudieron crear los datos de ejemplo. Inténtalo de nuevo."
   },
   "progress": {

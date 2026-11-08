@@ -25,6 +25,7 @@ import { setLocale } from "@/lib/locale";
 import { seedDemoFood } from "@/data/seedFood";
 import { forgetChanges } from "@/health/sync";
 import { localDay } from "@/lib/time";
+import { report, resetTelemetryId } from "@/lib/telemetry";
 import type { DisplayPrefs } from "@/lib/units";
 import type { QueryCtx } from "@/queries/ctx";
 import { ensureDefaultTags } from "@/queries/journal";
@@ -216,7 +217,12 @@ export async function boot(applyTheme: (theme: string) => void): Promise<void> {
     if (!source) { await clearWidgets(); return patch({ status: "needs_permissions" }); }
     if (source === "health_connect") {
       const perms = await permissionState().catch(() => null);
-      if (!perms || perms.granted.length === 0) { await clearWidgets(); return patch({ status: "needs_permissions" }); }
+      if (!perms || perms.granted.length === 0) {
+        // Connected before, and now Health Connect grants nothing: revoked in its settings, or its data was cleared.
+        void report("sync.permission_lost", { read: perms ? "none" : "failed" });
+        await clearWidgets();
+        return patch({ status: "needs_permissions" });
+      }
     }
     // Show the last scores at once; refresh in the background.
     const onboarded = sync.lastSyncTs !== null || source === "demo";
@@ -394,6 +400,7 @@ export async function reset(): Promise<void> {
   deleteAllPhotos();
   await AsyncStorage.multiRemove([SOURCE_KEY, OWN_PROFILE_KEY]).catch(() => {});
   await forgetChanges();
+  await resetTelemetryId();
   patch({ status: "needs_profile", profile: null, source: null, sync: EMPTY_SYNC, error: null, warnings: [], onboarded: false });
   dataChanged();
 }

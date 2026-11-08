@@ -9,6 +9,7 @@ import { File, Paths } from "expo-file-system";
 import * as IntentLauncher from "expo-intent-launcher";
 import { useSyncExternalStore } from "react";
 import { apkFor, isNewer, parseRelease, type Release } from "@/lib/release";
+import { report } from "@/lib/telemetry";
 import { APP_VERSION } from "@/queries/settings";
 
 /** GitHub's latest-release endpoint for Pulse's repository. */
@@ -61,6 +62,8 @@ async function fetchLatest(): Promise<Release | null> {
   const timer = setTimeout(() => ctl.abort(), TIMEOUT_MS);
   try {
     const res = await fetch(RELEASES_URL, { headers: { Accept: "application/vnd.github+json" }, signal: ctl.signal });
+    // Offline is no finding; GitHub refusing (rate limit, a moved repository) is.
+    if (!res.ok) void report("update.check_failed", { status: res.status });
     return res.ok ? parseRelease(await res.json()) : null;
   } catch {
     return null;

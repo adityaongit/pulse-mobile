@@ -1,6 +1,7 @@
 import "../global.css";
 
 import { useEffect, useMemo } from "react";
+import * as Sentry from "@sentry/react-native";
 import { useFonts } from "expo-font";
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
@@ -23,9 +24,13 @@ import { useNotificationDeepLinks, useTabLinks } from "@/background/links";
 import { Opening } from "@/screens/Opening";
 import { ScreenError } from "@/screens/ScreenError";
 import { ShellData } from "@/screens/ShellData";
+import { initTelemetry } from "@/lib/telemetry";
 import { boot, useApp } from "@/state/app";
 import { AppProviders } from "@/ui/providers";
 import { useTheme } from "@/ui/theme";
+
+// Error telemetry (docs/telemetry.md) as early as the app's code runs; a no-op without a DSN or with it turned off.
+void initTelemetry();
 
 // Screens out of view (under a pushed screen, or an inactive tab) stop rendering until they are shown again.
 enableFreeze(true);
@@ -41,7 +46,7 @@ SplashScreen.setOptions({ duration: 0, fade: false });
 // closing the app.
 export const unstable_settings = { anchor: "(tabs)", screenErrorBoundary: ScreenError };
 
-export default function RootLayout() {
+function RootLayout() {
   // Fonts: Figtree for text, Barlow for numerals, as the web (pulse src/app/layout.tsx). Each weight is its own file
   // and its own family name; src/ui/Text.tsx picks the name from the web's font classes.
   const [fonts, fontError] = useFonts({ Figtree_400Regular, Figtree_500Medium, Figtree_600SemiBold, Figtree_700Bold, Barlow_500Medium, Barlow_600SemiBold, Barlow_700Bold });
@@ -78,6 +83,11 @@ export default function RootLayout() {
     </>
   );
 }
+
+// Wrapped as Sentry's Expo guide asks. Uncaught errors, a render error at the root among them, reach Sentry through its
+// global handler; a screen's own error goes through ScreenError. Without breadcrumbs or tracing the wrapper's touch and
+// profiler boundaries record nothing.
+export default Sentry.wrap(RootLayout);
 
 function Screens({ onboarded }: { onboarded: boolean }) {
   const { c, scheme } = useTheme();
