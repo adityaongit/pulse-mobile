@@ -474,6 +474,8 @@ export async function getMonitor(day: string, ctx: QueryCtx, preloaded?: Map<str
       range: { low: 90, high: 120 },
       status,
       chip: { tone: chipTone, text: chipText },
+      // The category is the latest reading's; with no other reading that day, say so.
+      ...(bpSummary.readings.length === 1 && { caption: i18n.t("health:bloodPressure.singleReading") }),
       trend: {
         points: bpSummary.history.map((h) => ({ day: h.day, value: h.systolic })),
         // The 30-day summary has a mean but no spread, so no band is drawn rather than a made-up one.

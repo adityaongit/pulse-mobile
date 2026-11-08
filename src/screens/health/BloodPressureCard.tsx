@@ -219,7 +219,7 @@ export function BloodPressureCard({
             })}
             {latest.bodyPosition ? ` · ${latest.bodyPosition}` : ""}
             {latest.measurementLocation ? ` · ${latest.measurementLocation}` : ""}
-            {summary.readings.length > 1 ? t("bloodPressure.readingsOnDay", { count: summary.readings.length }) : ""}
+            {summary.readings.length > 1 ? t("bloodPressure.readingsOnDay", { count: summary.readings.length }) : ` · ${t("bloodPressure.singleReading")}`}
           </Text>
         </View>
       ) : (

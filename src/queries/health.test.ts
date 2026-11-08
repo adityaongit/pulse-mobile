@@ -77,7 +77,7 @@ describe("getMonitor with blood pressure", () => {
   it("includes blood pressure as 6th vital and attaches bloodPressure summary", async () => {
     const store = new MemoryStore();
     const reading = makeReading("bp-1", "2026-05-15", "08:15:00", 118, 76);
-    await store.insertBloodPressure([reading]);
+    await store.upsertBloodPressure([reading]);
 
     const ctx = await makeCtx(store, "2026-05-15");
     const vm = await getMonitor("2026-05-15", ctx);
@@ -92,6 +92,7 @@ describe("getMonitor with blood pressure", () => {
     expect(bpVital?.customValue).toBe("118/76");
     expect(bpVital?.status).toBe("in_range");
     expect(bpVital?.chip).toEqual({ tone: "optimal", text: "Normal" });
+    expect(bpVital?.caption).toBe("Based on one reading");
     expect(bpVital?.bp).toEqual({
       systolic: 118,
       diastolic: 76,
@@ -112,7 +113,7 @@ describe("getMonitor with blood pressure", () => {
   it("handles elevated or hypertension stages with appropriate chips and status", async () => {
     const store = new MemoryStore();
     const reading = makeReading("bp-stage2", "2026-05-15", "14:00:00", 145, 92);
-    await store.insertBloodPressure([reading]);
+    await store.upsertBloodPressure([reading]);
 
     const ctx = await makeCtx(store, "2026-05-15");
     const vm = await getMonitor("2026-05-15", ctx);
@@ -123,10 +124,19 @@ describe("getMonitor with blood pressure", () => {
     expect(bpVital?.bp?.category).toBe("stage2");
   });
 
+  it("drops the one-reading note when the day has more than one reading", async () => {
+    const store = new MemoryStore();
+    await store.upsertBloodPressure([makeReading("bp-a", "2026-05-15", "08:00:00", 118, 76), makeReading("bp-b", "2026-05-15", "20:00:00", 122, 79)]);
+
+    const vm = await getMonitor("2026-05-15", await makeCtx(store, "2026-05-15"));
+
+    expect(vm.vitals.find((v) => v.key === "bp")?.caption).toBeUndefined();
+  });
+
   it("shows prior reading chip when current day has no reading but prior exists", async () => {
     const store = new MemoryStore();
     const reading = makeReading("bp-prior", "2026-05-10", "11:00:00", 124, 78);
-    await store.insertBloodPressure([reading]);
+    await store.upsertBloodPressure([reading]);
 
     const ctx = await makeCtx(store, "2026-05-15");
     const vm = await getMonitor("2026-05-15", ctx);

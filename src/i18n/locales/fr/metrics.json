@@ -41,7 +41,7 @@
     "glucose": "Glycémie",
     "core_temp": "Température centrale",
     "swim_strokes": "Mouvements de nage",
-    "bp": "Pression artérielle"
+    "bp": "Pression artérielle systolique"
   },
   "group": {
     "recovery": "Recovery et sommeil",

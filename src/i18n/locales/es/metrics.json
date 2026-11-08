@@ -41,7 +41,7 @@
     "glucose": "Glucosa en sangre",
     "core_temp": "Temperatura central",
     "swim_strokes": "Brazadas de natación",
-    "bp": "Presión arterial"
+    "bp": "Presión arterial sistólica"
   },
   "group": {
     "recovery": "Recovery y sueño",

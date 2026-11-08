@@ -75,7 +75,7 @@ describe("getBloodPressureSummary", () => {
       makeReading("r-5", "2026-05-15", "18:30:00", 122, 79), // later -> selected
     ];
 
-    await store.insertBloodPressure(readings);
+    await store.upsertBloodPressure(readings);
     const ctx = await makeCtx(store, "2026-05-15");
     const summary = await getBloodPressureSummary("2026-05-15", ctx);
 
@@ -134,7 +134,7 @@ describe("getBloodPressureSummary", () => {
     const readings: BloodPressureReading[] = [
       makeReading("r-1", "2026-05-10", "09:00:00", 118, 78),
     ];
-    await store.insertBloodPressure(readings);
+    await store.upsertBloodPressure(readings);
 
     const ctx = await makeCtx(store, "2026-05-15");
     const summary = await getBloodPressureSummary("2026-05-15", ctx);

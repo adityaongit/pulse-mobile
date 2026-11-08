@@ -53,8 +53,6 @@ export interface Store {
   upsertHealthRecords(rows: HealthRecord[]): Promise<void>;
   /** Paired blood pressure readings, upserted by id. */
   upsertBloodPressure(rows: BloodPressureReading[]): Promise<void>;
-  /** Alias for upsertBloodPressure. */
-  insertBloodPressure(records: BloodPressureReading[]): Promise<void>;
   /** Days whose intraday samples changed since the pipeline last ran (stage 1 reruns them). */
   markIntradayDirty(days: string[]): Promise<void>;
   takeIntradayDirty(): Promise<string[]>;
@@ -70,12 +68,6 @@ export interface Store {
   healthRecords(toDay?: string): Promise<HealthRecord[]>;
   /** All blood pressure readings, newest first. */
   allBloodPressure(): Promise<BloodPressureReading[]>;
-  /** Blood pressure readings with day in range, newest first. */
-  bloodPressureIn(range: DayRange): Promise<BloodPressureReading[]>;
-  /** Blood pressure readings with fromTs <= ts < toTs, ascending. */
-  readBloodPressure(fromTs: number, toTs: number): Promise<BloodPressureReading[]>;
-  /** Blood pressure readings for a day, or all if omitted, newest first. */
-  getBloodPressure(day?: string): Promise<BloodPressureReading[]>;
   /** HR with lo <= ts < hi, ascending. */
   readHr(lo: number, hi: number): Promise<HrSample[]>;
   readSteps(lo: number, hi: number): Promise<StepsMinute[]>;

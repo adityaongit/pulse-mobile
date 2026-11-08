@@ -59,6 +59,25 @@ it("an incremental run writes what a full replay writes", async () => {
   expect(lastRun.stage2From).toBe(first);
 }, 60_000);
 
+it("replays from the start for a back-dated blood pressure reading, but not for a re-import of the same one", async () => {
+  const store = new MemoryStore();
+  await seedDemo(store, { today: TODAY, timeZone: TZ, now: NOW });
+  await run(store);
+  const first = lastRun.stage2From;
+  const day = addDays(TODAY, -60);
+  const reading = { id: "bp-old", ts: NOW - 60 * 86_400, day, systolicMmhg: 128, diastolicMmhg: 82, quality: "direct" as const, importedAt: NOW };
+
+  await store.upsertBloodPressure([reading]);
+  await run(store);
+  expect(lastRun.stage2From).toBe(first);
+  expect((await store.getScores(day))?.health_monitor?.bloodPressure?.systolic).toBe(128);
+
+  // The next sync writes the same reading with a new importedAt: nothing to redo.
+  await store.upsertBloodPressure([{ ...reading, importedAt: NOW + 3600 }]);
+  await run(store);
+  expect(lastRun.stage2From > first).toBe(true);
+}, 60_000);
+
 it("replays every day when the stored checkpoint is unreadable or from another build's fold", async () => {
   const store = new MemoryStore();
   await seedDemo(store, { today: TODAY, timeZone: TZ, now: NOW });
