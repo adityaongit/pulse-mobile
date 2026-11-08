@@ -8,6 +8,8 @@ import { readAhead } from "@/lib/ahead";
 import { READ_TYPES, ensureInitialized, permissionState, readAll, skippedWarning, type ReadOptions, type ReadType } from "@/health/connect";
 import { deriveDayExtras, restingHrOn, type Interval } from "@/health/derive";
 import {
+  createBloodPressureDiagnostics,
+  mapBloodPressure,
   mapDailyValuesSteps,
   SOURCE_DAILY_KEYS,
   mapExercisesSteps,
@@ -54,9 +56,9 @@ export { forgetChanges };
  * app's records are kept, the largest source per day for measured totals. 8: near-identical workouts from different
  * apps are imported once, retaining distinct sports, partial overlaps and records with no source. 9: a night's readings
  * (HRV, respiratory rate, oxygen saturation) count from the sleep's start through two minutes after its end, where
- * Fitbit stamps its one HRV value for the night.
+ * Fitbit stamps its one HRV value for the night. 10: blood pressure readings are imported.
  */
-export const IMPORT_VERSION = 9;
+export const IMPORT_VERSION = 10;
 
 /**
  * How far before the window's first local midnight the reads start. Health Connect returns a record only to a read whose
@@ -469,6 +471,8 @@ export async function syncHealthConnect(store: Store, opts: SyncOptions): Promis
     await slice();
     // Water, food and cycle logs made in Fitbit: the window's rows are replaced, so what Fitbit deleted goes too.
     const external = inWindow(mapExternalEntries(input, tz));
+    const bpDiag = createBloodPressureDiagnostics();
+    const bpReadings = inWindow(mapBloodPressure(input.BloodPressure ?? [], tz, nowTs, bpDiag));
 
     // Every HRV sample (the Pulse engine labels them by sleep stage); their days rerun stage 1.
     const hrv = mapHrv(input.HeartRateVariabilityRmssd ?? []);
@@ -495,6 +499,7 @@ export async function syncHealthConnect(store: Store, opts: SyncOptions): Promis
     const replaced = Object.entries(SOURCE_DAILY_KEYS).filter(([, type]) => granted.has(type) && !skipped.has(type)).map(([key]) => key);
     await store.replaceDailyValues({ from: fromDay, to: today }, replaced, dailyValues);
     if (metrics.length) await store.upsertMetrics(metrics);
+    if (bpReadings.length) await store.upsertBloodPressure(bpReadings);
     await store.replaceExternalEntries({ from: fromDay, to: today }, external);
     if (dirty.length) await store.markIntradayDirty(dirty);
     counts.sessions = sessions.length;
@@ -504,6 +509,8 @@ export async function syncHealthConnect(store: Store, opts: SyncOptions): Promis
     counts.derived = derived.length;
     counts.externalEntries = external.length;
     counts.metrics = metrics.length;
+    counts.bloodPressure = bpReadings.length;
+    counts["bloodPressure:rejected"] = bpDiag.rejected;
     done++;
 
     for (const type of skipped) warnings.push(skippedWarning(type));

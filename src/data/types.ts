@@ -124,6 +124,27 @@ export type HrvSample = { ts: number; ms: number };
 /** Steps in the minute starting at `ts` (a whole minute, unix seconds). */
 export type StepsMinute = { ts: number; v: number };
 
+export type BloodPressureQuality = "direct" | "manual" | "derived" | "unknown";
+
+export type BloodPressureReading = {
+  id: string;
+  ts: number;
+  day: string;
+  systolicMmhg: number;
+  diastolicMmhg: number;
+  bodyPosition?: string | null;
+  measurementLocation?: string | null;
+  recordingMethod?: string | null;
+  sourcePlatform?: string | null;
+  sourceApplication?: string | null;
+  sourceDevice?: string | null;
+  quality: BloodPressureQuality;
+  importedAt: number;
+};
+
+/** Alias for BloodPressureReading mirroring the Health Connect record naming. */
+export type BloodPressureRecord = BloodPressureReading;
+
 /** "Shown, never scored" extras keyed like Pulse's daily_values (e.g. "distance_m", "floors", "height_cm" on day "latest"). */
 export type DailyValue = { day: string; key: string; value: number };
 

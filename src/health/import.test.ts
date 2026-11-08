@@ -604,7 +604,7 @@ describe("extras and the Fitbit log", () => {
 
 describe("empty input", () => {
   it("maps to empty lists", () => {
-    expect(mapRecords({}, TZ)).toEqual({ metrics: [], sessions: [], segments: [], exercises: [], hr: [], hrv: [], steps: [], dailyValues: [], externalEntries: [] });
+    expect(mapRecords({}, TZ)).toEqual({ metrics: [], sessions: [], segments: [], exercises: [], hr: [], hrv: [], steps: [], dailyValues: [], externalEntries: [], bloodPressure: [] });
   });
 });
 

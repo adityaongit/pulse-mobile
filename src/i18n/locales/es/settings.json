@@ -103,6 +103,7 @@
     "hydration": "Agua",
     "nutrition": "Comida",
     "bloodGlucose": "Glucosa en sangre",
+    "bloodPressure": "Presión arterial",
     "bodyTemperature": "Temperatura corporal",
     "menstruationPeriod": "Periodos",
     "menstruationFlow": "Flujo del periodo",
