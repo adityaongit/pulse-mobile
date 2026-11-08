@@ -10,15 +10,17 @@ export const BP_CATEGORY_LABELS = {
   elevated: "Elevated",
   stage1: "Stage 1",
   stage2: "Stage 2",
-  crisis: "Crisis",
+  crisis: "Severe hypertension",
 } as const satisfies Record<BloodPressureCategory, string>;
 
 /**
- * Categorizes resting blood pressure readings according to AHA/ACC guidelines.
+ * Categorizes resting blood pressure readings according to AHA/ACC guidelines (reference study,
+ * `other-calculators.md` § Blood pressure categories). The top category is the study's ahaSevereHypertension; the
+ * key stays "crisis" so stored rows keep their meaning.
  * When systolic and diastolic readings fall into different categories, the higher
  * category is assigned.
  *
- * - Crisis: Systolic > 180 and/or Diastolic > 120
+ * - Severe hypertension: Systolic > 180 and/or Diastolic > 120
  * - Stage 2: Systolic >= 140 or Diastolic >= 90
  * - Stage 1: Systolic 130-139 or Diastolic 80-89
  * - Elevated: Systolic 120-129 and Diastolic < 80

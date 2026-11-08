@@ -40,6 +40,7 @@
         "android.permission.health.READ_HYDRATION",
         "android.permission.health.READ_NUTRITION",
         "android.permission.health.READ_BLOOD_GLUCOSE",
+        "android.permission.health.READ_BLOOD_PRESSURE",
         "android.permission.health.READ_BODY_TEMPERATURE",
         "android.permission.health.READ_MENSTRUATION",
         "android.permission.health.READ_INTERMENSTRUAL_BLEEDING",

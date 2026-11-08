@@ -370,7 +370,6 @@ function healthspanInsight(pace: number | null, deltaYears: number, cs: Healthsp
 
 const VITALS: { key: VitalKey; short: string; unit: string; signed?: boolean; pick: (r: DayRow) => number | null | undefined }[] = [
   { key: "resp", short: "Resp", unit: "rpm", pick: (r) => r.metrics?.respBpm },
-  { key: "spo2", short: "SpO2", unit: "%", pick: (r) => r.metrics?.spo2Pct },
   // The engine's night values, the ones Health Monitor's band and Recovery use (the daily ones before a scored night).
   { key: "restingHr", short: "RHR", unit: "bpm", pick: (r) => r.rhr },
   { key: "hrv", short: "HRV", unit: "ms", pick: (r) => r.metrics?.hrvMs },
@@ -477,7 +476,8 @@ export async function getMonitor(day: string, ctx: QueryCtx, preloaded?: Map<str
       chip: { tone: chipTone, text: chipText },
       trend: {
         points: bpSummary.history.map((h) => ({ day: h.day, value: h.systolic })),
-        baseline: bpSummary.baseline ? { mean: bpSummary.baseline.avgSystolic, sd: 0 } : null,
+        // The 30-day summary has a mean but no spread, so no band is drawn rather than a made-up one.
+        baseline: null,
       },
       bp: {
         systolic: bpVal.systolic,

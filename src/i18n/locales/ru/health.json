@@ -387,8 +387,8 @@
       "elevated": "Повышенное",
       "stage1": "Стадия 1",
       "stage2": "Стадия 2",
-      "crisis": "Кризис",
-      "hypertensiveCrisis": "Гипертонический криз"
+      "crisis": "Тяжёлая гипертензия",
+      "hypertensiveCrisis": "Тяжёлая гипертензия"
     },
     "stageRange": {
       "normal": "< 120 и < 80 мм рт. ст.",

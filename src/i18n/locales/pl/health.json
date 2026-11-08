@@ -387,8 +387,8 @@
       "elevated": "Podwyższone",
       "stage1": "Stopień 1",
       "stage2": "Stopień 2",
-      "crisis": "Kryzys",
-      "hypertensiveCrisis": "Przełom nadciśnieniowy"
+      "crisis": "Ciężkie nadciśnienie",
+      "hypertensiveCrisis": "Ciężkie nadciśnienie"
     },
     "stageRange": {
       "normal": "< 120 i < 80 mmHg",

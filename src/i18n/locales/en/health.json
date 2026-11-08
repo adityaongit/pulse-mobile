@@ -383,8 +383,8 @@
       "elevated": "Elevated",
       "stage1": "Stage 1",
       "stage2": "Stage 2",
-      "crisis": "Crisis",
-      "hypertensiveCrisis": "Hypertensive Crisis"
+      "crisis": "Severe hypertension",
+      "hypertensiveCrisis": "Severe hypertension"
     },
     "stageRange": {
       "normal": "< 120 and < 80 mmHg",

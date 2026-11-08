@@ -82,8 +82,8 @@ describe("getMonitor with blood pressure", () => {
     const ctx = await makeCtx(store, "2026-05-15");
     const vm = await getMonitor("2026-05-15", ctx);
 
-    // 6 vitals: resp, spo2, restingHr, hrv, skinTempDev, bp
-    expect(vm.vitals).toHaveLength(6);
+    // 5 vitals: resp, restingHr, hrv, skinTempDev, bp
+    expect(vm.vitals).toHaveLength(5);
     const bpVital = vm.vitals.find((v) => v.key === "bp");
     expect(bpVital).toBeDefined();
     expect(bpVital?.label).toBe("Blood pressure");
