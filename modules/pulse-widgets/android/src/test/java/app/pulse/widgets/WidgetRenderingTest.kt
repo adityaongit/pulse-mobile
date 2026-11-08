@@ -70,6 +70,30 @@ class WidgetRenderingTest {
     context.resources.updateConfiguration(configuration, context.resources.displayMetrics)
     render(WidgetSize.LARGE, 250, 280, "large-large-font")
   }
+  @Test fun designPreviewsInLightAndDark() {
+    for (mode in listOf("light", "dark")) {
+      RuntimeEnvironment.setQualifiers("w360dp-h800dp-${if (mode == "dark") "night" else "notnight"}-xhdpi")
+      render(WidgetSize.SMALL, 150, 165, "design-small-$mode")
+      render(WidgetSize.MEDIUM, 320, 165, "design-medium-$mode")
+      render(WidgetSize.LARGE, 340, 360, "design-large-$mode")
+    }
+  }
+  /** One update carries both themes: the same RemoteViews applied after a light/dark switch shows the other colours. */
+  @Test fun themeSwitchRedrawsBitmapsWithoutAnUpdate() {
+    val context = RuntimeEnvironment.getApplication() as Context
+    RuntimeEnvironment.setQualifiers("w360dp-h800dp-notnight-xhdpi")
+    val views = widgetViews(context, 31, WidgetSize.LARGE, snapshot(), keys, 340f, 360f, now)
+    fun cardPixel(): Int {
+      val view = views.apply(context, null)
+      val bitmap = ((view.findViewById<ImageView>(R.id.widget_art_4).drawable) as android.graphics.drawable.BitmapDrawable).bitmap
+      return bitmap.getPixel((4 * context.resources.displayMetrics.density).toInt(), bitmap.height / 2)
+    }
+    assertEquals(context.getColor(R.color.pulse_widget_card), cardPixel())
+    assertEquals(android.graphics.Color.WHITE, cardPixel())
+    RuntimeEnvironment.setQualifiers("w360dp-h800dp-night-xhdpi")
+    val dark = cardPixel()
+    assertTrue("dark card ${Integer.toHexString(dark)}", android.graphics.Color.red(dark) in 0x20..0x30 && android.graphics.Color.blue(dark) in 0x26..0x30)
+  }
   @Test @Config(sdk = [30]) fun minimumLayoutAlsoFitsBeforeAndroid12() {
     RuntimeEnvironment.setQualifiers("w360dp-h800dp-night-xhdpi")
     render(WidgetSize.LARGE, 250, 280, "large-android11")
@@ -78,7 +102,7 @@ class WidgetRenderingTest {
     val data = snapshot().put("source", "demo")
     RuntimeEnvironment.setQualifiers("w360dp-h800dp-night-xhdpi")
     val large = render(WidgetSize.LARGE, 340, 360, "pr-large-dark", data)
-    assertEquals("Sample data", large.findViewById<android.widget.TextView>(R.id.widget_status).text.toString())
+    assertEquals("Sample data", large.findViewById<View>(R.id.widget_status).contentDescription.toString())
     render(WidgetSize.MEDIUM, 300, 170, "pr-medium", data)
     render(WidgetSize.SMALL, 140, 180, "pr-small-score", data)
     render(WidgetSize.SMALL, 140, 180, "pr-small-heart", data, listOf("heart_rate"))
@@ -127,12 +151,12 @@ class WidgetRenderingTest {
   }
   @Test fun ringCapsOnlyProgressAndKeepsTheTrueStrainLabel() {
     val context = RuntimeEnvironment.getApplication() as Context
-    val art = WidgetArtwork(context)
+    val art = WidgetArtwork(context, false)
     val metric = JSONObject().put("display", "129").put("unit", "%").put("color", "#0093e7").put("progress", 129)
-    val over = art.metric(metric, "strain", "Strain", true, "", 100f, 120f, false)
-    val capped = art.metric(metric.put("progress", 100), "strain", "Strain", true, "", 100f, 120f, false)
+    val over = art.metric(metric, "strain", "Strain", true, "", 100f, 120f, 0f)
+    val capped = art.metric(metric.put("progress", 100), "strain", "Strain", true, "", 100f, 120f, 0f)
     assertTrue(over.sameAs(capped))
-    val label100 = art.metric(metric.put("display", "100"), "strain", "Strain", true, "", 100f, 120f, false)
+    val label100 = art.metric(metric.put("display", "100"), "strain", "Strain", true, "", 100f, 120f, 0f)
     assertFalse(over.sameAs(label100))
   }
 }

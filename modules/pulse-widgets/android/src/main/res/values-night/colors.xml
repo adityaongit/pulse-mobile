@@ -1,7 +1,21 @@
+<!-- Pulse tokens (src/ui/palette.ts DARK; scripts/widgets.test.ts keeps them equal). -->
 <resources>
+  <color name="pulse_widget_bg_top">#1d2529</color>
   <color name="pulse_widget_bg">#101518</color>
-  <color name="pulse_widget_fg">#f6f8f9</color>
-  <color name="pulse_widget_muted">#9ba4aa</color>
-  <color name="pulse_widget_panel">#24282c</color>
-  <color name="pulse_widget_track">#30373b</color>
+  <color name="pulse_widget_card_top">#272a2d</color>
+  <color name="pulse_widget_card">#232629</color>
+  <color name="pulse_widget_card_edge">#0fffffff</color>
+  <color name="pulse_widget_fg">#ffffff</color>
+  <color name="pulse_widget_secondary">#babac0</color>
+  <color name="pulse_widget_muted">#a9aeb3</color>
+  <color name="pulse_widget_track">#33383c</color>
+  <color name="pulse_widget_warning_text">#ffa722</color>
+  <color name="pulse_widget_green">#16ec06</color>
+  <color name="pulse_widget_yellow">#ffde00</color>
+  <color name="pulse_widget_red">#ff0026</color>
+  <color name="pulse_widget_strain">#0093e7</color>
+  <color name="pulse_widget_sleep">#7ba1bb</color>
+  <color name="pulse_widget_optimal">#00f19f</color>
+  <color name="pulse_widget_warning">#ffa722</color>
+  <color name="pulse_widget_blue">#67aee6</color>
 </resources>

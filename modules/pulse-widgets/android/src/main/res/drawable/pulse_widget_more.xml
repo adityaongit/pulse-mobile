@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Vertical ellipsis (the configure affordance), drawn at the right edge so it lines up with the content edge. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="20dp" android:viewportWidth="24" android:viewportHeight="20">
+  <path android:fillColor="@color/pulse_widget_secondary" android:pathData="M21.5,2.75a1.75,1.75 0 1,1 0,3.5a1.75,1.75 0 1,1 0,-3.5zM21.5,8.25a1.75,1.75 0 1,1 0,3.5a1.75,1.75 0 1,1 0,-3.5zM21.5,13.75a1.75,1.75 0 1,1 0,3.5a1.75,1.75 0 1,1 0,-3.5z"/>
+</vector>

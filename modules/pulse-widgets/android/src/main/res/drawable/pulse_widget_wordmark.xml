@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The Pulse wordmark, generated from build(STROKE.bold) in src/ui/brand.tsx (same geometry, never "PULSE" in a font). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="70.87dp" android:height="15dp" android:viewportWidth="114.15" android:viewportHeight="24.16">
+  <path android:pathData="M1.6 20V1.6H12.4A5 5 0 0 1 17.4 6.6V8.1A5 5 0 0 1 12.4 13.1H1.6M26.1 0V13.4A5 5 0 0 0 31.1 18.4H37.9A5 5 0 0 0 42.9 13.4V0M51.6 0V18.4H62L65.86 10.9L69.72 20.9L71.65 18.4H85.85A4.2 4.2 0 0 0 90.05 14.2V14.2A4.2 4.2 0 0 0 85.85 10H76.45A4.2 4.2 0 0 1 72.25 5.8V5.8A4.2 4.2 0 0 1 76.45 1.6H91.65M114.15 1.6H98.75V18.4H114.15M98.75 10H112.15" android:strokeColor="@color/pulse_widget_secondary" android:strokeWidth="3.2" android:strokeMiterLimit="8" android:strokeLineJoin="miter" android:strokeLineCap="butt"/>
+</vector>

@@ -1,2 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle"><solid android:color="@color/pulse_widget_bg"/><corners android:radius="24dp"/><padding android:left="2dp" android:top="2dp" android:right="2dp" android:bottom="2dp"/></shape>
+<!-- The app's ground (background-top fading to background) with the 4xl corner; cards inside take 16 dp (28 - 12 padding). -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+  <gradient android:angle="270" android:startColor="@color/pulse_widget_bg_top" android:endColor="@color/pulse_widget_bg"/>
+  <corners android:radius="28dp"/>
+</shape>

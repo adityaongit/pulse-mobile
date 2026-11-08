@@ -7,11 +7,12 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
+import android.graphics.Bitmap
+import android.graphics.drawable.Icon
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.format.DateUtils
-import android.util.TypedValue
 import android.view.View
 import android.widget.RemoteViews
 import org.json.JSONObject
@@ -69,20 +70,29 @@ internal fun widgetViews(context: Context, id: Int, size: WidgetSize, snapshot: 
     synced == null || synced > now + 300 || now - synced > 3 * 60 * 60 -> label("stale", R.string.pulse_widget_stale)
     else -> label("updated", R.string.pulse_widget_updated) + " " + clock(synced)
   }
+  val warn = snapshot != null && (!sameDay || status == label("stale", R.string.pulse_widget_stale))
   val views = RemoteViews(context.packageName, size.layout)
-  views.setTextViewText(R.id.widget_status, status)
+  // Bitmaps cannot follow the launcher's theme by themselves. On Android 12+ each one is drawn twice and the host picks
+  // the light or dark one at apply time (RemoteViews.setIcon with a night-mode variant), so a theme switch needs no
+  // update from Pulse. Earlier versions get the theme of the moment; the XML chrome follows the theme everywhere.
+  val night = (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
+  val arts = if (Build.VERSION.SDK_INT >= 31) listOf(WidgetArtwork(context, false), WidgetArtwork(context, true)) else listOf(WidgetArtwork(context, night))
+  fun art(viewId: Int, draw: WidgetArtwork.() -> Bitmap) {
+    if (arts.size == 2) views.setIcon(viewId, "setImageIcon", Icon.createWithBitmap(arts[0].draw()), Icon.createWithBitmap(arts[1].draw()))
+    else views.setImageViewBitmap(viewId, arts[0].draw())
+  }
+  // Same numbers as the layouts: 12 dp padding, 20 header + 8 gap, 6 gap + 14 footer; large rows share the body 42/33/25 with 8 dp gaps.
+  val inner = (width - 24).coerceAtLeast(40f)
+  val body = (height - 72).coerceAtLeast(40f)
+  val avail = body - 16
+  art(R.id.widget_status) { this.status(status, warn, inner, 14f) }
+  views.setContentDescription(R.id.widget_status, status)
   views.setOnClickPendingIntent(R.id.widget_root, openPulse(context, id, "pulse:///"))
   val configure = Intent(context, WidgetConfigureActivity::class.java).putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id)
   views.setOnClickPendingIntent(R.id.widget_configure, PendingIntent.getActivity(context, id, configure, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
   val metrics = mutableMapOf<String, JSONObject>()
   val records = snapshot?.optJSONArray("metrics")
   if (records != null) for (i in 0 until records.length()) records.optJSONObject(i)?.let { metrics[it.optString("key")] = it }
-  val art = WidgetArtwork(context)
-  val bodyHeight = (height - 68).coerceAtLeast(50f)
-  val heartHeight = (bodyHeight * .30f).coerceIn(56f, 96f)
-  val statsHeight = (bodyHeight * .21f).coerceIn(36f, 64f)
-  val topHeight = if (size == WidgetSize.LARGE) (bodyHeight - heartHeight - statsHeight - 16).coerceIn(50f, 132f) else bodyHeight.coerceAtMost(168f)
-  val columnWidth = (width - 24) / if (size == WidgetSize.SMALL) 1 else 3
   fun valid(metric: JSONObject?, key: String): Boolean {
     if (!sameDay || metric == null || metric.isNull("value") || !metric.optDouble("value", Double.NaN).isFinite()) return false
     if (key != "heart_rate") return true
@@ -99,19 +109,21 @@ internal fun widgetViews(context: Context, id: Int, size: WidgetSize, snapshot: 
     metric!!.optBoolean("provisional") -> label("provisional", R.string.pulse_widget_provisional)
     else -> ""
   }
+  val shown = chosen.take(size.count)
   for (index in 0 until size.count) {
     val cell = CELLS[index]
-    val key = chosen.getOrNull(index)
+    val key = shown.getOrNull(index)
     views.setViewVisibility(cell[0], if (key == null) View.GONE else View.VISIBLE)
     if (key == null) continue
     val metric = metrics[key]
     val title = metric?.optString("label")?.takeIf { it.isNotBlank() } ?: metricLabel(context, key)
     val usable = valid(metric, key)
     val reason = caption(metric, key, usable)
-    val compact = size == WidgetSize.LARGE && index >= 3
-    val tileHeight = if (compact) statsHeight else topHeight
-    views.setImageViewBitmap(cell[1], art.metric(metric, key, title, usable, reason, columnWidth, tileHeight, compact))
-    if (Build.VERSION.SDK_INT >= 31) views.setViewLayoutHeight(cell[1], tileHeight, TypedValue.COMPLEX_UNIT_DIP)
+    val stats = size == WidgetSize.LARGE && index >= 3
+    val row = if (stats) shown.drop(3) else shown.take(3)
+    val cellWidth = if (stats) (inner - 8 * (row.size - 1)) / row.size else inner / row.size
+    val cellHeight = when { size != WidgetSize.LARGE -> body; stats -> avail * .25f; else -> avail * .42f }
+    art(cell[1]) { this.metric(metric, key, title, usable, reason, cellWidth, cellHeight, if (stats) 0f else 4f) }
     val value = if (usable) metric!!.optString("display") + " " + metric.optString("unit") else "--"
     views.setContentDescription(cell[0], listOf(title, value, reason).filter { it.isNotBlank() }.joinToString(", "))
     views.setOnClickPendingIntent(cell[0], openPulse(context, id, metric?.optString("href")?.takeIf { it.startsWith("pulse://") } ?: "pulse:///"))
@@ -124,8 +136,8 @@ internal fun widgetViews(context: Context, id: Int, size: WidgetSize, snapshot: 
       val at = metric!!.optDouble("observedAt").toLong()
       (if (now - at > 3 * 60 * 60) label("oldReading", R.string.pulse_widget_oldReading) else clock(at)) + " · " + age(at)
     }
-    views.setImageViewBitmap(R.id.widget_heart_card, art.heartRate(metric, usable, title, reading, label("heartWindow", R.string.pulse_widget_heartWindow), width - 24, heartHeight))
-    if (Build.VERSION.SDK_INT >= 31) views.setViewLayoutHeight(R.id.widget_heart_card, heartHeight, TypedValue.COMPLEX_UNIT_DIP)
+    val window = label("heartWindow", R.string.pulse_widget_heartWindow)
+    art(R.id.widget_heart_card) { heartRate(metric, usable, title, reading, window, inner, avail * .33f) }
     views.setContentDescription(R.id.widget_heart_card, title + ", " + (if (usable) metric!!.optString("display") + " bpm, " else "--, ") + reading)
     views.setOnClickPendingIntent(R.id.widget_heart_card, openPulse(context, id, "pulse://health/heart-rate"))
   }
