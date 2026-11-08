@@ -315,6 +315,11 @@ function morningWindow(day: string, tz: string): Interval {
 }
 
 const inside = (t: number, w: Interval) => t >= w.startTs && t < w.endTs;
+/** A night's window runs two minutes past the sleep's end: Fitbit stamps its one HRV value for the night at wake, and a
+ * value can be written a moment later. */
+const NIGHT_GRACE_S = 120;
+/** Whether `t` counts for the sleep `w`: from its start through NIGHT_GRACE_S past its end, both ends included. */
+const inNightWindow = (t: number, w: Interval) => t >= w.startTs && t <= w.endTs + NIGHT_GRACE_S;
 
 // The loops that grow with the records read (a day's heart-rate samples, a window of per-minute calorie records) are
 // generators that pause at a `yield` every PAUSE_EVERY items, so the sync can give the JS thread back between pauses
@@ -809,9 +814,10 @@ export type MetricsInput = Pick<
 >;
 
 /**
- * One Metrics row per civil day that has anything. Nightly readings (HRV, respiration, SpO2, skin temperature)
- * are taken inside the day's main sleep session; without one, HRV falls back to 00:00–12:00 local and the others
- * to the whole day. `stepsByDay` comes from `stepsPerDay`.
+ * One Metrics row per civil day that has anything. Nightly readings (HRV, respiration, SpO2) are taken inside the day's
+ * main sleep through `NIGHT_GRACE_S` past its end; without one, HRV falls back to 00:00–12:00 local and the others to
+ * the whole day. Skin temperature pools the records overlapping the main sleep, else that morning window. `stepsByDay`
+ * comes from `stepsPerDay`.
  */
 export function mapMetrics(input: MetricsInput, sessions: Session[], stepsByDay: Map<string, number>, tz: string): Metrics[] {
   return finish(mapMetricsSteps(input, sessions, stepsByDay, tz));
@@ -848,9 +854,9 @@ export function* mapMetricsSteps(input: MetricsInput, sessions: Session[], steps
     const night = mainSleep.get(day);
     const morning = morningWindow(day, tz);
 
-    // Nightly readings: inside the main sleep, else a fallback window.
+    // Nightly readings: the main sleep's window (the wake instant included), else a fallback window.
     const nightly = <T>(xs: { t: number; day: string; r: T }[], fallback: "morning" | "day") => {
-      const inNight = night ? xs.filter((x) => inside(x.t, night)) : [];
+      const inNight = night ? xs.filter((x) => inNightWindow(x.t, night)) : [];
       if (inNight.length) return inNight.map((x) => x.r);
       return xs.filter((x) => (fallback === "morning" ? inside(x.t, morning) : x.day === day)).map((x) => x.r);
     };
