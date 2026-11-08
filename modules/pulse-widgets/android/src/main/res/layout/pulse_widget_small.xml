@@ -2,10 +2,10 @@
 <!-- Chrome (background, wordmark, configure) is XML with @color resources, so the launcher re-themes it. Everything with
      Pulse type is a bitmap drawn in light and dark (PulseWidgetProvider: setIcon on Android 12+). Spacing must match
      widgetViews in PulseWidgetProvider.kt: 12 padding, 20 header, 8 gap, body, 6 gap, 14 footer.
-     Small only: the wordmark starts at the left, since at 110 dp a centred one would run into the configure dots. -->
+     Small only: the wordmark is drawn smaller (11 dp tall, 52 dp wide), so it stays centred clear of the configure dots. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/widget_root" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:padding="12dp" android:background="@drawable/pulse_widget_background">
   <FrameLayout android:layout_width="match_parent" android:layout_height="20dp">
-    <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="start|center_vertical" android:src="@drawable/pulse_widget_wordmark" android:contentDescription="@string/pulse_widget_brand"/>
+    <ImageView android:layout_width="52dp" android:layout_height="11dp" android:layout_gravity="center" android:scaleType="fitCenter" android:src="@drawable/pulse_widget_wordmark" android:contentDescription="@string/pulse_widget_brand"/>
     <ImageView android:id="@+id/widget_configure" android:layout_width="40dp" android:layout_height="match_parent" android:layout_gravity="end" android:scaleType="fitEnd" android:src="@drawable/pulse_widget_more" android:contentDescription="@string/pulse_widget_configure"/>
   </FrameLayout>
   <LinearLayout android:id="@+id/widget_body" android:layout_height="0dp" android:layout_weight="1" android:layout_marginTop="8dp" android:layout_width="match_parent" android:orientation="horizontal">
