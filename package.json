@@ -1,7 +1,7 @@
 {
   "name": "pulse-mobile",
   "main": "index.ts",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "dependencies": {
     "@ai-sdk/anthropic": "4.0.71",
     "@ai-sdk/google": "4.0.87",
@@ -81,7 +81,8 @@
     "android": "expo run:android",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "export-fixtures": "tsx scripts/export-fixtures.ts"
   },
   "private": true,
   "packageManager": "pnpm@11.17.0",

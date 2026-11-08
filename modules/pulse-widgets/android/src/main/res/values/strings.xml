@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="pulse_widget_brand">Pulse</string>
+  <string name="pulse_widget_configure">Choose metrics</string>
+  <string name="pulse_widget_choose">Choose up to %1$d metrics. Reconfigure later by long-pressing the widget on a supported launcher.</string>
+  <string name="pulse_widget_choose_large">Choose up to %1$d metrics. Heart rate is always included in the large widget.</string>
+  <string name="pulse_widget_save">Save widget</string>
+  <string name="pulse_widget_cancel">Cancel</string>
+  <string name="pulse_widget_empty">Choose at least one metric.</string>
+  <string name="pulse_widget_too_many">Choose no more than %1$d metrics.</string>
+  <string name="pulse_widget_description">Your last synced Pulse health summary. Tap a metric to open its details.</string>
+  <string name="pulse_widget_small">Small · one metric</string>
+  <string name="pulse_widget_medium">Medium · three metrics</string>
+  <string name="pulse_widget_large">Large · six metrics + heart rate</string>
+  <string name="pulse_widget_demo">Sample data</string>
+  <string name="pulse_widget_updated">Synced</string>
+  <string name="pulse_widget_stale">Older sync · open Pulse</string>
+  <string name="pulse_widget_open">Open Pulse and sync to see your data</string>
+  <string name="pulse_widget_today">Open Pulse for today\'s data</string>
+  <string name="pulse_widget_provisional">Estimate</string>
+  <string name="pulse_widget_reading">Reading</string>
+  <string name="pulse_widget_oldReading">Older reading</string>
+  <string name="pulse_widget_noReading">No heart-rate reading</string>
+  <string name="pulse_widget_heartWindow">30 min before reading</string>
+  <string name="pulse_widget_metric_sleep">Sleep</string>
+  <string name="pulse_widget_metric_recovery">Recovery</string>
+  <string name="pulse_widget_metric_strain">Strain</string>
+  <string name="pulse_widget_metric_steps">Steps</string>
+  <string name="pulse_widget_metric_calories">Calories</string>
+  <string name="pulse_widget_metric_hrv">HRV</string>
+  <string name="pulse_widget_metric_rhr">Resting HR</string>
+  <string name="pulse_widget_metric_stress">Stress</string>
+  <string name="pulse_widget_metric_heart_rate">Heart rate</string>
+</resources>

@@ -894,3 +894,22 @@ Pulse uses `i18next` + `react-i18next` with every language bundled and `initAsyn
 ## Staying in sync with Health Connect: edits replace by id, deletions replace the window
 
 Health Connect's change feed (`getChanges`) says which records were written (with their time) and which were deleted (a record id only, no day). An edited record comes back as a write with the same id, so rows keyed by id (sleep sessions, workouts, logged entries) are overwritten, and the sync re-reads from the earliest changed record. A deletion names no day, so a sync that finds one re-imports the whole history window (`windowPlan({ deleted })` in `src/health/sync.ts`), the same clear-and-rewrite as a policy change. Summed daily totals (calories eaten, water, distance) are replaced over the window per type that was read (`replaceDailyValues`, `SOURCE_DAILY_KEYS`), so a day with no records left loses its total. A type that was not granted or could not be read keeps what is stored.
+
+## Opening a workout in Coach
+
+Each workout link starts a fresh Expo Router chat using `n`, carries the workout ID, and keeps the preview as the opening exchange. The ID is saved in message metadata so follow-up questions still refer to that workout after reopening the chat. Route parameters are cleared after the first full answer. Hash-only links do not scroll native stat rows; zone rows use their explicit trend routes.
+
+
+## Sleep analysis uses the wake-up date
+
+Sleep Coach links carry the selected wake-up date in Expo Router params, then message metadata for saved follow-ups. The preview uses the existing sleep digest and a session-only cache keyed by night data, provider, model and instructions, including language and display units. Matching concurrent requests share one promise; failures are not cached. The shared activity Coach uses one automatic-analysis setting for every recorded workout type, main sleep and naps. Each link carries its activity kind and session ID or wake-up date; saved chats preserve that selection. Turning automatic analysis off keeps the Coach available on tap for every activity.
+
+## Android home screen widgets
+
+SDK 57's `expo-widgets` supports iOS, while Pulse is Android only. Use an autolinked local Expo module with Android RemoteViews rather than adding an iOS dependency or modifying generated `android/`. A config plugin declares providers and the configuration activity. Reuse the Home query after existing syncs; an app-private, non-backed-up summary lets the widget render without starting JavaScript or reading Health Connect. Keep source/reset invalidation in both JavaScript and the native cache. See [widgets.md](widgets.md) for freshness and owner phone checks.
+
+References checked: [Expo SDK 57](https://docs.expo.dev/versions/v57.0.0/), [local modules](https://docs.expo.dev/modules/get-started/), [module API](https://docs.expo.dev/modules/module-api/), [configuration plugins](https://docs.expo.dev/config-plugins/introduction/), [expo-widgets](https://docs.expo.dev/versions/v57.0.0/sdk/widgets/), and [Android widget configuration](https://developer.android.com/develop/ui/views/appwidgets/configuration).
+
+## Circular widget rendering and stored heart rate
+
+RemoteViews cannot host Pulse's React Native score components. Render the score rings and compact heart-rate card with bounded native Canvas bitmaps in supported ImageViews, sizing them from launcher options and retaining per-metric click targets/accessibility descriptions. Reuse `storedRecentHeartRate` and `minuteMeanHr` so the widget uses Home's same sample/window, with actual sample time and missing-minute gaps. The foreground ticker re-publishes only when its existing read moves samples; no additional health read is introduced. Native-graphics Robolectric JVM tests render the real layouts without a device and retain synthetic PNGs for visual inspection. See [widgets.md](widgets.md), [Android flexible widget layouts](https://developer.android.com/develop/ui/views/appwidgets/layouts), and [Robolectric setup](https://robolectric.org/getting-started/).

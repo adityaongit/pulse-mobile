@@ -15,7 +15,6 @@ export type CoachSetup = {
   last4: string | null;
   consent: boolean;
   instructions: string | null;
-  /** The workout pill asks the provider for a one-line take as a workout opens; off, it asks only when tapped. */
   autoAnalysis: boolean;
   /** The person's own server (provider "custom"): its OpenAI-compatible URL. */
   baseUrl: string | null;
@@ -58,7 +57,6 @@ export const setConsent = (on: boolean) => patchSetup({ consent: on });
 /** The person's notes for the coach (null clears them). */
 export const setInstructions = (notes: string | null) => patchSetup({ instructions: notes?.trim() || null });
 
-/** Whether a workout's coach pill analyses it as it opens (GitHub #5). */
 export const setAutoAnalysis = (on: boolean) => patchSetup({ autoAnalysis: on });
 
 /**

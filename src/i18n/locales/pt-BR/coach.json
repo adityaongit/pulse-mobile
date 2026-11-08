@@ -110,12 +110,12 @@
     "notSaved": "Não salva",
     "change": "Alterar",
     "cancel": "Cancelar",
-    "workouts": "Treinos",
-    "analyze": "Analisar cada treino",
-    "analyzeHint": "Um comentário de uma linha do seu provedor quando um treino é aberto. Desligado, o Coach só responde quando você toca.",
+    "analyze": "Analisar cada atividade",
+    "analyzeHint": "Um resumo de IA ao abrir uma atividade, incluindo treinos, sono e cochilos. Desativado, Coach responde apenas ao tocar.",
     "chats": "Conversas",
     "chatsHint": "Salvas neste celular, visíveis só para você.",
-    "saving": "Salvando…"
+    "saving": "Salvando…",
+    "activities": "Atividades"
   },
   "setup": {
     "consentTitle": "Antes de começar",
@@ -191,5 +191,16 @@
     "reportTitle": "Relatório · {{start}} a {{end}}",
     "reportPartial": "Relatório · {{start}} a {{end}} · Parcial",
     "profile": "Seu perfil"
+  },
+  "sleep": {
+    "question": "Analise meu sono que termina em {{day}}."
+  },
+  "activity": {
+    "ask": "Perguntar ao Coach sobre esta atividade",
+    "analyzing": "Analisando…",
+    "spokenText": "Coach: {{text}} Pergunte sobre esta atividade.",
+    "spokenAnalyzing": "Coach está analisando esta atividade. Toque para abrir a conversa.",
+    "expand": "Amplie esta análise de atividade.",
+    "napQuestion": "Analise meu cochilo em {{day}} iniciado às {{time}}."
   }
 }

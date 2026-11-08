@@ -327,6 +327,27 @@ describe("metrics", () => {
     expect(metrics[0]).toMatchObject({ day: "2026-10-02", hrvMs: 30, respBpm: 14 });
   });
 
+  it("counts a nightly aggregate stamped at the sleep's end, even when that is after noon", () => {
+    // Fitbit writes one HRV value per night, stamped at wake. This wake is at 12:30, past the 00:00–12:00 fallback,
+    // so the value lands in the night's own window.
+    const lateNight = {
+      metadata: meta("late"),
+      startTime: at("2026-10-01", "23:00:00"),
+      endTime: at("2026-10-02", "12:30:00"),
+      stages: [{ startTime: at("2026-10-01", "23:00:00"), endTime: at("2026-10-02", "12:30:00"), stage: SLEEPING }],
+    };
+    const one = (time: string, ms: number) =>
+      mapRecords(
+        {
+          SleepSession: [lateNight],
+          HeartRateVariabilityRmssd: [{ metadata: meta("v1"), time: at("2026-10-02", time), heartRateVariabilityMillis: ms }],
+        },
+        TZ,
+      ).metrics[0];
+    expect(one("12:30:00", 81.1)).toMatchObject({ day: "2026-10-02", hrvMs: 81.1 }); // exactly at the end
+    expect(one("12:30:07", 106)).toMatchObject({ day: "2026-10-02", hrvMs: 106 }); // a moment after waking
+  });
+
   it("builds skin temperature from baseline + mean delta, or deviation-only with a zero baseline", () => {
     const skin = (id: string, baseline: number | undefined, deltas: number[]) => ({
       metadata: meta(id),
@@ -365,8 +386,30 @@ describe("metrics", () => {
 });
 
 describe("exercises and daily values", () => {
+  it("does not lose an eligible workout to a titled copy below the minimum duration", () => {
+    const startTime = at("2026-10-02", "07:00:00");
+    const { exercises } = mapRecords({ ExerciseSession: [
+      { metadata: meta("valid", "com.fitbit"), startTime, endTime: at("2026-10-02", "07:02:00"), exerciseType: ExerciseType.BIKING },
+      { metadata: meta("short", "com.samsung"), startTime, endTime: at("2026-10-02", "07:01:59"), exerciseType: ExerciseType.BIKING, title: "Ride" },
+    ] }, TZ);
+    expect(exercises.map((e) => e.id)).toEqual(["valid"]);
+  });
+
   const len = (m: number) => ({ inMeters: m, inKilometers: m / 1000, inMiles: m / 1609.344, inInches: m * 39.3701, inFeet: m * 3.28084 });
   const energy = (v: number) => ({ inKilocalories: v, inCalories: v * 1000, inJoules: v * 4184, inKilojoules: v * 4.184 });
+
+  it("imports a cross-source copy once without adding both sessions' calories or distance", () => {
+    const span = { startTime: at("2026-10-02", "07:00:00"), endTime: at("2026-10-02", "07:30:00") };
+    const { exercises } = mapRecords({
+      ExerciseSession: [
+        { metadata: meta("a", "com.fitbit"), ...span, exerciseType: ExerciseType.BIKING },
+        { metadata: meta("b", "com.samsung"), ...span, exerciseType: ExerciseType.BIKING, title: "Morning ride" },
+      ],
+      ActiveCaloriesBurned: [{ metadata: meta("c"), ...span, energy: energy(150) }],
+      Distance: [{ metadata: meta("d"), ...span, distance: len(5000) }],
+    }, TZ);
+    expect(exercises).toEqual([expect.objectContaining({ id: "b", name: "Morning ride", calories: 150, distanceM: 5000 })]);
+  });
 
   it("names the type, sums overlapping active kcal and distance, and drops sessions under 2 minutes", () => {
     const { exercises, dailyValues } = mapRecords(

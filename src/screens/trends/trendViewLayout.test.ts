@@ -15,6 +15,14 @@ const props = (o: Partial<TrendViewChartProps>): TrendViewChartProps => ({
 const fmt = (v: number) => String(Math.round(v));
 
 describe("Trend View chart layout", () => {
+  it("keeps negative temperature deviations inside the plotted domain", () => {
+    const values = [-0.1, -0.9, -0.1, -0.3, 0.8, 0.5, 0.2];
+    const m = buildModel(props({ range: "w", unit: "°C", bars: values.map((value, i) => ({ from: `2026-10-${19 + i}`, to: `2026-10-${19 + i}`, value })), typical: [-0.4, 0.5] }), String);
+    expect(m.domain[0]).toBeLessThanOrEqual(-0.9);
+    expect(m.domain[1]).toBeGreaterThanOrEqual(0.8);
+    expect(m.rows.map((r) => r.value)).toEqual(values);
+  });
+
   it("clock labels wrap around midnight", () => {
     expect([clockOf(-90), clockOf(0), clockOf(450), clockOf(1500)]).toEqual(["22:30", "00:00", "07:30", "01:00"]);
   });

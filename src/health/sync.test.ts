@@ -127,6 +127,36 @@ describe("windowPlan", () => {
 });
 
 describe("syncHealthConnect re-import", () => {
+  it("keeps a minimum-duration workout when another app supplies a shorter titled copy", async () => {
+    const store = await staleStore();
+    const startTime = "2026-10-06T08:00:00Z";
+    const data = { ...fixture(), ExerciseSession: [
+      { metadata: meta("valid", FITBIT), startTime, endTime: "2026-10-06T08:02:00Z", exerciseType: 8 },
+      { metadata: meta("short", "com.samsung"), startTime, endTime: "2026-10-06T08:01:59Z", exerciseType: 8, title: "Ride" },
+    ] };
+    hc.permissionState.mockResolvedValue({ granted: ["ExerciseSession"], missing: [], history: true, background: true });
+    hc.readAll.mockImplementation(startTimeRead(data));
+    await syncHealthConnect(store, { timeZone: TZ, now: NOW, historyDays: 5 });
+    expect((await store.allExercises()).map((e) => e.id)).toEqual(["valid"]);
+  });
+
+  it("removes a previously imported copy when an incremental read selects another source", async () => {
+    const store = await staleStore();
+    const a = { metadata: meta("ride-a", FITBIT), startTime: "2026-10-06T08:00:00Z", endTime: "2026-10-06T08:30:00Z", exerciseType: 8, title: undefined as string | undefined };
+    const data = { ...fixture(), ExerciseSession: [a] };
+    hc.permissionState.mockResolvedValue({ granted: ["ExerciseSession", "SleepSession"], missing: [], history: true, background: true });
+    hc.readAll.mockImplementation(startTimeRead(data));
+    await syncHealthConnect(store, { timeZone: TZ, now: NOW, historyDays: 5 });
+    expect((await store.allExercises()).map((e) => e.id)).toEqual(["ride-a"]);
+    await store.upsertExercises([{ id: "outside", day: "2026-10-01", startTs: sec("2026-10-01T08:00:00Z"), endTs: sec("2026-10-01T08:30:00Z"), type: "BIKING", name: null, calories: null, distanceM: null }]);
+    data.ExerciseSession.push({ ...a, metadata: meta("ride-b", "com.samsung"), title: "Morning ride" });
+    vi.mocked((await import("react-native-health-connect")).getChanges).mockResolvedValue(WRITTEN("2026-10-06") as never);
+    const result = await syncHealthConnect(store, { timeZone: TZ, now: NOW, historyDays: 5 });
+    expect(result.counts.reimport).toBeUndefined();
+    expect((await store.allExercises()).map((e) => e.id).sort()).toEqual(["outside", "ride-b"]);
+    expect(await store.takeIntradayDirty()).toContain("2026-10-06");
+  });
+
   it("replaces what the old importer wrote for every day in the window, keeping every app and the largest source per day", async () => {
     const store = await staleStore();
     const r = await syncHealthConnect(store, { timeZone: TZ, now: NOW, historyDays: 5 });

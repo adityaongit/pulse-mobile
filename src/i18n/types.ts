@@ -22,10 +22,12 @@ import type errors from "./locales/en/errors.json";
 import type ui from "./locales/en/ui.json";
 import type coachTools from "./locales/en/coachTools.json";
 
+import type widgets from "./locales/en/widgets.json";
+
 declare module "i18next" {
   interface CustomTypeOptions {
     defaultNS: "common";
-    resources: { common: typeof common, reasons: typeof reasons, metrics: typeof metrics, home: typeof home, sleep: typeof sleep, recovery: typeof recovery, strain: typeof strain, health: typeof health, journal: typeof journal, trends: typeof trends, nutrition: typeof nutrition, goals: typeof goals, reports: typeof reports, coach: typeof coach, settings: typeof settings, onboarding: typeof onboarding, more: typeof more, howItWorks: typeof howItWorks, notifications: typeof notifications, errors: typeof errors, ui: typeof ui; coachTools: typeof coachTools };
+    resources: { common: typeof common, reasons: typeof reasons, metrics: typeof metrics, home: typeof home, sleep: typeof sleep, recovery: typeof recovery, strain: typeof strain, health: typeof health, journal: typeof journal, trends: typeof trends, nutrition: typeof nutrition, goals: typeof goals, reports: typeof reports, coach: typeof coach, settings: typeof settings, onboarding: typeof onboarding, more: typeof more, howItWorks: typeof howItWorks, notifications: typeof notifications, errors: typeof errors, ui: typeof ui; coachTools: typeof coachTools; widgets: typeof widgets };
     returnNull: false;
   }
 }
