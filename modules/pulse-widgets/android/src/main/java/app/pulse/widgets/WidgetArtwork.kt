@@ -1,12 +1,15 @@
 package app.pulse.widgets
 
 import android.content.Context
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.Color
+import android.graphics.LinearGradient
 import android.graphics.Paint
 import android.graphics.Path
+import android.graphics.Rect
 import android.graphics.RectF
+import android.graphics.Shader
 import android.graphics.Typeface
 import android.text.TextPaint
 import android.text.TextUtils
@@ -15,17 +18,31 @@ import org.json.JSONObject
 import kotlin.math.max
 import kotlin.math.min
 
-/** RemoteViews supports ImageView, not custom Views. These bounded bitmaps use real Android Canvas rendering. */
-internal class WidgetArtwork(private val context: Context) {
-  private val density = context.resources.displayMetrics.density.coerceAtMost(3f)
-  private val fontScale = context.resources.configuration.fontScale.coerceIn(1f, 1.35f)
-  private val foreground = context.getColor(R.color.pulse_widget_fg)
-  private val muted = context.getColor(R.color.pulse_widget_muted)
-  private val panel = context.getColor(R.color.pulse_widget_panel)
-  private val track = context.getColor(R.color.pulse_widget_track)
-  private val numberFace = Typeface.create("sans-serif-condensed", Typeface.BOLD)
-  private val labelFace = Typeface.create("sans-serif", Typeface.BOLD)
-  private val regularFace = Typeface.create("sans-serif", Typeface.NORMAL)
+/**
+ * RemoteViews supports ImageView, not custom Views, and a widget host inflates TextViews in a restricted context that
+ * ignores font resources. So everything set in Pulse type (Barlow numbers, Figtree labels) is a bounded Canvas bitmap,
+ * drawn for one theme: `night` picks values-night colours, whatever the app process is showing.
+ */
+internal class WidgetArtwork(base: Context, night: Boolean) {
+  private val context = base.createConfigurationContext(Configuration(base.resources.configuration).apply {
+    uiMode = (uiMode and Configuration.UI_MODE_NIGHT_MASK.inv()) or if (night) Configuration.UI_MODE_NIGHT_YES else Configuration.UI_MODE_NIGHT_NO
+  })
+  private val density = base.resources.displayMetrics.density.coerceAtMost(3f)
+  private val fontScale = base.resources.configuration.fontScale.coerceIn(1f, 1.3f)
+  private fun color(id: Int) = context.getColor(id)
+  private val fg = color(R.color.pulse_widget_fg)
+  private val secondary = color(R.color.pulse_widget_secondary)
+  private val muted = color(R.color.pulse_widget_muted)
+  private val track = color(R.color.pulse_widget_track)
+  private val card = color(R.color.pulse_widget_card)
+  private val cardTop = color(R.color.pulse_widget_card_top)
+  private val cardEdge = color(R.color.pulse_widget_card_edge)
+  private val warning = color(R.color.pulse_widget_warning_text)
+  private val red = color(R.color.pulse_widget_red)
+  private val numeric = context.resources.getFont(R.font.barlow_bold)
+  private val numericUnit = context.resources.getFont(R.font.barlow_semibold)
+  private val labelFace = context.resources.getFont(R.font.figtree_bold)
+  private val bodyFace = context.resources.getFont(R.font.figtree_medium)
 
   private fun image(width: Float, height: Float, draw: (Canvas) -> Unit): Bitmap {
     val bitmap = Bitmap.createBitmap(max(1, (width * density).toInt()), max(1, (height * density).toInt()), Bitmap.Config.ARGB_8888)
@@ -34,26 +51,44 @@ internal class WidgetArtwork(private val context: Context) {
     draw(canvas)
     return bitmap
   }
-  private fun paint(color: Int, size: Float = 12f, face: Typeface = regularFace) = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-    this.color = color; textSize = size * fontScale; typeface = face
+  /** Text sizes in dp follow the system font scale; ring numbers do not (they are sized by the ring). */
+  private fun paint(color: Int, size: Float, face: Typeface, tracking: Float = 0f, scaled: Boolean = true) = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
+    this.color = color; textSize = size * if (scaled) fontScale else 1f; typeface = face; letterSpacing = tracking
   }
-  private fun text(c: Canvas, value: String, x: Float, y: Float, width: Float, size: Float, color: Int = muted, center: Boolean = false, bold: Boolean = false) {
-    val p = paint(color, size, if (bold) labelFace else regularFace)
-    p.textAlign = if (center) Paint.Align.CENTER else Paint.Align.LEFT
-    val safe = TextUtils.ellipsize(value, TextPaint(p), width.coerceAtLeast(1f), TextUtils.TruncateAt.END).toString()
-    c.drawText(safe, x, y, p)
+  /** The app's 12 px label (uppercase, bold, 0.1 em tracking) and its 12 px muted caption, a step smaller for the widget. */
+  private fun labelPaint(color: Int = fg, size: Float = 10.5f) = paint(color, size, labelFace, .1f)
+  private fun captionPaint(size: Float = 10f) = paint(muted, size, bodyFace)
+  private fun lineHeight(p: Paint) = p.textSize * 1.35f
+
+  /** Shrinks to fit (down to 80 %), then ellipsizes: long labels in other languages stay readable. */
+  private fun fitted(p: TextPaint, text: String, width: Float): String {
+    val min = p.textSize * .8f
+    while (p.measureText(text) > width && p.textSize > min) p.textSize *= .95f
+    return TextUtils.ellipsize(text, p, width.coerceAtLeast(1f), TextUtils.TruncateAt.END).toString()
   }
-  private fun number(c: Canvas, value: String, unit: String, cx: Float, baseline: Float, width: Float, size: Float, color: Int = foreground) {
-    val valuePaint = paint(color, size, numberFace)
-    val unitPaint = paint(if (unit == "%") color else muted, size * 0.43f)
-    val gap = if (unit.isBlank() || unit == "%") 0f else 3f
-    fun length() = valuePaint.measureText(value) + gap + unitPaint.measureText(unit)
-    while ((length() > width || valuePaint.fontSpacing > size * 1.2f) && valuePaint.textSize > 12f) { valuePaint.textSize *= .94f; unitPaint.textSize *= .94f }
-    val left = cx - length() / 2
+  /** One line of text vertically centred on `centerY`. */
+  private fun line(c: Canvas, text: String, x: Float, centerY: Float, width: Float, p: TextPaint, align: Paint.Align = Paint.Align.LEFT) {
+    if (text.isBlank()) return
+    p.textAlign = align
+    val safe = fitted(p, text, width)
+    c.drawText(safe, x, centerY - (p.fontMetrics.ascent + p.fontMetrics.descent) / 2, p)
+  }
+  /** Value and unit on one baseline, shrunk together to `width`. Returns the right edge. */
+  private fun valueUnit(c: Canvas, value: String, unit: String, x: Float, baseline: Float, width: Float, valuePaint: TextPaint, unitPaint: TextPaint, center: Boolean): Float {
+    val shown = if (value == "--") "" else unit
+    val gap = if (shown.isBlank() || shown == "%") 1f else 3f
+    fun length() = valuePaint.measureText(value) + if (shown.isBlank()) 0f else gap + unitPaint.measureText(shown)
+    while (length() > width && valuePaint.textSize > 8f) { valuePaint.textSize *= .95f; unitPaint.textSize *= .95f }
+    val left = if (center) x - length() / 2 else x
     c.drawText(value, left, baseline, valuePaint)
-    c.drawText(unit, left + valuePaint.measureText(value) + gap, baseline, unitPaint)
+    if (shown.isNotBlank()) c.drawText(shown, left + valuePaint.measureText(value) + gap, baseline, unitPaint)
+    return left + length()
   }
-  private fun metricColor(metric: JSONObject?) = try { Color.parseColor(metric?.optString("color") ?: "#0093e7") } catch (_: IllegalArgumentException) { foreground }
+  /** Maps the snapshot's (light) data colour to the same token in this theme. */
+  private fun dataColor(metric: JSONObject?): Int {
+    val hex = metric?.optString("color")?.lowercase(Locale.ROOT).orEmpty()
+    return DATA[hex]?.let(::color) ?: try { android.graphics.Color.parseColor(hex) } catch (_: IllegalArgumentException) { fg }
+  }
   private fun heart(c: Canvas, x: Float, y: Float, size: Float) {
     c.save(); c.translate(x, y); c.scale(size / 24, size / 24)
     val path = Path().apply {
@@ -61,74 +96,131 @@ internal class WidgetArtwork(private val context: Context) {
       cubicTo(1f, 1f, 8f, -1f, 12f, 4f); cubicTo(16f, -1f, 23f, 1f, 23f, 7f)
       cubicTo(23f, 13f, 16f, 18f, 12f, 21f); close()
     }
-    c.drawPath(path, paint(Color.rgb(255, 0, 38))); c.restore()
+    c.drawPath(path, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = red }); c.restore()
+  }
+  /** The card material: card-top fading to card, a 1 dp rim, 16 dp corners (the app's rounded-2xl). */
+  private fun card(c: Canvas, rect: RectF) {
+    val radius = min(16f, rect.height() / 2)
+    val fill = Paint(Paint.ANTI_ALIAS_FLAG).apply { shader = LinearGradient(0f, rect.top, 0f, rect.bottom, cardTop, card, Shader.TileMode.CLAMP) }
+    c.drawRoundRect(rect, radius, radius, fill)
+    val rim = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = 1f; color = cardEdge }
+    c.drawRoundRect(RectF(rect.left + .5f, rect.top + .5f, rect.right - .5f, rect.bottom - .5f), radius, radius, rim)
   }
 
-  fun metric(metric: JSONObject?, key: String, label: String, valid: Boolean, caption: String, width: Float, height: Float, compact: Boolean): Bitmap = image(width, height) { c ->
+  /** A selected metric: Sleep, Recovery and Strain as Home's ring; the rest as a stat card, `inset` in from the cell's sides. */
+  fun metric(metric: JSONObject?, key: String, label: String, valid: Boolean, caption: String, width: Float, height: Float, inset: Float): Bitmap = image(width, height) { c ->
     val value = if (valid) metric!!.optString("display", "--") else "--"
     val unit = if (valid) metric?.optString("unit").orEmpty() else ""
-    val inset = 3f
-    if (compact) {
-      c.drawRoundRect(RectF(inset, 1f, width - inset, height - 1f), 14f, 14f, paint(panel))
-      text(c, label.uppercase(Locale.ROOT), width / 2, 12f, width - 16, 9f, center = true, bold = true)
-      number(c, value, unit, width / 2, height - if (caption.isBlank()) 9 else 18, width - 16, min(25f, (height - if (caption.isBlank()) 20 else 28) * .85f))
-      if (caption.isNotBlank()) text(c, caption, width / 2, height - 5, width - 14, 8f, center = true)
-    } else if (key in listOf("sleep", "recovery", "strain")) {
-      val labelSpace = if (caption.isBlank()) 20f else 32f
-      val diameter = min(width - 12, height - labelSpace - 4).coerceAtLeast(28f)
-      val left = (width - diameter) / 2
-      val top = max(2f, (height - labelSpace - diameter) / 2)
-      val stroke = (diameter * .062f).coerceIn(3f, 7f)
-      val ring = RectF(left + stroke / 2, top + stroke / 2, left + diameter - stroke / 2, top + diameter - stroke / 2)
-      val ringPaint = paint(track).apply { style = Paint.Style.STROKE; strokeWidth = stroke; strokeCap = Paint.Cap.BUTT }
-      c.drawArc(ring, -90f, 360f, false, ringPaint)
-      val progress = metric?.optDouble("progress", Double.NaN) ?: Double.NaN
-      if (valid && progress.isFinite()) {
-        ringPaint.color = metricColor(metric)
-        c.drawArc(ring, -90f, progress.coerceIn(0.0, 100.0).toFloat() * 3.6f, false, ringPaint)
-      }
-      number(c, value, unit, width / 2, top + diameter / 2 + diameter * .105f, diameter - 16, diameter * .33f, if (valid) foreground else muted)
-      text(c, label.uppercase(Locale.ROOT), width / 2, top + diameter + 16, width - 4, 10f, foreground, center = true, bold = true)
-      if (caption.isNotBlank()) text(c, caption, width / 2, height - 2, width - 6, 8f, center = true)
-    } else {
-      c.drawRoundRect(RectF(inset, 2f, width - inset, height - 2), 18f, 18f, paint(panel))
-      if (key == "heart_rate") heart(c, width / 2 - 7, max(7f, height * .16f), 14f)
-      number(c, value, unit, width / 2, height * .57f, width - 14, min(34f, height * .30f))
-      text(c, label.uppercase(Locale.ROOT), width / 2, height * .79f, width - 12, 9f, foreground, center = true, bold = true)
-      if (caption.isNotBlank()) text(c, caption, width / 2, height - 6, width - 12, 8f, center = true)
-    }
+    if (key in RINGS) ring(c, metric, value, unit, label, valid, caption, width, height)
+    else statCard(c, RectF(inset, 0f, width - inset, height), key, value, unit, label, caption)
   }
 
-  fun heartRate(metric: JSONObject?, valid: Boolean, title: String, reading: String, window: String, width: Float, height: Float): Bitmap = image(width, height) { c ->
-    c.drawRoundRect(RectF(0f, 0f, width, height), 18f, 18f, paint(panel))
-    text(c, title.uppercase(Locale.ROOT), 14f, 16f, width - 30, if (height < 72) 8.8f else 10f, foreground, bold = true)
-    val leftWidth = width * .46f
-    val valueY = height * .64f
-    heart(c, 14f, valueY - 17, 19f)
-    number(c, if (valid) metric!!.optString("display", "--") else "--", if (valid) "bpm" else "", 35 + (leftWidth - 35) / 2, valueY, leftWidth - 35, min(39f, (height - 38) * .95f))
-    text(c, reading, 14f, height - 10, leftWidth - 10, 9f)
-    if (valid) {
-      val series = metric?.optJSONArray("trend")
-      val values = (0 until (series?.length() ?: 0)).map { i -> if (series!!.isNull(i)) null else series.optDouble(i, Double.NaN).takeIf { it.isFinite() } }
-      val finite = values.filterNotNull()
-      if (finite.isNotEmpty()) {
-        val low = finite.min() - 3; val high = max(finite.max() + 3, low + 8)
-        val left = width * .52f; val right = width - 14; val top = 29f; val bottom = height - 27
-        val path = Path(); var connected = false
-        val line = paint(muted).apply { style = Paint.Style.STROKE; strokeWidth = 1.4f; strokeCap = Paint.Cap.ROUND; strokeJoin = Paint.Join.ROUND }
-        var lastX = 0f; var lastY = 0f
-        values.forEachIndexed { i, v ->
-          if (v == null) { connected = false } else {
-            val x = left + (right - left) * i / max(1, values.size - 1)
-            val y = bottom - (bottom - top) * ((v - low) / (high - low)).toFloat()
-            if (connected) path.lineTo(x, y) else path.moveTo(x, y)
-            connected = true; lastX = x; lastY = y
-            c.drawCircle(x, y, .7f, paint(muted))
-          }
-        }
-        c.drawPath(path, line); c.drawCircle(lastX, lastY, 2f, paint(foreground))
-      }
-      text(c, window.uppercase(Locale.ROOT), width * .52f, height - 10, width * .48f - 14, 8f)
+  /** Home's md dial (ScoreDial): the 4°-356° track and fill on a 92-unit box, the value in Barlow inside, the label under it. */
+  private fun ring(c: Canvas, metric: JSONObject?, value: String, unit: String, label: String, valid: Boolean, caption: String, width: Float, height: Float) {
+    val labelP = labelPaint()
+    val captionP = captionPaint()
+    val labelH = lineHeight(labelP)
+    val captionH = if (caption.isBlank()) 0f else lineHeight(captionP)
+    val d = min(min(width - 8, 112f), height - 4 - labelH - captionH).coerceAtLeast(24f)
+    val top = max(0f, (height - d - 4 - labelH - captionH) / 2)
+    val cx = width / 2; val cy = top + d / 2; val k = d / 92
+    val r = d / 2 - 5 * k
+    val oval = RectF(cx - r, cy - r, cx + r, cy + r)
+    val stroke = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeCap = Paint.Cap.BUTT; color = track; strokeWidth = 5.5f * k }
+    c.drawArc(oval, -86f, 352f, false, stroke)
+    val progress = metric?.optDouble("progress", Double.NaN) ?: Double.NaN
+    if (valid && progress.isFinite() && progress > 0) {
+      stroke.color = dataColor(metric); stroke.strokeWidth = 6 * k
+      c.drawArc(oval, -86f, 352f * (progress.coerceIn(0.0, 100.0).toFloat() / 100f), false, stroke)
     }
+    val hole = d - 16 * k
+    val valueP = paint(if (valid) fg else muted, hole * .34f, numeric, -.01f, scaled = false)
+    val unitP = paint(valueP.color, hole * .34f * .55f, numeric, scaled = false)
+    val bounds = Rect().also { valueP.getTextBounds("0", 0, 1, it) }
+    valueUnit(c, value, unit, cx, cy - (bounds.top + bounds.bottom) / 2f, hole * .88f, valueP, unitP, center = true)
+    line(c, label.uppercase(Locale.getDefault()), cx, top + d + 4 + labelH / 2, width - 4, labelP, Paint.Align.CENTER)
+    line(c, caption, cx, top + d + 4 + labelH + captionH / 2, width - 4, captionP, Paint.Align.CENTER)
+  }
+
+  /** The app's stat card: the label at the top, the value and unit (ValueUnit) at the foot, an honest-state caption under it. */
+  private fun statCard(c: Canvas, rect: RectF, key: String, value: String, unit: String, label: String, caption: String) {
+    card(c, rect)
+    val pad = min(12f, rect.height() * .16f).coerceAtLeast(7f)
+    val labelP = labelPaint(secondary, 9.5f)
+    val captionP = captionPaint(9.5f)
+    val labelH = lineHeight(labelP)
+    val captionH = if (caption.isBlank()) 0f else lineHeight(captionP)
+    val left = rect.left + pad; val inner = rect.width() - 2 * pad
+    var labelLeft = left
+    if (key == "heart_rate") { heart(c, left, rect.top + pad + labelH / 2 - 5, 10f); labelLeft += 13 }
+    line(c, label.uppercase(Locale.getDefault()), labelLeft, rect.top + pad + labelH / 2, inner - (labelLeft - left), labelP)
+    val room = rect.height() - 2 * pad - labelH - captionH
+    val size = min(30f, room * .95f).coerceAtLeast(10f)
+    val valueP = paint(if (value == "--") muted else fg, size, numeric, -.01f, scaled = false)
+    val unitP = paint(secondary, max(9f, size * .42f), numericUnit, scaled = false)
+    val baseline = rect.bottom - pad - captionH - (room - size * .72f).coerceAtLeast(0f) * .25f
+    valueUnit(c, value, unit, left, baseline, inner, valueP, unitP, center = false)
+    line(c, caption, left, rect.bottom - pad - captionH / 2, inner, captionP)
+  }
+
+  /** Home's heart-rate card: title, the heart and bpm, when it was read; the 30 minutes before it on the right. */
+  fun heartRate(metric: JSONObject?, valid: Boolean, title: String, reading: String, window: String, width: Float, height: Float): Bitmap = image(width, height) { c ->
+    card(c, RectF(0f, 0f, width, height))
+    val pad = min(12f, height * .16f)
+    val titleP = labelPaint(fg, 10.5f)
+    val captionP = captionPaint()
+    val titleH = lineHeight(titleP); val captionH = lineHeight(captionP)
+    // The title row carries when the reading was taken, so the bpm gets the card's full height below it.
+    val readingP = captionPaint()
+    val titleText = title.uppercase(Locale.getDefault())
+    val titleWidth = min(titleP.measureText(titleText), (width - 2 * pad) * .5f)
+    line(c, titleText, pad, pad + titleH / 2, titleWidth, titleP)
+    line(c, reading, width - pad, pad + titleH / 2, width - 2 * pad - titleWidth - 8, readingP, Paint.Align.RIGHT)
+    val bodyTop = pad + titleH + 4; val bodyBottom = height - pad
+    val size = min(36f, (bodyBottom - bodyTop) / .78f).coerceAtLeast(12f)
+    val leftWidth = width * .46f - pad
+    val baseline = bodyBottom - max(0f, (bodyBottom - bodyTop - size * .72f) / 2)
+    val glyph = size * .55f
+    heart(c, pad, baseline - size * .36f - glyph / 2, glyph)
+    val valueP = paint(if (valid) fg else muted, size, numeric, -.01f, scaled = false)
+    val unitP = paint(secondary, max(9f, size * .38f), numericUnit, scaled = false)
+    valueUnit(c, if (valid) metric!!.optString("display", "--") else "--", if (valid) "bpm" else "", pad + glyph + 6, baseline, leftWidth - glyph - 6, valueP, unitP, center = false)
+    if (!valid) return@image
+    val series = metric?.optJSONArray("trend")
+    val values = (0 until (series?.length() ?: 0)).map { i -> if (series!!.isNull(i)) null else series.optDouble(i, Double.NaN).takeIf { it.isFinite() } }
+    val finite = values.filterNotNull()
+    val left = width * .5f; val right = width - pad
+    if (finite.isNotEmpty()) {
+      val low = finite.min() - 3; val high = max(finite.max() + 3, low + 8)
+      val top = bodyTop + 2; val bottom = bodyBottom - captionH - 4
+      val path = Path(); var connected = false; var lastX = 0f; var lastY = 0f
+      values.forEachIndexed { i, v ->
+        // A missing minute is a gap: the line never runs across it.
+        if (v == null) connected = false else {
+          val x = left + (right - left) * i / max(1, values.size - 1)
+          val y = bottom - (bottom - top) * ((v - low) / (high - low)).toFloat()
+          if (connected) path.lineTo(x, y) else path.moveTo(x, y)
+          connected = true; lastX = x; lastY = y
+        }
+      }
+      c.drawPath(path, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = red; style = Paint.Style.STROKE; strokeWidth = 1.5f; strokeCap = Paint.Cap.ROUND; strokeJoin = Paint.Join.ROUND })
+      c.drawCircle(lastX, lastY, 2.5f, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = red })
+    }
+    line(c, window, left, height - pad - captionH / 2, right - left, captionP)
+  }
+
+  /** The footer: sync time, sample data or a stale warning (in the warning colour). */
+  fun status(text: String, warn: Boolean, width: Float, height: Float): Bitmap = image(width, height) { c ->
+    line(c, text, width / 2, height / 2, width, paint(if (warn) warning else muted, 10f, bodyFace), Paint.Align.CENTER)
+  }
+
+  companion object {
+    val RINGS = setOf("sleep", "recovery", "strain")
+    /** src/widgets/model.ts sends light-theme hex colours; each is a palette token with its own dark value. */
+    private val DATA = mapOf(
+      "#12c805" to R.color.pulse_widget_green, "#e5c300" to R.color.pulse_widget_yellow, "#ff0026" to R.color.pulse_widget_red,
+      "#0093e7" to R.color.pulse_widget_strain, "#7ba1bb" to R.color.pulse_widget_sleep, "#00b377" to R.color.pulse_widget_optimal,
+      "#d97900" to R.color.pulse_widget_warning, "#3f92d3" to R.color.pulse_widget_blue,
+    )
   }
 }

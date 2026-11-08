@@ -6,7 +6,7 @@ Pulse supports three providers: Small (one metric), Medium (up to three), and La
 
 Install a native build containing `modules/pulse-widgets`; an OTA JavaScript update or Expo Go cannot add the native providers. Complete onboarding and sync, then open Settings → App → Home screen widgets. Choose a size and confirm Android's pin request. Alternatively, long-press the home screen and choose Widgets → Pulse. Tap the widget's ⋮ control to choose metrics; supported launchers also offer reconfiguration on long press. Selection is saved separately for every widget. Tap a metric to open its Pulse detail screen.
 
-Launcher grid sizes vary. The target footprints are 2×2, 4×2 and 4×4; providers declare minimum dimensions and can be resized. The widget follows the phone's light/dark appearance. Metric labels, missing-value reasons, number formatting and status labels follow Pulse's selected language after a refresh. The native configuration screen and gallery currently use English fallback strings. Sync timestamps use the phone's clock format.
+Launcher grid sizes vary. The target footprints are 2×2, 4×2 and 4×4; providers declare minimum dimensions and can be resized. The widget follows the phone's light/dark appearance (see Light and dark below). Metric labels, missing-value reasons, number formatting and status labels follow Pulse's selected language after a refresh. The native configuration screen and gallery currently use English fallback strings. Sync timestamps use the phone's clock format.
 
 ## Data, freshness and privacy
 
@@ -38,7 +38,7 @@ Remove the temporary bundle after checking it. A complete development APK can be
 
 No device automation is used, as required by `AGENTS.md`. Before release, check on a physical Android phone:
 
-1. Add all three sizes both from Settings and the launcher gallery; cancel an add, configure, resize, remove and re-add. Confirm no clipping at normal and large system font scales in light/dark modes.
+1. Add all three sizes both from Settings and the launcher gallery; cancel an add, configure, resize, remove and re-add. Confirm no clipping at normal and large system font scales in light/dark modes. With widgets on screen, switch the system theme: on Android 12+ every tile, ring and the footer should change with the background, without opening Pulse.
 2. Pick different metrics on two instances; confirm selections remain independent after process death, reboot and a native rebuild.
 3. Tap every supported metric and confirm the correct detail route. Check missing/calibrating values, valid zero, a strain above 100 and provisional labels.
 4. Compare against Pulse Home after manual sync and an allowed background sync. Confirm demo labels, stale timestamps, and day rollover in the profile time zone.
@@ -49,13 +49,35 @@ Automated test/build results and their limits belong in the change's review note
 
 ## Rendering and stored heart rate
 
-Score dials use Pulse's colored progress rings with white/dark foreground values, rather than horizontal progress bars. RemoteViews ImageViews display bounded native Canvas bitmaps; the native renderer handles widget dimensions and keeps the content together. Other selected metrics use compact cards. Existing metric selections are preserved; newly added widgets default to Sleep, Recovery and Strain in Home order.
+### Look
+
+The widget uses the app's own design: the Pulse wordmark (centred as on Home; at the left on Small, where a centred one would meet the ⋮ at 110 dp), Barlow for numbers and Figtree for labels, and the palette tokens of `src/ui/palette.ts`. Sleep, Recovery and Strain are Home's md dial (the 4°–356° track and fill on a 92-unit box, the value in Barlow inside, the uppercase label under it). Other metrics, the heart-rate card and Large's bottom row are the app's card (`card-top` to `card`, a 1 dp rim, 16 dp corners inside the widget's 28 dp corners and 12 dp padding). The rows share the body by weight (42/33/25 on Large, 8 dp gaps), so there is no dead space above the footer at any size. Labels shrink to 80 % before they ellipsize.
+
+- `res/drawable/pulse_widget_wordmark.xml` is generated from `build(STROKE.bold)` in `src/ui/brand.tsx`: the same path, not "PULSE" set in a font. Regenerate it if the wordmark changes.
+- `res/font/` holds only the weights drawn: Barlow 700 and 600, Figtree 700 and 500 (OFL, from `@expo-google-fonts`).
+- `values/colors.xml` and `values-night/colors.xml` are palette tokens; `scripts/widgets.test.ts` fails if they drift from `palette.ts`. The snapshot's light-theme ring colours are mapped to the same token in the active theme (`WidgetArtwork.DATA`).
+
+### Light and dark
+
+A widget host inflates RemoteViews in a restricted context that ignores font resources, so anything in Pulse type has to be a bitmap, and a bitmap cannot change colour when the phone switches theme. The previous build drew each bitmap once in the app process's theme, which left dark text on a dark widget after a switch until the next update.
+
+```mermaid
+flowchart LR
+  U[Widget update] --> X["XML chrome: background, wordmark, ⋮ (@color resources)"]
+  U --> B{Android 12+?}
+  B -- yes --> T["Each bitmap drawn twice, light and dark: RemoteViews.setIcon(id, setImageIcon, light, dark)"]
+  B -- no --> O[Each bitmap drawn once, in the current theme]
+  X --> H[Launcher resolves values / values-night at inflation]
+  T --> H2[Launcher picks the variant for its own night mode at apply time]
+```
+
+On Android 12+ (API 31) the night-mode `setIcon` overload hands the host both variants, and the host re-applies the views when its configuration changes, so a theme switch needs nothing from Pulse. Re-rendering on a configuration change was rejected: the app process is usually not running, and `AppWidgetProvider` receives no theme-change broadcast. Splitting text into TextViews was rejected because the host would draw them in Roboto. The cost is twice the bitmap memory on Android 12+, well under the RemoteViews limit at the declared sizes. Android 8–11 (minSdk 26) keep one variant in the theme of the last update; the XML chrome still follows the theme there.
 
 Large always includes a dedicated Heart Rate card in addition to its six configurable metrics. Small and Medium can select Heart Rate from the metric picker. The card shows the latest **stored** sample's bpm and actual measurement time/age, plus the 30 minutes ending at that sample. Missing minutes stay gaps; no line is fabricated across them. Future, nonfinite or nonpositive readings display no value. The timestamp is separate from the full-sync footer; an older last-known measurement is explicitly marked. Bluetooth streaming is not exposed as a live background widget feed.
 
 The existing foreground ticker publishes when it imports new heart-rate samples, reusing the Store-backed helper. Background widgets still follow the existing sync/redraw schedule; this adds no new Health Connect read or background service. A summary predating the current profile-local day stays suppressed until refreshed. The summary reader accepts both eight-metric and nine-metric caches; opening Pulse and syncing adds heart-rate data to existing widgets.
 
-Native JVM tests use Robolectric 4.17 with native graphics to inflate/draw the actual RemoteViews layouts, test minimum sizes, light/dark and 130% font scale, check empty/previous-day states, verify the uncapped Strain label, and exercise old-cache/reset invalidation. This is a host-side render, not device or launcher automation. Tests save synthetic previews under the module's ignored `android/build/widget-previews/` directory:
+Native JVM tests use Robolectric 4.17 with native graphics to inflate/draw the actual RemoteViews layouts, test minimum sizes, light/dark and 130% font scale, check empty/previous-day states, verify the uncapped Strain label, apply one update under light and then dark qualifiers to check the bitmaps switch, and exercise old-cache/reset invalidation. This is a host-side render, not device or launcher automation; Robolectric also does not prove that a given launcher honours the night-mode variants. Tests save synthetic previews under the module's ignored `android/build/widget-previews/` directory (`design-{small,medium,large}-{light,dark}.png` at typical sizes):
 
 ```sh
 ./android/gradlew -p android :pulse-widgets:testDebugUnitTest
@@ -69,4 +91,14 @@ For local full release assembly, the SDK's original 512 MiB metadata limit was i
   '-Dorg.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1536m' --max-workers=2
 ```
 
-A regression check on Android 11 (API 30) exposed overlap with the sync footer because pre-Android 12 RemoteViews cannot apply the newer explicit height action. Bitmap ImageViews now use intrinsic aspect-ratio measurement (`wrap_content` + `adjustViewBounds`) there. API 30 and API 35 minimum-size renders both pass, with footer-overlap assertions.
+Pre-Android 12 RemoteViews cannot set an explicit view height, which once let bitmaps overlap the sync footer on API 30. The rows now take their height from layout weights and the bitmaps are drawn at the same proportions (`fitCenter`), so nothing can overflow on any version; API 30 and API 35 minimum-size renders both pass, with footer-overlap assertions.
+
+## Previews
+
+Rendered by `WidgetRenderingTest` from demo data (`./gradlew :pulse-widgets:testDebugUnitTest`, output in `modules/pulse-widgets/android/build/widget-previews/`). Regenerate these copies when the design changes.
+
+| | Light | Dark |
+|---|---|---|
+| Small | ![Small, light](images/widgets/small-light.png) | ![Small, dark](images/widgets/small-dark.png) |
+| Medium | ![Medium, light](images/widgets/medium-light.png) | ![Medium, dark](images/widgets/medium-dark.png) |
+| Large | ![Large, light](images/widgets/large-light.png) | ![Large, dark](images/widgets/large-dark.png) |
