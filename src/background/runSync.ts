@@ -105,7 +105,8 @@ async function run(store: Store, profile: Profile, source: Source, opts: RunSync
     // data: the sync itself has succeeded, and the next run tries again.
     await timed(`maintenance (${opts.owner})`, () => maintainStorage(store, Date.now() / 1000)).catch((e) => console.warn("[maintenance]", e instanceof Error ? e.message : String(e)));
     const now = Math.floor(Date.now() / 1000);
-    if (epoch !== null) await store.getSyncState().then((sync) => refreshWidgets({ store, profile, timeZone: opts.timeZone, today: localDay(now, opts.timeZone), now, sync }, source, { epoch })).catch(() => {});
+    // The app's own runs publish through dataChanged(); only a background run publishes here.
+    if (epoch !== null && opts.owner !== "app") await store.getSyncState().then((sync) => refreshWidgets({ store, profile, timeZone: opts.timeZone, today: localDay(now, opts.timeZone), now, sync }, source, { epoch })).catch(() => {});
     return { ran: true, warnings, ...(unchanged && { unchanged: true as const }) };
   } finally {
     await releaseLock(opts.owner);

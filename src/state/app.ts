@@ -309,9 +309,10 @@ export async function exploreSample(): Promise<void> {
     // The demo data belongs to a demo person with their own profile; keep the person's own to restore later.
     if (profile && source !== "demo") await AsyncStorage.setItem(OWN_PROFILE_KEY, JSON.stringify(profile));
     if (running) await running.catch(() => {});
+    await store.clearAll();
+    // Only after the clear succeeds: a cleared source over rows that survived would let real data land on demo data.
     await AsyncStorage.removeItem(SOURCE_KEY);
     await clearWidgets();
-    await store.clearAll();
     await forgetChanges();
     const timeZone = profile?.timeZone ?? deviceTimeZone();
     const today = localDay(Date.now() / 1000, timeZone);
@@ -344,9 +345,10 @@ export async function connectHealth(): Promise<PermissionState | null> {
   if (state.source === "demo") {
     const own = await AsyncStorage.getItem(OWN_PROFILE_KEY).catch(() => null);
     if (running) await running.catch(() => {});
+    await store.clearAll();
+    // Only after the clear succeeds: a cleared source over rows that survived would let real data land on demo data.
     await AsyncStorage.removeItem(SOURCE_KEY);
     await clearWidgets();
-    await store.clearAll();
     await AsyncStorage.removeItem(OWN_PROFILE_KEY).catch(() => {});
     profile = own ? (JSON.parse(own) as Profile) : null;
     if (profile) {
@@ -374,9 +376,8 @@ export async function reimport(): Promise<void> {
 export async function reset(): Promise<void> {
   const { store } = state;
   if (running) await running.catch(() => {});
-  await AsyncStorage.removeItem(SOURCE_KEY);
-  await clearWidgets();
   if (store) await store.clearAll();
+  await clearWidgets();
   deleteAllPhotos();
   await AsyncStorage.multiRemove([SOURCE_KEY, OWN_PROFILE_KEY]).catch(() => {});
   await forgetChanges();
