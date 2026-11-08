@@ -77,8 +77,9 @@ Add new codes here when you add a `report` or `reportError` call (AGENTS.md).
 | `SENTRY_ORG`, `SENTRY_PROJECT` | `eas.json`, same profiles | `pulse-fit` and `pulse-mobile`, for the source-map upload |
 | `SENTRY_AUTH_TOKEN` | The shell running `eas build --local`, or an EAS secret | Uploads source maps so crash stacks show source lines. Secret: never commit it. Without it the build skips the upload (`plugins/withSentryUpload.js`). |
 
-To create the token: Sentry › Settings › Organization `pulse-fit` › Auth Tokens › Create New Token, then
-`export SENTRY_AUTH_TOKEN=…` in `~/.zshrc` under `~/personal/` (beside `GH_TOKEN`), and for cloud builds
+To create the token: Sentry › Settings › Organization `pulse-fit` › Organization Tokens › Create New Token (scope
+`org:ci`). Keep it outside every repository, readable only by you, in `~/.config/pulse-mobile/sentry.env` (mode 600)
+as `export SENTRY_AUTH_TOKEN=…`; the build commands in `docs/releases.md` source that file. For cloud builds, also run
 `npx eas-cli@latest env:create --name SENTRY_AUTH_TOKEN --value … --visibility secret`.
 
 ## Turning it off

@@ -23,9 +23,11 @@ flowchart LR
 
 ## Build
 
-On `main`, with a clean tree (`eas build` packs the working tree):
+On `main`, with a clean tree (`eas build` packs the working tree). The first line loads `SENTRY_AUTH_TOKEN` for the
+source-map upload (`docs/telemetry.md`); without the file the build still works, with minified crash stacks.
 
 ```sh
+[ -f ~/.config/pulse-mobile/sentry.env ] && source ~/.config/pulse-mobile/sentry.env
 v=$(jq -r .expo.version app.json)
 out=~/personal/pulse-mobile-builds
 for p in preview:arm64 preview-armv7:armv7 preview-x86_64:x86_64; do
