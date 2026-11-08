@@ -1,3 +1,4 @@
+import { clearWidgets, refreshWidgets } from "@/widgets/publish";
 import { workoutNative, workoutNativeAvailable } from "../../modules/pulse-workouts";
 import { i18n } from "@/i18n/config";
 // App-wide state: the Store, the profile, where data comes from (Health Connect, or the demo generator for "Explore
@@ -102,6 +103,7 @@ const versionListeners = new Set<() => void>();
 export function dataChanged() {
   version++;
   for (const l of versionListeners) l();
+  if (state.store && state.profile && state.source && state.onboarded) void refreshWidgets(queryCtx(), state.source);
 }
 const subscribeVersion = (l: () => void) => {
   versionListeners.add(l);
@@ -210,11 +212,11 @@ export async function boot(applyTheme: (theme: string) => void): Promise<void> {
     patch({ store: st, profile, source, sync, availability: avail });
     watchForeground();
     void checkForUpdate();
-    if (!profile) return patch({ status: "needs_profile" });
-    if (!source) return patch({ status: "needs_permissions" });
+    if (!profile) { await clearWidgets(); return patch({ status: "needs_profile" }); }
+    if (!source) { await clearWidgets(); return patch({ status: "needs_permissions" }); }
     if (source === "health_connect") {
       const perms = await permissionState().catch(() => null);
-      if (!perms || perms.granted.length === 0) return patch({ status: "needs_permissions" });
+      if (!perms || perms.granted.length === 0) { await clearWidgets(); return patch({ status: "needs_permissions" }); }
     }
     // Show the last scores at once; refresh in the background.
     const onboarded = sync.lastSyncTs !== null || source === "demo";
@@ -312,7 +314,11 @@ export async function exploreSample(): Promise<void> {
   try {
     // The demo data belongs to a demo person with their own profile; keep the person's own to restore later.
     if (profile && source !== "demo") await AsyncStorage.setItem(OWN_PROFILE_KEY, JSON.stringify(profile));
+    if (running) await running.catch(() => {});
     await store.clearAll();
+    // Only after the clear succeeds: a cleared source over rows that survived would let real data land on demo data.
+    await AsyncStorage.removeItem(SOURCE_KEY);
+    await clearWidgets();
     await forgetChanges();
     const timeZone = profile?.timeZone ?? deviceTimeZone();
     const today = localDay(Date.now() / 1000, timeZone);
@@ -344,7 +350,11 @@ export async function connectHealth(): Promise<PermissionState | null> {
   let profile = state.profile;
   if (state.source === "demo") {
     const own = await AsyncStorage.getItem(OWN_PROFILE_KEY).catch(() => null);
+    if (running) await running.catch(() => {});
     await store.clearAll();
+    // Only after the clear succeeds: a cleared source over rows that survived would let real data land on demo data.
+    await AsyncStorage.removeItem(SOURCE_KEY);
+    await clearWidgets();
     await AsyncStorage.removeItem(OWN_PROFILE_KEY).catch(() => {});
     profile = own ? (JSON.parse(own) as Profile) : null;
     if (profile) {
@@ -378,6 +388,7 @@ export async function reset(): Promise<void> {
   (await import("@/live/workoutRecorder")).workoutRecorder.clearView();
   await AsyncStorage.removeItem(SOURCE_KEY);
   if (store) await store.clearAll();
+  await clearWidgets();
   deleteAllPhotos();
   await AsyncStorage.multiRemove([SOURCE_KEY, OWN_PROFILE_KEY]).catch(() => {});
   await forgetChanges();
