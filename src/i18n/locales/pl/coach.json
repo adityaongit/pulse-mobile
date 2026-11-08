@@ -110,12 +110,12 @@
     "notSaved": "Niezapisany",
     "change": "Zmień",
     "cancel": "Anuluj",
-    "workouts": "Treningi",
-    "analyze": "Analizuj każdy trening",
-    "analyzeHint": "Jednozdaniowa opinia od Twojego dostawcy przy otwarciu treningu. Gdy wyłączone, Coach odpowiada tylko po stuknięciu.",
+    "analyze": "Analizuj każdą aktywność",
+    "analyzeHint": "Podsumowanie AI po otwarciu aktywności, w tym treningów, snu i drzemek. Po wyłączeniu Coach odpowiada tylko po dotknięciu.",
     "chats": "Czaty",
     "chatsHint": "Zapisane na tym telefonie, widoczne tylko dla Ciebie.",
-    "saving": "Zapisywanie…"
+    "saving": "Zapisywanie…",
+    "activities": "Aktywności"
   },
   "setup": {
     "consentTitle": "Zanim zaczniesz",
@@ -191,5 +191,16 @@
     "reportTitle": "Raport · {{start}} do {{end}}",
     "reportPartial": "Raport · {{start}} do {{end}} · Niepełny",
     "profile": "Twój profil"
+  },
+  "sleep": {
+    "question": "Przeanalizuj mój sen kończący się {{day}}."
+  },
+  "activity": {
+    "ask": "Zapytaj Coach o tę aktywność",
+    "analyzing": "Analizowanie…",
+    "spokenText": "Coach: {{text}} Zapytaj o tę aktywność.",
+    "spokenAnalyzing": "Coach analizuje tę aktywność. Dotknij, aby otworzyć czat.",
+    "expand": "Rozwiń tę analizę aktywności.",
+    "napQuestion": "Przeanalizuj moją drzemkę {{day}} rozpoczętą o {{time}}."
   }
 }

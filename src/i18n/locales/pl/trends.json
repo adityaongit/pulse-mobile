@@ -198,7 +198,9 @@
     "activity": "Dzienne podsumowanie Twojej aplikacji zdrowotnej, liczone przez opaskę lub telefon. Pulse pokazuje je tak, jak przychodzi, i go nie ocenia.",
     "body": "Odczyty zsynchronizowane z Twojej aplikacji zdrowotnej. Dzień bez odczytu pokazuje ostatni wcześniejszy.",
     "nutrition": "Dzienna suma Twoich zapisów z aplikacji zdrowotnej plus to, co zapisujesz w Dzienniku Pulse. Posiłek zapisany i w Pulse, i we Fitbit liczy się raz.",
-    "vitals": "Dzienna wartość z Twojej aplikacji zdrowotnej, z opaski lub podłączonego urządzenia. Pulse zaznacza Twój zwykły zakres z ostatnich 90 dni."
+    "vitals": "Dzienna wartość z Twojej aplikacji zdrowotnej, z opaski lub podłączonego urządzenia. Pulse zaznacza Twój zwykły zakres z ostatnich 90 dni.",
+    "monitor": "Z Health Connect. Zacieniowany zakres odpowiada Health Monitor: średnia ± 1 SD z ostatnich 30 nocy, włącznie z wybraną nocą.",
+    "monitorUnavailable": "Z Health Connect. Dla tego dnia zakres Health Monitor jest niedostępny."
   },
   "stat": {
     "zones13": "Strefy lekka i umiarkowana",

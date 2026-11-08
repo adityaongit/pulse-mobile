@@ -280,7 +280,7 @@
     "steps": "Mehr tägliche Schritte gehen mit geringerer Sterblichkeit einher. Die Referenz sind 8.000 pro Tag (6.000 ab 60), und die Anrechnung endet bei 10.000 (8.000 ab 60). Tage ohne Herzfrequenz oder Schritte bleiben außen vor, damit ein Band am Ladegerät nicht als fauler Tag gilt.",
     "vo2max": "Eine höhere kardiorespiratorische Fitness ist einer der stärksten Prädiktoren für ein längeres Leben. Die Referenz stammt aus einer Tabelle für dein Alter und Geschlecht; jedes ml/kg/min darüber nimmt etwa 0,4 Jahre ab, jedes darunter fügt etwa genauso viel hinzu. Aus den VO2 max Werten von Fitbit.",
     "restingHr": "Eine höhere Ruheherzfrequenz hängt mit höherer Sterblichkeit zusammen. Die Referenz stammt aus einer Tabelle für dein Alter und Geschlecht; je 10 bpm darüber kommen etwa 1,2 Jahre hinzu.",
-    "leanMass": "Der Anteil deines Gewichts, der kein Fett ist. Die Referenz ist 100 minus das typische Körperfett für dein Alter und Geschlecht. Liegst du darunter, kostet das Jahre, umso schneller, je weiter du entfernt bist; ab 35 nimmt es ein wenig ab, wenn du sie übertriffst, mit dem Alter mehr. Aus deinen Körperfettwerten."
+    "leanMass": "Der Anteil deines Gewichts ohne Fett, berechnet aus deinen Körperfettwerten. Der Zielwert hängt von Alter und Geschlecht ab. Ein Wert darunter erhöht dein Pulse Age. Mit 35 Jahren oder jünger trägt das Erreichen oder Übertreffen des Ziels 0,0 Jahre bei; es senkt dein Pulse Age nicht. Über 35 kann ein Wert über dem Ziel dein Pulse Age senken, mit zunehmendem Alter stärker."
   },
   "hs": {
     "source": "Bevölkerungsstudien zur Sterblichkeit",

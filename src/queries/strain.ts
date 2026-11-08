@@ -2,6 +2,7 @@
 import { i18n } from "@/i18n/config";
 import { inUnits } from "@/lib/units";
 import { addDays } from "@/lib/time";
+import { trendHref } from "@/lib/url";
 import { type ExtraKey, extraMetric, metricHref } from "./_lib";
 import {
   activityItem,
@@ -74,9 +75,8 @@ export async function getStrain(day: string, ctx: QueryCtx): Promise<StrainVM> {
   };
   const worn = (d: string) => (rows.get(d)?.s1?.hrCount ?? 0) > 0;
   const summary: KeyStat[] = [
-    // Each row leads to its own detail: the zones to the page's "Time in zones" (`#zones`), strength to its workouts.
-    { ...stat("zones13", i18n.t("strain:stat.zones13"), (d) => zoneMin(rows.get(d), 0, 3), "min"), href: "#zones" },
-    { ...stat("zones45", i18n.t("strain:stat.zones45"), (d) => zoneMin(rows.get(d), 3, 5), "min"), href: "#zones" },
+    { ...stat("zones13", i18n.t("strain:stat.zones13"), (d) => zoneMin(rows.get(d), 0, 3), "min"), href: trendHref("zones13") },
+    { ...stat("zones45", i18n.t("strain:stat.zones45"), (d) => zoneMin(rows.get(d), 3, 5), "min"), href: trendHref("zones45") },
     { ...stat("strength", i18n.t("strain:stat.strength"), (d) => (worn(d) ? strengthMin(d) : null), "min"), href: "/activities?kind=strength" },
     { ...stat("steps", i18n.t("strain:stat.steps"), (d) => rows.get(d)?.metrics?.steps ?? null, undefined), href: metricHref("steps") },
     ...STRAIN_EXTRAS.map(extra),

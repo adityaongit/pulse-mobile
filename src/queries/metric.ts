@@ -43,6 +43,7 @@ import {
 } from "./common";
 import { recentEntries } from "./log";
 import { trendMetric } from "./trends";
+import { monitorVital } from "./vitalsExtras";
 import type { KeyStat, Metric } from "./types";
 
 export type VitalDetailKey = "hrv" | "rhr" | "resp" | "spo2" | "skin";
@@ -199,9 +200,10 @@ export async function getMetricDetail(key: DetailKey, day: string, ctx: QueryCtx
   const from = addDays(day, -(2 * SPAN - 1));
   const needExs = !!m.stack || m.sections.includes("workouts");
   const [rows, exs] = await Promise.all([loadDays(ctx, from, day), needExs ? exercisesBetween(ctx, addDays(day, -(SPAN - 1)), day) : []]);
+  const read = (r: DayRow) => monitorVital(key, r)?.value ?? m.pick(r);
   const raw = (d: string) => {
     const r = rows.get(d);
-    const v = r ? m.pick(r) : null;
+    const v = r ? read(r) : null;
     return finite(v) ? v : null;
   };
   // Today's running total is not a day's value yet (Trends' rule): a gap in history and stats.
@@ -211,7 +213,7 @@ export async function getMetricDetail(key: DetailKey, day: string, ctx: QueryCtx
   let valueDay: string | null = day;
   if (m.reading) valueDay = [...days].reverse().find((d) => raw(d) !== null) ?? null;
   const value = valueDay ? raw(valueDay) : null;
-  const prior = valueDay ? priorStats(rows, valueDay, (r) => m.pick(r)) : { mean: null, sd: undefined };
+  const prior = valueDay ? priorStats(rows, valueDay, read) : { mean: null, sd: undefined };
 
   const shown: Point[] = days.slice(-SPAN).map((d) => {
     const soFar = m.partialToday && d === today && raw(d) !== null;
@@ -221,6 +223,11 @@ export async function getMetricDetail(key: DetailKey, day: string, ctx: QueryCtx
 
   const ranges = Object.fromEntries(RANGES.map((r) => [r, rangeStats(days.map(val), days, RANGE_DAYS[r], !!m.total)])) as Record<TrendRange, RangeStats>;
   const out = m.baseline ? outliers(days.slice(-90), val) : null;
+  const monitor = monitorVital(key, rows.get(day));
+  const baseline = monitor ? monitor.baseline : out && { mean: out.mean, sd: out.sd };
+  const source = monitor
+    ? i18n.t(monitor.baseline ? "trends:metricSource.monitor" : "trends:metricSource.monitorUnavailable")
+    : i18n.t(`trends:metricSource.${m.group}`);
 
   const s: SectionCtx = { ctx, rows, day, today, isToday, val, raw, exs };
   const built = await Promise.all(m.sections.map((k) => (k === "outliers" ? out : BUILD[k](s, key))));
@@ -232,7 +239,7 @@ export async function getMetricDetail(key: DetailKey, day: string, ctx: QueryCtx
     direction: m.direction,
     group: m.group,
     about: m.about,
-    source: m.note ?? i18n.t(`trends:metricSource.${m.group}`),
+    source: m.note ?? source,
     day,
     today,
     value: value === null ? none(detailReason(key, rows.get(day), isToday)) : ok(value),
@@ -243,7 +250,7 @@ export async function getMetricDetail(key: DetailKey, day: string, ctx: QueryCtx
     history: shown.some((p) => p.value !== null) ? ok(shown) : none("no_data"),
     ranges,
     total: !!m.total,
-    chart: { stack: m.stack, baseline: out && { mean: out.mean, sd: out.sd } },
+    chart: { stack: m.stack, baseline },
     sections: built.filter((sec): sec is Section => !!sec),
   };
 }

@@ -281,7 +281,7 @@
     "steps": "Mais passos por dia estão associados a menor mortalidade. A referência é 8.000 por dia (6.000 a partir dos 60), e o benefício para em 10.000 (8.000 a partir dos 60). Dias sem frequência cardíaca ou passos ficam de fora, então uma pulseira esquecida no carregador não é lida como um dia preguiçoso.",
     "vo2max": "Um condicionamento cardiorrespiratório maior é um dos preditores mais fortes de uma vida mais longa. A referência vem de uma tabela para a sua idade e sexo; cada ml/kg/min acima dela tira cerca de 0,4 ano, cada um abaixo soma o mesmo tanto. Com base nas leituras de VO2 max do Fitbit.",
     "restingHr": "Uma frequência cardíaca em repouso mais alta está ligada a maior mortalidade. A referência vem de uma tabela para a sua idade e sexo; cada 10 bpm acima dela soma cerca de 1,2 ano.",
-    "leanMass": "A parte do seu peso que não é gordura. A referência é 100 menos a gordura corporal típica para a sua idade e sexo. Ficar abaixo dela custa anos, mais rápido quanto mais longe você está; a partir dos 35, superá-la tira um pouco, mais com a idade. A partir das suas leituras de gordura corporal."
+    "leanMass": "A proporção do seu peso sem gordura, calculada pelas suas leituras de gordura corporal. A meta depende da sua idade e sexo. Ficar abaixo da meta acrescenta anos à Pulse Age. Aos 35 anos ou menos, atingir ou superar a meta contribui com 0,0 anos; não reduz a Pulse Age. Acima dos 35, superar a meta pode reduzir a Pulse Age, com um efeito maior conforme a idade aumenta."
   },
   "hs": {
     "source": "Estudos populacionais de mortalidade",

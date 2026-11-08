@@ -34,6 +34,7 @@ import { slice, sliced } from "@/lib/yield";
 import { resolveMaxHr } from "@/pipeline/index";
 import { forgetChanges, readImportState, TOKEN_KEY, TYPES_KEY, writeImportState } from "@/health/importState";
 import { originBreakdown } from "@/health/origins";
+import { uniqueExercises } from "./exerciseDedup";
 
 export { forgetChanges };
 
@@ -52,9 +53,12 @@ export { forgetChanges };
  * record is left out instead of failing the sync. 6: a sync replaces the window's source-derived daily totals (calories
  * eaten, water, distance and the rest), so a record deleted in Health Connect no longer leaves its day's total behind,
  * and a sync that finds deletions replaces the window it re-reads (see replaceWindow). 7: the source policy is gone; every
- * app's records are kept, the largest source per day for measured totals. 8: blood pressure readings ingested.
+ * app's records are kept, the largest source per day for measured totals. 8: near-identical workouts from different
+ * apps are imported once, retaining distinct sports, partial overlaps and records with no source. 9: a night's readings
+ * (HRV, respiratory rate, oxygen saturation) count from the sleep's start through two minutes after its end, where
+ * Fitbit stamps its one HRV value for the night. 10: blood pressure readings are imported.
  */
-export const IMPORT_VERSION = 8;
+export const IMPORT_VERSION = 10;
 
 /**
  * How far before the window's first local midnight the reads start. Health Connect returns a record only to a read whose
@@ -330,6 +334,12 @@ export async function syncHealthConnect(store: Store, opts: SyncOptions): Promis
       done++;
     }
 
+    const readExercises = input.ExerciseSession ?? [];
+    input.ExerciseSession = await sliced(uniqueExercises(readExercises));
+    const keptExerciseIds = new Set(input.ExerciseSession.map((r) => r.metadata?.id));
+    const keptExercises = new Set(input.ExerciseSession);
+    const duplicateExercises = readExercises.filter((r) => !keptExercises.has(r) && !keptExerciseIds.has(r.metadata?.id) && localDay(ts(r.startTime), tz) >= fromDay);
+
     // Health Connect carries no activity minutes, Active Zone Minutes or daily average heart rate, so each day's are
     // derived from its heart rate and steps as they are read (derive.ts). Sleep and workouts bound the sedentary minutes;
     // max HR is the profile's, as the pipeline resolves it.
@@ -478,6 +488,10 @@ export async function syncHealthConnect(store: Store, opts: SyncOptions): Promis
       for (const [d, xs] of byDay) if (await store.putHrv(xs)) dirty.push(d);
     }
     counts.hrv = hrv.length;
+    if (duplicateExercises.length) {
+      await store.deleteExercises(duplicateExercises.flatMap((r) => r.metadata?.id ? [r.metadata.id] : []));
+      dirty.push(...duplicateExercises.map((r) => localDay(ts(r.startTime), tz)));
+    }
     if (sessions.length) await store.upsertSessions(sessions, segments);
     if (exercises.length) await store.upsertExercises(exercises);
     // The keys of every type this sync read are replaced over the window (so a food entry deleted in Health Connect takes the

@@ -7,6 +7,8 @@ import { addDays } from "@/lib/time";
 import { runPipeline } from "@/pipeline";
 import type { QueryCtx } from "./ctx";
 import { getTrendView, isTrendViewKey, TREND_VIEW, type TrendViewKey } from "./trendView";
+import { getStrain } from "./strain";
+import { dayHref } from "@/lib/url";
 
 const TZ = "Asia/Kolkata";
 const TODAY = "2026-10-02";
@@ -25,6 +27,16 @@ const dayAt = (i: number) => addDays("2026-04-06", i);
 
 
 describe("getTrendView", () => {
+  it("opens each strain zone summary in its own trend while preserving the day", async () => {
+    const day = dayAt(150);
+    const vm = await getStrain(day, ctx);
+    for (const key of ["zones13", "zones45"] as const) {
+      const href = vm.summary.find((s) => s.key === key)!.href!;
+      expect(dayHref(href, day, TODAY)).toBe(`/trend/${key}?d=${day}`);
+      expect(isTrendViewKey(key)).toBe(true);
+    }
+  });
+
   it("every metric builds a window, a prior and a verdict", async () => {
     for (const key of Object.keys(TREND_VIEW) as TrendViewKey[]) {
       if (!isTrendViewKey(key)) continue;

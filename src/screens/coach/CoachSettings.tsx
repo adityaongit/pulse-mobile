@@ -102,7 +102,7 @@ export function CoachSettings() {
         </View>
         <Notes key={setup.instructions ?? ""} saved={setup.instructions} />
         <View className="gap-2">
-          <Text className={GROUP_LABEL}>{t("settings.workouts")}</Text>
+          <Text className={GROUP_LABEL}>{t("settings.activities")}</Text>
           <SwitchRow rule={false} label={t("settings.analyze")} hint={t("settings.analyzeHint")} value={setup.autoAnalysis} onChange={(on) => void setAutoAnalysis(on).catch(failed)} />
         </View>
         <View className="gap-2">

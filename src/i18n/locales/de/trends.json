@@ -198,7 +198,9 @@
     "activity": "Die Tagessumme deiner Health-App, von deinem Band oder Handy gezählt. Pulse zeigt sie, wie sie kommt, und bewertet sie nicht.",
     "body": "Aus deiner Health-App synchronisierte Werte. Ein Tag ohne Wert zeigt den letzten davor.",
     "nutrition": "Die Tagessumme deiner Einträge in deiner Health-App, plus das, was du im Journal von Pulse erfasst. Eine Mahlzeit, die in Pulse und Fitbit erfasst wurde, zählt einmal.",
-    "vitals": "Der Tageswert deiner Health-App, von deinem Band oder einem verbundenen Gerät. Pulse schattiert deinen üblichen Bereich aus den letzten 90 Tagen."
+    "vitals": "Der Tageswert deiner Health-App, von deinem Band oder einem verbundenen Gerät. Pulse schattiert deinen üblichen Bereich aus den letzten 90 Tagen.",
+    "monitor": "Aus Health Connect. Der schattierte Bereich entspricht Health Monitor: dein Mittelwert ± 1 SD der letzten 30 Nächte, einschließlich der ausgewählten Nacht.",
+    "monitorUnavailable": "Aus Health Connect. Für diesen Tag ist kein Health Monitor-Bereich verfügbar."
   },
   "stat": {
     "zones13": "Leichte und moderate Zonen",

@@ -155,7 +155,7 @@ export function coachTools(ctx: QueryCtx, t: Texts = defaultTexts) {
       execute: async ({ days }) => {
         const a = await getActivities(days, ctx);
         const all = a.groups.flatMap((g) =>
-          g.items.map((i) => ({
+          g.items.filter((i) => i.kind === "activity").map((i) => ({
             id: i.id,
             day: g.day,
             name: i.name,

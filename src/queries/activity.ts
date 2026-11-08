@@ -81,7 +81,7 @@ export async function getActivity(id: string, ctx: QueryCtx): Promise<ActivityVM
   return {
     id,
     day: e.day,
-    name: ACTIVITY_NAME[kind],
+    name: e.name?.trim() || ACTIVITY_NAME[kind],
     kind,
     start: ms(e.startTs),
     end: ms(e.endTs),

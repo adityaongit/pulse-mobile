@@ -1,0 +1,7 @@
+<resources>
+  <color name="pulse_widget_bg">#101518</color>
+  <color name="pulse_widget_fg">#f6f8f9</color>
+  <color name="pulse_widget_muted">#9ba4aa</color>
+  <color name="pulse_widget_panel">#24282c</color>
+  <color name="pulse_widget_track">#30373b</color>
+</resources>

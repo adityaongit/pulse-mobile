@@ -198,7 +198,9 @@
     "activity": "Le cumul quotidien de ton app santé, compté par ton bracelet ou ton téléphone. Pulse l’affiche tel quel et ne le note pas.",
     "body": "Relevés synchronisés depuis ton app santé. Un jour sans relevé affiche le dernier avant lui.",
     "nutrition": "Le total quotidien de tes enregistrements dans ton app santé, plus ce que tu enregistres dans le Journal de Pulse. Un repas enregistré dans Pulse et dans Fitbit compte une seule fois.",
-    "vitals": "La valeur quotidienne de ton app santé, d’après ton bracelet ou un appareil connecté. Pulse grise ta plage habituelle sur les 90 derniers jours."
+    "vitals": "La valeur quotidienne de ton app santé, d’après ton bracelet ou un appareil connecté. Pulse grise ta plage habituelle sur les 90 derniers jours.",
+    "monitor": "Depuis Health Connect. La zone ombrée correspond à Health Monitor : votre moyenne ± 1 SD sur les 30 dernières nuits, nuit sélectionnée comprise.",
+    "monitorUnavailable": "Depuis Health Connect. Aucune plage Health Monitor n’est disponible pour ce jour."
   },
   "stat": {
     "zones13": "Zones légères et modérées",

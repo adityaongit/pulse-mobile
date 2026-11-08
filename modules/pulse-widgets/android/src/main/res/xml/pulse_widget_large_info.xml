@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+ android:minWidth="250dp" android:minHeight="280dp" android:minResizeWidth="250dp" android:minResizeHeight="280dp"
+ android:targetCellWidth="4" android:targetCellHeight="4" android:updatePeriodMillis="1800000"
+ android:initialLayout="@layout/pulse_widget_large" android:previewLayout="@layout/pulse_widget_large"
+ android:description="@string/pulse_widget_description" android:resizeMode="horizontal|vertical" android:widgetCategory="home_screen"
+ android:configure="app.pulse.widgets.WidgetConfigureActivity" android:widgetFeatures="reconfigurable|configuration_optional"/>
