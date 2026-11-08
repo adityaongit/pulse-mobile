@@ -15,7 +15,7 @@ flowchart LR
   Once -->|no| Drop[dropped on the phone]
   Switch{Send error reports on?} -->|off| Closed[Sentry closed, nothing sent]
   Scrub --> Switch
-  Switch -->|on| Sentry[(Sentry: pulse-w6 / pulse-mobile)]
+  Switch -->|on| Sentry[(Sentry: pulse-fit / pulse-mobile)]
 ```
 
 ## What is sent
@@ -74,10 +74,10 @@ Add new codes here when you add a `report` or `reportError` call (AGENTS.md).
 | Variable | Where | What |
 |---|---|---|
 | `EXPO_PUBLIC_SENTRY_DSN` | `eas.json`, `preview` and `production` | Where reports go. Public by design: it ships in every APK. Without it, nothing initialises, so development builds send nothing. |
-| `SENTRY_ORG`, `SENTRY_PROJECT` | `eas.json`, same profiles | `pulse-w6` and `pulse-mobile`, for the source-map upload |
+| `SENTRY_ORG`, `SENTRY_PROJECT` | `eas.json`, same profiles | `pulse-fit` and `pulse-mobile`, for the source-map upload |
 | `SENTRY_AUTH_TOKEN` | The shell running `eas build --local`, or an EAS secret | Uploads source maps so crash stacks show source lines. Secret: never commit it. Without it the build skips the upload (`plugins/withSentryUpload.js`). |
 
-To create the token: Sentry › Settings › Organization `pulse-w6` › Auth Tokens › Create New Token, then
+To create the token: Sentry › Settings › Organization `pulse-fit` › Auth Tokens › Create New Token, then
 `export SENTRY_AUTH_TOKEN=…` in `~/.zshrc` under `~/personal/` (beside `GH_TOKEN`), and for cloud builds
 `npx eas-cli@latest env:create --name SENTRY_AUTH_TOKEN --value … --visibility secret`.
 

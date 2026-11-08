@@ -39,7 +39,7 @@ done
 `eas.json` gives the `preview` and `production` profiles `EXPO_PUBLIC_SENTRY_DSN`, `SENTRY_ORG` and `SENTRY_PROJECT`, so
 the APKs people install send error reports (`docs/telemetry.md`); `development` builds send nothing. Readable crash
 stacks also need the source maps uploaded, which takes `SENTRY_AUTH_TOKEN` (a Sentry organization auth token for
-`pulse-w6`) in the shell that runs `eas build --local`. Without it the build still succeeds and skips the upload
+`pulse-fit`) in the shell that runs `eas build --local`. Without it the build still succeeds and skips the upload
 (`plugins/withSentryUpload.js`); reports then arrive with minified stacks.
 
 ## Publish
