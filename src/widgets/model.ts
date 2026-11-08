@@ -1,6 +1,7 @@
 // A small versioned projection of the existing Home query. No extra Health Connect reads or new scoring rules.
 import { minuteMeanHr } from "@/core/algorithms/stress";
 import { i18n } from "@/i18n/config";
+import { recoveryBand } from "@/lib/bands";
 import { getLocale } from "@/lib/locale";
 import { reasonCopy, type Metric } from "@/lib/reasons";
 import type { HomeVM } from "@/queries/types";
@@ -45,6 +46,9 @@ const SPEC: Record<WidgetKey, { unit: string; href: string; color: string; perce
   stress: { unit: "", href: "pulse://health/stress", color: "#d97900" },
 };
 
+/** Light-theme hex per Recovery band; WidgetArtwork maps each to the active theme's token. */
+const RECOVERY_COLOR = { green: SPEC.recovery.color, yellow: "#e5c300", red: "#ff0026" } as const;
+
 export function widgetMetric(key: WidgetKey, metric: Metric<number>): WidgetMetric {
   const spec = SPEC[key];
   const value = metric.value !== null && Number.isFinite(metric.value) ? metric.value : null;
@@ -57,7 +61,7 @@ export function widgetMetric(key: WidgetKey, metric: Metric<number>): WidgetMetr
     reason: value === null ? reasonCopy(metric.reason, metric.nightsLeft).short : null,
     provisional: metric.provisional,
     href: spec.href,
-    color: key === "recovery" && value !== null ? (value < 34 ? "#ff0026" : value < 67 ? "#e5c300" : spec.color) : spec.color,
+    color: key === "recovery" && value !== null ? RECOVERY_COLOR[recoveryBand(value)] : spec.color,
     // Pulse Strain is a percent and can exceed 100: retain the true label, cap only the track.
     progress: value !== null && spec.percent ? Math.max(0, Math.min(100, value)) : null,
   };

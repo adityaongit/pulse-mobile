@@ -4,6 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import type { QueryCtx } from "@/queries/ctx";
 import { storedRecentHeartRate } from "@/health/live";
 import { getHome } from "@/queries/home";
+import { SOURCE_KEY } from "@/state/source";
 import { buildWidgetSnapshot } from "./model";
 
 let generation = 0;
@@ -18,11 +19,11 @@ export function refreshWidgets(ctx: QueryCtx, source: "health_connect" | "demo",
     if (mine !== generation) return;
     const epoch = opts.epoch ?? await widgetEpoch();
     // A headless run may finish after the user reset Pulse or changed source in another runtime.
-    if ((await AsyncStorage.getItem("pulse.source")) !== source || !(await ctx.store.getProfile())) return;
+    if ((await AsyncStorage.getItem(SOURCE_KEY)) !== source || !(await ctx.store.getProfile())) return;
     const [home, reading] = await Promise.all([getHome(ctx.today, ctx), storedRecentHeartRate(ctx.store).catch(() => undefined)]);
     if (mine !== generation) return;
     const snapshot = buildWidgetSnapshot(home, { timeZone: ctx.timeZone, generatedAt: ctx.now, lastSyncTs: ctx.sync.lastSyncTs, source }, reading);
-    if ((await AsyncStorage.getItem("pulse.source")) !== source) return;
+    if ((await AsyncStorage.getItem(SOURCE_KEY)) !== source) return;
     await publishSnapshot(JSON.stringify(snapshot), epoch);
   }).catch(() => { /* Best effort; keep the last snapshot's original sync timestamp, never log health payloads. */ });
   return queue;

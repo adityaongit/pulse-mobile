@@ -4,14 +4,13 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import type { ScoreRow, Store } from "@/data/store";
 import { addDays, localDay } from "@/lib/time";
+import { SOURCE_KEY } from "@/state/source";
 import { decide, EMPTY_MARKERS, markSent, type Alert, type AlertSource, type Markers } from "./decide";
 import { cancelBedtime, notificationPermission, scheduleBedtime, sendNow } from "./notify";
 import { readSettings, type BackgroundSettings } from "./settings";
 import { decideSmart, MONITOR_LOOKBACK_DAYS, monitorBefore, monitorState, planBedtime, strainOf, type BedtimeAction, type BedtimeReminder } from "./smart";
 
 export const MARKERS_KEY = "pulse.notifications.markers";
-/** src/state/app.ts's key for the chosen source; read here, written only there. */
-export const SOURCE_KEY = "pulse.source";
 
 export async function readMarkers(): Promise<Markers> {
   try {

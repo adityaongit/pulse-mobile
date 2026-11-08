@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The metric picker follows the system theme: this light parent, and values-night's dark one. -->
+<resources>
+  <style name="PulseWidgetConfigure" parent="@android:style/Theme.DeviceDefault.Light.NoActionBar" />
+</resources>

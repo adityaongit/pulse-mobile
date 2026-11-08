@@ -42,6 +42,15 @@ internal object WidgetCache {
     require(selected.isNotEmpty() && selected.size <= size.count && selected.distinct().size == selected.size && selected.all { it in METRIC_KEYS })
     check(settings(context).edit().putString("metrics_$id", selected.joinToString(",")).commit())
   }
+  /** Old and new ids can overlap: read every old choice first, then remove before putting so a reused id keeps its new value. */
+  fun restore(context: Context, oldIds: IntArray, newIds: IntArray) {
+    val prefs = settings(context)
+    val saved = oldIds.map { prefs.getString("metrics_$it", null) }
+    check(prefs.edit().apply {
+      oldIds.forEach { remove("metrics_$it") }
+      newIds.forEachIndexed { i, id -> saved.getOrNull(i)?.let { putString("metrics_$id", it) } }
+    }.commit())
+  }
   fun remove(context: Context, ids: IntArray) {
     settings(context).edit().apply { ids.forEach { remove("metrics_$it") } }.apply()
   }

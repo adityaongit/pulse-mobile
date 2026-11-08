@@ -20,7 +20,9 @@ function addWidgetDeclarations(manifest) {
   app.activity ??= [];
   const name = `${BASE}.WidgetConfigureActivity`;
   const entry = {
-    $: { "android:name": name, "android:exported": "true", "android:label": "@string/pulse_widget_configure", "android:theme": "@android:style/Theme.Material.Light.NoActionBar" },
+    $: { "android:name": name, "android:exported": "true", "android:label": "@string/pulse_widget_configure", "android:theme": "@style/PulseWidgetConfigure",
+      // Its own empty affinity: ⋮ opens just this screen, and Save returns to the home screen, not into Pulse's task.
+      "android:taskAffinity": "", "android:excludeFromRecents": "true" },
     "intent-filter": [{ action: [{ $: { "android:name": "android.appwidget.action.APPWIDGET_CONFIGURE" } }] }],
   };
   const index = app.activity.findIndex((a) => a.$["android:name"] === name);
