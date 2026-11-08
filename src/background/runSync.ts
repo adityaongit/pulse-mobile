@@ -2,6 +2,8 @@
 // (task.ts) do the same thing: take the run lock (lock.ts), import from Health Connect, score, then send the alerts
 // that are due (alerts.ts). Within one JavaScript runtime a second call joins the first; across runtimes the lock keeps
 // the two apart. Copied from halo's src/background/runSync.ts without the Google source.
+import { widgetEpoch } from "../../modules/pulse-widgets";
+import { refreshWidgets } from "@/widgets/publish";
 import { appendLog } from "./log";
 import { AppState } from "react-native";
 import { openStore } from "@/data/db";
@@ -85,6 +87,8 @@ async function run(store: Store, profile: Profile, source: Source, opts: RunSync
   const warnings: string[] = [];
   let unchanged = false;
   try {
+    // A reset in another runtime must invalidate this run even if the person reconnects to the same source.
+    const epoch = await Promise.resolve().then(widgetEpoch).catch(() => null);
     if (source === "health_connect") {
       const t0 = Date.now();
       const r = await timed(`sync-health-connect (${opts.owner})`, () => syncHealthConnect(store, { timeZone: opts.timeZone, onProgress: opts.onProgress }));
@@ -100,6 +104,8 @@ async function run(store: Store, profile: Profile, source: Source, opts: RunSync
     // After scoring, so the day that just aged out was scored from its raw samples. A failure here costs space, not
     // data: the sync itself has succeeded, and the next run tries again.
     await timed(`maintenance (${opts.owner})`, () => maintainStorage(store, Date.now() / 1000)).catch((e) => console.warn("[maintenance]", e instanceof Error ? e.message : String(e)));
+    const now = Math.floor(Date.now() / 1000);
+    if (epoch !== null) await store.getSyncState().then((sync) => refreshWidgets({ store, profile, timeZone: opts.timeZone, today: localDay(now, opts.timeZone), now, sync }, source, { epoch })).catch(() => {});
     return { ran: true, warnings, ...(unchanged && { unchanged: true as const }) };
   } finally {
     await releaseLock(opts.owner);

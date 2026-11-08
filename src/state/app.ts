@@ -1,3 +1,4 @@
+import { clearWidgets, refreshWidgets } from "@/widgets/publish";
 import { i18n } from "@/i18n/config";
 // App-wide state: the Store, the profile, where data comes from (Health Connect, or the demo generator for "Explore
 // with sample data"), the sync + scoring run, and the query context the screens read with. Follows halo's
@@ -101,6 +102,7 @@ const versionListeners = new Set<() => void>();
 export function dataChanged() {
   version++;
   for (const l of versionListeners) l();
+  if (state.store && state.profile && state.source && state.onboarded) void refreshWidgets(queryCtx(), state.source);
 }
 const subscribeVersion = (l: () => void) => {
   versionListeners.add(l);
@@ -204,11 +206,11 @@ export async function boot(applyTheme: (theme: string) => void): Promise<void> {
     patch({ store: st, profile, source, sync, availability: avail });
     watchForeground();
     void checkForUpdate();
-    if (!profile) return patch({ status: "needs_profile" });
-    if (!source) return patch({ status: "needs_permissions" });
+    if (!profile) { await clearWidgets(); return patch({ status: "needs_profile" }); }
+    if (!source) { await clearWidgets(); return patch({ status: "needs_permissions" }); }
     if (source === "health_connect") {
       const perms = await permissionState().catch(() => null);
-      if (!perms || perms.granted.length === 0) return patch({ status: "needs_permissions" });
+      if (!perms || perms.granted.length === 0) { await clearWidgets(); return patch({ status: "needs_permissions" }); }
     }
     // Show the last scores at once; refresh in the background.
     const onboarded = sync.lastSyncTs !== null || source === "demo";
@@ -306,6 +308,9 @@ export async function exploreSample(): Promise<void> {
   try {
     // The demo data belongs to a demo person with their own profile; keep the person's own to restore later.
     if (profile && source !== "demo") await AsyncStorage.setItem(OWN_PROFILE_KEY, JSON.stringify(profile));
+    if (running) await running.catch(() => {});
+    await AsyncStorage.removeItem(SOURCE_KEY);
+    await clearWidgets();
     await store.clearAll();
     await forgetChanges();
     const timeZone = profile?.timeZone ?? deviceTimeZone();
@@ -338,6 +343,9 @@ export async function connectHealth(): Promise<PermissionState | null> {
   let profile = state.profile;
   if (state.source === "demo") {
     const own = await AsyncStorage.getItem(OWN_PROFILE_KEY).catch(() => null);
+    if (running) await running.catch(() => {});
+    await AsyncStorage.removeItem(SOURCE_KEY);
+    await clearWidgets();
     await store.clearAll();
     await AsyncStorage.removeItem(OWN_PROFILE_KEY).catch(() => {});
     profile = own ? (JSON.parse(own) as Profile) : null;
@@ -366,6 +374,8 @@ export async function reimport(): Promise<void> {
 export async function reset(): Promise<void> {
   const { store } = state;
   if (running) await running.catch(() => {});
+  await AsyncStorage.removeItem(SOURCE_KEY);
+  await clearWidgets();
   if (store) await store.clearAll();
   deleteAllPhotos();
   await AsyncStorage.multiRemove([SOURCE_KEY, OWN_PROFILE_KEY]).catch(() => {});

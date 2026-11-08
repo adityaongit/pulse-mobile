@@ -903,3 +903,13 @@ Each workout link starts a fresh Expo Router chat using `n`, carries the workout
 ## Sleep analysis uses the wake-up date
 
 Sleep Coach links carry the selected wake-up date in Expo Router params, then message metadata for saved follow-ups. The preview uses the existing sleep digest and a session-only cache keyed by night data, provider, model and instructions, including language and display units. Matching concurrent requests share one promise; failures are not cached. The shared activity Coach uses one automatic-analysis setting for every recorded workout type, main sleep and naps. Each link carries its activity kind and session ID or wake-up date; saved chats preserve that selection. Turning automatic analysis off keeps the Coach available on tap for every activity.
+
+## Android home screen widgets
+
+SDK 57's `expo-widgets` supports iOS, while Pulse is Android only. Use an autolinked local Expo module with Android RemoteViews rather than adding an iOS dependency or modifying generated `android/`. A config plugin declares providers and the configuration activity. Reuse the Home query after existing syncs; an app-private, non-backed-up summary lets the widget render without starting JavaScript or reading Health Connect. Keep source/reset invalidation in both JavaScript and the native cache. See [widgets.md](widgets.md) for freshness and owner phone checks.
+
+References checked: [Expo SDK 57](https://docs.expo.dev/versions/v57.0.0/), [local modules](https://docs.expo.dev/modules/get-started/), [module API](https://docs.expo.dev/modules/module-api/), [configuration plugins](https://docs.expo.dev/config-plugins/introduction/), [expo-widgets](https://docs.expo.dev/versions/v57.0.0/sdk/widgets/), and [Android widget configuration](https://developer.android.com/develop/ui/views/appwidgets/configuration).
+
+## Circular widget rendering and stored heart rate
+
+RemoteViews cannot host Pulse's React Native score components. Render the score rings and compact heart-rate card with bounded native Canvas bitmaps in supported ImageViews, sizing them from launcher options and retaining per-metric click targets/accessibility descriptions. Reuse `storedRecentHeartRate` and `minuteMeanHr` so the widget uses Home's same sample/window, with actual sample time and missing-minute gaps. The foreground ticker re-publishes only when its existing read moves samples; no additional health read is introduced. Native-graphics Robolectric JVM tests render the real layouts without a device and retain synthetic PNGs for visual inspection. See [widgets.md](widgets.md), [Android flexible widget layouts](https://developer.android.com/develop/ui/views/appwidgets/layouts), and [Robolectric setup](https://robolectric.org/getting-started/).
