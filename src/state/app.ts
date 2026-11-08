@@ -382,11 +382,13 @@ export async function reimport(): Promise<void> {
 export async function reset(): Promise<void> {
   const { store } = state;
   if (running) await running.catch(() => {});
+  const { workoutRecorder } = await import("@/live/workoutRecorder");
   if (workoutNativeAvailable) await workoutNative.beginReset();
+  // A poll that began before beginReset could still be ingesting; any later one sees the reset and stops.
+  await workoutRecorder.settle();
   if (store) await store.workouts.clear();
   if (workoutNativeAvailable) await workoutNative.finishReset();
-  (await import("@/live/workoutRecorder")).workoutRecorder.clearView();
-  await AsyncStorage.removeItem(SOURCE_KEY);
+  workoutRecorder.clearView();
   if (store) await store.clearAll();
   await clearWidgets();
   deleteAllPhotos();

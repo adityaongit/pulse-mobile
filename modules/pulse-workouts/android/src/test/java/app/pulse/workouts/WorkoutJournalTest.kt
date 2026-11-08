@@ -74,12 +74,13 @@ class WorkoutJournalTest {
     assertEquals(1, page.getJSONArray("samples").length())
     assertFalse(page.getBoolean("more"))
   }
-  @Test fun fullResetHasARecoverableMarkerAndRefusesAnActiveSession() {
+  @Test fun fullResetHasARecoverableMarkerAndRefusesARunningSession() {
     WorkoutJournal.save(ctx, meta())
     WorkoutJournal.setActive(ctx, "test-1")
+    WorkoutService.runningId = "test-1"
     assertThrows(IllegalArgumentException::class.java) { WorkoutJournal.beginReset(ctx) }
-    WorkoutJournal.save(ctx, meta("completed"))
-    WorkoutJournal.setActive(ctx, null)
+    // An interrupted session that no service records never blocks Delete Everything.
+    WorkoutService.runningId = null
     WorkoutJournal.beginReset(ctx)
     assertTrue(WorkoutJournal.resetPending(ctx))
     // The Store is cleared between beginReset and finishReset; a new process can finish this sequence.
@@ -91,5 +92,26 @@ class WorkoutJournalTest {
     WorkoutJournal.save(ctx, meta())
     assertEquals("test-1", WorkoutJournal.active(ctx)!!.getString("id"))
     assertEquals("interrupted", WorkoutJournal.active(ctx)!!.getString("status"))
+  }
+  @Test fun anInterruptedSessionFinishesWithoutTheService() {
+    WorkoutJournal.save(ctx, meta("interrupted").put("updatedAt", 1_000L))
+    WorkoutJournal.setActive(ctx, "test-1")
+    val done = JSONObject(WorkoutJournal.finishStopped(ctx, "test-1"))
+    assertEquals("completed", done.getString("status"))
+    assertEquals(1_000L, done.getLong("endedAt"))
+    assertEquals(5000L, done.getLong("activeMs"))
+    assertNull(WorkoutJournal.active(ctx))
+    assertEquals(1, org.json.JSONArray(WorkoutJournal.pending(ctx)).length())
+  }
+  @Test fun aRunningSessionIsNotFinishedBehindTheServicesBack() {
+    WorkoutJournal.save(ctx, meta())
+    WorkoutService.runningId = "test-1"
+    assertThrows(IllegalArgumentException::class.java) { WorkoutJournal.finishStopped(ctx, "test-1") }
+  }
+  @Test fun aDamagedCommittedLineIsSkipped() {
+    WorkoutJournal.sampleFile(ctx, "test-1").writeText("{\"seq\":1,\"bpm\":100}\nnot json\n{\"seq\":3,\"bpm\":110}\n")
+    val page = JSONObject(WorkoutJournal.page(ctx, "test-1", 0))
+    assertEquals(2, page.getJSONArray("samples").length())
+    assertFalse(page.getBoolean("more"))
   }
 }

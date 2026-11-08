@@ -71,10 +71,29 @@ object WorkoutJournal {
       check(File(dir(ctx, id), "pending").delete() || !File(dir(ctx, id), "pending").exists())
     }
   }
+  /**
+   * Finishes a session that no service is recording (interrupted, or left behind by process death) straight in the
+   * journal, with no Bluetooth or foreground service. Starting a connectedDevice service needs Nearby devices on
+   * Android 14+, so routing this through the service could leave the session unfinishable. The session keeps what the
+   * last checkpoint committed; anything written after it is never read.
+   */
+  @Synchronized fun finishStopped(ctx: Context, id: String): String {
+    require(WorkoutService.runningId != id) { "activeWorkout" }
+    val meta = read(ctx, id)
+    if (meta.getString("status") != "completed") {
+      meta.put("status", "completed").put("link", "off").put("lastBpm", JSONObject.NULL)
+        .put("endedAt", meta.optLong("updatedAt", System.currentTimeMillis()))
+        .put("revision", meta.optLong("revision") + 1)
+      save(ctx, meta)
+    }
+    setActive(ctx, null)
+    return meta.toString()
+  }
   private fun resetFile(ctx: Context) = File(ctx.filesDir, "workout-reset-pending")
   @Synchronized fun resetPending(ctx: Context) = resetFile(ctx).exists()
   @Synchronized fun beginReset(ctx: Context) {
-    require(active(ctx) == null && WorkoutService.runningId == null) { "activeWorkout" }
+    // A running service must be finished first; a session nothing records is deleted with the rest.
+    require(WorkoutService.runningId == null) { "activeWorkout" }
     atomic(resetFile(ctx), "reset")
   }
   @Synchronized fun finishReset(ctx: Context) {
@@ -102,7 +121,8 @@ object WorkoutJournal {
           if (input.readByte().toInt() != 10) { input.seek(start); break }
         }
         next = input.filePointer
-        result.put(JSONObject(line))
+        // A damaged line is skipped rather than failing every later page of the session.
+        try { result.put(JSONObject(line)) } catch (_: org.json.JSONException) { }
       }
       more = next < end
     }

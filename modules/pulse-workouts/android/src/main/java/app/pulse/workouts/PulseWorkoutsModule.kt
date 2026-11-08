@@ -18,6 +18,8 @@ class PulseWorkoutsModule : Module() {
     }
     AsyncFunction("command") { id: String, action: String ->
       require(action in listOf("pause", "resume", "finish"))
+      val ctx = requireNotNull(appContext.reactContext)
+      if (action == "finish" && WorkoutService.runningId != id) return@AsyncFunction WorkoutJournal.finishStopped(ctx, id)
       WorkoutService.request(requireNotNull(appContext.reactContext), action, JSONObject().put("id", id)).get(20, java.util.concurrent.TimeUnit.SECONDS)
     }
     AsyncFunction("active") { WorkoutService.active(requireNotNull(appContext.reactContext)) }

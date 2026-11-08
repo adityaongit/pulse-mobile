@@ -19,7 +19,7 @@
     "breathe": "Respiration",
     "breatheHint": "Respiration guidée, avec HRV avant et après",
     "liveWorkout": "Séance en direct",
-    "liveWorkoutHint": "Coach de Strain sur la fréquence cardiaque en direct de ton bracelet",
+    "liveWorkoutHint": "Enregistre la fréquence cardiaque, les zones et la Training Load estimée",
     "weeklyReport": "Rapport hebdomadaire",
     "monthlyReport": "Rapport mensuel",
     "allReports": "Tous les rapports",

@@ -172,8 +172,8 @@ class WorkoutService : Service() {
         var begin = end - 1
         while (begin > 0) { seek(begin - 1); if (readByte().toInt() == 10) break; begin-- }
         seek(begin)
-        val last = JSONObject(readLine())
-        meta?.let { m ->
+        val last = try { JSONObject(readLine()) } catch (_: org.json.JSONException) { null }
+        if (last != null) meta?.let { m ->
           m.put("seq", maxOf(m.optLong("seq"), last.getLong("seq")))
           m.put("activeMs", maxOf(m.optLong("activeMs"), last.getLong("elapsedMs")))
           epoch = maxOf(epoch, last.getInt("epoch") + 1)
@@ -226,7 +226,7 @@ class WorkoutService : Service() {
     val gen = generation
     try {
       if (Build.VERSION.SDK_INT >= 31 && checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-        m.put("link", "lost").put("error", "bluetoothPermission"); return
+        m.put("link", "lost").put("error", "bluetoothPermission"); giveUp(); return
       }
       attempts++
       val adapter = getSystemService(BluetoothManager::class.java)?.adapter
@@ -236,7 +236,7 @@ class WorkoutService : Service() {
       worker.postDelayed({
         if (generation == gen && m.optString("link") != "live") retry("sharingUnavailable")
       }, 20_000)
-    } catch (_: SecurityException) { m.put("link", "lost").put("error", "bluetoothPermission") }
+    } catch (_: SecurityException) { m.put("link", "lost").put("error", "bluetoothPermission"); giveUp() }
     catch (_: Exception) { retry("connectionLost") }
   }
   private fun disconnect() {
@@ -250,9 +250,21 @@ class WorkoutService : Service() {
     disconnect()
     val m = meta ?: return
     m.put("link", "lost").put("error", reason).put("lastBpm", JSONObject.NULL)
-    if (m.optString("status") != "recording" || attempts >= 6) return
+    if (m.optString("status") != "recording") return
+    if (attempts >= 6) { giveUp(); return }
     val gen = generation
     worker.postDelayed({ if (generation == gen) connect() }, (2_000L shl attempts.coerceAtMost(4)).coerceAtMost(30_000))
+  }
+  /** No sensor to record from: pause, so neither the clock nor the wake lock runs on with nothing to capture. */
+  private fun giveUp() {
+    val m = meta ?: return
+    if (m.optString("status") != "recording") return
+    updateTime()
+    m.put("status", "paused").put("lastBpm", JSONObject.NULL)
+    runAt = 0
+    releaseWake()
+    checkpoint()
+    updateNotification()
   }
   private val callbacks = object : BluetoothGattCallback() {
     override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {

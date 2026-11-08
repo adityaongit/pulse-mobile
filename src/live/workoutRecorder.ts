@@ -137,6 +137,8 @@ class WorkoutRecorder {
     this.activeSamples.clear();
     this.patch({ active: null, viewed: null, samples: [], history: [], error: null, loading: false });
   };
+  /** Resolves once a poll already under way ends; a reset waits on it so no ingest lands after the clear. */
+  settle = (): Promise<void> => this.polling ?? Promise.resolve();
   more = () => { this.historyLimit += 25; void this.refresh(); };
 }
 
