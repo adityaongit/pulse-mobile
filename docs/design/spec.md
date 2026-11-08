@@ -3073,3 +3073,10 @@ Open items for U17 (not design changes): `src/lib/header-state.ts` with its unit
 | The "MMM d TO TODAY" pill label [latest-home-top-3] | Not adopted (Pulse days are calendar days) |
 | The reference app's in-app coach pill, Ask row, Plan (custom plans with goal rings [latest-plan-1]) | Not adopted (no data); My Plan is out of scope |
 | Light mode | None (v1) |
+
+
+### Workout tab and recorder notification (2026-10-30)
+
+The phone bar has five destinations: Home, Health, Workout (dumbbell), Journal, More. Keep the 62 px glass bar and existing check-in action. Workout uses the tab page shell, circular HR hero, recorder controls, summary, chart and saved history. Navigation never stops the native recorder. Existing `/workout-live` links return onboarded owners to Workout; first-run owners retain the standalone recorder.
+
+During recording or pause, an ongoing notification shows state, active elapsed time and Pause/Resume plus Finish. Tapping it returns to Workout. Missing HR keeps the timer and Pause available; finishing removes the notification. Ask for notification permission at Start/Resume, with a visible explanation and system-settings action when blocked.

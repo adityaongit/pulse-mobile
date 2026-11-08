@@ -3,7 +3,7 @@ import { useEffect, useState, type ComponentProps } from "react";
 import { View } from "react-native";
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import type { Tabs } from "expo-router";
-import { HeartPulse, Menu, NotebookPen, type LucideIcon } from "lucide-react-native";
+import { Dumbbell, HeartPulse, Menu, NotebookPen, type LucideIcon } from "lucide-react-native";
 import { alpha } from "../color";
 import { Glass } from "../Glass";
 import { haptic } from "../haptics";
@@ -23,11 +23,12 @@ const LENS_RADIUS = GLASS_RADIUS - 4;
 
 type TabBarProps = Parameters<NonNullable<ComponentProps<typeof Tabs>["tabBar"]>>[0];
 
-// The web app's tabs, in its order (src/lib/url.ts TAB_ROOT): Home, Health, Journal, More. The route file of each is
+// Home, Health, Workout, Journal, More. The route file of each is
 // app/(tabs)/<route>.tsx.
-export const TABS: { route: string; labelKey: "tabs.home" | "tabs.health" | "tabs.journal" | "tabs.more"; icon: LucideIcon }[] = [
+export const TABS: { route: string; labelKey: "tabs.home" | "tabs.health" | "workouts:tab" | "tabs.journal" | "tabs.more"; icon: LucideIcon }[] = [
   { route: "index", labelKey: "tabs.home", icon: HomeChart },
   { route: "health", labelKey: "tabs.health", icon: HeartPulse },
+  { route: "workout", labelKey: "workouts:tab", icon: Dumbbell },
   { route: "journal", labelKey: "tabs.journal", icon: NotebookPen },
   { route: "more", labelKey: "tabs.more", icon: Menu },
 ];
@@ -50,9 +51,9 @@ function Lens({ index, itemWidth }: { index: number; itemWidth: number }) {
   );
 }
 
-/** Phone tab bar: a 62 px glass squircle with four destinations (spec §4.2, G1), for expo-router's <Tabs tabBar>. */
+/** Phone tab bar: a 62 px glass squircle with five destinations, for expo-router's <Tabs tabBar>. */
 function Bar({ state, navigation, current: shown }: TabBarProps & { current: number }) {
-  const { t } = useTranslation("ui");
+  const { t } = useTranslation(["ui", "workouts"]);
   const [width, setWidth] = useState(0);
   // The tapped tab lights up (lens, icon, label) in its own small render; the tab's screen renders a frame later. One
   // render for both would hold the feedback until the whole screen had rendered.
@@ -87,7 +88,7 @@ function Bar({ state, navigation, current: shown }: TabBarProps & { current: num
               className="h-full min-w-0 flex-1 items-center justify-center gap-0.5 rounded-[18px]"
             >
               <Icon icon={icon} size={26} tone={on ? "foreground" : "muted-foreground"} strokeWidth={1.6} />
-              <Text className={on ? "text-[11px] font-semibold leading-[13px] text-foreground" : "text-[11px] font-semibold leading-[13px] text-muted-foreground"}>{label}</Text>
+              <Text numberOfLines={1} className={on ? "text-[11px] font-semibold leading-[13px] text-foreground" : "text-[11px] font-semibold leading-[13px] text-muted-foreground"}>{label}</Text>
             </Press>
           );
         })}

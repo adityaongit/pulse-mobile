@@ -1,3 +1,4 @@
+import workouts from "./locales/en/workouts.json";
 // Types the keys from the English files: a misspelt or missing key fails `pnpm typecheck`.
 import type common from "./locales/en/common.json";
 import type reasons from "./locales/en/reasons.json";
@@ -27,7 +28,7 @@ import type widgets from "./locales/en/widgets.json";
 declare module "i18next" {
   interface CustomTypeOptions {
     defaultNS: "common";
-    resources: { common: typeof common, reasons: typeof reasons, metrics: typeof metrics, home: typeof home, sleep: typeof sleep, recovery: typeof recovery, strain: typeof strain, health: typeof health, journal: typeof journal, trends: typeof trends, nutrition: typeof nutrition, goals: typeof goals, reports: typeof reports, coach: typeof coach, settings: typeof settings, onboarding: typeof onboarding, more: typeof more, howItWorks: typeof howItWorks, notifications: typeof notifications, errors: typeof errors, ui: typeof ui; coachTools: typeof coachTools; widgets: typeof widgets };
+    resources: { common: typeof common, reasons: typeof reasons, metrics: typeof metrics, home: typeof home, sleep: typeof sleep, recovery: typeof recovery, strain: typeof strain, health: typeof health, journal: typeof journal, trends: typeof trends, nutrition: typeof nutrition, goals: typeof goals, reports: typeof reports, coach: typeof coach, settings: typeof settings, onboarding: typeof onboarding, more: typeof more, howItWorks: typeof howItWorks, notifications: typeof notifications, errors: typeof errors, ui: typeof ui; coachTools: typeof coachTools; widgets: typeof widgets; workouts: typeof workouts };
     returnNull: false;
   }
 }

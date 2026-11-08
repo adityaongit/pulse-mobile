@@ -1,8 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const pushed: string[] = [];
-vi.mock("expo-router", () => ({ router: { push: (h: string) => pushed.push(h) } }));
-const { push } = await import("./navigate");
+const linked: string[] = [];
+vi.mock("expo-router", () => ({ router: {
+  push: (h: string) => pushed.push(h),
+  canDismiss: () => true,
+  dismissAll: () => linked.push("dismiss"),
+  navigate: (h: string) => linked.push(h),
+} }));
+const { push, openLink } = await import("./navigate");
 
 describe("push", () => {
   beforeEach(() => vi.useFakeTimers());
@@ -16,4 +22,9 @@ describe("push", () => {
     push("/recovery");
     expect(pushed).toEqual(["/sleep", "/recovery"]);
   });
+});
+
+it("closes stacked details before opening an external Workout tab link", () => {
+  openLink("/workout?source=shortcut");
+  expect(linked).toEqual(["dismiss", "/workout?source=shortcut"]);
 });

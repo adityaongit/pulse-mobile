@@ -151,6 +151,7 @@ function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
 class LiveHeartRate {
   private manager: BleManager | null = null;
   private started = false;
+  private workoutOwner = false;
   private loaded = false;
   private radio: BleRadio = "unknown";
   private permission: BlePermission = "unknown";
@@ -473,6 +474,7 @@ class LiveHeartRate {
 
   /** Looks for bands sharing heart rate for 15 s; `found` fills as they appear. Turning Bluetooth on resumes it. */
   scan = async (): Promise<void> => {
+    if (this.workoutOwner) { this.error = i18n.t("workouts:recorder.errors.externalOwner"); this.emit(); return; }
     this.pendingScanAt = Date.now();
     if (!(await this.prepare())) return;
     this.pendingScanAt = null;
@@ -569,6 +571,7 @@ class LiveHeartRate {
 
   /** Connects to a band from the scan (or the remembered one) and remembers it. */
   connect = async (id: string): Promise<void> => {
+    if (this.workoutOwner) { this.error = i18n.t("workouts:recorder.errors.externalOwner"); this.emit(); return; }
     const seen = this.found.get(id);
     const dev: BleDevice = { id, name: seen?.name ?? (this.remembered?.id === id ? this.remembered.name : null) };
     this.setStopped(false);
@@ -595,6 +598,21 @@ class LiveHeartRate {
     await this.dropWant();
     this.error = null;
     this.emit();
+  };
+
+  /** Hand the sensor to the foreground recorder without changing the person's auto-connect preference. */
+  suspendForWorkout = async (): Promise<void> => {
+    this.workoutOwner = true;
+    this.pendingScanAt = null;
+    this.resume = null;
+    await this.dropWant();
+    this.error = null;
+    this.emit();
+  };
+
+  releaseWorkout = (): void => {
+    this.workoutOwner = false;
+    this.maybeConnect();
   };
 
   /** Disconnects and forgets the remembered band. */
@@ -645,6 +663,7 @@ class LiveHeartRate {
    * the remembered band.
    */
   private maybeConnect() {
+    if (this.workoutOwner) return;
     if (!this.loaded || !this.foreground() || !this.ready()) return;
     if (this.pendingScanAt !== null) {
       const fresh = Date.now() - this.pendingScanAt < PENDING_SCAN_MS;

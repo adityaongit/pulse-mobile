@@ -1,3 +1,4 @@
+import type { WorkoutStore } from "./workouts";
 // The storage contract every layer talks to: the importer writes rows, the pipeline reads rows and writes scores,
 // the screen queries read both. One implementation on expo-sqlite (db.ts); tests may use an in-memory one.
 import type { DailyValue, Exercise, HealthRecord, HrSample, HrvSample, JournalEntry, Metrics, Profile, Segment, Session, StepsMinute, SyncState } from "./types";
@@ -9,6 +10,8 @@ import type { DetectedActivity } from "@/core/algorithms/autoWorkout";
 export type DayRange = { from: string; to: string };
 
 export interface Store {
+  /** Personal recordings survive health reimports and demo/source switches. */
+  readonly workouts: WorkoutStore;
   // Profile and sync
   getProfile(): Promise<Profile | null>;
   setProfile(p: Profile): Promise<void>;

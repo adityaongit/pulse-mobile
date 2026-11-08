@@ -1,3 +1,4 @@
+import { MemoryWorkoutStore } from "./workouts";
 // An in-memory Store on Maps: the pipeline tests run on it, and "demo" mode can when nothing need survive a
 // restart. Rows are copied on the way in and out (JSON round-trip), so callers never share objects with the
 // store, as they would not with SQLite.
@@ -89,6 +90,7 @@ class Samples {
 }
 
 export class MemoryStore implements Store {
+  readonly workouts = new MemoryWorkoutStore();
   private profile: Profile | null = null;
   private sync: SyncState = { lastSyncTs: null, firstDay: null, lastError: null };
   private metrics = new Map<string, Metrics>();
