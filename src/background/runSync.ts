@@ -11,7 +11,7 @@ import type { Store } from "@/data/store";
 import type { Profile } from "@/data/types";
 import { syncHealthConnect } from "@/health/sync";
 import { timed } from "@/lib/perf";
-import { report, reportError } from "@/lib/telemetry";
+import { errorKind, log, report, reportError, traced } from "@/lib/telemetry";
 import { skippedTypes } from "@/health/connect";
 import { runDataGapChecks } from "@/health/dataGaps";
 import { localDay } from "@/lib/time";
@@ -83,7 +83,23 @@ export function runSync(store: Store, profile: Profile, source: Source, opts: Ru
   return job;
 }
 
+/** One run as a `sync` span (its steps are child spans through timed()), with a log line at each end. */
 async function run(store: Store, profile: Profile, source: Source, opts: RunSyncOptions): Promise<RunSyncResult> {
+  const t0 = Date.now();
+  void log("info", "sync.start", { owner: opts.owner, source });
+  return traced("sync", { owner: opts.owner, source }, () => runSteps(store, profile, source, opts)).then(
+    (r) => {
+      void log("info", r.ran ? "sync.done" : "sync.skipped", { owner: opts.owner, ms: Date.now() - t0, warnings: r.warnings.length, unchanged: !!r.unchanged });
+      return r;
+    },
+    (e: unknown) => {
+      void log("error", "sync.error", { owner: opts.owner, ms: Date.now() - t0, kind: errorKind(e) });
+      throw e;
+    },
+  );
+}
+
+async function runSteps(store: Store, profile: Profile, source: Source, opts: RunSyncOptions): Promise<RunSyncResult> {
   let lock = await takeLock(opts.owner);
   if (!lock.taken && opts.waitIfLocked && (await waitForLock(opts.owner, WAIT_FOR_TASK_MS))) lock = await takeLock(opts.owner);
   if (!lock.taken) return { ran: false, skipped: `${lock.holder === "app" ? "the app" : "the background task"} is syncing`, warnings: [] };
@@ -101,6 +117,9 @@ async function run(store: Store, profile: Profile, source: Source, opts: RunSync
       warnings.push(...(r.warnings ?? []));
       for (const type of skippedTypes(r.warnings ?? [])) void report("sync.type_skipped", { type });
       unchanged = !!r.unchanged;
+      // What the read covered, as counts only: how many types were read and how many records in all.
+      const reads = Object.entries(r.counts).filter(([k, v]) => k.startsWith("read:") && typeof v === "number");
+      void log("info", "sync.read", { owner: opts.owner, types: reads.length, records: reads.reduce((a, [, v]) => a + (v as number), 0), full: "full" in r.counts, ms: Date.now() - t0 });
       // The app's syncs are logged like the background task's, with what the sync did (whole window or not, and why).
       if (opts.owner === "app") {
         const flags = Object.keys(r.counts).filter((k) => ["full", "reimport", "backfillFrom", "deleted", "unchanged"].includes(k) || k.startsWith("why:"));

@@ -2,6 +2,7 @@
 // the new screen mounts and counts as open, how long each view model takes, how long sync and scoring run, and every
 // stretch the JS thread was blocked for more than 60 ms. Read with `adb logcat | grep PulsePerf`; switch off with ON.
 import { AppState } from "react-native";
+import { traced } from "./telemetry";
 
 const ON = typeof __DEV__ !== "undefined" && __DEV__;
 const T0 = Date.now();
@@ -11,11 +12,15 @@ export function perf(event: string, ...detail: unknown[]) {
   console.log("[PulsePerf]", Date.now() - T0, event, ...detail);
 }
 
-/** Times an async step: `await timed("pipeline", () => run())`. */
+/**
+ * Times an async step: `await timed("pipeline (app)", () => run())`. In a traced session it is also a Sentry span
+ * (docs/telemetry.md): "sync-health-connect (app)" becomes `sync.health_connect` with `owner: app`.
+ */
 export async function timed<T>(label: string, run: () => Promise<T>): Promise<T> {
   const t = Date.now();
+  const [, step, owner] = /^(.*?)(?: \((\w+)\))?$/.exec(label) ?? [label, label];
   try {
-    return await run();
+    return await traced(step.replace("-", ".").replace(/-/g, "_"), owner ? { owner } : {}, run);
   } finally {
     perf(label, `${Date.now() - t}ms`);
   }

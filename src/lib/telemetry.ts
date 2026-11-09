@@ -1,14 +1,17 @@
-// Error telemetry (docs/telemetry.md): crashes and a short list of coded problems go to Sentry, on by default, off in
-// Settings › App › Privacy. Nothing initialises without EXPO_PUBLIC_SENTRY_DSN, so local and development builds send
+// Error telemetry (docs/telemetry.md): crashes, a short list of coded problems, sampled performance traces and coded
+// logs go to Sentry, on by default, off in Settings › App › Privacy. Nothing initialises without EXPO_PUBLIC_SENTRY_DSN, so local and development builds send
 // nothing. Every event passes scrubEvent: an allowlist of fields, URLs cut to their path, key-like strings redacted,
 // numbers replaced. Codes are stable dotted strings ("sync.failed"); their tags carry enums and small counts, never a
 // health value. A code with the same tags goes at most once per install, app version and local day; crashes always go.
 // The SDK and storage load lazily, so a module that reports can be imported in Node tests without either.
-import type { Breadcrumb, ErrorEvent } from "@sentry/react-native";
+import type { Breadcrumb, ErrorEvent, TransactionEvent } from "@sentry/react-native";
 import app from "../../app.json";
 import { localDay } from "./time";
 
 type Sentry = typeof import("@sentry/react-native");
+type Options = NonNullable<Parameters<Sentry["init"]>[0]>;
+type Log = Parameters<NonNullable<Options["beforeSendLog"]>>[0];
+type SpanJSON = Parameters<NonNullable<Options["beforeSendSpan"]>>[0];
 export type Tags = Record<string, string | number | boolean>;
 
 const DSN = process.env.EXPO_PUBLIC_SENTRY_DSN ?? "";
@@ -24,6 +27,12 @@ const storage = () => import("@react-native-async-storage/async-storage").then((
 let sentry: Promise<Sentry | null> | null = null;
 /** The live gate beforeSend reads: false the moment the switch goes off, so nothing still in the pipeline goes out. */
 let on = false;
+/** Share of sessions whose performance is traced (docs/telemetry.md, Volume). */
+const TRACES_SAMPLE_RATE = 0.2;
+/** Expo Router's navigation container, registered once Sentry's navigation integration exists. */
+type NavigationRef = Parameters<ReturnType<Sentry["reactNavigationIntegration"]>["registerNavigationContainer"]>[0];
+let navigationRef: NavigationRef | null = null;
+let navigation: ReturnType<Sentry["reactNavigationIntegration"]> | null = null;
 
 /** Starts Sentry once per runtime, unless there is no DSN or the person turned it off. Never throws. */
 export function initTelemetry(): Promise<Sentry | null> {
@@ -37,6 +46,8 @@ async function start(): Promise<Sentry | null> {
   if ((await store.getItem(OFF_KEY).catch(() => null)) === "off") return null;
   const S = await import("@sentry/react-native");
   on = true;
+  navigation = S.reactNavigationIntegration({ enableTimeToInitialDisplay: true });
+  if (navigationRef) navigation.registerNavigationContainer(navigationRef);
   S.init({
     dsn: DSN,
     environment: typeof __DEV__ !== "undefined" && __DEV__ ? "development" : "production",
@@ -46,21 +57,38 @@ async function start(): Promise<Sentry | null> {
     attachScreenshot: false,
     attachViewHierarchy: false,
     enableCaptureFailedRequests: false,
-    enableLogs: false,
+    // Logs come only from log() below: no console integration is added, so console lines never become logs.
+    enableLogs: true,
     // Release health (sessions) and native crash handling stay on.
     enableAutoSessionTracking: true,
     enableNativeCrashHandling: true,
-    // tracesSampleRate is left unset, not 0: any number turns on the tracing integrations (no replay options either).
+    // A fifth of sessions are traced: app start, screen loads and Pulse's own spans (sync, scoring). No HTTP spans: the
+    // coach's URLs can hold its key, so fetch and XHR are not traced at all. No replay or profiling.
+    tracesSampleRate: TRACES_SAMPLE_RATE,
     // Console, fetch and XHR breadcrumbs, and the request context, go with their integrations.
-    integrations: (defaults) => defaults.filter((i) => !DROPPED.has(i.name)),
+    integrations: (defaults) => [
+      ...defaults.filter((i) => !DROPPED.has(i.name)),
+      S.reactNativeTracingIntegration({ traceFetch: false, traceXHR: false, enableHTTPTimings: false }),
+      navigation!,
+    ],
     beforeBreadcrumb: scrubBreadcrumb,
     beforeSend: (event) => (on ? scrubEvent(event) : null),
+    beforeSendTransaction: (event) => (on ? scrubTransaction(event) : null),
+    beforeSendSpan: scrubSpan,
+    beforeSendLog: (entry) => (on ? scrubLog(entry) : null),
   });
   S.setUser({ id: await installId() });
   return S;
 }
 
-const DROPPED = new Set(["Breadcrumbs", "HttpContext"]);
+// ReactNativeTracing and ReactNavigation are dropped from the defaults and added back configured (above).
+const DROPPED = new Set(["Breadcrumbs", "HttpContext", "ReactNativeTracing", "ReactNavigation", "ConsoleLogs"]);
+
+/** Expo Router's root layout hands its navigation container over, so screen loads are traced. Safe before init. */
+export function registerNavigation(ref: NavigationRef): void {
+  navigationRef = ref;
+  navigation?.registerNavigationContainer(ref);
+}
 
 /** Whether telemetry is on (the Settings switch). */
 export async function telemetryEnabled(): Promise<boolean> {
@@ -150,6 +178,30 @@ export async function reportError(code: string, error: unknown, tags: Tags = {})
     const all = { ...tags, kind: errorKind(error) };
     if (!S || !(await once(keyOf(code, all)))) return;
     S.captureException(error, { level: "error", fingerprint: [code], tags: { ...clean(all), code } });
+  } catch {
+    // Telemetry never breaks the app.
+  }
+}
+
+/**
+ * Runs `run` inside a span named `name` (a stable code, like the report codes) when this session is traced; otherwise
+ * just runs it. Attributes follow the tag rules: enums and small counts. Never throws for telemetry's sake.
+ */
+export async function traced<T>(name: string, attributes: Tags, run: () => Promise<T>): Promise<T> {
+  const S = await (sentry ?? Promise.resolve(null)).catch(() => null);
+  if (!S || !on) return run();
+  return S.startSpan({ name, op: `pulse.${name.split(".")[0]}`, attributes: clean(attributes) }, run);
+}
+
+/**
+ * A coded log line (`sync.done`, `pipeline.done`) with attributes that follow the tag rules. Logs give an error the
+ * steps that led to it; they are not deduped, so keep them to a few per sync. Never throws.
+ */
+export async function log(level: "info" | "warn" | "error", code: string, attributes: Tags = {}): Promise<void> {
+  try {
+    const S = await (sentry ?? Promise.resolve(null));
+    if (!S || !on) return;
+    S.logger[level](code, { ...clean(attributes), code });
   } catch {
     // Telemetry never breaks the app.
   }
@@ -249,3 +301,58 @@ export function scrubEvent(event: ErrorEvent): ErrorEvent {
   };
   return JSON.parse(JSON.stringify(out)) as ErrorEvent;
 }
+
+/** Span and log attribute keys the SDK sets itself (release, environment, SDK name, frame counts) pass as they are. */
+const SDK_KEY = /^(sentry\.|frames\.|stall_|app_start|ttid|ttfd|thread\.|device\.|os\.|app\.)/;
+/** Route names may be strings; any parameters (`route.params`, query strings) never are. */
+const ROUTE_KEY = /^(route|previous_route)\.name$/;
+
+/**
+ * Attributes made safe: the SDK's own keys as they are, numbers and booleans, and strings only under a route-name key
+ * or when they read as a short enum after scrubbing. Everything else (params, URLs, free text) is dropped.
+ */
+export function scrubAttributes(data: Record<string, unknown> | undefined): Record<string, unknown> | undefined {
+  if (!data) return undefined;
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(data)) {
+    if (/params|url|query|http|body|message/i.test(k)) continue;
+    if (SDK_KEY.test(k)) out[k] = v;
+    else if (typeof v === "number" || typeof v === "boolean") out[k] = v;
+    else if (typeof v === "string" && (ROUTE_KEY.test(k) || /^[A-Za-z0-9_.:/()[\]-]{1,64}$/.test(v))) out[k] = scrubText(v, 64);
+    else if (v && typeof v === "object" && "value" in v) {
+      // A log attribute arrives as { value, type }.
+      const inner = scrubAttributes({ [k]: (v as { value: unknown }).value });
+      if (inner && k in inner) out[k] = { ...(v as object), value: inner[k] };
+    }
+  }
+  return out;
+}
+
+/** beforeSendSpan: the span's name scrubbed (no URL host or query, no numbers) and its data allowlisted. */
+export function scrubSpan(span: SpanJSON): SpanJSON {
+  return { ...span, description: span.description && scrubText(span.description), data: (scrubAttributes(span.data) ?? {}) as SpanJSON["data"] };
+}
+
+/** beforeSendTransaction: the event's allowlist (scrubEvent) plus the transaction's name, timing, trace and spans. */
+export function scrubTransaction(event: TransactionEvent): TransactionEvent {
+  const base = scrubEvent(event as unknown as ErrorEvent) as unknown as TransactionEvent;
+  const trace = event.contexts?.trace;
+  return JSON.parse(
+    JSON.stringify({
+      ...base,
+      type: "transaction",
+      transaction: event.transaction && scrubText(event.transaction, 100),
+      transaction_info: event.transaction_info && { source: event.transaction_info.source },
+      start_timestamp: event.start_timestamp,
+      measurements: event.measurements,
+      contexts: { ...base.contexts, trace: trace && { trace_id: trace.trace_id, span_id: trace.span_id, parent_span_id: trace.parent_span_id, op: trace.op, status: trace.status, origin: trace.origin, data: scrubAttributes(trace.data) } },
+      spans: event.spans?.map(scrubSpan),
+    }),
+  ) as TransactionEvent;
+}
+
+/** beforeSendLog: the message scrubbed like an event's and the attributes allowlisted. */
+export function scrubLog(entry: Log): Log {
+  return { ...entry, message: scrubText(String(entry.message)), attributes: scrubAttributes(entry.attributes as Record<string, unknown> | undefined) as Log["attributes"] };
+}
+

@@ -37,7 +37,7 @@
     "checkForUpdatesHint": "Uma vez por dia o Pulse pergunta ao GitHub se há uma versão nova. Nada sobre você é enviado.",
     "privacy": "Privacidade",
     "errorReports": "Enviar relatórios de erro",
-    "errorReportsHint": "Quando o Pulse trava ou uma sincronização falha, ele envia um relatório curto: o erro, o modelo do celular e a versão do Pulse. Nunca seus dados de saúde. Desativar interrompe os relatórios na hora.",
+    "errorReportsHint": "Quando o Pulse trava ou uma sincronização falha, ele envia um relatório curto: o erro, o modelo do celular e a versão do Pulse. Algumas sessões também enviam quanto tempo levam as sincronizações e as telas. Nunca seus dados de saúde. Desativar interrompe os relatórios na hora.",
     "version": "Pulse {{version}}",
     "isOut": "{{version}} já está disponível",
     "checking": "Verificando…",

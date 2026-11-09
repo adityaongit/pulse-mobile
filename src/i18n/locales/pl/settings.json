@@ -37,7 +37,7 @@
     "checkForUpdatesHint": "Raz dziennie Pulse pyta GitHub, czy jest nowsza wersja. Nic o Tobie nie jest wysyłane.",
     "privacy": "Prywatność",
     "errorReports": "Wysyłaj raporty o błędach",
-    "errorReportsHint": "Gdy Pulse się zawiesi albo synchronizacja się nie uda, wysyła krótki raport: błąd, model telefonu i wersję Pulse. Nigdy Twoich danych o zdrowiu. Wyłączenie od razu zatrzymuje raporty.",
+    "errorReportsHint": "Gdy Pulse się zawiesi albo synchronizacja się nie uda, wysyła krótki raport: błąd, model telefonu i wersję Pulse. Niektóre sesje wysyłają też, ile trwają synchronizacje i ekrany. Nigdy Twoich danych o zdrowiu. Wyłączenie od razu zatrzymuje raporty.",
     "version": "Pulse {{version}}",
     "isOut": "{{version}} jest już dostępna",
     "checking": "Sprawdzanie…",

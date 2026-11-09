@@ -37,7 +37,7 @@
     "checkForUpdatesHint": "Einmal am Tag fragt Pulse bei GitHub nach, ob es eine neuere Version gibt. Es werden keine Daten über dich gesendet.",
     "privacy": "Datenschutz",
     "errorReports": "Fehlerberichte senden",
-    "errorReportsHint": "Wenn Pulse abstürzt oder eine Synchronisierung fehlschlägt, sendet es einen kurzen Bericht: den Fehler, das Handymodell und die Pulse-Version. Nie deine Gesundheitsdaten. Ausschalten stoppt die Berichte sofort.",
+    "errorReportsHint": "Wenn Pulse abstürzt oder eine Synchronisierung fehlschlägt, sendet es einen kurzen Bericht: den Fehler, das Handymodell und die Pulse-Version. Manche Sitzungen senden auch, wie lange Synchronisierungen und Bildschirme brauchen. Nie deine Gesundheitsdaten. Ausschalten stoppt die Berichte sofort.",
     "version": "Pulse {{version}}",
     "isOut": "{{version}} ist da",
     "checking": "Wird geprüft…",

@@ -3,7 +3,7 @@ import "../global.css";
 import { useEffect, useMemo } from "react";
 import * as Sentry from "@sentry/react-native";
 import { useFonts } from "expo-font";
-import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from "expo-router";
+import { DarkTheme, DefaultTheme, Stack, ThemeProvider, useNavigationContainerRef } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import * as SystemUI from "expo-system-ui";
 import { StatusBar } from "expo-status-bar";
@@ -24,7 +24,7 @@ import { useNotificationDeepLinks, useTabLinks } from "@/background/links";
 import { Opening } from "@/screens/Opening";
 import { ScreenError } from "@/screens/ScreenError";
 import { ShellData } from "@/screens/ShellData";
-import { initTelemetry } from "@/lib/telemetry";
+import { initTelemetry, registerNavigation } from "@/lib/telemetry";
 import { boot, useApp } from "@/state/app";
 import { AppProviders } from "@/ui/providers";
 import { useTheme } from "@/ui/theme";
@@ -53,6 +53,11 @@ function RootLayout() {
   // Boot opens the database and reads the profile, the source and the saved theme (src/state/app.ts); the stored theme is
   // applied before the first frame, so a dark-mode person never sees a light flash.
   useEffect(() => void boot((theme) => colorScheme.set(theme as "light" | "dark" | "system")), []);
+  // Screen loads in traced sessions (docs/telemetry.md): Sentry's navigation integration follows Expo Router's container.
+  const navigationRef = useNavigationContainerRef();
+  useEffect(() => {
+    if (navigationRef) registerNavigation(navigationRef);
+  }, [navigationRef]);
   const status = useApp((s) => s.status);
   const opened = useApp((s) => s.store !== null);
   // Onboarded: a profile, a source and a first completed run (pulse's (app) layout sends anyone else to onboarding).

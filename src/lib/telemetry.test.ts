@@ -10,6 +10,10 @@ const sentry = vi.hoisted(() => ({
   captureMessage: vi.fn(),
   captureException: vi.fn(),
   close: vi.fn(async () => {}),
+  startSpan: vi.fn((_opts: unknown, run: () => unknown) => run()),
+  logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn() },
+  reactNativeTracingIntegration: vi.fn((o: unknown) => ({ name: "ReactNativeTracing", options: o })),
+  reactNavigationIntegration: vi.fn(() => ({ name: "ReactNavigation", registerNavigationContainer: vi.fn() })),
 }));
 vi.mock("@sentry/react-native", () => sentry);
 vi.mock("@react-native-async-storage/async-storage", () => ({
@@ -48,15 +52,18 @@ describe("init", () => {
     expect(sentry.captureMessage).not.toHaveBeenCalled();
   });
 
-  it("starts without PII, breadcrumbs, tracing or request context, as a random install id", async () => {
+  it("starts without PII, breadcrumbs, HTTP spans, replays or request context, as a random install id", async () => {
     const t = await load();
     await t.initTelemetry();
     const opts = sentry.init.mock.calls[0][0];
-    expect(opts).toMatchObject({ dsn: DSN, sendDefaultPii: false, maxBreadcrumbs: 0, attachScreenshot: false, attachViewHierarchy: false, enableCaptureFailedRequests: false });
-    expect(opts).not.toHaveProperty("tracesSampleRate");
+    expect(opts).toMatchObject({ dsn: DSN, sendDefaultPii: false, maxBreadcrumbs: 0, attachScreenshot: false, attachViewHierarchy: false, enableCaptureFailedRequests: false, tracesSampleRate: 0.2, enableLogs: true });
     expect(opts).not.toHaveProperty("replaysSessionSampleRate");
-    const kept = opts.integrations([{ name: "Breadcrumbs" }, { name: "HttpContext" }, { name: "ReactNativeErrorHandlers" }]).map((i: { name: string }) => i.name);
-    expect(kept).toEqual(["ReactNativeErrorHandlers"]);
+    expect(opts).not.toHaveProperty("profilesSampleRate");
+    const defaults = ["Breadcrumbs", "HttpContext", "ReactNativeErrorHandlers", "ReactNativeTracing", "ConsoleLogs"].map((name) => ({ name }));
+    const kept = opts.integrations(defaults).map((i: { name: string }) => i.name);
+    // The tracing integration comes back configured, with no fetch or XHR spans; console lines never become logs.
+    expect(kept).toEqual(["ReactNativeErrorHandlers", "ReactNativeTracing", "ReactNavigation"]);
+    expect(sentry.reactNativeTracingIntegration).toHaveBeenCalledWith({ traceFetch: false, traceXHR: false, enableHTTPTimings: false });
     expect(opts.beforeBreadcrumb({ category: "console", message: "x" })).toBeNull();
     expect(sentry.setUser.mock.calls[0][0].id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
   });
@@ -190,3 +197,80 @@ describe("errorKind", () => {
     expect(errorKind(42)).toBe("unknown");
   });
 });
+
+describe("traces and logs", () => {
+  it("runs work untraced and logs nothing without a DSN or with the switch off", async () => {
+    const t = await load("");
+    await t.initTelemetry();
+    expect(await t.traced("sync", { owner: "app" }, async () => 7)).toBe(7);
+    await t.log("info", "sync.done", { ms: 5 });
+    expect(sentry.startSpan).not.toHaveBeenCalled();
+    expect(sentry.logger.info).not.toHaveBeenCalled();
+
+    const on = await load();
+    await on.initTelemetry();
+    await on.setTelemetryEnabled(false);
+    expect(await on.traced("sync", {}, async () => 1)).toBe(1);
+    await on.log("info", "sync.done");
+    expect(sentry.startSpan).not.toHaveBeenCalled();
+    expect(sentry.logger.info).not.toHaveBeenCalled();
+  });
+
+  it("spans and logs carry the code and clean attributes", async () => {
+    const t = await load();
+    await t.initTelemetry();
+    expect(await t.traced("sync.health_connect", { owner: "task" }, async () => "ok")).toBe("ok");
+    expect(sentry.startSpan.mock.calls[0][0]).toEqual({ name: "sync.health_connect", op: "pulse.sync", attributes: { owner: "task" } });
+    await t.log("warn", "sync.read", { types: 12, records: 4810, full: false });
+    expect(sentry.logger.warn).toHaveBeenCalledWith("sync.read", { types: 12, records: 4810, full: false, code: "sync.read" });
+  });
+
+  it("registers the navigation container whether it arrives before or after init", async () => {
+    const t = await load();
+    const ref = { current: null } as never;
+    t.registerNavigation(ref);
+    await t.initTelemetry();
+    const nav = sentry.reactNavigationIntegration.mock.results[0].value;
+    expect(nav.registerNavigationContainer).toHaveBeenCalledWith(ref);
+  });
+
+  it("drops span params, URLs and free text, keeping route names, counts and the SDK's keys", async () => {
+    const t = await load();
+    const span = t.scrubSpan({
+      span_id: "a", trace_id: "b", start_timestamp: 1, op: "navigation",
+      description: "GET https://generativelanguage.googleapis.com/v1/models?key=AIzaSyFAKEKEY1234567890 took 812ms",
+      data: { "route.name": "metric/[key]", "route.params": { key: "hrv" }, "http.url": "https://x.io?key=1", "frames.total": 120, records: 4810, owner: "app", note: "HRV 81.1 ms on 2026-11-02", "sentry.release": "in.portlabs.pulse@0.5.0+1" },
+    } as never);
+    expect(span.description).toBe("GET /v#/models took #ms");
+    expect(span.data).toEqual({ "route.name": "metric/[key]", "frames.total": 120, records: 4810, owner: "app", "sentry.release": "in.portlabs.pulse@0.5.0+1" });
+  });
+
+  it("builds a transaction from the allowlist, with scrubbed spans and no request", async () => {
+    const t = await load();
+    const out = t.scrubTransaction({
+      type: "transaction", event_id: "e", transaction: "metric/[key]", start_timestamp: 1, timestamp: 2,
+      transaction_info: { source: "component" }, measurements: { ttid: { value: 300, unit: "millisecond" } },
+      request: { url: "https://x.io?key=1" }, extra: { hrv: 81 }, breadcrumbs: [{ message: "x" }],
+      contexts: { trace: { trace_id: "t", span_id: "s", op: "navigation", data: { "route.params": { key: "hrv" }, "route.name": "metric/[key]" } }, culture: { locale: "de" } },
+      spans: [{ span_id: "c", trace_id: "t", start_timestamp: 1, data: { url: "https://x.io" } }],
+    } as never);
+    expect(out).toMatchObject({ type: "transaction", transaction: "metric/[key]", measurements: { ttid: { value: 300 } } });
+    expect(out).not.toHaveProperty("request");
+    expect(out).not.toHaveProperty("extra");
+    expect(out).not.toHaveProperty("breadcrumbs");
+    expect(out.contexts).not.toHaveProperty("culture");
+    expect(out.contexts?.trace?.data).toEqual({ "route.name": "metric/[key]" });
+    expect(out.spans?.[0].data).toEqual({});
+  });
+
+  it("scrubs a log's message and attributes", async () => {
+    const t = await load();
+    const entry = t.scrubLog({
+      level: "info", message: "sync.read 4810 records from https://x.io?key=AIzaSyFAKEKEY1234567890",
+      attributes: { records: 4810, owner: "app", url: "https://x.io", note: "HRV 81.1 ms", "sentry.environment": "production", wrapped: { value: 12, type: "integer" } },
+    } as never);
+    expect(entry.message).toBe("sync.read # records from /");
+    expect(entry.attributes).toEqual({ records: 4810, owner: "app", "sentry.environment": "production", wrapped: { value: 12, type: "integer" } });
+  });
+});
+

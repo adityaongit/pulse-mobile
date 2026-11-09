@@ -37,7 +37,7 @@
     "checkForUpdatesHint": "Une fois par jour, Pulse demande à GitHub si une version plus récente est sortie. Rien sur toi n’est envoyé.",
     "privacy": "Confidentialité",
     "errorReports": "Envoyer les rapports d’erreur",
-    "errorReportsHint": "Quand Pulse plante ou qu’une synchronisation échoue, il envoie un court rapport : l’erreur, le modèle du téléphone et la version de Pulse. Jamais tes données de santé. Le désactiver arrête les rapports tout de suite.",
+    "errorReportsHint": "Quand Pulse plante ou qu’une synchronisation échoue, il envoie un court rapport : l’erreur, le modèle du téléphone et la version de Pulse. Certaines sessions envoient aussi la durée des synchronisations et des écrans. Jamais tes données de santé. Le désactiver arrête les rapports tout de suite.",
     "version": "Pulse {{version}}",
     "isOut": "{{version}} est disponible",
     "checking": "Recherche…",
