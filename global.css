@@ -160,6 +160,19 @@
   --input-fill: rgb(16 21 24 / 0);
   --alert-ring: rgb(242 0 36 / 0.6);
   --warning-ring: rgb(217 121 0 / 0.5);
+  /* Blood pressure: the systolic and diastolic series and the five AHA/ACC category dots (normal, elevated, stage 1,
+     stage 2, crisis), a severity scale of its own. Same in both themes, as the card drew them before they were tokens. */
+  --bp-systolic: 244 63 94;
+  --bp-diastolic: 59 130 246;
+  --bp-normal: 16 185 129;
+  --bp-elevated: 245 158 11;
+  --bp-stage-1: 249 115 22;
+  --bp-stage-2: 239 68 68;
+  --bp-crisis: 220 38 38;
+  /* The settings switch's thumb: white on either track, in both themes. */
+  --switch-thumb: 255 255 255;
+  /* The white ground a third-party mark needs (Health Connect's guidelines ask for white or very light grey). */
+  --brand-tile: 255 255 255;
 
   /* Not colours: box shadows in the web's syntax and the orb's scalars. tailwind.config.js skips them; palette.ts holds
      them (shadows as React Native boxShadow strings) and src/ui/shadow.ts applies the shadows. */
@@ -315,6 +328,15 @@
   --input-fill: rgb(255 255 255 / 0.045);
   --alert-ring: rgb(255 0 38 / 0.6);
   --warning-ring: rgb(255 167 34 / 0.5);
+  --bp-systolic: 244 63 94;
+  --bp-diastolic: 59 130 246;
+  --bp-normal: 16 185 129;
+  --bp-elevated: 245 158 11;
+  --bp-stage-1: 249 115 22;
+  --bp-stage-2: 239 68 68;
+  --bp-crisis: 220 38 38;
+  --switch-thumb: 255 255 255;
+  --brand-tile: 255 255 255;
 
   --card-shadow: 0 0 #0000;
   --overlay-shadow: 0 8px 24px rgb(0 0 0 / 0.45);

@@ -216,11 +216,16 @@ internal class WidgetArtwork(base: Context, night: Boolean) {
 
   companion object {
     val RINGS = setOf("sleep", "recovery", "strain")
-    /** src/widgets/model.ts sends light-theme hex colours; each is a palette token with its own dark value. */
+    /**
+     * src/widgets/model.ts sends light-theme hex colours (src/ui/palette.ts LIGHT) as names; each maps to the colour resource
+     * of that token, whose values-night copy holds the dark value. src/widgets/model.test.ts fails if model.ts sends one
+     * this map lacks. The last two are the red and sleep that older cached snapshots still carry.
+     */
     private val DATA = mapOf(
-      "#12c805" to R.color.pulse_widget_green, "#e5c300" to R.color.pulse_widget_yellow, "#ff0026" to R.color.pulse_widget_red,
-      "#0093e7" to R.color.pulse_widget_strain, "#7ba1bb" to R.color.pulse_widget_sleep, "#00b377" to R.color.pulse_widget_optimal,
+      "#12c805" to R.color.pulse_widget_green, "#e5c300" to R.color.pulse_widget_yellow, "#f20024" to R.color.pulse_widget_red,
+      "#0093e7" to R.color.pulse_widget_strain, "#6690ad" to R.color.pulse_widget_sleep, "#00b377" to R.color.pulse_widget_optimal,
       "#d97900" to R.color.pulse_widget_warning, "#3f92d3" to R.color.pulse_widget_blue,
+      "#ff0026" to R.color.pulse_widget_red, "#7ba1bb" to R.color.pulse_widget_sleep,
     )
   }
 }

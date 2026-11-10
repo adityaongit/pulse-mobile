@@ -139,6 +139,15 @@ export const LIGHT = {
   "input-fill": "rgba(16, 21, 24, 0)",
   "alert-ring": "rgba(242, 0, 36, 0.6)",
   "warning-ring": "rgba(217, 121, 0, 0.5)",
+  "bp-systolic": "#f43f5e",
+  "bp-diastolic": "#3b82f6",
+  "bp-normal": "#10b981",
+  "bp-elevated": "#f59e0b",
+  "bp-stage-1": "#f97316",
+  "bp-stage-2": "#ef4444",
+  "bp-crisis": "#dc2626",
+  "switch-thumb": "#ffffff",
+  "brand-tile": "#ffffff",
 } as const;
 
 export const DARK = {
@@ -278,6 +287,15 @@ export const DARK = {
   "input-fill": "rgba(255, 255, 255, 0.045)",
   "alert-ring": "rgba(255, 0, 38, 0.6)",
   "warning-ring": "rgba(255, 167, 34, 0.5)",
+  "bp-systolic": "#f43f5e",
+  "bp-diastolic": "#3b82f6",
+  "bp-normal": "#10b981",
+  "bp-elevated": "#f59e0b",
+  "bp-stage-1": "#f97316",
+  "bp-stage-2": "#ef4444",
+  "bp-crisis": "#dc2626",
+  "switch-thumb": "#ffffff",
+  "brand-tile": "#ffffff",
 } as const;
 
 /**

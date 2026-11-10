@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { MemoryStore } from "@/data/memory";
 import type { Profile } from "@/data/types";
@@ -11,8 +12,14 @@ describe("widget projection", () => {
     expect(widgetMetric("steps", { value: 0, reason: null, provisional: false })).toMatchObject({ value: 0, display: "0", reason: null });
     expect(widgetMetric("strain", { value: 129, reason: null, provisional: true })).toMatchObject({ value: 129, display: "129", progress: 100, provisional: true });
   });
-  it.each([[33, "#ff0026"], [34, "#e5c300"], [66, "#e5c300"], [67, "#12c805"]] as const)("matches the recovery dial color at %s", (value, color) => {
+  it.each([[33, "#f20024"], [34, "#e5c300"], [66, "#e5c300"], [67, "#12c805"]] as const)("matches the recovery dial color at %s", (value, color) => {
     expect(widgetMetric("recovery", { value, reason: null, provisional: false }).color).toBe(color);
+  });
+  it("sends only colours the native widget maps to a theme resource", () => {
+    const kotlin = readFileSync("modules/pulse-widgets/android/src/main/java/app/pulse/widgets/WidgetArtwork.kt", "utf8");
+    const mapped = new Set([...kotlin.matchAll(/"(#[0-9a-f]{6})" to R\.color\./g)].map((m) => m[1]));
+    const sent = [...WIDGET_KEYS.map((key) => widgetMetric(key, { value: 50, reason: null, provisional: false }).color), ...[0, 50, 100].map((value) => widgetMetric("recovery", { value, reason: null, provisional: false }).color)];
+    for (const color of sent) expect(mapped).toContain(color);
   });
   it.each([null, NaN, Infinity, -Infinity])("does not fabricate a number for %s", (value) => {
     expect(widgetMetric("recovery", { value, reason: "calibrating", provisional: true, nightsLeft: 3 })).toMatchObject({ value: null, display: "--", progress: null, reason: "Calibrating", provisional: true });

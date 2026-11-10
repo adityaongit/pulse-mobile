@@ -7,9 +7,9 @@ import { useTheme } from "./theme";
 const ICON = require("../../assets/images/health-connect.png");
 
 export function HealthConnectMark({ size = 20 }: { size?: number }) {
-  const { scheme } = useTheme();
+  const { scheme, c } = useTheme();
   const image = <Image source={ICON} style={{ width: size, height: size }} accessibilityIgnoresInvertColors />;
   if (scheme !== "dark") return image;
   const pad = Math.round(size * 0.18);
-  return <View style={{ padding: pad, borderRadius: Math.round(size * 0.3), backgroundColor: "#ffffff" }}>{image}</View>;
+  return <View style={{ padding: pad, borderRadius: Math.round(size * 0.3), backgroundColor: c["brand-tile"] }}>{image}</View>;
 }

@@ -5,6 +5,7 @@ import { recoveryBand } from "@/lib/bands";
 import { getLocale } from "@/lib/locale";
 import { reasonCopy, type Metric } from "@/lib/reasons";
 import type { HomeVM } from "@/queries/types";
+import { LIGHT } from "@/ui/palette";
 
 export const WIDGET_KEYS = ["recovery", "strain", "sleep", "steps", "calories", "hrv", "rhr", "stress", "heart_rate"] as const;
 export type WidgetKey = (typeof WIDGET_KEYS)[number];
@@ -34,20 +35,22 @@ export type WidgetSnapshot = {
   labels: Record<"demo" | "updated" | "stale" | "open" | "today" | "provisional" | "reading" | "oldReading" | "noReading" | "heartWindow", string>;
 };
 
+// Each colour is a LIGHT palette value: WidgetArtwork.kt reads it as the name of a widget colour resource (res/values and
+// res/values-night, which scripts/widgets.test.ts keeps equal to LIGHT and DARK), so the widget draws the active theme's token.
 const SPEC: Record<WidgetKey, { unit: string; href: string; color: string; percent?: true; decimal?: true }> = {
-  recovery: { unit: "%", href: "pulse://recovery", color: "#12c805", percent: true },
-  strain: { unit: "%", href: "pulse://strain", color: "#0093e7", percent: true },
-  sleep: { unit: "%", href: "pulse://sleep", color: "#7ba1bb", percent: true },
-  steps: { unit: "", href: "pulse://metric/steps", color: "#00b377" },
-  calories: { unit: "kcal", href: "pulse://metric/calories", color: "#d97900" },
-  hrv: { unit: "ms", href: "pulse://metric/hrv", color: "#12c805", decimal: true },
-  rhr: { unit: "bpm", href: "pulse://metric/rhr", color: "#3f92d3" },
-  heart_rate: { unit: "bpm", href: "pulse://health/heart-rate", color: "#ff0026" },
-  stress: { unit: "", href: "pulse://health/stress", color: "#d97900" },
+  recovery: { unit: "%", href: "pulse://recovery", color: LIGHT["recovery-green"], percent: true },
+  strain: { unit: "%", href: "pulse://strain", color: LIGHT.strain, percent: true },
+  sleep: { unit: "%", href: "pulse://sleep", color: LIGHT.sleep, percent: true },
+  steps: { unit: "", href: "pulse://metric/steps", color: LIGHT.optimal },
+  calories: { unit: "kcal", href: "pulse://metric/calories", color: LIGHT.warning },
+  hrv: { unit: "ms", href: "pulse://metric/hrv", color: LIGHT["recovery-green"], decimal: true },
+  rhr: { unit: "bpm", href: "pulse://metric/rhr", color: LIGHT["recovery-blue"] },
+  heart_rate: { unit: "bpm", href: "pulse://health/heart-rate", color: LIGHT["recovery-red"] },
+  stress: { unit: "", href: "pulse://health/stress", color: LIGHT.warning },
 };
 
-/** Light-theme hex per Recovery band; WidgetArtwork maps each to the active theme's token. */
-const RECOVERY_COLOR = { green: SPEC.recovery.color, yellow: "#e5c300", red: "#ff0026" } as const;
+/** Light-theme colour per Recovery band; WidgetArtwork maps each to the active theme's token. */
+const RECOVERY_COLOR = { green: LIGHT["recovery-green"], yellow: LIGHT["recovery-yellow"], red: LIGHT["recovery-red"] } as const;
 
 export function widgetMetric(key: WidgetKey, metric: Metric<number>): WidgetMetric {
   const spec = SPEC[key];

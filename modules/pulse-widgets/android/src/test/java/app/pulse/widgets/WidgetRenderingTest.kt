@@ -25,7 +25,7 @@ class WidgetRenderingTest {
   private val keys = listOf("sleep", "recovery", "strain", "steps", "calories", "hrv")
   private fun snapshot(): JSONObject {
     val metrics = JSONArray()
-    listOf(Triple("sleep", 87, "#7ba1bb"), Triple("recovery", 72, "#12c805"), Triple("strain", 58, "#0093e7"), Triple("steps", 4200, "#00b377"), Triple("calories", 1800, "#d97900"), Triple("hrv", 42, "#12c805")).forEach { (key, value, color) ->
+    listOf(Triple("sleep", 87, "#6690ad"), Triple("recovery", 72, "#12c805"), Triple("strain", 58, "#0093e7"), Triple("steps", 4200, "#00b377"), Triple("calories", 1800, "#d97900"), Triple("hrv", 42, "#12c805")).forEach { (key, value, color) ->
       metrics.put(JSONObject().put("key", key).put("label", key).put("value", value).put("display", java.text.NumberFormat.getIntegerInstance(java.util.Locale.US).format(value)).put("unit", if (key in listOf("sleep", "recovery", "strain")) "%" else if (key == "hrv") "ms" else if (key == "calories") "kcal" else "").put("progress", if (value < 100) value else JSONObject.NULL).put("color", color).put("href", "pulse://$key"))
     }
     metrics.put(JSONObject().put("key", "heart_rate").put("label", "Heart rate").put("value", 68).put("display", "68").put("unit", "bpm").put("observedAt", now - 480).put("trend", JSONArray((0..29).map { if (it in 12..14) JSONObject.NULL else 65 + it % 8 })))

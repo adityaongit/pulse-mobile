@@ -14,7 +14,7 @@ import { Icon } from "@/ui/Icon";
 import { Button } from "@/ui/Button";
 import { Text } from "@/ui/Text";
 import { usePanelStyle } from "@/ui/Panel";
-import { ring as ringLayer } from "@/ui/shadow";
+import { ring as ringLayer, useShadow } from "@/ui/shadow";
 import { useTheme } from "@/ui/theme";
 import { Press } from "@/ui/Press";
 import { MenuPanel, useMenu } from "@/ui/Menu";
@@ -240,11 +240,12 @@ export function SmallButton({ label, accessibilityLabel, onPress, icon, solid, c
 }
 
 /**
- * A native-style switch (42 × 26 track, 22 px white thumb with a soft shadow), as WHOOP draws theirs, a size down from the platform's:
+ * A native-style switch (42 × 26 track, 22 px thumb in switch-thumb with the thumb shadow), as WHOOP draws theirs, a size down from the platform's:
  * the web's 32 × 18 shadcn switch read as a toy on a phone (owner's call). On, the track is the optimal green.
  */
 export function Switch({ value, onValueChange, disabled, label }: { value: boolean; onValueChange: (v: boolean) => void; disabled?: boolean; label: string }) {
   const { c } = useTheme();
+  const shadow = useShadow();
   const on = useDerivedValue(() => withTiming(value ? 1 : 0, { duration: DURATION.fast }), [value]);
   const track = useAnimatedStyle(() => ({ backgroundColor: interpolateColor(on.value, [0, 1], [c.input, c.optimal]) }));
   const thumb = useAnimatedStyle(() => ({ transform: [{ translateX: on.value * 16 }] }));
@@ -262,7 +263,7 @@ export function Switch({ value, onValueChange, disabled, label }: { value: boole
       className={cn(disabled && "opacity-disabled")}
     >
       <Animated.View style={[{ width: 42, height: 26, borderRadius: 13, padding: 2, justifyContent: "center" }, track]}>
-        <Animated.View style={[{ width: 22, height: 22, borderRadius: 11, backgroundColor: "#ffffff", boxShadow: "0 1px 3px rgba(0, 0, 0, 0.25)" }, thumb]} />
+        <Animated.View style={[{ width: 22, height: 22, borderRadius: 11, backgroundColor: c["switch-thumb"], boxShadow: shadow("thumb") }, thumb]} />
       </Animated.View>
     </Pressable>
   );

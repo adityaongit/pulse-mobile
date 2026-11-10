@@ -14,6 +14,7 @@ import { StatusChip, ValueUnit } from "@/ui/metrics/primitives";
 import { push } from "@/ui/navigate";
 import { Press } from "@/ui/Press";
 import { Text } from "@/ui/Text";
+import type { TokenName } from "@/ui/palette";
 import { useTheme } from "@/ui/theme";
 import { vitalHref } from "./vitals";
 
@@ -25,12 +26,12 @@ const CATEGORY_TONE: Record<BloodPressureCategory, "optimal" | "warning" | "aler
   crisis: "alert",
 };
 
-const CATEGORY_DOT: Record<BloodPressureCategory, string> = {
-  normal: "#10b981",
-  elevated: "#f59e0b",
-  stage1: "#f97316",
-  stage2: "#ef4444",
-  crisis: "#dc2626",
+const CATEGORY_DOT: Record<BloodPressureCategory, TokenName> = {
+  normal: "bp-normal",
+  elevated: "bp-elevated",
+  stage1: "bp-stage-1",
+  stage2: "bp-stage-2",
+  crisis: "bp-crisis",
 };
 
 const STAGE_KEYS: BloodPressureCategory[] = ["normal", "elevated", "stage1", "stage2", "crisis"];
@@ -97,7 +98,7 @@ function TrendPlot({ history }: { history: BloodPressurePoint[] }) {
                 )}
                 style="stroke"
                 strokeWidth={2}
-                color="#f43f5e"
+                color={c["bp-systolic"]}
               />
               {/* Diastolic line (blue) */}
               <Path
@@ -106,7 +107,7 @@ function TrendPlot({ history }: { history: BloodPressurePoint[] }) {
                 )}
                 style="stroke"
                 strokeWidth={2}
-                color="#3b82f6"
+                color={c["bp-diastolic"]}
               />
 
               {/* Data point dots */}
@@ -115,13 +116,13 @@ function TrendPlot({ history }: { history: BloodPressurePoint[] }) {
                 const cx = getX(i);
                 const cySys = scaleY(p.systolic);
                 const cyDia = scaleY(p.diastolic);
-                const dotColor = CATEGORY_DOT[p.category];
+                const dotColor = c[CATEGORY_DOT[p.category]];
                 return (
                   <Group key={p.day}>
                     <Circle cx={cx} cy={cySys} r={4} color={dotColor} />
-                    <Circle cx={cx} cy={cySys} r={2} color="#ffffff" />
-                    <Circle cx={cx} cy={cyDia} r={4} color="#3b82f6" />
-                    <Circle cx={cx} cy={cyDia} r={2} color="#ffffff" />
+                    <Circle cx={cx} cy={cySys} r={2} color={c.card} />
+                    <Circle cx={cx} cy={cyDia} r={4} color={c["bp-diastolic"]} />
+                    <Circle cx={cx} cy={cyDia} r={2} color={c.card} />
                   </Group>
                 );
               })}
@@ -157,6 +158,7 @@ export function BloodPressureCard({
   today: string;
 }) {
   const { t } = useTranslation(["health", "common"]);
+  const { c } = useTheme();
   const [showGuidelines, setShowGuidelines] = useState(false);
   const latest = summary.latest.value;
   const categoryLabel = (cat: BloodPressureCategory) => t(`bloodPressure.category.${cat}`);
@@ -258,13 +260,13 @@ export function BloodPressureCard({
           </Text>
           <View className="flex-row items-center gap-3">
             <View className="flex-row items-center gap-1">
-              <View className="size-2 rounded-full bg-[#f43f5e]" />
+              <View className="size-2 rounded-full bg-bp-systolic" />
               <Text className="text-[10px] font-semibold text-muted-foreground">
                 {t("bloodPressure.systolic")}
               </Text>
             </View>
             <View className="flex-row items-center gap-1">
-              <View className="size-2 rounded-full bg-[#3b82f6]" />
+              <View className="size-2 rounded-full bg-bp-diastolic" />
               <Text className="text-[10px] font-semibold text-muted-foreground">
                 {t("bloodPressure.diastolic")}
               </Text>
@@ -298,7 +300,7 @@ export function BloodPressureCard({
               </Text>
             )}
             {summary.distribution.stage2 > 0 && (
-              <Text className="text-xs font-medium text-alert-text">
+              <Text className="text-xs font-medium text-recovery-red-text">
                 {`${summary.distribution.stage2} ${categoryLabel("stage2")}`}
               </Text>
             )}
@@ -361,7 +363,7 @@ export function BloodPressureCard({
             {STAGE_KEYS.map((cat) => (
               <View key={cat} className="flex-row items-center justify-between py-1 border-b border-border/50">
                 <View className="flex-row items-center gap-2">
-                  <View className="size-2 rounded-full" style={{ backgroundColor: CATEGORY_DOT[cat] }} />
+                  <View className="size-2 rounded-full" style={{ backgroundColor: c[CATEGORY_DOT[cat]] }} />
                   <Text className="text-xs font-semibold">
                     {cat === "crisis" ? t("bloodPressure.category.hypertensiveCrisis") : categoryLabel(cat)}
                   </Text>
