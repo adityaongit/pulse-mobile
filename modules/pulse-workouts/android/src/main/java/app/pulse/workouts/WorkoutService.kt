@@ -68,9 +68,15 @@ class WorkoutService : Service() {
     super.onCreate()
     thread = HandlerThread("PulseWorkout").apply { start() }
     worker = Handler(thread.looper)
-    val channel = NotificationChannel(WorkoutNotification.CHANNEL, getString(R.string.pulse_workout_channel), NotificationManager.IMPORTANCE_LOW)
-    channel.lockscreenVisibility = Notification.VISIBILITY_PRIVATE
-    getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
+    // Silent but not "Silent": default importance with no sound or vibration, and public on the lock screen, where it is
+    // the live workout card. A channel's settings are fixed once created, so the old private, low one is removed.
+    val manager = getSystemService(NotificationManager::class.java)
+    manager.deleteNotificationChannel(WorkoutNotification.OLD_CHANNEL)
+    val channel = NotificationChannel(WorkoutNotification.CHANNEL, getString(R.string.pulse_workout_channel), NotificationManager.IMPORTANCE_DEFAULT)
+    channel.setSound(null, null)
+    channel.enableVibration(false)
+    channel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+    manager.createNotificationChannel(channel)
   }
   override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
     val request = intent?.getStringExtra("request")

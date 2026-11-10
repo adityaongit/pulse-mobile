@@ -1,9 +1,11 @@
-import { Redirect } from "expo-router";
-import { useApp } from "@/state/app";
-import { WorkoutRecorderScreen } from "@/screens/workout/WorkoutRecorderScreen";
+import { useSyncExternalStore } from "react";
+import { Redirect, type Href } from "expo-router";
+import { View } from "react-native";
+import { workoutRecorder } from "@/live/workoutRecorder";
 
-// Keep existing notification/onboarding links working; an onboarded owner lands in the tab.
+// The notification, Strain, More and onboarding link here: a running activity opens live, otherwise Start activity.
 export default function WorkoutLink() {
-  const onboarded = useApp((s) => s.onboarded);
-  return onboarded ? <Redirect href="/(tabs)/workout" /> : <WorkoutRecorderScreen />;
+  const state = useSyncExternalStore(workoutRecorder.subscribe, workoutRecorder.getSnapshot, workoutRecorder.getSnapshot);
+  if (state.loading) return <View className="flex-1 bg-background" />;
+  return <Redirect href={(state.active ? "/workout/live" : "/workout/start") as Href} />;
 }

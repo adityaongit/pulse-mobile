@@ -20,10 +20,11 @@ class WorkoutNotificationTest {
   private fun meta(status: String = "recording", link: String = "live") = JSONObject()
     .put("id", "fixture-session").put("status", status).put("link", link).put("activeMs", 125_000)
 
-  @Test fun recordingKeepsOneOngoingPrivateNotificationWithAnActiveTimer() {
+  @Test fun recordingKeepsOneOngoingPublicNotificationWithAnActiveTimer() {
     val n = WorkoutNotification.build(ctx, meta(), 1_000_000)
     assertTrue(n.flags and Notification.FLAG_ONGOING_EVENT != 0)
-    assertEquals(Notification.VISIBILITY_PRIVATE, n.visibility)
+    assertEquals(Notification.VISIBILITY_PUBLIC, n.visibility)
+    assertNotNull(n.bigContentView)
     assertEquals(875_000L, n.`when`)
     assertTrue(n.extras.getBoolean(Notification.EXTRA_SHOW_CHRONOMETER))
     assertEquals("Recording", n.extras.getCharSequence(Notification.EXTRA_TEXT).toString())
@@ -59,5 +60,13 @@ class WorkoutNotificationTest {
     val manager = ctx.getSystemService(NotificationManager::class.java)
     manager.createNotificationChannel(NotificationChannel(WorkoutNotification.CHANNEL, "Workout recording", NotificationManager.IMPORTANCE_NONE))
     assertFalse(WorkoutNotification.enabled(ctx))
+  }
+
+  @Test fun zonesFollowTheEngine() {
+    // max 190: zones start at 95, 114, 133, 152 and 171 bpm.
+    assertEquals(0, WorkoutNotification.zoneOf(94, 190.0))
+    assertEquals(1, WorkoutNotification.zoneOf(95, 190.0))
+    assertEquals(3, WorkoutNotification.zoneOf(140, 190.0))
+    assertEquals(5, WorkoutNotification.zoneOf(171, 190.0))
   }
 }

@@ -3,12 +3,13 @@ import { useEffect, useState, type ComponentProps } from "react";
 import { View } from "react-native";
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import type { Tabs } from "expo-router";
-import { Dumbbell, HeartPulse, Menu, NotebookPen, type LucideIcon } from "lucide-react-native";
+import { HeartPulse, Menu, NotebookPen, type LucideIcon } from "lucide-react-native";
 import { alpha } from "../color";
 import { Glass } from "../Glass";
 import { haptic } from "../haptics";
 import { Gradient } from "../Gradient";
 import { HomeChart } from "../icons";
+import { LiveWorkoutBar } from "./LiveWorkoutBar";
 import { Icon } from "../Icon";
 import { Text } from "../Text";
 import { useTheme } from "../theme";
@@ -23,12 +24,11 @@ const LENS_RADIUS = GLASS_RADIUS - 4;
 
 type TabBarProps = Parameters<NonNullable<ComponentProps<typeof Tabs>["tabBar"]>>[0];
 
-// Home, Health, Workout, Journal, More. The route file of each is
-// app/(tabs)/<route>.tsx.
-export const TABS: { route: string; labelKey: "tabs.home" | "tabs.health" | "workouts:tab" | "tabs.journal" | "tabs.more"; icon: LucideIcon }[] = [
+// Home, Health, Journal, More, as WHOOP's bar (an activity starts from Home, docs/workout-tracker/whoop-ui.md). The
+// route file of each is app/(tabs)/<route>.tsx.
+export const TABS: { route: string; labelKey: "tabs.home" | "tabs.health" | "tabs.journal" | "tabs.more"; icon: LucideIcon }[] = [
   { route: "index", labelKey: "tabs.home", icon: HomeChart },
   { route: "health", labelKey: "tabs.health", icon: HeartPulse },
-  { route: "workout", labelKey: "workouts:tab", icon: Dumbbell },
   { route: "journal", labelKey: "tabs.journal", icon: NotebookPen },
   { route: "more", labelKey: "tabs.more", icon: Menu },
 ];
@@ -106,9 +106,12 @@ export function TabBar(props: TabBarProps) {
   const route = props.state.routes[props.state.index];
   const current = TABS.findIndex((t) => t.route === route?.name);
   return (
-    <View pointerEvents="box-none" className="absolute inset-x-3 flex-row justify-end gap-2" style={{ bottom }}>
-      <Bar {...props} current={current} />
-      <CheckInAction />
+    <View pointerEvents="box-none" className="absolute inset-x-3 gap-2" style={{ bottom }}>
+      <LiveWorkoutBar />
+      <View pointerEvents="box-none" className="flex-row justify-end gap-2">
+        <Bar {...props} current={current} />
+        <CheckInAction />
+      </View>
     </View>
   );
 }

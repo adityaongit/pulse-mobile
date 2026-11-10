@@ -99,6 +99,11 @@ export class LiveStrain {
     return true;
   }
 
+  /** Starts a new run: the next reading is credited nothing for the gap before it (a pause or a reconnect). */
+  restart(): void {
+    this.last = null;
+  }
+
   /** Heart-rate zone 1–5 of `bpm`, 0 below Zone 1 (the engine's zones: 50/60/70/80/90 % of max HR). */
   zoneOf(bpm: number): number {
     // The engine's zones (% of max HR), the ones the Strain screen shows: 0 below zone 1.

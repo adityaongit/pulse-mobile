@@ -1,5 +1,5 @@
 import { openDatabaseAsync, type SQLiteDatabase } from "expo-sqlite";
-import type { WorkoutStore } from "./workouts";
+import { keepHcId, type WorkoutStore } from "./workouts";
 import type { RecordedWorkout, WorkoutSample } from "@/live/workout";
 
 export class SqliteWorkoutStore implements WorkoutStore {
@@ -44,9 +44,15 @@ export class SqliteWorkoutStore implements WorkoutStore {
     return this.write((db) => db.withExclusiveTransactionAsync(async (tx) => {
       const previous = await tx.getFirstAsync<{ body: string; cursor: number }>("SELECT body,cursor FROM workout_sessions WHERE id=?", session.id);
       const old = previous ? JSON.parse(previous.body) as RecordedWorkout : null;
-      const newest = old && (old.revision > session.revision || old.seq > session.seq || (old.status === "completed" && session.status !== "completed")) ? old : session;
+      const newest = old && (old.revision > session.revision || old.seq > session.seq || (old.status === "completed" && session.status !== "completed")) ? old : keepHcId(old, session);
       await tx.runAsync("INSERT INTO workout_sessions(id,started_at,body,cursor) VALUES(?,?,?,?) ON CONFLICT(id) DO UPDATE SET body=excluded.body,cursor=excluded.cursor", session.id, session.startedAt, JSON.stringify(newest), Math.max(previous?.cursor ?? 0, cursor));
       for (const s of samples) await tx.runAsync("INSERT OR IGNORE INTO workout_samples(session_id,seq,body) VALUES(?,?,?)", session.id, s.seq, JSON.stringify(s));
+    }));
+  }
+  remove(id: string): Promise<void> {
+    return this.write((db) => db.withExclusiveTransactionAsync(async (tx) => {
+      await tx.runAsync("DELETE FROM workout_samples WHERE session_id=?", id);
+      await tx.runAsync("DELETE FROM workout_sessions WHERE id=?", id);
     }));
   }
   clear(): Promise<void> {

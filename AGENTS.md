@@ -54,7 +54,7 @@ docs/         rewrite-plan.md, plan.md, design/spec.md, learning.md, onboarding.
 
 ## Rules
 
-- **Health Connect only, Android only.** No Google sign-in, no network source, no iOS config. The app asks for Health Connect read permissions only and never writes to Health Connect.
+- **Health Connect only, Android only.** No Google sign-in, no network source, no iOS config. The app reads Health Connect and writes exactly one thing back: the exercise session of a workout recorded in Pulse (`WRITE_EXERCISE`, `saveExercise` in `src/health/connect.ts`), so it reaches Google Health and returns through the import like any other workout. It writes no other type.
 - **No auth.** No accounts, no login screen, no user ids.
 - **Owner's own name and photo are fine.** The rule against storing a Google account's email, name or picture is about Google accounts. A display name and photo the owner types or picks (Settings › Profile) stay in the profile, the photo as a file in the app's document directory; neither leaves the phone.
 - **Only `src/data` touches SQLite.** Everything else goes through the `Store` interface (`src/data/store.ts`). Tests use the in-memory store (`src/data/memory.ts`).

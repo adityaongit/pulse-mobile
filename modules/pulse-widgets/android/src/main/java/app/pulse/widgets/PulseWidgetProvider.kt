@@ -108,7 +108,6 @@ internal fun widgetViews(context: Context, id: Int, size: WidgetSize, snapshot: 
       if (now - at > 3 * 60 * 60) label("oldReading", R.string.pulse_widget_oldReading) + " · " + age(at)
       else label("reading", R.string.pulse_widget_reading) + " " + clock(at)
     }
-    metric!!.optBoolean("provisional") -> label("provisional", R.string.pulse_widget_provisional)
     else -> ""
   }
   val shown = chosen.take(size.count)

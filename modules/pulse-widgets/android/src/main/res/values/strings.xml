@@ -17,7 +17,6 @@
   <string name="pulse_widget_stale">Older sync · open Pulse</string>
   <string name="pulse_widget_open">Open Pulse and sync to see your data</string>
   <string name="pulse_widget_today">Open Pulse for today\'s data</string>
-  <string name="pulse_widget_provisional">Estimate</string>
   <string name="pulse_widget_reading">Reading</string>
   <string name="pulse_widget_oldReading">Older reading</string>
   <string name="pulse_widget_noReading">No heart-rate reading</string>

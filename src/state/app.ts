@@ -146,8 +146,8 @@ export function appStore(): Store {
 let running: Promise<void> | null = null;
 export const isSyncing = () => running !== null;
 
-/** Import (Health Connect) and score. Serialised: a second call joins the first. */
-function run(): Promise<void> {
+/** Import (Health Connect) and score; `scoreOnly` skips the import. Serialised: a second call joins the first. */
+function run(scoreOnly = false): Promise<void> {
   if (running) return running;
   const { store, profile, source } = state;
   if (!store || !profile || !source) return Promise.resolve();
@@ -158,6 +158,7 @@ function run(): Promise<void> {
         timeZone: profile.timeZone,
         owner: "app",
         waitIfLocked: true,
+        scoreOnly,
         onProgress: (step, done, total) => patch({ progress: { step, done, total } }),
       });
       if (r.warnings.length) console.log("[sync]", r.warnings.join("; "));
@@ -377,6 +378,8 @@ export async function connectHealth(): Promise<PermissionState | null> {
 
 /** Re-imports recent days and rescores (Sync now, pull to sync). Joins a run in flight. */
 export const refresh = (): Promise<void> => run();
+/** Rescores what the store holds without reading Health Connect (the dirty days only), then publishes it. */
+export const rescore = (): Promise<void> => run(true);
 
 /** Re-reads the whole history window from Health Connect (for data an app shared late), then rescores. */
 export async function reimport(): Promise<void> {

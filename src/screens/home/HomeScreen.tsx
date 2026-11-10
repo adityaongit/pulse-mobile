@@ -58,6 +58,7 @@ import { HeartRateTile } from "./HeartRateTile";
 import { HomeInsight } from "./HomeInsight";
 import { HomeSkeleton } from "./HomeSkeleton";
 import { CardButtonContent, CardButtonLink, GradientBanner, IconLink } from "./parts";
+import { RecordedActivityCard, StartActivityButton, useRecordedRows } from "./RecordedActivities";
 import { PlusKey } from "./PlusMenu";
 import { TonightPlan } from "./TonightPlan";
 import { push } from "@/ui/navigate";
@@ -135,6 +136,8 @@ function Home({ vm, timeZone }: { vm: HomePageVM; timeZone: string }) {
   const { c } = useTheme();
   const { t } = useTranslation("home");
   const dashboardKeysShown = useMemo(() => vm.keyStats.map((s) => s.key).filter(isDashboardKey), [vm.keyStats]);
+  const imported = useMemo(() => vm.activities.items.flatMap((it) => (it.kind === "activity" ? [{ start: it.start, end: it.end }] : [])), [vm.activities.items]);
+  const recorded = useRecordedRows(d, timeZone, imported);
 
   return (
     <PageShell
@@ -204,25 +207,31 @@ function Home({ vm, timeZone }: { vm: HomePageVM; timeZone: string }) {
               <View className="gap-3">
                 {vm.outlook && <DayBanner outlook={vm.outlook} />}
                 <SectionShell variant="card" title={vm.activities.title} info={vm.isToday ? false : cardInfo("Activities")} action={<IconLink href="/activities" label={t("activities.all")} icon={Maximize2} />}>
-                  {vm.activities.items.length || vm.activities.detected.length ? (
+                  {vm.activities.items.length || vm.activities.detected.length || recorded.length ? (
                     <View className="gap-1.5">
-                      {vm.activities.items.map((it) =>
-                        it.kind === "activity" ? (
-                          <ActivityCard key={it.id} name={it.name} kind={it.activityKind} strain={it.strain} start={it.start} end={it.end} distanceKm={it.distanceKm} paceS={it.paceS} href={activityHref(it.id)} timeZone={timeZone} />
-                        ) : (
-                          <SleepCard key={it.id} kind={it.kind} minutes={it.minutes} start={it.start} end={it.end} href={it.kind === "nap" ? napHref(it.id) : at("/sleep")} timeZone={timeZone} />
-                        ),
-                      )}
+                      {/* Imported and recorded activities in one list, newest first, as the import orders its own. */}
+                      {[
+                        ...vm.activities.items.map((it) => ({ start: it.start, key: it.id, node:
+                          it.kind === "activity" ? (
+                            <ActivityCard key={it.id} name={it.name} kind={it.activityKind} strain={it.strain} start={it.start} end={it.end} distanceKm={it.distanceKm} paceS={it.paceS} href={activityHref(it.id)} timeZone={timeZone} />
+                          ) : (
+                            <SleepCard key={it.id} kind={it.kind} minutes={it.minutes} start={it.start} end={it.end} href={it.kind === "nap" ? napHref(it.id) : at("/sleep")} timeZone={timeZone} />
+                          ) })),
+                        ...recorded.map((row) => ({ start: row.start, key: row.session.id, node: <RecordedActivityCard key={row.session.id} row={row} timeZone={timeZone} /> })),
+                      ].sort((a, b) => b.start - a.start).map((row) => row.node)}
                       {vm.activities.detected.map((it) => <DetectedRow key={`detected-${it.start}`} item={it} timeZone={timeZone} />)}
                     </View>
                   ) : (
                     <EmptyState body={vm.isToday ? t("activities.emptyToday") : t("activities.emptyDay")} />
                   )}
-                  {/* Workouts come from Google, so Add explains importing rather than creating a local workout. */}
-                  <View className="mt-3">
-                    <InfoCardTrigger info={ADD_ACTIVITY_INFO} activeScale={0.96} className={CARD_BUTTON}>
-                      <CardButtonContent icon={Plus} label={t("activities.add")} />
-                    </InfoCardTrigger>
+                  {/* Add explains importing from Google; Start records one live on the phone (WHOOP's pair of buttons). */}
+                  <View className="mt-3 flex-row gap-3">
+                    <View className="min-w-0 flex-1">
+                      <InfoCardTrigger info={ADD_ACTIVITY_INFO} activeScale={0.96} className={vm.isToday ? `${CARD_BUTTON} px-3` : CARD_BUTTON}>
+                        <CardButtonContent icon={Plus} label={t("activities.add")} compact={vm.isToday} />
+                      </InfoCardTrigger>
+                    </View>
+                    {vm.isToday && <StartActivityButton />}
                   </View>
                 </SectionShell>
                 {vm.isToday && (

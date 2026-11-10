@@ -1,6 +1,7 @@
 /** Personal workout records. Epochs split reconnects/pauses so missing HR is never filled across a gap. */
 import { trimp, zoneOf, zonesOf } from "@/core/engine/strain";
 import type { Metric } from "@/lib/reasons";
+import type { ActivityBody, ActivityStrainSetup } from "./activityView";
 
 export const WORKOUT_TYPES = ["walk", "run", "cycle", "strength", "hiit", "other"] as const;
 export type WorkoutType = (typeof WORKOUT_TYPES)[number];
@@ -29,7 +30,17 @@ export type RecordedWorkout = {
   lastBpm: number | null;
   lastSampleAt: number | null;
   error: string | null;
+  /** Kept from the start config (workoutStart.ts); absent on sessions recorded before the live dial. */
+  strainSetup?: ActivityStrainSetup;
+  /** The Strain Target the dial drew, or null when it was off. */
+  target?: [number, number] | null;
+  body?: ActivityBody | null;
+  /** The Health Connect id of the session Pulse wrote for it once finished (connect.ts saveExercise). */
+  hcId?: string;
 };
+
+/** Health Connect's ExerciseSessionRecord types for Pulse's workouts (androidx ExerciseSessionRecord constants). */
+export const HC_EXERCISE: Record<WorkoutType, number> = { walk: 79, run: 56, cycle: 8, strength: 70, hiit: 36, other: 0 };
 export type WorkoutSummary = {
   activeMs: number;
   observedMs: number;

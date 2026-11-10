@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The collapsed live-workout notification: the activity, the bpm and the elapsed time (docs/workout-tracker/whoop-ui.md). -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+      <TextView android:id="@+id/pulse_workout_name" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:maxLines="1" android:ellipsize="end" android:textAppearance="@android:style/TextAppearance.Material.Notification.Title" />
+      <TextView android:id="@+id/pulse_workout_bpm" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textAppearance="@android:style/TextAppearance.Material.Notification.Title" android:textStyle="bold" />
+    </LinearLayout>
+    <Chronometer android:id="@+id/pulse_workout_timer" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/pulse_workout_strain" android:textStyle="bold" android:fontFeatureSettings="tnum" android:textSize="22sp" />
+</LinearLayout>

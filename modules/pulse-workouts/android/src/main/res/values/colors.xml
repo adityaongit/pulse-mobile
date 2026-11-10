@@ -1,0 +1,9 @@
+<!-- Pulse tokens (src/ui/palette.ts LIGHT; scripts/workoutColors.test.ts keeps them equal). values-night holds DARK. -->
+<resources>
+  <color name="pulse_workout_strain">#0093e7</color>
+  <color name="pulse_workout_muted">#5a646b</color>
+  <color name="pulse_workout_sleep">#6690ad</color>
+  <color name="pulse_workout_optimal">#00b377</color>
+  <color name="pulse_workout_warning">#d97900</color>
+  <color name="pulse_workout_red">#f20024</color>
+</resources>

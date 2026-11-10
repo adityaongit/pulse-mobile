@@ -29,6 +29,7 @@
         "android.permission.health.READ_RESPIRATORY_RATE",
         "android.permission.health.READ_SKIN_TEMPERATURE",
         "android.permission.health.READ_EXERCISE",
+        "android.permission.health.WRITE_EXERCISE",
         "android.permission.health.READ_TOTAL_CALORIES_BURNED",
         "android.permission.health.READ_ACTIVE_CALORIES_BURNED",
         "android.permission.health.READ_VO2_MAX",

@@ -83,7 +83,7 @@ export function ActivityScreen() {
         backHref={strainHref}
         // The coach pill takes the foot of the screen, full width, in place of the round coach button.
         floatingAction={!coach}
-        action={<ActivityMenu strainHref={strainHref} settingsHref={HR_SETTINGS} />}
+        action={<ActivityMenu strainHref={strainHref} settingsHref={HR_SETTINGS} activityId={vm.id} />}
         hero={<Hero vm={vm} />}
         // the reference app draws the heart rate and the zone rows on the ground, not in cards [latest-activity-1].
         primary={
@@ -276,7 +276,7 @@ function BodySkeleton() {
 }
 
 /** The route's loading state (pulse's ActivitySkeleton). */
-function ActivitySkeleton() {
+export function ActivitySkeleton() {
   const { t } = useTranslation("strain")
   return (
     <DetailShell

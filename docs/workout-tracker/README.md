@@ -1,6 +1,6 @@
 # Live workout recorder
 
-Open **Workout** in the bottom bar to start a session or browse saved workouts. Existing `/workout-live` links open the tab after onboarding; the standalone recorder remains available from onboarding. The previous live Strain coach and its summaries remain available under **Open Strain coach**.
+Start a workout from Home: **Start activity** on the Today's Activities card, or the first entry in My Day's **+** menu. The screens follow WHOOP's activity flow; `whoop-ui.md` has the spec and `reference/` the screenshots it was read from. `/workout-live` (the notification, Strain, More and onboarding link there) opens the running workout, else the start screen. Recorded workouts show among the day's activities and open `/workout/[id]`, where they can be deleted. The earlier Strain Coach screen is removed: the live dial now shows the day's Strain against its target.
 
 ## Recording
 
@@ -22,11 +22,11 @@ Process interruption recovers the last committed capture as **Interrupted** and 
 
 Start/resume requests notification access and checks that the **Workout recording** channel is enabled. When blocked, Pulse explains the requirement and offers system settings; Pause and Finish remain available.
 
-One ongoing, private notification shows state, active elapsed time, Pause/Resume and Finish. The chronometer continues while recording or waiting for the sensor, freezes while paused, and is removed by Finish. Tapping it returns to Workout. Health readings are not included in notification text. Android notification settings and dismissal remain under the owner's control.
+One ongoing notification shows the activity, the live bpm, the active elapsed time and the zone bar, with Pause/Resume and Finish. It is public, so the card shows on the lock screen as WHOOP's does; the owner can hide it under Android's lock-screen notification settings. The chronometer continues while recording or waiting for the sensor, freezes while paused, and is removed by Finish. Tapping it returns to the live screen.
 
 ## Scope and validation
 
-All capture and storage are local to this installation. No account, Drive integration, GPS/pace recording or Health Connect write permission is added. Workouts do not feed daily scoring, avoiding duplicate load when Health Connect imports overlapping sessions. The scoring kernels remain unchanged. New copy is in the English `workouts` namespace and uses the existing English fallback for other languages.
+Capture and storage are local to this installation; no account, Drive integration or GPS/pace recording is added. The band shares only heart rate over Bluetooth, so the live screen shows heart rate, Strain, zones and calories, and nothing from the phone's own sensors. Steps, distance and pace come from the band's records in Health Connect: the activity page shows them for the workout's window once Google Health has synced them. On Finish, Pulse writes the workout's exercise session (type, start, end, title) to Health Connect with the `WRITE_EXERCISE` permission it asks for at Start; Google Health reads it from there. The next sync imports it like any other workout, so its page is the regular activity page, scored by the pipeline from the heart rate the band writes; the recorded copy stays only as the live trace. Deleting the workout deletes the session from Health Connect too. Without the permission the workout stays on the phone. The scoring kernels remain unchanged. New copy is in the English `workouts` namespace and uses the existing English fallback for other languages.
 
 Automated coverage includes observed-time/load gaps, session parsing and persistence, replay idempotency, native journal recovery, and notification state/actions. Native tests require Java 21 for Robolectric's Android API 36 runtime. Android sources under `android/` are generated through Expo prebuild; the native module is maintained under `modules/`.
 

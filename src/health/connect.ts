@@ -1,7 +1,10 @@
-// Thin wrapper over react-native-health-connect: availability, permissions and paginated range reads.
-// Everything Pulse needs is read-only; the Google Health app writes the Fitbit data into Health Connect.
+// Thin wrapper over react-native-health-connect: availability, permissions and paginated range reads. Pulse reads
+// everything the Google Health app writes, and writes one thing back: the exercise session of a workout recorded in
+// Pulse (saveExercise), so it reaches Google Health and comes back through the import as any other workout.
 import {
+  deleteRecordsByUuids,
   getGrantedPermissions,
+  insertRecords,
   getSdkStatus,
   initialize,
   openHealthConnectSettings,
@@ -123,6 +126,46 @@ export async function askBackgroundPermission(): Promise<PermissionState> {
 }
 
 export { openHealthConnectSettings };
+
+/** The only write permission Pulse holds: exercise sessions (workouts recorded in Pulse). */
+const writeExercise = { accessType: "write", recordType: "ExerciseSession" } as const satisfies Permission;
+
+/** Whether Pulse may write exercise sessions; asks for it first when `ask` (a screen is open to show the sheet). */
+export async function exerciseWriteAllowed(ask: boolean): Promise<boolean> {
+  try {
+    if (!(await ensureInitialized())) return false;
+    const has = async () => (await getGrantedPermissions()).some((p) => p.accessType === "write" && p.recordType === "ExerciseSession");
+    if (await has()) return true;
+    if (!ask) return false;
+    await requestPermission([writeExercise]);
+    return await has();
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Writes a recorded workout's session and returns its Health Connect id. `clientRecordId` (the workout's id) makes a
+ * retry replace the record rather than add a second one.
+ */
+export async function saveExercise(w: { clientRecordId: string; start: number; end: number; exerciseType: number; title: string }): Promise<string | null> {
+  if (!(await exerciseWriteAllowed(false))) return null;
+  const [id] = await insertRecords([{
+    recordType: "ExerciseSession",
+    startTime: new Date(w.start).toISOString(),
+    endTime: new Date(w.end).toISOString(),
+    exerciseType: w.exerciseType,
+    title: w.title,
+    metadata: { clientRecordId: w.clientRecordId, clientRecordVersion: 1 },
+  }]);
+  return id ?? null;
+}
+
+/** Deletes a session Pulse wrote (a recorded workout the owner deleted). */
+export async function deleteExercise(id: string): Promise<void> {
+  if (!(await exerciseWriteAllowed(false))) return;
+  await deleteRecordsByUuids("ExerciseSession", [id], []);
+}
 
 export type Range = { start: Date; end: Date };
 

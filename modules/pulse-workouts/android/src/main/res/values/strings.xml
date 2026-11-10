@@ -7,4 +7,5 @@
   <string name="pulse_workout_pause">Pause</string>
   <string name="pulse_workout_resume">Resume</string>
   <string name="pulse_workout_finish">Finish</string>
+  <string name="pulse_workout_zone">Zone %d</string>
 </resources>

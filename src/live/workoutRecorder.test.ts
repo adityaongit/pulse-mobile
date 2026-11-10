@@ -13,6 +13,9 @@ const fake = vi.hoisted(() => {
     /** Holds every samples() call until released, to catch a poll mid-ingest. */
     gate: null as Promise<void> | null,
     store: { workouts: null as unknown },
+    sync: vi.fn(async () => {}),
+    saveExercise: vi.fn(async (_w: { clientRecordId: string; exerciseType: number }): Promise<string | null> => "hc-1"),
+    deleteExercise: vi.fn(async (_id: string) => {}),
     native: {
       notificationsEnabled: vi.fn(async () => true),
       start: vi.fn(async (_config: unknown): Promise<string> => { throw new Error("unused"); }),
@@ -45,7 +48,10 @@ vi.mock("react-native", () => ({ AppState: { currentState: "active", addEventLis
 vi.mock("../../modules/pulse-workouts", () => ({ workoutNative: fake.native, workoutNativeAvailable: true }));
 vi.mock("@/health/ble", () => ({ liveBle: fake.ble }));
 vi.mock("@/background/notify", () => ({ askNotificationPermission: vi.fn(async () => "granted") }));
-vi.mock("@/state/app", () => ({ appStore: () => fake.store }));
+vi.mock("@/state/app", () => ({ appStore: () => fake.store, refresh: fake.sync, rescore: fake.sync }));
+vi.mock("@/health/connect", () => ({ saveExercise: fake.saveExercise, deleteExercise: fake.deleteExercise, readAll: vi.fn(async () => []) }));
+vi.mock("@/health/import", () => ({ mapExercises: () => [] }));
+vi.mock("@/i18n/config", () => ({ i18n: { t: (key: string) => key } }));
 
 const session = (id: string, patch: Partial<RecordedWorkout> = {}): RecordedWorkout => ({
   schemaVersion: 1, id, type: "run", status: "recording", startedAt: 1_000, endedAt: null, updatedAt: 1_000, activeMs: 0,
@@ -181,5 +187,34 @@ describe("WorkoutRecorder", () => {
     expect(r.getSnapshot().active).toBeNull();
     expect(r.getSnapshot().viewed?.status).toBe("completed");
     expect(r.getSnapshot().error).toBeNull();
+  });
+
+  it("saves a finished workout to Health Connect once, keeps its id and syncs", async () => {
+    put(session("live"), 2);
+    fake.activeId = "live";
+    const r = await recorder();
+    await r.refresh();
+    fake.native.command.mockImplementationOnce(async (id) => {
+      const s = fake.journal.get(id)!;
+      s.meta = { ...s.meta, status: "completed", revision: 3, endedAt: 5_000 };
+      fake.activeId = null;
+      return JSON.stringify(s.meta);
+    });
+    await r.command("finish");
+    expect(fake.saveExercise).toHaveBeenCalledTimes(1);
+    expect(fake.saveExercise.mock.calls[0][0]).toMatchObject({ clientRecordId: "live" });
+    expect((await (fake.store.workouts as MemoryWorkoutStore).get("live"))?.hcId).toBe("hc-1");
+    expect(fake.sync).toHaveBeenCalled();
+    await r.refresh();
+    expect(fake.saveExercise).toHaveBeenCalledTimes(1);
+  });
+
+  it("deletes the Health Connect copy with the workout", async () => {
+    const store = fake.store.workouts as MemoryWorkoutStore;
+    await store.ingest({ ...session("done"), status: "completed", endedAt: 5_000, hcId: "hc-9" } as RecordedWorkout, [], 0);
+    const r = await recorder();
+    await r.discard("done");
+    expect(fake.deleteExercise).toHaveBeenCalledWith("hc-9");
+    expect(await store.get("done")).toBeNull();
   });
 });

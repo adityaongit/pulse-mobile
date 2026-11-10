@@ -29,6 +29,8 @@ export type RunSyncOptions = {
   onProgress?: (step: string, done: number, total: number) => void;
   /** Wait for the other owner's run to end instead of skipping (the app does; a background task's window is short). */
   waitIfLocked?: boolean;
+  /** Score only, skipping the Health Connect read: a write the app made itself (a finished workout) is already stored. */
+  scoreOnly?: boolean;
 };
 
 export type RunSyncResult = {
@@ -108,7 +110,7 @@ async function runSteps(store: Store, profile: Profile, source: Source, opts: Ru
   try {
     // A reset in another runtime must invalidate this run even if the person reconnects to the same source.
     const epoch = await Promise.resolve().then(widgetEpoch).catch(() => null);
-    if (source === "health_connect") {
+    if (source === "health_connect" && !opts.scoreOnly) {
       const t0 = Date.now();
       const r = await timed(`sync-health-connect (${opts.owner})`, () => syncHealthConnect(store, { timeZone: opts.timeZone, onProgress: opts.onProgress })).catch((e: unknown) => {
         void reportError("sync.failed", e, { owner: opts.owner });

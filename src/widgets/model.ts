@@ -32,7 +32,7 @@ export type WidgetSnapshot = {
   lastSyncTs: number | null;
   source: "health_connect" | "demo";
   metrics: WidgetMetric[];
-  labels: Record<"demo" | "updated" | "stale" | "open" | "today" | "provisional" | "reading" | "oldReading" | "noReading" | "heartWindow", string>;
+  labels: Record<"demo" | "updated" | "stale" | "open" | "today" | "reading" | "oldReading" | "noReading" | "heartWindow", string>;
 };
 
 // Each colour is a LIGHT palette value: WidgetArtwork.kt reads it as the name of a widget colour resource (res/values and
@@ -97,7 +97,6 @@ export function buildWidgetSnapshot(home: HomeVM, meta: Pick<WidgetSnapshot, "ti
       stale: i18n.t("widgets:state.stale"),
       open: i18n.t("widgets:state.open"),
       today: i18n.t("widgets:state.today"),
-      provisional: i18n.t("widgets:state.provisional"),
     },
   };
 }
