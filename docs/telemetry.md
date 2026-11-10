@@ -117,7 +117,7 @@ also a row under Settings › App › Privacy, beside a switch that turns the sh
 
 ```mermaid
 flowchart LR
-  A[Accelerometer 10 Hz<br/>app in front, reports on, shake on] --> B{3 jolts past 2.5 g<br/>within 1 s?}
+  A[Accelerometer 20 Hz<br/>app in front, reports on, shake on] --> B{3/4 of readings past 1.33 g<br/>over 0.5 s?}
   B -- no --> A
   B -- yes --> C{onboarding, report page<br/>or a workout recording?}
   C -- yes --> A
@@ -125,12 +125,15 @@ flowchart LR
   D -- Send --> E[sendFeedback: Sentry feedback]
 ```
 
-- The detector (`src/lib/shake.ts`) is pure and tested. The listener (`ShakeToReport.tsx`) runs only while the app is in
+- The detector (`src/lib/shake.ts`) follows Square's Seismic: at least 4 readings in the last half second, three
+  quarters of them past 1.33 g. A shake keeps that up; a step's spike does not. It is pure and tested. The listener (`ShakeToReport.tsx`) runs only while the app is in
   front and both switches are on, so no sensor runs in the background. It ignores shakes during onboarding, on the
   report page and while a workout records, where running shakes the phone.
 - What goes: the words the person typed (up to 4,000 characters), the route they shook on as the `screen` tag, the
   install id and the device, OS and app context. Feedback events skip `beforeSend`, and nothing else is attached: no
   screenshot (the screens show health data), no breadcrumbs, no logs.
 - The accelerometer is `expo-sensors`. Its manifest asks for `ACTIVITY_RECOGNITION` (for its pedometer), which Pulse
-  does not use, so `app.json` blocks it.
+  does not use, so `app.json` blocks it. On Android 12+ it reads only 5 times a second unless the app declares
+  `HIGH_SAMPLING_RATE_SENSORS` (an install-time permission, no prompt); too slow to catch a shake, so `app.json` declares
+  it and the listener asks for 20 Hz.
 - Sentry's own shake option (`enableShakeToReport`) needs SDK 8; Expo SDK 57 pins 7.11, so Pulse detects the shake.

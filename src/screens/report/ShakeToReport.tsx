@@ -1,5 +1,5 @@
 // Shake to report (docs/telemetry.md § Shake to report): while the app is in front, telemetry is on and the switch in
-// Settings › App › Privacy is on, the accelerometer listens at 10 Hz and a shake opens the report page. Off otherwise,
+// Settings › App › Privacy is on, the accelerometer listens at 20 Hz and a shake opens the report page. Off otherwise,
 // so no sensor runs in the background. Never during onboarding, on the report page itself, or while a workout records
 // (running shakes the phone).
 import { useEffect, useRef, useState } from "react";
@@ -27,7 +27,7 @@ export function ShakeToReport() {
   useEffect(() => {
     if (!active || !enabled) return;
     const shake = shakeDetector();
-    Accelerometer.setUpdateInterval(100);
+    Accelerometer.setUpdateInterval(50);
     const sub = Accelerometer.addListener(({ x, y, z }) => {
       if (!shake(Date.now(), x, y, z)) return;
       const from = where.current;

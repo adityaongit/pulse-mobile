@@ -1,20 +1,22 @@
 import { describe, expect, it } from "vitest";
 import { COOLDOWN_MS, shakeDetector } from "./shake";
 
+/** Readings at 20 Hz from `from` ms: `g(i)` gives the i-th magnitude, along x. */
+const feed = (shake: ReturnType<typeof shakeDetector>, from: number, n: number, g: (i: number) => number) =>
+  Array.from({ length: n }, (_, i) => shake(from + i * 50, g(i), 0, 0));
+
 describe("shakeDetector", () => {
-  it("fires on three hard jolts within a second, then rests", () => {
+  it("fires once a shake keeps most readings past 1.33 g for half a second, then rests", () => {
     const shake = shakeDetector();
-    expect(shake(0, 0, 0, 1)).toBe(false); // at rest
-    expect(shake(100, 3, 0, 0)).toBe(false);
-    expect(shake(300, -3, 0, 0)).toBe(false);
-    expect(shake(500, 3, 0, 0)).toBe(true);
-    expect([700, 900, 1100].map((t) => shake(t, 3, 0, 0))).toEqual([false, false, false]); // cooling down
-    expect([COOLDOWN_MS + 600, COOLDOWN_MS + 700, COOLDOWN_MS + 800].map((t) => shake(t, 0, 3, 0))).toEqual([false, false, true]);
+    expect(feed(shake, 0, 10, () => 1).some(Boolean)).toBe(false); // at rest
+    const hits = feed(shake, 1000, 40, (i) => (i % 4 === 3 ? 1.1 : 2)); // two seconds of shaking
+    expect(hits.indexOf(true)).toBe(3);
+    expect(hits.filter(Boolean)).toHaveLength(1); // cooling down
+    expect(feed(shake, 1000 + COOLDOWN_MS + 500, 6, () => 2).some(Boolean)).toBe(true);
   });
 
-  it("ignores walking and jolts spread over more than a second", () => {
+  it("ignores walking: a spike a step, never three quarters of the readings", () => {
     const shake = shakeDetector();
-    expect(Array.from({ length: 50 }, (_, i) => shake(i * 100, 0.4, 0.3, 1.6)).some(Boolean)).toBe(false);
-    expect([0, 600, 1200, 1800].map((t) => shake(t, 3, 0, 0)).some(Boolean)).toBe(false);
+    expect(feed(shake, 0, 200, (i) => (i % 10 < 2 ? 1.6 : 1)).some(Boolean)).toBe(false);
   });
 });

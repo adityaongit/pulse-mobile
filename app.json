@@ -48,7 +48,8 @@
         "android.permission.health.READ_OVULATION_TEST",
         "android.permission.health.READ_HEALTH_DATA_IN_BACKGROUND",
         "android.permission.POST_NOTIFICATIONS",
-        "android.permission.REQUEST_INSTALL_PACKAGES"
+        "android.permission.REQUEST_INSTALL_PACKAGES",
+        "android.permission.HIGH_SAMPLING_RATE_SENSORS"
       ],
       "blockedPermissions": [
         "android.permission.ACTIVITY_RECOGNITION",
