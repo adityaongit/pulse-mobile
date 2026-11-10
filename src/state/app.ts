@@ -144,10 +144,16 @@ export function appStore(): Store {
 // ── The run ─────────────────────────────────────────────────────────────────
 
 let running: Promise<void> | null = null;
+/** Whether the run under way skips the import (a rescore after a finished workout). */
+let runningScoreOnly = false;
 export const isSyncing = () => running !== null;
 
-/** Import (Health Connect) and score; `scoreOnly` skips the import. Serialised: a second call joins the first. */
+/**
+ * Import (Health Connect) and score; `scoreOnly` skips the import. Serialised: a second call joins the first, except a
+ * full run asked for during a score-only one, which follows it (joining would skip the import it asked for).
+ */
 function run(scoreOnly = false): Promise<void> {
+  if (running && runningScoreOnly && !scoreOnly) return running.catch(() => {}).then(() => run(false));
   if (running) return running;
   const { store, profile, source } = state;
   if (!store || !profile || !source) return Promise.resolve();
@@ -178,6 +184,7 @@ function run(scoreOnly = false): Promise<void> {
     }
   })();
   running = job;
+  runningScoreOnly = scoreOnly;
   return job;
 }
 

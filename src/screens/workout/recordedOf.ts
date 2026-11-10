@@ -1,5 +1,5 @@
 // The workout Pulse recorded behind an activity it saved to Health Connect and imported back: found by the Health
-// Connect id the recording keeps. The activity page uses it for the route card and the menu's Delete.
+// Connect id the recording keeps. The activity page's menu uses it for Delete.
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { appStore } from "@/state/app";
 import { workoutRecorder } from "@/live/workoutRecorder";

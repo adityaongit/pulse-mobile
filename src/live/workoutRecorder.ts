@@ -1,9 +1,9 @@
 import { AppState } from "react-native";
 import { i18n } from "@/i18n/config";
-import { appStore, refresh as syncNow, rescore } from "@/state/app";
-import { mapExercises } from "@/health/import";
+import { appStore, isSyncing, refresh as syncNow, rescore } from "@/state/app";
+import { mapExercises, MIN_EXERCISE_SEC } from "@/health/import";
 import { localDay } from "@/lib/time";
-import { deleteExercise, readAll, saveExercise } from "@/health/connect";
+import { deleteExercise, exerciseWriteAllowed, readAll, saveExercise } from "@/health/connect";
 import { liveBle } from "@/health/ble";
 import { askNotificationPermission } from "@/background/notify";
 import { errorKind, report, reportError } from "@/lib/telemetry";
@@ -24,14 +24,18 @@ class WorkoutRecorder {
   private selectedId: string | null = null;
   private activeSamples = new Map<number, WorkoutSample>();
   private timer: ReturnType<typeof setInterval> | null = null;
+  /** Workouts being discarded: never saved to Health Connect, even when the discard finishes a running one first. */
+  private discarding = new Set<string>();
+  /** Workouts being saved to Health Connect, so a retry never runs beside the first attempt. */
+  private exporting = new Set<string>();
   getSnapshot = () => this.state;
   subscribe = (fn: () => void) => { this.listeners.add(fn); return () => this.listeners.delete(fn); };
   private patch(patch: Partial<State>) { this.state = { ...this.state, ...patch }; this.listeners.forEach((fn) => fn()); }
 
   mount = (): (() => void) => {
-    void this.refresh();
+    void this.refresh().then(() => this.retryExports());
     this.timer = setInterval(() => { if (AppState.currentState === "active" && (this.state.active || this.state.loading || this.state.error === "storage")) void this.refresh(); }, 1000);
-    const subscription = AppState.addEventListener("change", (status) => { if (status === "active") void this.refresh(); });
+    const subscription = AppState.addEventListener("change", (status) => { if (status === "active") void this.refresh().then(() => this.retryExports()); });
     return () => { if (this.timer) clearInterval(this.timer); this.timer = null; subscription.remove(); };
   };
   private ingest(session: RecordedWorkout): Promise<void> {
@@ -58,7 +62,8 @@ class WorkoutRecorder {
     // Acknowledging deletes the native journal, so only once every committed sample is in the Store.
     if (session.status === "completed" && drained) {
       await workoutNative.acknowledge(session.id, session.revision);
-      await this.export(session.id);
+      // Not awaited: the save, the read-back and the rescore can wait on a running sync, and Finish must not.
+      void this.export(session.id);
     }
   }
   /** Reads back the one session Pulse wrote, maps it with the import's mapper, stores it and rescores its day. */
@@ -70,29 +75,60 @@ class WorkoutRecorder {
     const tz = session.timeZone;
     await app.upsertExercises(mapExercises(records, [], [], tz));
     await app.markIntradayDirty([localDay(session.startedAt / 1000, tz)]);
+    // A run already under way may have read the dirty days before this one: joined, it would leave the day unscored.
+    const joined = isSyncing();
     await rescore();
+    if (joined) await rescore();
   }
   /**
-   * Saves a finished workout's session to Health Connect (where Google Health reads it), keeps its id, and syncs so the
-   * import brings it back as an activity like any other. Without the write permission the workout stays on the phone.
+   * Saves a finished workout's session to Health Connect (where Google Health reads it), keeps its id, and imports it
+   * back so it shows as an activity like any other. Without the write permission, or when the save fails, the workout
+   * stays on the phone and retryExports tries again when the app comes back. Never for one being discarded, and never
+   * under MIN_EXERCISE_SEC (wall clock, as the import counts): the import would drop it, leaving a session in Google
+   * Health that Pulse never shows.
    */
   private async export(id: string): Promise<void> {
-    const store = appStore().workouts;
-    const session = await store.get(id);
-    if (!session || session.status !== "completed" || session.hcId || session.endedAt === null) return;
-    const hcId = await saveExercise({
-      clientRecordId: session.id,
-      start: session.startedAt,
-      end: session.endedAt,
-      exerciseType: HC_EXERCISE[session.type],
-      title: i18n.t(`workouts:recorder.types.${session.type}`),
-    }).catch(() => null);
-    if (!hcId) return;
-    await store.ingest({ ...session, hcId }, [], await store.cursor(session.id));
-    // The activity page waits on this: store the session as the import would and score today only (about a second),
-    // instead of a whole sync (every type, then scoring). The full sync follows for the band's heart rate.
-    await this.storeImported(hcId, session).catch(() => {});
-    void syncNow().catch(() => {});
+    if (this.discarding.has(id) || this.exporting.has(id)) return;
+    this.exporting.add(id);
+    try {
+      const store = appStore().workouts;
+      const session = await store.get(id);
+      if (!session || session.status !== "completed" || session.hcId || session.endedAt === null) return;
+      if (session.endedAt - session.startedAt < MIN_EXERCISE_SEC * 1000) return;
+      const hcId = await saveExercise({
+        clientRecordId: session.id,
+        start: session.startedAt,
+        end: session.endedAt,
+        exerciseType: HC_EXERCISE[session.type],
+        title: i18n.t(`workouts:recorder.types.${session.type}`),
+      });
+      if (!hcId) return;
+      // Discarded while it was being saved: take it back out.
+      if (this.discarding.has(id) || !(await store.get(id))) { await deleteExercise(hcId).catch(() => {}); return; }
+      await store.ingest({ ...session, hcId }, [], await store.cursor(session.id));
+      // The activity page waits on this: store the session as the import would and score its day only (about a
+      // second), instead of a whole sync (every type, then scoring). The full sync follows for the band's heart rate.
+      await this.storeImported(hcId, session).catch(() => {});
+      void syncNow().catch(() => {});
+    } catch (error) {
+      void reportError("workout.export_failed", error);
+    } finally {
+      this.exporting.delete(id);
+    }
+  }
+  /**
+   * Saves the finished workouts that stayed on the phone (no permission then, or a failed save) once Pulse may write.
+   * Only ones recorded with this flow (they carry their strain setup) and long enough for the import: older recordings
+   * were never meant for Health Connect.
+   */
+  private async retryExports(): Promise<void> {
+    try {
+      const stuck = (await appStore().workouts.list(25)).filter((w) => w.status === "completed" && !w.hcId && w.strainSetup && w.endedAt !== null && w.endedAt - w.startedAt >= MIN_EXERCISE_SEC * 1000);
+      if (!stuck.length || !(await exerciseWriteAllowed(false))) return;
+      for (const w of stuck) await this.export(w.id);
+    } catch {
+      // The Store not open yet, or Health Connect unavailable: the next foreground tries again.
+    }
   }
   refresh = (): Promise<void> => {
     if (this.polling) return this.polling;
@@ -139,17 +175,19 @@ class WorkoutRecorder {
     const same = history.length === this.state.history.length && history.every((w, i) => sameRow(w, this.state.history[i]));
     this.patch({ active, viewed, samples, history: same ? this.state.history : history, loading: false, error: this.state.error === "storage" ? null : this.state.error });
   }
-  private async action(run: () => Promise<void>) {
-    if (this.state.busy) return;
+  /** Runs one command at a time; resolves true when it ran to the end, false when it failed or another was running. */
+  private async action(run: () => Promise<void>): Promise<boolean> {
+    if (this.state.busy) return false;
     this.patch({ busy: true, error: null });
-    try { if (this.polling) await this.polling; await run(); }
+    try { if (this.polling) await this.polling; await run(); return true; }
     catch (error) {
       const message = error instanceof Error ? error.message : "";
-      const known = ["nativeUnavailable", "activeWorkout", "bluetoothPermission", "bluetoothOff", "invalidSession", "notificationPermission"];
+      const known = ["nativeUnavailable", "activeWorkout", "bluetoothPermission", "bluetoothOff", "invalidSession", "notificationPermission", "healthPermission"];
       const code = known.find((c) => message.includes(c)) ?? "commandFailed";
       // The person's own states (Bluetooth off, a permission refused) are not failures worth a report.
       if (code === "commandFailed" || code === "invalidSession" || code === "nativeUnavailable") void report("workout.command_failed", { code, kind: errorKind(error) });
       this.patch({ error: code });
+      return false;
     } finally { this.patch({ busy: false }); await this.refresh(); }
   }
   /** `calibration` may carry the start setup (workoutStart.ts); every field is kept on the session. */
@@ -187,15 +225,27 @@ class WorkoutRecorder {
   });
   /**
    * Deletes a workout (Discard while it runs, Delete afterwards). A running one is finished first, so the native
-   * journal is drained and acknowledged before the row goes and a later poll cannot bring it back.
+   * journal is drained and acknowledged before the row goes and a later poll cannot bring it back; it is never saved to
+   * Health Connect on the way. One Pulse saved there is deleted there first (and from the imported activities), and when
+   * that fails (no permission, Health Connect unavailable) the workout stays, so Delete can be tried again.
    */
   discard = (id: string) => this.action(async () => {
-    if (this.state.active?.id === id) await this.ingest(parseRecordedWorkout(await workoutNative.command(id, "finish")));
-    // Also out of Health Connect (and so Google Health and the next import) when Pulse had saved it there.
-    const hcId = (await appStore().workouts.get(id))?.hcId;
-    if (hcId) { await deleteExercise(hcId); void syncNow().catch(() => {}); }
-    await appStore().workouts.remove(id);
-    if (this.selectedId === id) this.selectedId = null;
+    this.discarding.add(id);
+    try {
+      if (this.state.active?.id === id) await this.ingest(parseRecordedWorkout(await workoutNative.command(id, "finish")));
+      const app = appStore();
+      const session = await app.workouts.get(id);
+      if (session?.hcId) {
+        await deleteExercise(session.hcId);
+        await app.deleteExercises([session.hcId]);
+        await app.markIntradayDirty([localDay(session.startedAt / 1000, session.timeZone)]);
+        void rescore().catch(() => {});
+      }
+      await app.workouts.remove(id);
+      if (this.selectedId === id) this.selectedId = null;
+    } finally {
+      this.discarding.delete(id);
+    }
   });
   private async requireNotification() {
     if (await askNotificationPermission() !== "granted" || !await workoutNative.notificationsEnabled()) {

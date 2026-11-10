@@ -1,4 +1,4 @@
-// A recorded activity `/workout/[id]`: WHOOP's activity detail (reference/detail-zones.jpg, detail-stats-route.jpg) on
+// A recorded activity `/workout/[id]`: WHOOP's activity detail (reference/detail-zones.jpg) on
 // the same pieces as an imported activity (src/screens/activity/ActivityScreen.tsx): Activity Strain, the heart-rate
 // chart, time in each zone and the key statistics, with Delete in the header.
 import { useEffect, useState, useSyncExternalStore } from "react";
@@ -42,6 +42,7 @@ export function RecordedActivityScreen() {
   const timeZone = useApp((s) => s.profile?.timeZone);
   const recorder = useSyncExternalStore(workoutRecorder.subscribe, workoutRecorder.getSnapshot, workoutRecorder.getSnapshot);
   const [asking, setAsking] = useState(false);
+  const [failed, setFailed] = useState<string | null>(null);
   const [now, setNow] = useState(() => Date.now());
   // Re-checks the import wait once a second while it runs.
   useEffect(() => {
@@ -78,7 +79,11 @@ export function RecordedActivityScreen() {
   const view = activityView(samples, strainSetupOf(session), session.body ?? null);
   const summary = summarizeWorkout(session, samples);
   const maxHr = strainSetupOf(session).maxHr;
-  const remove = () => { setAsking(false); void workoutRecorder.discard(session.id).then(() => router.replace("/(tabs)" as Href)); };
+  // Home once it is gone; when the delete fails the dialog stays open with the reason.
+  const remove = () => void workoutRecorder.discard(session.id).then((ok) => {
+    if (ok) { setAsking(false); router.replace("/(tabs)" as Href); }
+    else setFailed(workoutRecorder.getSnapshot().error ?? "commandFailed");
+  });
   const end = session.endedAt ?? session.updatedAt;
   const hasHr = summary.trace.some((p) => p.bpm !== null);
   const known = (v: number | null) => ({ value: v, reason: v === null ? ("no_data" as const) : null, provisional: false });
@@ -126,7 +131,7 @@ export function RecordedActivityScreen() {
         </SectionShell>,
       ]}
     />
-    <ConfirmDialog open={asking} title={t("detail.deleteTitle")} description={t("detail.deleteBody")} confirmLabel={t("detail.delete")} pendingLabel={t("detail.deleting")} pending={recorder.busy} onCancel={() => setAsking(false)} onConfirm={remove} />
+    <ConfirmDialog open={asking} title={t("detail.deleteTitle")} description={t("detail.deleteBody")} confirmLabel={t("detail.delete")} pendingLabel={t("detail.deleting")} pending={recorder.busy} error={failed && t(`recorder.errors.${failed}`, { defaultValue: t("recorder.errors.commandFailed") })} onCancel={() => { setAsking(false); setFailed(null); }} onConfirm={remove} />
     </>
   );
 }

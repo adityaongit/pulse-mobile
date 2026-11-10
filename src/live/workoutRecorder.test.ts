@@ -12,7 +12,8 @@ const fake = vi.hoisted(() => {
     pageSize: 2,
     /** Holds every samples() call until released, to catch a poll mid-ingest. */
     gate: null as Promise<void> | null,
-    store: { workouts: null as unknown },
+    store: { workouts: null as unknown, deleteExercises: vi.fn(async (_ids: string[]) => {}), markIntradayDirty: vi.fn(async (_days: string[]) => {}), upsertExercises: vi.fn(async () => {}) },
+    writeAllowed: true,
     sync: vi.fn(async () => {}),
     saveExercise: vi.fn(async (_w: { clientRecordId: string; exerciseType: number }): Promise<string | null> => "hc-1"),
     deleteExercise: vi.fn(async (_id: string) => {}),
@@ -48,9 +49,10 @@ vi.mock("react-native", () => ({ AppState: { currentState: "active", addEventLis
 vi.mock("../../modules/pulse-workouts", () => ({ workoutNative: fake.native, workoutNativeAvailable: true }));
 vi.mock("@/health/ble", () => ({ liveBle: fake.ble }));
 vi.mock("@/background/notify", () => ({ askNotificationPermission: vi.fn(async () => "granted") }));
-vi.mock("@/state/app", () => ({ appStore: () => fake.store, refresh: fake.sync, rescore: fake.sync }));
-vi.mock("@/health/connect", () => ({ saveExercise: fake.saveExercise, deleteExercise: fake.deleteExercise, readAll: vi.fn(async () => []) }));
-vi.mock("@/health/import", () => ({ mapExercises: () => [] }));
+vi.mock("@/state/app", () => ({ appStore: () => fake.store, refresh: fake.sync, rescore: fake.sync, isSyncing: () => false }));
+vi.mock("@/health/connect", () => ({ saveExercise: fake.saveExercise, deleteExercise: fake.deleteExercise, readAll: vi.fn(async () => []), exerciseWriteAllowed: vi.fn(async () => fake.writeAllowed) }));
+vi.mock("@/health/import", () => ({ mapExercises: () => [], MIN_EXERCISE_SEC: 120 }));
+vi.mock("@/lib/telemetry", () => ({ report: vi.fn(), reportError: vi.fn(), errorKind: () => "unknown" }));
 vi.mock("@/i18n/config", () => ({ i18n: { t: (key: string) => key } }));
 
 const session = (id: string, patch: Partial<RecordedWorkout> = {}): RecordedWorkout => ({
@@ -76,6 +78,8 @@ beforeEach(() => {
   fake.activeId = null;
   fake.pageSize = 2;
   fake.gate = null;
+  fake.writeAllowed = true;
+  fake.deleteExercise.mockImplementation(async () => {});
   store = new MemoryWorkoutStore();
   fake.store.workouts = store;
 });
@@ -189,32 +193,82 @@ describe("WorkoutRecorder", () => {
     expect(r.getSnapshot().error).toBeNull();
   });
 
-  it("saves a finished workout to Health Connect once, keeps its id and syncs", async () => {
+  it("saves a finished workout to Health Connect once, keeps its id and syncs, without holding Finish", async () => {
     put(session("live"), 2);
     fake.activeId = "live";
     const r = await recorder();
     await r.refresh();
     fake.native.command.mockImplementationOnce(async (id) => {
       const s = fake.journal.get(id)!;
-      s.meta = { ...s.meta, status: "completed", revision: 3, endedAt: 5_000 };
+      s.meta = { ...s.meta, status: "completed", revision: 3, endedAt: 200_000 };
       fake.activeId = null;
       return JSON.stringify(s.meta);
     });
-    await r.command("finish");
+    expect(await r.command("finish")).toBe(true);
+    await vi.waitFor(() => expect(fake.sync).toHaveBeenCalled());
     expect(fake.saveExercise).toHaveBeenCalledTimes(1);
     expect(fake.saveExercise.mock.calls[0][0]).toMatchObject({ clientRecordId: "live" });
     expect((await (fake.store.workouts as MemoryWorkoutStore).get("live"))?.hcId).toBe("hc-1");
-    expect(fake.sync).toHaveBeenCalled();
     await r.refresh();
     expect(fake.saveExercise).toHaveBeenCalledTimes(1);
   });
 
-  it("deletes the Health Connect copy with the workout", async () => {
-    const store = fake.store.workouts as MemoryWorkoutStore;
-    await store.ingest({ ...session("done"), status: "completed", endedAt: 5_000, hcId: "hc-9" } as RecordedWorkout, [], 0);
+  it("keeps a workout under two minutes (wall clock) on the phone: the import would drop it", async () => {
+    put(session("short", { status: "completed", revision: 2, endedAt: 100_000 }), 1);
     const r = await recorder();
-    await r.discard("done");
+    await r.refresh();
+    await new Promise((res) => setTimeout(res, 0));
+    expect(fake.saveExercise).not.toHaveBeenCalled();
+  });
+
+  it("never saves a running workout it is discarding to Health Connect", async () => {
+    put(session("live"), 2);
+    fake.activeId = "live";
+    const r = await recorder();
+    await r.refresh();
+    fake.native.command.mockImplementationOnce(async (id) => {
+      const s = fake.journal.get(id)!;
+      s.meta = { ...s.meta, status: "completed", revision: 3, endedAt: 200_000 };
+      fake.activeId = null;
+      return JSON.stringify(s.meta);
+    });
+    expect(await r.discard("live")).toBe(true);
+    await new Promise((res) => setTimeout(res, 0));
+    expect(fake.saveExercise).not.toHaveBeenCalled();
+    expect(await store.get("live")).toBeNull();
+  });
+
+  it("saves a workout that stayed on the phone once Pulse may write, when the app comes back", async () => {
+    fake.writeAllowed = false;
+    fake.saveExercise.mockResolvedValueOnce(null);
+    put(session("done", { status: "completed", revision: 2, endedAt: 200_000, strainSetup: { restingHr: 55, maxHr: 190, base: null, sex: "male" } }), 1);
+    const r = await recorder();
+    r.mount()();
+    await vi.waitFor(() => expect(fake.native.acknowledge).toHaveBeenCalled());
+    await new Promise((res) => setTimeout(res, 0));
+    expect((await store.get("done"))?.hcId ?? null).toBeNull();
+    fake.writeAllowed = true;
+    r.mount()();
+    await vi.waitFor(async () => expect((await store.get("done"))?.hcId).toBe("hc-1"));
+  });
+
+  it("deletes the Health Connect copy, and the imported activity, with the workout", async () => {
+    await store.ingest({ ...session("done"), status: "completed", endedAt: 200_000, hcId: "hc-9" } as RecordedWorkout, [], 0);
+    const r = await recorder();
+    expect(await r.discard("done")).toBe(true);
     expect(fake.deleteExercise).toHaveBeenCalledWith("hc-9");
+    expect(fake.store.deleteExercises).toHaveBeenCalledWith(["hc-9"]);
+    expect(fake.store.markIntradayDirty).toHaveBeenCalledWith(["1970-01-01"]);
     expect(await store.get("done")).toBeNull();
+  });
+
+  it("keeps the workout when Health Connect cannot delete its copy, and says why", async () => {
+    await store.ingest({ ...session("done"), status: "completed", endedAt: 200_000, hcId: "hc-9" } as RecordedWorkout, [], 0);
+    fake.deleteExercise.mockRejectedValueOnce(new Error("healthPermission"));
+    const r = await recorder();
+    expect(await r.discard("done")).toBe(false);
+    expect(r.getSnapshot().error).toBe("healthPermission");
+    expect(await store.get("done")).not.toBeNull();
+    expect(fake.store.deleteExercises).not.toHaveBeenCalled();
   });
 });

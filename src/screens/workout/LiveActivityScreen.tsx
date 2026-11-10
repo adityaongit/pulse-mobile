@@ -171,7 +171,7 @@ export function LiveActivityScreen() {
           pendingLabel={t("live.discarding")}
           pending={state.busy}
           onCancel={() => setAsk(null)}
-          onConfirm={() => { setAsk(null); void workoutRecorder.discard(session.id); }}
+          onConfirm={() => { setAsk(null); setFinishedId(null); void workoutRecorder.discard(session.id); }}
         />
       ) : (
         <ConfirmDialog
@@ -194,7 +194,7 @@ export function LiveActivityScreen() {
         pendingLabel={t("live.discarding")}
         pending={state.busy}
         onCancel={() => setAsk(null)}
-        onConfirm={() => { setAsk(null); void workoutRecorder.discard(session.id); }}
+        onConfirm={() => { setAsk(null); setFinishedId(null); void workoutRecorder.discard(session.id); }}
       />
     </View>
   );

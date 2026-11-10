@@ -20,6 +20,7 @@ export function ActivityMenu({ strainHref, settingsHref, activityId }: { strainH
   const of = useRecordedOf(activityId)
   const recorded = { id: of.session?.id ?? null, busy: of.busy }
   const [asking, setAsking] = useState(false)
+  const [failed, setFailed] = useState<string | null>(null)
   const go = (href: string) => {
     close()
     push(href)
@@ -52,11 +53,21 @@ export function ActivityMenu({ strainHref, settingsHref, activityId }: { strainH
         confirmLabel={t("workouts:detail.delete")}
         pendingLabel={t("workouts:detail.deleting")}
         pending={recorded.busy}
-        onCancel={() => setAsking(false)}
+        error={failed && t(`workouts:recorder.errors.${failed}`, { defaultValue: t("workouts:recorder.errors.commandFailed") })}
+        onCancel={() => {
+          setAsking(false)
+          setFailed(null)
+        }}
         onConfirm={() => {
           const id = recorded.id
-          setAsking(false)
-          if (id) void workoutRecorder.discard(id).then(() => router.replace("/(tabs)" as Href))
+          if (!id) return
+          // Home once it is gone; when the delete fails the dialog stays open with the reason.
+          void workoutRecorder.discard(id).then((ok) => {
+            if (ok) {
+              setAsking(false)
+              router.replace("/(tabs)" as Href)
+            } else setFailed(workoutRecorder.getSnapshot().error ?? "commandFailed")
+          })
         }}
       />
     </>

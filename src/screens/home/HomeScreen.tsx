@@ -136,7 +136,7 @@ function Home({ vm, timeZone }: { vm: HomePageVM; timeZone: string }) {
   const { c } = useTheme();
   const { t } = useTranslation("home");
   const dashboardKeysShown = useMemo(() => vm.keyStats.map((s) => s.key).filter(isDashboardKey), [vm.keyStats]);
-  const imported = useMemo(() => vm.activities.items.flatMap((it) => (it.kind === "activity" ? [{ start: it.start, end: it.end }] : [])), [vm.activities.items]);
+  const imported = useMemo(() => vm.activities.items.flatMap((it) => (it.kind === "activity" ? [it.id] : [])), [vm.activities.items]);
   const recorded = useRecordedRows(d, timeZone, imported);
 
   return (

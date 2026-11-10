@@ -40,6 +40,8 @@ export function StartActivityScreen() {
   const [picking, setPicking] = useState(false);
   const [targetOn, setTargetOn] = useState(true);
   const [start, setStart] = useState<WorkoutStart | null>(null);
+  // From the tap until the recorder answers (the Health Connect sheet comes first): a second tap does nothing.
+  const [starting, setStarting] = useState(false);
   const live = band.status === "live" && band.bpm !== null;
   const scale = usePulse(live ? band.bpm : null);
   const { c } = useTheme();
@@ -54,19 +56,23 @@ export function StartActivityScreen() {
   useEffect(() => { if (state.active) router.replace("/workout/live" as Href); }, [state.active]);
 
   const begin = async () => {
-    if (!start) return;
-    // Asked here, while a screen is open, so Finish can save the workout to Health Connect; recording works without it.
-    await exerciseWriteAllowed(true);
-    await workoutRecorder.start(type, { ...start, target: targetOn ? start.target : null });
-    if (workoutRecorder.getSnapshot().active) haptic.success();
-    if (workoutRecorder.getSnapshot().active) router.replace("/workout/live" as Href);
+    if (!start || starting) return;
+    setStarting(true);
+    try {
+      // Asked here, while a screen is open, so Finish can save the workout to Health Connect; recording works without it.
+      await exerciseWriteAllowed(true);
+      // The state.active effect above opens the live screen, and only while this screen is still up.
+      if (await workoutRecorder.start(type, { ...start, target: targetOn ? start.target : null })) haptic.success();
+    } finally {
+      setStarting(false);
+    }
   };
   const halo = width * 0.56;
   const disc = width * 0.33;
   const Glyph = ACTIVITY_GLYPH[type];
   const target = start?.target ?? null;
 
-  const ready = live && !!start && !state.busy && workoutNativeAvailable;
+  const ready = live && !!start && !state.busy && !starting && workoutNativeAvailable;
   return (
     <View className="flex-1 bg-background">
       <Gradient from={c["strain-band-4"]} to={c.background} angle="y" />
