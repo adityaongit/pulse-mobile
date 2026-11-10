@@ -4,13 +4,12 @@
 // (running shakes the phone).
 import { useEffect, useRef, useState } from "react";
 import { AppState } from "react-native";
-import { usePathname } from "expo-router";
+import { router, usePathname, type Href } from "expo-router";
 import { Accelerometer } from "expo-sensors";
 import { onShakeEnabled } from "@/lib/telemetry";
 import { shakeDetector } from "@/lib/shake";
 import { workoutRecorder } from "@/live/workoutRecorder";
 import { haptic } from "@/ui/haptics";
-import { push } from "@/ui/navigate";
 
 export function ShakeToReport() {
   const pathname = usePathname();
@@ -33,8 +32,10 @@ export function ShakeToReport() {
       if (!shake(Date.now(), x, y, z)) return;
       const from = where.current;
       if (from.startsWith("/onboarding") || from === "/report" || workoutRecorder.getSnapshot().active) return;
+      // Straight to the router: navigate's push drops a second push within 500 ms, and a shake is not a double tap
+      // (the detector's cooldown already keeps it to one).
       haptic.warning();
-      push(`/report?from=${encodeURIComponent(from)}`);
+      router.push(`/report?from=${encodeURIComponent(from)}` as Href);
     });
     return () => sub.remove();
   }, [active, enabled]);

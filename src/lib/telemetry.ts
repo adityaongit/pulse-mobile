@@ -4,7 +4,7 @@
 // numbers replaced. Codes are stable dotted strings ("sync.failed"); their tags carry enums and small counts, never a
 // health value. A code with the same tags goes at most once per install, app version and local day; crashes always go.
 // The SDK and storage load lazily, so a module that reports can be imported in Node tests without either.
-import type { Breadcrumb, ErrorEvent, TransactionEvent } from "@sentry/react-native";
+import type { Breadcrumb, ErrorEvent, Event, TransactionEvent } from "@sentry/react-native";
 import app from "../../app.json";
 import { localDay } from "./time";
 
@@ -81,6 +81,10 @@ async function start(): Promise<Sentry | null> {
     beforeSendLog: (entry) => (on ? scrubLog(entry) : null),
   });
   S.setUser({ id: await installId() });
+  // Feedback (sendFeedback) skips beforeSend, but the device-context integration still merges every native context into
+  // it (battery, memory, storage, locale, kernel, root). Scope processors run after the integrations' own, so this one
+  // puts it through the same allowlist and keeps only the feedback itself.
+  S.getGlobalScope().addEventProcessor((event) => (event.type === "feedback" ? (on ? scrubFeedback(event) : null) : event));
   return S;
 }
 
@@ -144,9 +148,9 @@ export function onShakeEnabled(f: (on: boolean) => void): () => void {
 
 /**
  * A problem the person wrote and chose to send (the report page): their words as typed, cut to 4,000 characters, and
- * the screen's route name. Feedback skips beforeSend, so nothing else of theirs is added: no screenshot, no
- * breadcrumbs (maxBreadcrumbs is 0), the install id and the device, OS and app context only. False when telemetry is
- * off or the send failed.
+ * the screen's route name. The event goes through scrubFeedback (the start's scope processor), so nothing else of
+ * theirs is added: no screenshot, no breadcrumbs, the install id and the allowlisted device, OS and app context only.
+ * True once it is queued (the SDK sends it and retries); false when telemetry is off.
  */
 export async function sendFeedback(message: string, screen: string): Promise<boolean> {
   try {
@@ -350,6 +354,13 @@ export function scrubEvent(event: ErrorEvent): ErrorEvent {
     },
   };
   return JSON.parse(JSON.stringify(out)) as ErrorEvent;
+}
+
+/** A feedback event through scrubEvent's allowlist, keeping its type and the feedback context (the person's words). */
+export function scrubFeedback(event: Event): Event {
+  const base = scrubEvent(event as ErrorEvent);
+  const feedback = event.contexts?.feedback;
+  return JSON.parse(JSON.stringify({ ...base, type: "feedback", contexts: { ...base.contexts, feedback } })) as Event;
 }
 
 /** Span and log attribute keys the SDK sets itself (release, environment, SDK name, frame counts) pass as they are. */

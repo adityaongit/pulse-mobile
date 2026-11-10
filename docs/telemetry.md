@@ -11,7 +11,8 @@ The code is `src/lib/telemetry.ts`; the data-gap checks are `src/health/dataGaps
 
 ```mermaid
 flowchart LR
-  Crash[JS or native crash] --> Scrub
+  Crash[JS crash] --> Scrub
+  Native[native crash] --> Switch
   Code["report(code, tags)"] --> Once{first time today<br>for this code, tags, version?}
   Once -->|yes| Scrub[scrubEvent: allowlist]
   Once -->|no| Drop[dropped on the phone]
@@ -35,6 +36,10 @@ flowchart LR
 - **Logs**, only from `log()` in `src/lib/telemetry.ts`: `sync.start`, `sync.read` (how many types were read and how
   many records in all), `sync.done` or `sync.skipped` (duration, warning count, whether anything changed) and
   `sync.error` (a coarse error kind). Console output never becomes a log.
+
+A native crash (Kotlin or Java) is sent by the Android SDK, which does not run the JS `beforeSend`: its exception
+message and the native device context go as captured. Pulse's native code logs no health values in exception messages,
+but that path is not scrubbed the way JS events are.
 
 ## What is never sent
 
@@ -131,8 +136,10 @@ flowchart LR
   front and both switches are on, so no sensor runs in the background. It ignores shakes during onboarding, on the
   report page and while a workout records, where running shakes the phone.
 - What goes: the words the person typed (up to 4,000 characters), the route they shook on as the `screen` tag, the
-  install id and the device, OS and app context. Feedback events skip `beforeSend`, and nothing else is attached: no
-  screenshot (the screens show health data), no breadcrumbs, no logs.
+  install id and the device, OS and app context. Feedback events skip `beforeSend`, but the native device-context
+  integration still fills them (battery, memory, storage, locale, kernel), so a global-scope event processor
+  (`scrubFeedback`, tested) puts them through `scrubEvent`'s allowlist and keeps only the feedback. Nothing else is
+  attached: no screenshot (the screens show health data), no breadcrumbs, no logs.
 - The accelerometer is `expo-sensors`. Its manifest asks for `ACTIVITY_RECOGNITION` (for its pedometer), which Pulse
   does not use, so `app.json` blocks it. On Android 12+ it reads only 5 times a second unless the app declares
   `HIGH_SAMPLING_RATE_SENSORS` (an install-time permission, no prompt); too slow to catch a shake, so `app.json` declares

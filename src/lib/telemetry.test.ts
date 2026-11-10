@@ -9,6 +9,8 @@ const sentry = vi.hoisted(() => ({
   setUser: vi.fn(),
   captureMessage: vi.fn(),
   captureFeedback: vi.fn(),
+  processors: [] as ((e: Record<string, unknown>) => unknown)[],
+  getGlobalScope: vi.fn(() => ({ addEventProcessor: (f: (e: Record<string, unknown>) => unknown) => void sentry.processors.push(f) })),
   captureException: vi.fn(),
   close: vi.fn(async () => {}),
   startSpan: vi.fn((_opts: unknown, run: () => unknown) => run()),
@@ -290,5 +292,36 @@ describe("report a problem", () => {
     expect(await t.sendFeedback("again", "/")).toBe(false);
     expect(seen.slice(-3)).toEqual([false, true, false]);
     expect(sentry.captureFeedback).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("feedback events", () => {
+  it("go through the allowlist: the person's words, the screen and the basic device context only", async () => {
+    const t = await load();
+    await t.initTelemetry();
+    const processor = sentry.processors.at(-1)!;
+    const out = processor({
+      type: "feedback", event_id: "f", level: "info", tags: { screen: "/sleep" }, user: { id: "install", ip_address: "1.2.3.4" },
+      contexts: {
+        feedback: { message: "Sleep chart blank", source: "pulse.report" },
+        device: { model: "CPH2611", battery_level: 81, memory_size: 12_000_000_000, free_storage: 5 },
+        os: { name: "Android", version: "16", kernel_version: "6.6" },
+        culture: { timezone: "Asia/Kolkata", locale: "en-IN" },
+      },
+      extra: { rooted: false },
+    }) as Record<string, Record<string, unknown>>;
+    expect(out.type).toBe("feedback");
+    expect(out.contexts.feedback).toEqual({ message: "Sleep chart blank", source: "pulse.report" });
+    expect(out.contexts.device).toEqual({ model: "CPH2611" });
+    expect(out.contexts.os).toEqual({ name: "Android", version: "16" });
+    expect(out.contexts.culture).toBeUndefined();
+    expect(out.extra).toBeUndefined();
+    expect(out.user).toEqual({ id: "install" });
+    expect(out.tags).toEqual({ screen: "/sleep" });
+    // Other events pass untouched (beforeSend scrubs them), and nothing goes once the switch is off.
+    const error = { type: undefined, event_id: "e" };
+    expect(processor(error)).toBe(error);
+    await t.setTelemetryEnabled(false);
+    expect(processor({ type: "feedback", contexts: {} })).toBeNull();
   });
 });
