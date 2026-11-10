@@ -69,6 +69,7 @@
   },
   "devDependencies": {
     "@babel/plugin-transform-react-jsx": "7.29.7",
+    "@sentry/cli": "2.58.4",
     "@types/node": "^26.6.5",
     "@types/react": "~19.2.2",
     "babel-preset-expo": "~57.0.14",

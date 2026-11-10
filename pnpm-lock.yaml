@@ -207,6 +207,9 @@ importers:
       '@babel/plugin-transform-react-jsx':
         specifier: 7.29.7
         version: 7.29.7(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1)
+      '@sentry/cli':
+        specifier: 2.58.4
+        version: 2.58.4(supports-color@8.1.1)
       '@types/node':
         specifier: ^26.6.5
         version: 26.6.5
