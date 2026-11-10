@@ -327,6 +327,27 @@ describe("metrics", () => {
     expect(metrics[0]).toMatchObject({ day: "2026-10-02", hrvMs: 30, respBpm: 14 });
   });
 
+  it("counts a nightly aggregate stamped at the sleep's end, even when that is after noon", () => {
+    // Fitbit writes one HRV value per night, stamped at wake. This wake is at 12:30, past the 00:00–12:00 fallback,
+    // so the value lands in the night's own window.
+    const lateNight = {
+      metadata: meta("late"),
+      startTime: at("2026-10-01", "23:00:00"),
+      endTime: at("2026-10-02", "12:30:00"),
+      stages: [{ startTime: at("2026-10-01", "23:00:00"), endTime: at("2026-10-02", "12:30:00"), stage: SLEEPING }],
+    };
+    const one = (time: string, ms: number) =>
+      mapRecords(
+        {
+          SleepSession: [lateNight],
+          HeartRateVariabilityRmssd: [{ metadata: meta("v1"), time: at("2026-10-02", time), heartRateVariabilityMillis: ms }],
+        },
+        TZ,
+      ).metrics[0];
+    expect(one("12:30:00", 81.1)).toMatchObject({ day: "2026-10-02", hrvMs: 81.1 }); // exactly at the end
+    expect(one("12:30:07", 106)).toMatchObject({ day: "2026-10-02", hrvMs: 106 }); // a moment after waking
+  });
+
   it("builds skin temperature from baseline + mean delta, or deviation-only with a zero baseline", () => {
     const skin = (id: string, baseline: number | undefined, deltas: number[]) => ({
       metadata: meta(id),

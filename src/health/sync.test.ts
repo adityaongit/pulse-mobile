@@ -356,6 +356,23 @@ describe("syncHealthConnect under Health Connect's start-time reads", () => {
     expect((await store.allSessions()).filter((s) => s.day === "2026-10-04")).toEqual([]);
   });
 
+  it("keeps a night's HRV that Fitbit stamps at wake after noon", async () => {
+    // The wake is after the 00:00–12:00 fallback, and Fitbit's one HRV value for the night is stamped on the sleep's
+    // end (plus a few seconds). The night's own window has to keep it, or the day has no HRV and no Recovery.
+    const lateNight = {
+      metadata: band("late-night"),
+      startTime: "2026-10-07T23:00:00Z",
+      endTime: "2026-10-08T12:30:00Z",
+      stages: [stage("2026-10-07T23:00:00Z", "2026-10-08T12:30:00Z", 4)],
+    };
+    const lateHrv = { metadata: band("late-hrv"), time: "2026-10-08T12:30:07Z", heartRateVariabilityMillis: 81.1 };
+    hc.readAll.mockImplementation(startTimeRead({ SleepSession: [lateNight], HeartRateVariabilityRmssd: [lateHrv] } as never));
+    granted(["SleepSession", "HeartRateVariabilityRmssd"]);
+    const store = await profiled();
+    await syncHealthConnect(store, { timeZone: TZ, now: new Date("2026-10-08T13:00:00Z"), historyDays: 7 });
+    expect(await dayOf(store, "2026-10-08")).toMatchObject({ hrvMs: 81.1, sessions: ["late-night:main"] });
+  });
+
   it("a heart-rate or steps record running over midnight keeps its samples after it, also on the window's first day", async () => {
     // Half-hour-shifted series (23:30 to 00:30 crosses every midnight), and a 20-minute walk record over D's midnight.
     const HeartRate: object[] = [];

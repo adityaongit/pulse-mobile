@@ -50,7 +50,9 @@ flowchart LR
 Written by the Google Health app from a Fitbit Air:
 
 - **HRV**: an RMSSD sample every 5 minutes through the night, none in the daytime. Today the app keeps only the night's
-  mean (`src/health/import.ts:829`); the engine needs every sample.
+  mean (`src/health/import.ts:829`); the engine needs every sample. Fitbit Air also writes some nights as one value
+  stamped at the sleep's end; the import counts the wake instant through a two-minute grace (`IMPORT_VERSION` 9), so a
+  late wake no longer leaves Recovery without HRV.
 - **Heart rate** samples (`HrSample`, stored), **sleep sessions** with stage segments (`Session`, `Segment`),
   **exercise sessions** (`Exercise`), **steps** per minute, **resting heart rate**, **respiratory rate**,
   **skin temperature**, **VO2 max**, weight, height.
