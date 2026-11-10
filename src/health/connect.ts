@@ -163,10 +163,11 @@ export async function saveExercise(w: { clientRecordId: string; start: number; e
 
 /**
  * Deletes a session Pulse wrote (a recorded workout the owner deleted). Without the write permission (asked for here)
- * it throws `healthPermission`, so the caller keeps its own copy and the Delete can be tried again: removing it only
+ * it throws `healthPermission` (`healthUnavailable` when Health Connect itself is missing), so the caller keeps its own copy and the Delete can be tried again: removing it only
  * locally would leave the session in Health Connect, coming back on the next import with nothing left to delete it.
  */
 export async function deleteExercise(id: string): Promise<void> {
+  if (!(await ensureInitialized())) throw new Error("healthUnavailable");
   if (!(await exerciseWriteAllowed(true))) throw new Error("healthPermission");
   await deleteRecordsByUuids("ExerciseSession", [id], []);
 }

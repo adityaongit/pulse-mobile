@@ -106,6 +106,8 @@ class WorkoutRecorder {
       // Discarded while it was being saved: take it back out.
       if (this.discarding.has(id) || !(await store.get(id))) { await deleteExercise(hcId).catch(() => {}); return; }
       await store.ingest({ ...session, hcId }, [], await store.cursor(session.id));
+      // Discarded between the check above and that write (which upserts the row back): undo both.
+      if (this.discarding.has(id)) { await deleteExercise(hcId).catch(() => {}); await store.remove(id); return; }
       // The activity page waits on this: store the session as the import would and score its day only (about a
       // second), instead of a whole sync (every type, then scoring). The full sync follows for the band's heart rate.
       await this.storeImported(hcId, session).catch(() => {});
@@ -182,7 +184,7 @@ class WorkoutRecorder {
     try { if (this.polling) await this.polling; await run(); return true; }
     catch (error) {
       const message = error instanceof Error ? error.message : "";
-      const known = ["nativeUnavailable", "activeWorkout", "bluetoothPermission", "bluetoothOff", "invalidSession", "notificationPermission", "healthPermission"];
+      const known = ["nativeUnavailable", "activeWorkout", "bluetoothPermission", "bluetoothOff", "invalidSession", "notificationPermission", "healthPermission", "healthUnavailable"];
       const code = known.find((c) => message.includes(c)) ?? "commandFailed";
       // The person's own states (Bluetooth off, a permission refused) are not failures worth a report.
       if (code === "commandFailed" || code === "invalidSession" || code === "nativeUnavailable") void report("workout.command_failed", { code, kind: errorKind(error) });
@@ -239,7 +241,9 @@ class WorkoutRecorder {
         await deleteExercise(session.hcId);
         await app.deleteExercises([session.hcId]);
         await app.markIntradayDirty([localDay(session.startedAt / 1000, session.timeZone)]);
-        void rescore().catch(() => {});
+        // As after a save: a run already under way may have read the dirty days before this one.
+        const joined = isSyncing();
+        void rescore().then(() => (joined ? rescore() : undefined)).catch(() => {});
       }
       await app.workouts.remove(id);
       if (this.selectedId === id) this.selectedId = null;

@@ -28,7 +28,8 @@
       "activeWorkout": "Finish the current workout before starting another or resetting Pulse.",
       "invalidSession": "The recording could not be read. Existing data has been kept.",
       "externalOwner": "The workout recorder is using this sensor. Return to Live workout to pause or finish.",
-      "healthPermission": "Allow Pulse to write exercise in Health Connect to delete this workout there too. Until then it stays in Pulse and Health Connect."
+      "healthPermission": "Allow Pulse to write exercise in Health Connect to delete this workout there too. Until then it stays in Pulse and Health Connect.",
+      "healthUnavailable": "Health Connect isn't available, so this workout can't be deleted there. Open Health Connect, then try again. Until then it stays in Pulse."
     },
     "recording": "Recording workout",
     "waiting": "Waiting for heart rate",

@@ -1,7 +1,7 @@
 // Start an activity `/workout/start` (docs/workout-tracker/whoop-ui.md § Pre-start, reference/prestart-android.jpg):
 // X, the sport and a caret over a dark blue gradient; the live heart rate in a blue bubble that beats with it; a white
 // sheet with the Strain Target row and the START ACTIVITY pill. The caret opens the picker.
-import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { Animated, Linking, ScrollView, TextInput, useWindowDimensions, View } from "react-native";
 import { Switch } from "@/screens/settings/controls";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -40,7 +40,9 @@ export function StartActivityScreen() {
   const [picking, setPicking] = useState(false);
   const [targetOn, setTargetOn] = useState(true);
   const [start, setStart] = useState<WorkoutStart | null>(null);
-  // From the tap until the recorder answers (the Health Connect sheet comes first): a second tap does nothing.
+  // From the tap until the recorder answers (the Health Connect sheet comes first): a second tap does nothing. The ref
+  // closes it within one frame (two taps can both see the state before it re-renders); the state dims the button.
+  const startingRef = useRef(false);
   const [starting, setStarting] = useState(false);
   const live = band.status === "live" && band.bpm !== null;
   const scale = usePulse(live ? band.bpm : null);
@@ -56,7 +58,8 @@ export function StartActivityScreen() {
   useEffect(() => { if (state.active) router.replace("/workout/live" as Href); }, [state.active]);
 
   const begin = async () => {
-    if (!start || starting) return;
+    if (!start || startingRef.current) return;
+    startingRef.current = true;
     setStarting(true);
     try {
       // Asked here, while a screen is open, so Finish can save the workout to Health Connect; recording works without it.
@@ -64,6 +67,7 @@ export function StartActivityScreen() {
       // The state.active effect above opens the live screen, and only while this screen is still up.
       if (await workoutRecorder.start(type, { ...start, target: targetOn ? start.target : null })) haptic.success();
     } finally {
+      startingRef.current = false;
       setStarting(false);
     }
   };

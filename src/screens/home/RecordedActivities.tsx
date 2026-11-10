@@ -25,20 +25,21 @@ export function StartActivityButton() {
 export type RecordedRow = { session: RecordedWorkout; strain: number; start: number };
 
 /**
- * The day's recorded workouts with their Strain, for Home to place among the imported activities by start time. One the
- * import already lists (Pulse's own saved session, by its Health Connect id) is left out. A phone-only one stays even
- * when it overlaps another app's activity, so it can still be opened and deleted.
+ * The day's recorded workouts with their Strain, for Home to place among the imported activities by start time. One
+ * Pulse saved to Health Connect is left out when the import lists it: by its id, or, when the import's dedup kept
+ * another app's copy of the same session instead, by overlapping that activity. A phone-only one always stays, so it
+ * can still be opened and deleted.
  */
-export function useRecordedRows(day: string, timeZone: string, importedIds: readonly string[]): RecordedRow[] {
+export function useRecordedRows(day: string, timeZone: string, imported: readonly { id: string; start: number; end: number }[]): RecordedRow[] {
   const state = useSyncExternalStore(workoutRecorder.subscribe, workoutRecorder.getSnapshot, workoutRecorder.getSnapshot);
   const [rows, setRows] = useState<RecordedRow[]>([]);
   useEffect(() => {
     let live = true;
-    const sessions = state.history.filter((s) => s.status === "completed" && localDay(s.startedAt / 1000, timeZone) === day && !(s.hcId && importedIds.includes(s.hcId)));
+    const sessions = state.history.filter((s) => s.status === "completed" && localDay(s.startedAt / 1000, timeZone) === day && !(s.hcId && imported.some((a) => a.id === s.hcId || overlaps(s, a))));
     void Promise.all(sessions.map(async (session) => ({ session, start: session.startedAt, strain: activityView(await appStore().workouts.samples(session.id), strainSetupOf(session), null).activityStrain })))
       .then((r) => { if (live) setRows(r); }).catch(() => {});
     return () => { live = false; };
-  }, [state.history, day, timeZone, importedIds]);
+  }, [state.history, day, timeZone, imported]);
   return rows;
 }
 
@@ -55,4 +56,11 @@ export function RecordedActivityCard({ row, timeZone }: { row: RecordedRow; time
       timeZone={timeZone}
     />
   );
+}
+
+/** More than half of the recorded session inside the imported one. */
+function overlaps(s: RecordedWorkout, a: { start: number; end: number }) {
+  const end = s.endedAt ?? s.updatedAt;
+  const shared = Math.min(end, a.end) - Math.max(s.startedAt, a.start);
+  return shared > (end - s.startedAt) / 2;
 }
