@@ -40,8 +40,7 @@
     "scoringVersion": "Scoring version",
     "sourceCode": "Source code",
     "sourceCodeLabel": "Source code, opens outside the app",
-    "reportBug": "Report a bug",
-    "reportBugLabel": "Report a bug, opens outside the app"
+    "reportBug": "Report a bug"
   },
   "data": {
     "title": "Your data",

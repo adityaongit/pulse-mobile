@@ -40,7 +40,6 @@
     "errorReportsHint": "Gdy Pulse się zawiesi albo synchronizacja się nie uda, wysyła krótki raport: błąd, model telefonu i wersję Pulse. Niektóre sesje wysyłają też, ile trwają synchronizacje i ekrany. Nigdy Twoich danych o zdrowiu. Wyłączenie od razu zatrzymuje raporty.",
     "shakeToReport": "Potrząśnij, aby zgłosić problem",
     "shakeToReportHint": "Potrząśnij telefonem, aby powiedzieć nam, co poszło nie tak. Pulse wysyła tylko to, co napiszesz, ekran, na którym byłeś, model telefonu i wersję Pulse.",
-    "reportOpen": "Otwórz",
     "version": "Pulse {{version}}",
     "isOut": "{{version}} jest już dostępna",
     "checking": "Sprawdzanie…",
@@ -332,6 +331,7 @@
     "send": "Wyślij",
     "sending": "Wysyłanie…",
     "failed": "Nie udało się wysłać zgłoszenia. Sprawdź połączenie i spróbuj ponownie.",
+    "off": "Włącz „Wysyłaj raporty o błędach” w Ustawienia › Aplikacja › Prywatność, aby to wysłać.",
     "sentTitle": "Wysłano",
     "sentBody": "Dziękujemy. Twoje zgłoszenie pomoże to naprawić."
   }

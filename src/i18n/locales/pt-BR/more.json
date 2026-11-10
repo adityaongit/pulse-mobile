@@ -41,8 +41,7 @@
     "scoringVersion": "Versão da pontuação",
     "sourceCode": "Código-fonte",
     "sourceCodeLabel": "Código-fonte, abre fora do app",
-    "reportBug": "Relatar um bug",
-    "reportBugLabel": "Relatar um bug, abre fora do app"
+    "reportBug": "Relatar um bug"
   },
   "data": {
     "title": "Seus dados",

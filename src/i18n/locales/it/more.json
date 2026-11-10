@@ -41,8 +41,7 @@
     "scoringVersion": "Versione del calcolo",
     "sourceCode": "Codice sorgente",
     "sourceCodeLabel": "Codice sorgente, si apre fuori dall’app",
-    "reportBug": "Segnala un bug",
-    "reportBugLabel": "Segnala un bug, si apre fuori dall’app"
+    "reportBug": "Segnala un bug"
   },
   "data": {
     "title": "I tuoi dati",

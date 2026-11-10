@@ -9,6 +9,7 @@ import { Accelerometer } from "expo-sensors";
 import { onShakeEnabled } from "@/lib/telemetry";
 import { shakeDetector } from "@/lib/shake";
 import { workoutRecorder } from "@/live/workoutRecorder";
+import { haptic } from "@/ui/haptics";
 import { push } from "@/ui/navigate";
 
 export function ShakeToReport() {
@@ -32,6 +33,7 @@ export function ShakeToReport() {
       if (!shake(Date.now(), x, y, z)) return;
       const from = where.current;
       if (from.startsWith("/onboarding") || from === "/report" || workoutRecorder.getSnapshot().active) return;
+      haptic.warning();
       push(`/report?from=${encodeURIComponent(from)}`);
     });
     return () => sub.remove();

@@ -40,7 +40,6 @@
     "errorReportsHint": "Quando Pulse si chiude per un errore o una sincronizzazione non riesce, invia una breve segnalazione: l’errore, il modello del telefono e la versione di Pulse. Alcune sessioni inviano anche quanto durano le sincronizzazioni e le schermate. Mai i tuoi dati sulla salute. Se lo disattivi, le segnalazioni si fermano subito.",
     "shakeToReport": "Scuoti per segnalare un problema",
     "shakeToReportHint": "Scuoti il telefono per dirci cosa non ha funzionato. Pulse invia solo ciò che scrivi, la schermata in cui eri, il modello del telefono e la versione di Pulse.",
-    "reportOpen": "Apri",
     "version": "Pulse {{version}}",
     "isOut": "{{version}} è disponibile",
     "checking": "Controllo…",
@@ -331,6 +330,7 @@
     "send": "Invia",
     "sending": "Invio…",
     "failed": "Impossibile inviare la segnalazione. Controlla la connessione e riprova.",
+    "off": "Attiva «Invia segnalazioni di errore» in Impostazioni › App › Privacy per inviarlo.",
     "sentTitle": "Inviata",
     "sentBody": "Grazie. La tua segnalazione aiuta a risolverlo."
   }

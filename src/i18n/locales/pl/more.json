@@ -42,8 +42,7 @@
     "scoringVersion": "Wersja punktacji",
     "sourceCode": "Kod źródłowy",
     "sourceCodeLabel": "Kod źródłowy, otwiera się poza aplikacją",
-    "reportBug": "Zgłoś błąd",
-    "reportBugLabel": "Zgłoś błąd, otwiera się poza aplikacją"
+    "reportBug": "Zgłoś błąd"
   },
   "data": {
     "title": "Twoje dane",

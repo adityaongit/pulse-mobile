@@ -40,7 +40,6 @@
     "errorReportsHint": "Quando o Pulse trava ou uma sincronização falha, ele envia um relatório curto: o erro, o modelo do celular e a versão do Pulse. Algumas sessões também enviam quanto tempo levam as sincronizações e as telas. Nunca seus dados de saúde. Desativar interrompe os relatórios na hora.",
     "shakeToReport": "Agitar para relatar um problema",
     "shakeToReportHint": "Agite o celular para nos contar o que deu errado. O Pulse envia só o que você escreve, a tela em que você estava, o modelo do celular e a versão do Pulse.",
-    "reportOpen": "Abrir",
     "version": "Pulse {{version}}",
     "isOut": "{{version}} já está disponível",
     "checking": "Verificando…",
@@ -331,6 +330,7 @@
     "send": "Enviar",
     "sending": "Enviando…",
     "failed": "Não foi possível enviar o relato. Verifique sua conexão e tente de novo.",
+    "off": "Ative “Enviar relatórios de erro” em Configurações › Aplicativo › Privacidade para enviar.",
     "sentTitle": "Enviado",
     "sentBody": "Obrigado. Seu relato ajuda a corrigir isso."
   }

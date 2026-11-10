@@ -40,7 +40,6 @@
     "errorReportsHint": "Quand Pulse plante ou qu’une synchronisation échoue, il envoie un court rapport : l’erreur, le modèle du téléphone et la version de Pulse. Certaines sessions envoient aussi la durée des synchronisations et des écrans. Jamais tes données de santé. Le désactiver arrête les rapports tout de suite.",
     "shakeToReport": "Secouer pour signaler un problème",
     "shakeToReportHint": "Secouez le téléphone pour nous dire ce qui n’a pas marché. Pulse n’envoie que ce que vous écrivez, l’écran où vous étiez, le modèle du téléphone et la version de Pulse.",
-    "reportOpen": "Ouvrir",
     "version": "Pulse {{version}}",
     "isOut": "{{version}} est disponible",
     "checking": "Recherche…",
@@ -331,6 +330,7 @@
     "send": "Envoyer",
     "sending": "Envoi…",
     "failed": "Impossible d’envoyer le signalement. Vérifiez votre connexion et réessayez.",
+    "off": "Activez « Envoyer les rapports d’erreur » dans Réglages › App › Confidentialité pour l’envoyer.",
     "sentTitle": "Envoyé",
     "sentBody": "Merci. Votre signalement aide à corriger le problème."
   }

@@ -40,7 +40,6 @@
     "errorReportsHint": "Wenn Pulse abstürzt oder eine Synchronisierung fehlschlägt, sendet es einen kurzen Bericht: den Fehler, das Handymodell und die Pulse-Version. Manche Sitzungen senden auch, wie lange Synchronisierungen und Bildschirme brauchen. Nie deine Gesundheitsdaten. Ausschalten stoppt die Berichte sofort.",
     "shakeToReport": "Schütteln, um ein Problem zu melden",
     "shakeToReportHint": "Schüttle das Handy, um uns zu sagen, was schiefgelaufen ist. Pulse sendet nur, was du schreibst, den Bildschirm, auf dem du warst, das Handymodell und die Pulse-Version.",
-    "reportOpen": "Öffnen",
     "version": "Pulse {{version}}",
     "isOut": "{{version}} ist da",
     "checking": "Wird geprüft…",
@@ -330,6 +329,7 @@
     "send": "Senden",
     "sending": "Wird gesendet …",
     "failed": "Die Meldung konnte nicht gesendet werden. Prüfe deine Verbindung und versuche es erneut.",
+    "off": "Aktiviere „Fehlerberichte senden“ unter Einstellungen › App › Datenschutz, um dies zu senden.",
     "sentTitle": "Gesendet",
     "sentBody": "Danke. Deine Meldung hilft, es zu beheben."
   }

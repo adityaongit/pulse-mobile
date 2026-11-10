@@ -112,8 +112,9 @@ SDK, which drops its queue. Pulse does not start Sentry on later launches while 
 
 ## Shake to report
 
-With error reports on, shaking the phone opens **Report a problem** (`app/report.tsx`, `src/screens/report`). It is
-also a row under Settings › App › Privacy, beside a switch that turns the shake off (`pulse.shake = "off"`).
+With error reports on, shaking the phone opens **Report a problem** (`app/report.tsx`, `src/screens/report`), with a
+haptic. More › About › Report a bug opens the same page (it used to open GitHub issues). A switch under Settings › App ›
+Privacy turns the shake off (`pulse.shake = "off"`). With error reports off, Send says where to turn them on.
 
 ```mermaid
 flowchart LR

@@ -5,7 +5,7 @@ import { useState } from "react";
 import { View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { sendFeedback } from "@/lib/telemetry";
+import { sendFeedback, telemetryEnabled } from "@/lib/telemetry";
 import { Button } from "@/ui/Button";
 import { goBack } from "@/ui/navigate";
 import { TaskPage } from "@/ui/shells/TaskPage";
@@ -26,7 +26,7 @@ export function ReportPage() {
     const ok = await sendFeedback(text, from || "settings");
     setSending(false);
     if (ok) setSent(true);
-    else toast.error(t("report.failed"));
+    else toast.error(t((await telemetryEnabled()) ? "report.failed" : "report.off"));
   };
   return (
     <TaskPage

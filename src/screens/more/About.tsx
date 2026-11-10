@@ -1,6 +1,8 @@
-// About (U21): the user's own wording, version, scoring version, the repo and its issues. Ported from
+// About (U21): the user's own wording, version, scoring version, the repo, and Report a bug (the in-app report page,
+// docs/telemetry.md § Shake to report). Ported from
 // pulse (app)/more/About.tsx. Licence and full credits stay in LICENSE, NOTICE and the README.
 import { Linking, View } from "react-native";
+import { push } from "@/ui/navigate";
 import { useTranslation } from "react-i18next";
 import { ArrowUpRight } from "lucide-react-native";
 import { Button } from "@/ui/Button";
@@ -34,9 +36,8 @@ export function About({ version, scoringVersion }: { version: string; scoringVer
           <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} className="shrink text-[13px] font-bold uppercase tracking-[0.1em] text-secondary-foreground">{t("about.sourceCode")}</Text>
           <Icon icon={ArrowUpRight} size={16} tone="secondary-foreground" />
         </Button>
-        <Button variant="outline" className="flex-1" accessibilityLabel={t("about.reportBugLabel")} onPress={() => Linking.openURL(`${REPO_URL}/issues`)}>
+        <Button variant="outline" className="flex-1" onPress={() => push("/report?from=about")}>
           <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} className="shrink text-[13px] font-bold uppercase tracking-[0.1em]">{t("about.reportBug")}</Text>
-          <Icon icon={ArrowUpRight} size={16} tone="foreground" />
         </Button>
       </View>
     </SectionShell>

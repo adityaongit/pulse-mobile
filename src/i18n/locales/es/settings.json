@@ -40,7 +40,6 @@
     "errorReportsHint": "Cuando Pulse se cierra por un error o falla una sincronización, envía un informe breve: el error, el modelo del teléfono y la versión de Pulse. Algunas sesiones también envían cuánto tardan las sincronizaciones y las pantallas. Nunca tus datos de salud. Si lo desactivas, los informes se detienen al instante.",
     "shakeToReport": "Agitar para informar de un problema",
     "shakeToReportHint": "Agita el teléfono para contarnos qué ha fallado. Pulse solo envía lo que escribes, la pantalla en la que estabas, el modelo del teléfono y la versión de Pulse.",
-    "reportOpen": "Abrir",
     "version": "Pulse {{version}}",
     "isOut": "{{version}} ya está disponible",
     "checking": "Buscando…",
@@ -331,6 +330,7 @@
     "send": "Enviar",
     "sending": "Enviando…",
     "failed": "No se pudo enviar el informe. Comprueba tu conexión e inténtalo de nuevo.",
+    "off": "Activa «Enviar informes de errores» en Ajustes › App › Privacidad para enviarlo.",
     "sentTitle": "Enviado",
     "sentBody": "Gracias. Tu informe ayuda a arreglarlo."
   }

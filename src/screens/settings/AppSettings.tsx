@@ -17,7 +17,6 @@ import { SectionShell } from "@/ui/shells/SectionShell";
 import { APP_VERSION } from "@/queries/settings";
 import { checkForUpdate, getUpdate, setUpdateCheck, useUpdate } from "@/state/update";
 import { setShakeEnabled, setTelemetryEnabled, shakeSetting, telemetryEnabled } from "@/lib/telemetry";
-import { push } from "@/ui/navigate";
 import { cn } from "@/ui/cn";
 import { Text } from "@/ui/Text";
 import { toast } from "@/ui/Toast";
@@ -122,7 +121,7 @@ function Updates() {
 
 /**
  * Privacy: error reports (src/lib/telemetry.ts, docs/telemetry.md), on by default; off stops them at once. Under them,
- * shake to report and the report page itself, both only while reports are on (feedback goes the same way).
+ * the shake to report switch, shown only while reports are on (feedback goes the same way).
  */
 function Privacy() {
   const { t } = useTranslation("settings");
@@ -143,7 +142,6 @@ function Privacy() {
         }}
       />
       {enabled && (
-        <>
           <SwitchRow
             label={t("app.shakeToReport")}
             hint={t("app.shakeToReportHint")}
@@ -153,11 +151,6 @@ function Privacy() {
               void setShakeEnabled(on);
             }}
           />
-          <View className={cn(ROW, ROW_RULE)}>
-            <Text className={ROW_LABEL}>{t("report.title")}</Text>
-            <SmallButton label={t("app.reportOpen")} onPress={() => push("/report?from=settings")} />
-          </View>
-        </>
       )}
     </SectionShell>
   );
