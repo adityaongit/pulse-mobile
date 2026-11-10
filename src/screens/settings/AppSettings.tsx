@@ -16,6 +16,8 @@ import { LinkList } from "@/ui/shells/LinkList";
 import { SectionShell } from "@/ui/shells/SectionShell";
 import { APP_VERSION } from "@/queries/settings";
 import { checkForUpdate, getUpdate, setUpdateCheck, useUpdate } from "@/state/update";
+import { setShakeEnabled, setTelemetryEnabled, shakeSetting, telemetryEnabled } from "@/lib/telemetry";
+import { push } from "@/ui/navigate";
 import { cn } from "@/ui/cn";
 import { Text } from "@/ui/Text";
 import { toast } from "@/ui/Toast";
@@ -94,8 +96,8 @@ function DisplayRows({ initialTheme }: { initialTheme: Theme }) {
 }
 
 /**
- * Updates: the daily check for a newer Pulse on GitHub (src/state/update.ts), and Check now. The check is the one request
- * Pulse makes on its own, and it carries nothing about the person.
+ * Updates: the daily check for a newer Pulse on GitHub (src/state/update.ts), and Check now. The check carries nothing
+ * about the person.
  */
 function Updates() {
   const { t } = useTranslation("settings");
@@ -118,6 +120,49 @@ function Updates() {
   );
 }
 
+/**
+ * Privacy: error reports (src/lib/telemetry.ts, docs/telemetry.md), on by default; off stops them at once. Under them,
+ * shake to report and the report page itself, both only while reports are on (feedback goes the same way).
+ */
+function Privacy() {
+  const { t } = useTranslation("settings");
+  const [enabled, setEnabled] = useState(true);
+  const [shake, setShake] = useState(true);
+  useEffect(() => void telemetryEnabled().then(setEnabled), []);
+  useEffect(() => void shakeSetting().then(setShake), []);
+  return (
+    <SectionShell variant="card" title={t("app.privacy")}>
+      <SwitchRow
+        rule={false}
+        label={t("app.errorReports")}
+        hint={t("app.errorReportsHint")}
+        value={enabled}
+        onChange={(on) => {
+          setEnabled(on);
+          void setTelemetryEnabled(on);
+        }}
+      />
+      {enabled && (
+        <>
+          <SwitchRow
+            label={t("app.shakeToReport")}
+            hint={t("app.shakeToReportHint")}
+            value={shake}
+            onChange={(on) => {
+              setShake(on);
+              void setShakeEnabled(on);
+            }}
+          />
+          <View className={cn(ROW, ROW_RULE)}>
+            <Text className={ROW_LABEL}>{t("report.title")}</Text>
+            <SmallButton label={t("app.reportOpen")} onPress={() => push("/report?from=settings")} />
+          </View>
+        </>
+      )}
+    </SectionShell>
+  );
+}
+
 export function AppSettings() {
   const { t } = useTranslation("settings");
   const theme = useApp((a) => a.theme);
@@ -128,6 +173,7 @@ export function AppSettings() {
       </SectionShell>
       <WidgetSettings />
       <Updates />
+      <Privacy />
       <LinkList title={t("app.group")} rows={[{ icon: Bell, label: t("app.notificationsLink"), href: "/settings?s=notifications" }]} />
     </>
   );

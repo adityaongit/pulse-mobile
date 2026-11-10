@@ -3,7 +3,8 @@
 // then the turn itself: validate the messages against the tools, summarise older turns (history.ts), stream the answer
 // with up to six steps of read-only tool calls, and save the whole chat when the stream ends.
 // Never logs message content, tool output, keys or provider bodies.
-import { APICallError, generateId, isStepCount, streamText, toUIMessageStream, validateUIMessages, type ChatTransport, type LanguageModel, type UIMessage, type UIMessageChunk } from "ai";
+import { APICallError, RetryError, generateId, isStepCount, streamText, toUIMessageStream, validateUIMessages, type ChatTransport, type LanguageModel, type UIMessage, type UIMessageChunk } from "ai";
+import { report } from "@/lib/telemetry";
 import type { QueryCtx } from "@/queries/ctx";
 import { coachHistory } from "./history";
 import { coachInstructions } from "./instructions";
@@ -57,6 +58,16 @@ export function streamProblem(e: unknown): StreamProblem {
   return "provider";
 }
 
+/** The provider's kind for telemetry: never its URL, key or model id. */
+const PROVIDER_KIND: Record<string, string> = { google: "gemini", openai: "openai", anthropic: "anthropic", gateway: "openai-compatible", openrouter: "openai-compatible", custom: "custom" };
+
+/** Reports a coach failure as `coach.<problem>` with the provider's kind and the HTTP status (0 without one). */
+export function reportCoach(problem: string, provider: string | null | undefined, e?: unknown): void {
+  const err = RetryError.isInstance(e) ? e.lastError : e;
+  const status = APICallError.isInstance(err) ? (err.statusCode ?? 0) : 0;
+  void report(`coach.${problem}`, { provider: PROVIDER_KIND[provider ?? ""] ?? "unknown", status });
+}
+
 /** The saved first message's metadata (the summary checkpoint) on the first of `messages`, when it is the same message. */
 function withCheckpoint(messages: UIMessage[], stored: UIMessage[] | null): UIMessage[] {
   const [first, ...rest] = messages;
@@ -67,10 +78,23 @@ function withCheckpoint(messages: UIMessage[], stored: UIMessage[] | null): UIMe
 
 /** One chat turn as a UI message stream. Throws `Error(problem)` for a CoachProblem before streaming. */
 export async function coachTurn(deps: CoachDeps, chatId: string, messages: UIMessage[], abortSignal?: AbortSignal): Promise<ReadableStream<UIMessageChunk>> {
+  let provider: string | undefined;
+  try {
+    return await turn(deps, chatId, messages, abortSignal, (p) => (provider = p));
+  } catch (e) {
+    // The four CoachProblems; anything else (a tool or history failure before the stream) as "failed".
+    const problem = e instanceof Error && ["limit", "key", "profile", "bad_request"].includes(e.message) ? e.message : "failed";
+    if (!abortSignal?.aborted) reportCoach(problem, provider, e);
+    throw e;
+  }
+}
+
+async function turn(deps: CoachDeps, chatId: string, messages: UIMessage[], abortSignal: AbortSignal | undefined, onModel: (provider: string) => void): Promise<ReadableStream<UIMessageChunk>> {
   const allow = deps.allow ?? allowRequest;
   if (!allow()) throw new Error("limit" satisfies CoachProblem);
   const m = await deps.model();
   if (!m) throw new Error("key" satisfies CoachProblem);
+  onModel(m.provider);
   const ctx = deps.ctx();
   if (!ctx) throw new Error("profile" satisfies CoachProblem);
 
@@ -102,7 +126,11 @@ export async function coachTurn(deps: CoachDeps, chatId: string, messages: UIMes
       await deps.save(chatId, all).catch((e) => deps.onSaveError?.(e));
     },
     // Name only: provider errors can echo the request.
-    onError: (e) => streamProblem(e),
+    onError: (e) => {
+      const problem = streamProblem(e);
+      if (!abortSignal?.aborted) reportCoach(problem, m.provider, e);
+      return problem;
+    },
   });
 }
 

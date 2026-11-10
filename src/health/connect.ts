@@ -163,6 +163,13 @@ async function readPages<T extends ReadType>(type: T, range: Range): Promise<Rec
   return out;
 }
 
+/** Whether Health Connect holds any record of `type` in the range, from a one-record page. */
+export async function hasRecords(type: ReadType, range: Range): Promise<boolean> {
+  await ensureInitialized();
+  const page = await readRecords(type, { timeRangeFilter: { operator: "between", startTime: range.start.toISOString(), endTime: range.end.toISOString() }, pageSize: 1 });
+  return page.records.length > 0;
+}
+
 /**
  * Every record of `type` in the range, ascending by time. A read refused for a malformed record is split in halves
  * until the record is cornered in one millisecond of start times, which is left out (and reported through

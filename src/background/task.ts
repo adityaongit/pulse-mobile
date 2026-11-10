@@ -6,6 +6,7 @@
 import { initI18n } from "@/i18n/config";
 import { localeFor, resolveLanguage } from "@/i18n/language";
 import { setLocale } from "@/lib/locale";
+import { initTelemetry } from "@/lib/telemetry";
 import { applyDisplay } from "@/state/display";
 import * as BackgroundTask from "expo-background-task";
 import * as TaskManager from "expo-task-manager";
@@ -26,6 +27,8 @@ export async function runBackgroundTask(): Promise<BackgroundTask.BackgroundTask
   const t0 = Date.now();
   try {
     // Headless: no React tree, so the notifications it posts read the language the person chose.
+    // A headless launch has no root layout to start telemetry, so the run's reports would go nowhere.
+    await initTelemetry();
     const language = await resolveLanguage();
     initI18n(language);
     setLocale(localeFor(language));

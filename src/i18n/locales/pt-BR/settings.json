@@ -35,6 +35,12 @@
     "updates": "Atualizações",
     "checkForUpdates": "Buscar atualizações",
     "checkForUpdatesHint": "Uma vez por dia o Pulse pergunta ao GitHub se há uma versão nova. Nada sobre você é enviado.",
+    "privacy": "Privacidade",
+    "errorReports": "Enviar relatórios de erro",
+    "errorReportsHint": "Quando o Pulse trava ou uma sincronização falha, ele envia um relatório curto: o erro, o modelo do celular e a versão do Pulse. Algumas sessões também enviam quanto tempo levam as sincronizações e as telas. Nunca seus dados de saúde. Desativar interrompe os relatórios na hora.",
+    "shakeToReport": "Agitar para relatar um problema",
+    "shakeToReportHint": "Agite o celular para nos contar o que deu errado. O Pulse envia só o que você escreve, a tela em que você estava, o modelo do celular e a versão do Pulse.",
+    "reportOpen": "Abrir",
     "version": "Pulse {{version}}",
     "isOut": "{{version}} já está disponível",
     "checking": "Verificando…",
@@ -317,5 +323,15 @@
     "yourBand": "Sua pulseira",
     "batteryNote": "Compartilhar gasta a bateria da pulseira, e ela aceita uma conexão por vez: enquanto o Pulse a mantém, aparelhos de academia ou outro app não conseguem conectar. O Pulse solta {{seconds}} segundos depois que você sai e reconecta quando você volta.",
     "viewingNote": "As leituras ao vivo são só para visualização; os scores usam o que o Pulse lê do Health Connect."
+  },
+  "report": {
+    "title": "Relatar um problema",
+    "description": "Conte o que deu errado e o que você esperava. O Pulse envia o que você escreve, a tela em que você estava, o modelo do celular e a versão do Pulse. Nunca seus dados de saúde.",
+    "placeholder": "O que aconteceu?",
+    "send": "Enviar",
+    "sending": "Enviando…",
+    "failed": "Não foi possível enviar o relato. Verifique sua conexão e tente de novo.",
+    "sentTitle": "Enviado",
+    "sentBody": "Obrigado. Seu relato ajuda a corrigir isso."
   }
 }

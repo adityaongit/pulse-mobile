@@ -16,14 +16,16 @@ export type RawRecord = {
 };
 
 /** The metrics the check covers, with how a record's value is read and how a day's values combine. */
-export const CHECK_METRICS: { key: string; label: string; type: ReadType; unit: string; combine: "sum" | "mean" | "latest" | "list"; value: (r: RawRecord) => number | null; pulse?: (m: Metrics) => number | null }[] = [
+/** `daily` names the daily value Pulse stores the metric in (src/health/import.ts SOURCE_DAILY_KEYS) when it is not on Metrics. */
+export const CHECK_METRICS: { key: string; label: string; type: ReadType; unit: string; combine: "sum" | "mean" | "latest" | "list"; value: (r: RawRecord) => number | null; pulse?: (m: Metrics) => number | null; daily?: string }[] = [
   { key: "steps", label: "Steps", type: "Steps", unit: "", combine: "sum", value: (r) => num(r.count), pulse: (m) => m.steps },
   { key: "spo2", label: "SpO2", type: "OxygenSaturation", unit: "%", combine: "list", value: (r) => num(r.percentage), pulse: (m) => m.spo2Pct },
   { key: "hrv", label: "HRV", type: "HeartRateVariabilityRmssd", unit: "ms", combine: "list", value: (r) => num(r.heartRateVariabilityMillis), pulse: (m) => m.hrvMs },
   { key: "rhr", label: "Resting HR", type: "RestingHeartRate", unit: "bpm", combine: "list", value: (r) => num(r.beatsPerMinute), pulse: (m) => m.rhrBpm },
   { key: "resp", label: "Breathing", type: "RespiratoryRate", unit: "rpm", combine: "list", value: (r) => num(r.rate), pulse: (m) => m.respBpm },
-  { key: "distance", label: "Distance", type: "Distance", unit: "km", combine: "sum", value: (r) => { const d = r.distance as { inMeters?: number } | undefined; return d?.inMeters == null ? null : d.inMeters / 1000; } },
+  { key: "distance", label: "Distance", type: "Distance", unit: "km", combine: "sum", value: (r) => { const d = r.distance as { inMeters?: number } | undefined; return d?.inMeters == null ? null : d.inMeters / 1000; }, daily: "distance" },
   { key: "calories", label: "Calories", type: "TotalCaloriesBurned", unit: "kcal", combine: "sum", value: (r) => { const e = r.energy as { inKilocalories?: number } | undefined; return e?.inKilocalories ?? null; }, pulse: (m) => m.calories },
+  { key: "activeCalories", label: "Active calories", type: "ActiveCaloriesBurned", unit: "kcal", combine: "sum", value: (r) => { const e = r.energy as { inKilocalories?: number } | undefined; return e?.inKilocalories ?? null; }, daily: "active_calories" },
   { key: "vo2", label: "VO2 max", type: "Vo2Max", unit: "", combine: "list", value: (r) => num(r.vo2MillilitersPerMinuteKilogram), pulse: (m) => m.vo2maxDaily ?? m.vo2maxRun },
 ];
 
@@ -76,7 +78,7 @@ export function summarize(raw: Partial<Record<ReadType, RawRecord[]>>, sleepRaw:
       });
       sources.sort((a, b) => b.records - a.records);
       const m = byDay.get(day);
-      const pulse = cm.key === "distance" ? valueOn(day, "distance") : m && cm.pulse ? cm.pulse(m) : null;
+      const pulse = cm.daily ? valueOn(day, cm.daily) : m && cm.pulse ? cm.pulse(m) : null;
       return { key: cm.key, label: cm.label, unit: cm.unit, pulse, sources };
     });
     // Sleep: Health Connect sessions ending on this day, and the sessions Pulse kept.

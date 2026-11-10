@@ -1,7 +1,9 @@
-const { getDefaultConfig } = require("expo/metro-config");
+const { getSentryExpoConfig } = require("@sentry/react-native/metro");
 const { withNativeWind } = require("nativewind/metro");
 
-const config = getDefaultConfig(__dirname);
+// Expo's default config with Sentry's serializer, which stamps the bundle and its source map with a shared Debug ID so
+// crash stacks map back to source (docs/telemetry.md). It needs no Sentry credentials.
+const config = getSentryExpoConfig(__dirname);
 
 // babel.config.js imports lucide's createLucideIcon from its own file, which the package's "exports" does not list.
 const resolveRequest = config.resolver.resolveRequest;

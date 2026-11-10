@@ -3,6 +3,7 @@ import { i18n } from "@/i18n/config";
 import { appStore } from "@/state/app";
 import { liveBle } from "@/health/ble";
 import { askNotificationPermission } from "@/background/notify";
+import { errorKind, report, reportError } from "@/lib/telemetry";
 import { workoutNative, workoutNativeAvailable } from "../../modules/pulse-workouts";
 import { parseRecordedWorkout, parseWorkoutSample, type RecordedWorkout, type WorkoutSample, type WorkoutType } from "./workout";
 
@@ -30,7 +31,13 @@ class WorkoutRecorder {
     const subscription = AppState.addEventListener("change", (status) => { if (status === "active") void this.refresh(); });
     return () => { if (this.timer) clearInterval(this.timer); this.timer = null; subscription.remove(); };
   };
-  private async ingest(session: RecordedWorkout): Promise<void> {
+  private ingest(session: RecordedWorkout): Promise<void> {
+    return this.drain(session).catch((error: unknown) => {
+      void reportError("workout.ingest_failed", error);
+      throw error;
+    });
+  }
+  private async drain(session: RecordedWorkout): Promise<void> {
     const store = appStore().workouts;
     let offset = await store.cursor(session.id);
     let drained = false;
@@ -53,7 +60,10 @@ class WorkoutRecorder {
     if (this.state.busy) return Promise.resolve();
     const task = this.poll().catch((error: unknown) => {
       // Boot may not yet have opened the Store. Subsequent polls retry; write failures are always visible.
-      if (!(error instanceof Error && error.message === "store_not_open")) this.patch({ error: "storage", loading: false });
+      if (!(error instanceof Error && error.message === "store_not_open")) {
+        void report("workout.storage_failed", { kind: errorKind(error) });
+        this.patch({ error: "storage", loading: false });
+      }
     }).finally(() => { this.polling = null; });
     this.polling = task;
     return task;
@@ -94,7 +104,10 @@ class WorkoutRecorder {
     catch (error) {
       const message = error instanceof Error ? error.message : "";
       const known = ["nativeUnavailable", "activeWorkout", "bluetoothPermission", "bluetoothOff", "invalidSession", "notificationPermission"];
-      this.patch({ error: known.find((code) => message.includes(code)) ?? "commandFailed" });
+      const code = known.find((c) => message.includes(c)) ?? "commandFailed";
+      // The person's own states (Bluetooth off, a permission refused) are not failures worth a report.
+      if (code === "commandFailed" || code === "invalidSession" || code === "nativeUnavailable") void report("workout.command_failed", { code, kind: errorKind(error) });
+      this.patch({ error: code });
     } finally { this.patch({ busy: false }); await this.refresh(); }
   }
   start = (type: WorkoutType, calibration: WorkoutCalibration) => this.action(async () => {

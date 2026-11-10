@@ -35,6 +35,12 @@
     "updates": "Aktualizacje",
     "checkForUpdates": "Sprawdzaj aktualizacje",
     "checkForUpdatesHint": "Raz dziennie Pulse pyta GitHub, czy jest nowsza wersja. Nic o Tobie nie jest wysyłane.",
+    "privacy": "Prywatność",
+    "errorReports": "Wysyłaj raporty o błędach",
+    "errorReportsHint": "Gdy Pulse się zawiesi albo synchronizacja się nie uda, wysyła krótki raport: błąd, model telefonu i wersję Pulse. Niektóre sesje wysyłają też, ile trwają synchronizacje i ekrany. Nigdy Twoich danych o zdrowiu. Wyłączenie od razu zatrzymuje raporty.",
+    "shakeToReport": "Potrząśnij, aby zgłosić problem",
+    "shakeToReportHint": "Potrząśnij telefonem, aby powiedzieć nam, co poszło nie tak. Pulse wysyła tylko to, co napiszesz, ekran, na którym byłeś, model telefonu i wersję Pulse.",
+    "reportOpen": "Otwórz",
     "version": "Pulse {{version}}",
     "isOut": "{{version}} jest już dostępna",
     "checking": "Sprawdzanie…",
@@ -318,5 +324,15 @@
     "yourBand": "Twoja opaska",
     "batteryNote": "Udostępnianie zużywa baterię opaski, a opaska przyjmuje jedno połączenie naraz: gdy Pulse je trzyma, sprzęt na siłowni lub inna aplikacja nie może się połączyć. Pulse puszcza je {{seconds}} s po Twoim wyjściu i łączy się ponownie, gdy wrócisz.",
     "viewingNote": "Odczyty na żywo służą do podglądu; wyniki używają tego, co Pulse czyta z Health Connect."
+  },
+  "report": {
+    "title": "Zgłoś problem",
+    "description": "Napisz, co poszło nie tak i czego się spodziewałeś. Pulse wysyła to, co napiszesz, ekran, na którym byłeś, model telefonu i wersję Pulse. Nigdy Twoich danych o zdrowiu.",
+    "placeholder": "Co się stało?",
+    "send": "Wyślij",
+    "sending": "Wysyłanie…",
+    "failed": "Nie udało się wysłać zgłoszenia. Sprawdź połączenie i spróbuj ponownie.",
+    "sentTitle": "Wysłano",
+    "sentBody": "Dziękujemy. Twoje zgłoszenie pomoże to naprawić."
   }
 }

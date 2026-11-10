@@ -3,7 +3,7 @@
     "title": "Seu Fitbit, avaliado toda manhã",
     "subtitle": "Sono, Recovery e Strain do Health Connect, calculados neste celular.",
     "exploreSample": "Explorar com dados de exemplo",
-    "private": "Fica neste celular. Sem conta, sem servidor.",
+    "private": "Seus dados de saúde ficam neste celular, sem conta. Os relatórios de erro não incluem nada deles; dá para desativá-los nas Configurações.",
     "sampleFailed": "Não foi possível montar os dados de exemplo. Tente de novo."
   },
   "progress": {

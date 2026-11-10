@@ -11,6 +11,9 @@ import type { Store } from "@/data/store";
 import type { Profile } from "@/data/types";
 import { syncHealthConnect } from "@/health/sync";
 import { timed } from "@/lib/perf";
+import { errorKind, log, report, reportError, traced } from "@/lib/telemetry";
+import { skippedTypes } from "@/health/connect";
+import { runDataGapChecks } from "@/health/dataGaps";
 import { localDay } from "@/lib/time";
 import { setForeground } from "@/lib/yield";
 import { runPipeline } from "@/pipeline";
@@ -80,7 +83,23 @@ export function runSync(store: Store, profile: Profile, source: Source, opts: Ru
   return job;
 }
 
+/** One run as a `sync` span (its steps are child spans through timed()), with a log line at each end. */
 async function run(store: Store, profile: Profile, source: Source, opts: RunSyncOptions): Promise<RunSyncResult> {
+  const t0 = Date.now();
+  void log("info", "sync.start", { owner: opts.owner, source });
+  return traced("sync", { owner: opts.owner, source }, () => runSteps(store, profile, source, opts)).then(
+    (r) => {
+      void log("info", r.ran ? "sync.done" : "sync.skipped", { owner: opts.owner, ms: Date.now() - t0, warnings: r.warnings.length, unchanged: !!r.unchanged });
+      return r;
+    },
+    (e: unknown) => {
+      void log("error", "sync.error", { owner: opts.owner, ms: Date.now() - t0, kind: errorKind(e) });
+      throw e;
+    },
+  );
+}
+
+async function runSteps(store: Store, profile: Profile, source: Source, opts: RunSyncOptions): Promise<RunSyncResult> {
   let lock = await takeLock(opts.owner);
   if (!lock.taken && opts.waitIfLocked && (await waitForLock(opts.owner, WAIT_FOR_TASK_MS))) lock = await takeLock(opts.owner);
   if (!lock.taken) return { ran: false, skipped: `${lock.holder === "app" ? "the app" : "the background task"} is syncing`, warnings: [] };
@@ -91,19 +110,35 @@ async function run(store: Store, profile: Profile, source: Source, opts: RunSync
     const epoch = await Promise.resolve().then(widgetEpoch).catch(() => null);
     if (source === "health_connect") {
       const t0 = Date.now();
-      const r = await timed(`sync-health-connect (${opts.owner})`, () => syncHealthConnect(store, { timeZone: opts.timeZone, onProgress: opts.onProgress }));
+      const r = await timed(`sync-health-connect (${opts.owner})`, () => syncHealthConnect(store, { timeZone: opts.timeZone, onProgress: opts.onProgress })).catch((e: unknown) => {
+        void reportError("sync.failed", e, { owner: opts.owner });
+        throw e;
+      });
       warnings.push(...(r.warnings ?? []));
+      for (const type of skippedTypes(r.warnings ?? [])) void report("sync.type_skipped", { type });
       unchanged = !!r.unchanged;
+      // What the read covered, as counts only: how many types were read and how many records in all.
+      const reads = Object.entries(r.counts).filter(([k, v]) => k.startsWith("read:") && typeof v === "number");
+      void log("info", "sync.read", { owner: opts.owner, types: reads.length, records: reads.reduce((a, [, v]) => a + (v as number), 0), full: "full" in r.counts, ms: Date.now() - t0 });
       // The app's syncs are logged like the background task's, with what the sync did (whole window or not, and why).
       if (opts.owner === "app") {
         const flags = Object.keys(r.counts).filter((k) => ["full", "reimport", "backfillFrom", "deleted", "unchanged"].includes(k) || k.startsWith("why:"));
         await appendLog({ at: t0, result: "ok", ms: Date.now() - t0, note: `app sync: ${flags.length ? flags.join(", ") : "recent days"}` });
       }
     }
-    await timed(`pipeline (${opts.owner})`, () => runPipeline(store, profile, { today: localDay(Date.now() / 1000, opts.timeZone), onProgress: opts.onProgress }));
+    await timed(`pipeline (${opts.owner})`, () => runPipeline(store, profile, { today: localDay(Date.now() / 1000, opts.timeZone), onProgress: opts.onProgress })).catch((e: unknown) => {
+      void reportError("pipeline.failed", e, { owner: opts.owner });
+      throw e;
+    });
     // After scoring, so the day that just aged out was scored from its raw samples. A failure here costs space, not
     // data: the sync itself has succeeded, and the next run tries again.
-    await timed(`maintenance (${opts.owner})`, () => maintainStorage(store, Date.now() / 1000)).catch((e) => console.warn("[maintenance]", e instanceof Error ? e.message : String(e)));
+    await timed(`maintenance (${opts.owner})`, () => maintainStorage(store, Date.now() / 1000)).catch((e) => {
+      console.warn("[maintenance]", e instanceof Error ? e.message : String(e));
+      void reportError("maintenance.failed", e);
+    });
+    // At most once a day, without holding up the run: what Health Connect has that Pulse did not store, and scores
+    // stuck on one reason (src/health/dataGaps.ts). Only codes and counts are sent.
+    if (source === "health_connect") void runDataGapChecks(store, opts.timeZone);
     const now = Math.floor(Date.now() / 1000);
     // The app's own runs publish through dataChanged(); only a background run publishes here.
     if (epoch !== null && opts.owner !== "app") await store.getSyncState().then((sync) => refreshWidgets({ store, profile, timeZone: opts.timeZone, today: localDay(now, opts.timeZone), now, sync }, source, { epoch })).catch(() => {});

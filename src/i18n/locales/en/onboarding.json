@@ -3,7 +3,7 @@
     "title": "Your Fitbit, scored every morning",
     "subtitle": "Sleep, Recovery and Strain from Health Connect, worked out on this phone.",
     "exploreSample": "Explore with sample data",
-    "private": "Stays on this phone. No account, no server.",
+    "private": "Your health data stays on this phone, with no account. Error reports carry none of it; Settings turns them off.",
     "sampleFailed": "Couldn’t build the sample data. Try again."
   },
   "progress": {

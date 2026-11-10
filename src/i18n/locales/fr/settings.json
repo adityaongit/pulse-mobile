@@ -35,6 +35,12 @@
     "updates": "Mises à jour",
     "checkForUpdates": "Rechercher des mises à jour",
     "checkForUpdatesHint": "Une fois par jour, Pulse demande à GitHub si une version plus récente est sortie. Rien sur toi n’est envoyé.",
+    "privacy": "Confidentialité",
+    "errorReports": "Envoyer les rapports d’erreur",
+    "errorReportsHint": "Quand Pulse plante ou qu’une synchronisation échoue, il envoie un court rapport : l’erreur, le modèle du téléphone et la version de Pulse. Certaines sessions envoient aussi la durée des synchronisations et des écrans. Jamais tes données de santé. Le désactiver arrête les rapports tout de suite.",
+    "shakeToReport": "Secouer pour signaler un problème",
+    "shakeToReportHint": "Secouez le téléphone pour nous dire ce qui n’a pas marché. Pulse n’envoie que ce que vous écrivez, l’écran où vous étiez, le modèle du téléphone et la version de Pulse.",
+    "reportOpen": "Ouvrir",
     "version": "Pulse {{version}}",
     "isOut": "{{version}} est disponible",
     "checking": "Recherche…",
@@ -317,5 +323,15 @@
     "yourBand": "Ton bracelet",
     "batteryNote": "Le partage utilise la batterie du bracelet, et le bracelet n’accepte qu’une connexion à la fois : tant que Pulse la garde, un équipement de salle ou une autre app ne peut pas se connecter. Pulse la libère {{seconds}} secondes après ton départ et se reconnecte à ton retour.",
     "viewingNote": "Les mesures en direct sont pour la consultation ; les scores utilisent ce que Pulse lit depuis Health Connect."
+  },
+  "report": {
+    "title": "Signaler un problème",
+    "description": "Dites-nous ce qui n’a pas marché et ce que vous attendiez. Pulse envoie ce que vous écrivez, l’écran où vous étiez, le modèle du téléphone et la version de Pulse. Jamais vos données de santé.",
+    "placeholder": "Que s’est-il passé ?",
+    "send": "Envoyer",
+    "sending": "Envoi…",
+    "failed": "Impossible d’envoyer le signalement. Vérifiez votre connexion et réessayez.",
+    "sentTitle": "Envoyé",
+    "sentBody": "Merci. Votre signalement aide à corriger le problème."
   }
 }

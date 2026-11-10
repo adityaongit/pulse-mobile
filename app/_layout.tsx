@@ -1,8 +1,9 @@
 import "../global.css";
 
 import { useEffect, useMemo } from "react";
+import * as Sentry from "@sentry/react-native";
 import { useFonts } from "expo-font";
-import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from "expo-router";
+import { DarkTheme, DefaultTheme, Stack, ThemeProvider, useNavigationContainerRef } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import * as SystemUI from "expo-system-ui";
 import { StatusBar } from "expo-status-bar";
@@ -23,9 +24,14 @@ import { useNotificationDeepLinks, useTabLinks } from "@/background/links";
 import { Opening } from "@/screens/Opening";
 import { ScreenError } from "@/screens/ScreenError";
 import { ShellData } from "@/screens/ShellData";
+import { ShakeToReport } from "@/screens/report/ShakeToReport";
+import { initTelemetry, registerNavigation } from "@/lib/telemetry";
 import { boot, useApp } from "@/state/app";
 import { AppProviders } from "@/ui/providers";
 import { useTheme } from "@/ui/theme";
+
+// Error telemetry (docs/telemetry.md) as early as the app's code runs; a no-op without a DSN or with it turned off.
+void initTelemetry();
 
 // Screens out of view (under a pushed screen, or an inactive tab) stop rendering until they are shown again.
 enableFreeze(true);
@@ -41,13 +47,18 @@ SplashScreen.setOptions({ duration: 0, fade: false });
 // closing the app.
 export const unstable_settings = { anchor: "(tabs)", screenErrorBoundary: ScreenError };
 
-export default function RootLayout() {
+function RootLayout() {
   // Fonts: Figtree for text, Barlow for numerals, as the web (pulse src/app/layout.tsx). Each weight is its own file
   // and its own family name; src/ui/Text.tsx picks the name from the web's font classes.
   const [fonts, fontError] = useFonts({ Figtree_400Regular, Figtree_500Medium, Figtree_600SemiBold, Figtree_700Bold, Barlow_500Medium, Barlow_600SemiBold, Barlow_700Bold });
   // Boot opens the database and reads the profile, the source and the saved theme (src/state/app.ts); the stored theme is
   // applied before the first frame, so a dark-mode person never sees a light flash.
   useEffect(() => void boot((theme) => colorScheme.set(theme as "light" | "dark" | "system")), []);
+  // Screen loads in traced sessions (docs/telemetry.md): Sentry's navigation integration follows Expo Router's container.
+  const navigationRef = useNavigationContainerRef();
+  useEffect(() => {
+    if (navigationRef) registerNavigation(navigationRef);
+  }, [navigationRef]);
   const status = useApp((s) => s.status);
   const opened = useApp((s) => s.store !== null);
   // Onboarded: a profile, a source and a first completed run (pulse's (app) layout sends anyone else to onboarding).
@@ -78,6 +89,11 @@ export default function RootLayout() {
     </>
   );
 }
+
+// Wrapped as Sentry's Expo guide asks. Uncaught errors, a render error at the root among them, reach Sentry through its
+// global handler; a screen's own error goes through ScreenError. Without breadcrumbs or tracing the wrapper's touch and
+// profiler boundaries record nothing.
+export default Sentry.wrap(RootLayout);
 
 function Screens({ onboarded }: { onboarded: boolean }) {
   const { c, scheme } = useTheme();
@@ -147,6 +163,7 @@ function Screens({ onboarded }: { onboarded: boolean }) {
           <Stack.Screen name="trends-metric" />
           <Stack.Screen name="ecg" />
           <Stack.Screen name="profile" />
+          <Stack.Screen name="report" />
           <Stack.Screen name="checkin" />
           <Stack.Screen name="log" />
           <Stack.Screen name="food" />
@@ -158,6 +175,8 @@ function Screens({ onboarded }: { onboarded: boolean }) {
         </Stack.Protected>
         <Stack.Screen name="workout-live" />
       </Stack>
+      {/* A shake opens Report a problem (docs/telemetry.md § Shake to report). */}
+      {onboarded && <ShakeToReport />}
     </ThemeProvider>
   );
 }

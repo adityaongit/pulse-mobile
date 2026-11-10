@@ -35,6 +35,12 @@
     "updates": "Updates",
     "checkForUpdates": "Nach Updates suchen",
     "checkForUpdatesHint": "Einmal am Tag fragt Pulse bei GitHub nach, ob es eine neuere Version gibt. Es werden keine Daten über dich gesendet.",
+    "privacy": "Datenschutz",
+    "errorReports": "Fehlerberichte senden",
+    "errorReportsHint": "Wenn Pulse abstürzt oder eine Synchronisierung fehlschlägt, sendet es einen kurzen Bericht: den Fehler, das Handymodell und die Pulse-Version. Manche Sitzungen senden auch, wie lange Synchronisierungen und Bildschirme brauchen. Nie deine Gesundheitsdaten. Ausschalten stoppt die Berichte sofort.",
+    "shakeToReport": "Schütteln, um ein Problem zu melden",
+    "shakeToReportHint": "Schüttle das Handy, um uns zu sagen, was schiefgelaufen ist. Pulse sendet nur, was du schreibst, den Bildschirm, auf dem du warst, das Handymodell und die Pulse-Version.",
+    "reportOpen": "Öffnen",
     "version": "Pulse {{version}}",
     "isOut": "{{version}} ist da",
     "checking": "Wird geprüft…",
@@ -316,5 +322,15 @@
     "yourBand": "Dein Band",
     "batteryNote": "Das Teilen verbraucht Akku des Bands, und das Band nimmt nur eine Verbindung gleichzeitig an: Solange Pulse sie hält, können sich Fitnessgeräte oder eine andere App nicht verbinden. Pulse lässt {{seconds}} Sekunden nach deinem Verlassen los und verbindet sich wieder, wenn du zurückkommst.",
     "viewingNote": "Live-Messwerte dienen nur der Ansicht; die Werte nutzen, was Pulse aus Health Connect liest."
+  },
+  "report": {
+    "title": "Problem melden",
+    "description": "Sag uns, was schiefgelaufen ist und was du erwartet hast. Pulse sendet, was du schreibst, den Bildschirm, auf dem du warst, das Handymodell und die Pulse-Version. Nie deine Gesundheitsdaten.",
+    "placeholder": "Was ist passiert?",
+    "send": "Senden",
+    "sending": "Wird gesendet …",
+    "failed": "Die Meldung konnte nicht gesendet werden. Prüfe deine Verbindung und versuche es erneut.",
+    "sentTitle": "Gesendet",
+    "sentBody": "Danke. Deine Meldung hilft, es zu beheben."
   }
 }

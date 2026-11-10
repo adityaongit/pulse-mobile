@@ -35,6 +35,12 @@
     "updates": "Updates",
     "checkForUpdates": "Check for updates",
     "checkForUpdatesHint": "Once a day Pulse asks GitHub whether a newer version is out. Nothing about you is sent.",
+    "privacy": "Privacy",
+    "errorReports": "Send error reports",
+    "errorReportsHint": "When Pulse crashes or a sync fails, it sends a short report: the error, the phone model and Pulse’s version. Some sessions also send how long syncs and screens take. Never your health data. Turning this off stops them at once.",
+    "shakeToReport": "Shake to report a problem",
+    "shakeToReportHint": "Shake the phone to tell us what went wrong. Pulse sends only what you write, the screen you were on, the phone model and Pulse’s version.",
+    "reportOpen": "Open",
     "version": "Pulse {{version}}",
     "isOut": "{{version}} is out",
     "checking": "Checking…",
@@ -316,5 +322,15 @@
     "yourBand": "Your band",
     "batteryNote": "Sharing uses the band’s battery, and the band takes one connection at a time: while Pulse holds it, gym equipment or another app can’t connect. Pulse lets go {{seconds}} seconds after you leave it and reconnects when you come back.",
     "viewingNote": "Live readings are for viewing; scores use what Pulse reads from Health Connect."
+  },
+  "report": {
+    "title": "Report a problem",
+    "description": "Tell us what went wrong and what you expected. Pulse sends what you write, the screen you were on, the phone model and Pulse’s version. Never your health data.",
+    "placeholder": "What happened?",
+    "send": "Send",
+    "sending": "Sending…",
+    "failed": "Couldn’t send the report. Check your connection and try again.",
+    "sentTitle": "Sent",
+    "sentBody": "Thanks. Your report helps fix it."
   }
 }

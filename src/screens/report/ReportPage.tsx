@@ -1,0 +1,43 @@
+// Report a problem (docs/telemetry.md § Shake to report): opened by a shake or from Settings › App › Privacy. The
+// person writes what went wrong; Send passes their words and the screen's route to Sentry as feedback (sendFeedback).
+// No screenshot: the screens show health data.
+import { useState } from "react";
+import { useLocalSearchParams } from "expo-router";
+import { useTranslation } from "react-i18next";
+import { sendFeedback } from "@/lib/telemetry";
+import { Button } from "@/ui/Button";
+import { goBack } from "@/ui/navigate";
+import { TaskPage } from "@/ui/shells/TaskPage";
+import { toast } from "@/ui/Toast";
+import { TextField } from "@/screens/settings/controls";
+
+const MAX = 2000;
+
+export function ReportPage() {
+  const { t } = useTranslation("settings");
+  const { from } = useLocalSearchParams<{ from?: string }>();
+  const [text, setText] = useState("");
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
+  const send = async () => {
+    setSending(true);
+    const ok = await sendFeedback(text, from || "settings");
+    setSending(false);
+    if (ok) setSent(true);
+    else toast.error(t("report.failed"));
+  };
+  return (
+    <TaskPage
+      title={t("report.title")}
+      description={t("report.description")}
+      done={sent ? { title: t("report.sentTitle"), body: t("report.sentBody"), onDone: goBack } : null}
+      footer={
+        <Button disabled={sending || !text.trim()} onPress={() => void send()}>
+          {sending ? t("report.sending") : t("report.send")}
+        </Button>
+      }
+    >
+      <TextField accessibilityLabel={t("report.title")} value={text} onChangeText={setText} multiline maxLength={MAX} autoFocus placeholder={t("report.placeholder")} />
+    </TaskPage>
+  );
+}

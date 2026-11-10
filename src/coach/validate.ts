@@ -3,6 +3,7 @@
 import { generateText } from "ai";
 import { i18n } from "@/i18n/config";
 import { modelFor, providerOf, type Fetch } from "./providers";
+import { reportCoach } from "./transport";
 
 export type ProviderInput = { provider: string; model: string; apiKey: string; baseUrl?: string };
 export type Checked = { ok: true; provider: string; model: string; apiKey: string | null; baseUrl: string | null } | { ok: false; error: string };
@@ -56,6 +57,7 @@ export async function testKey(input: ProviderInput, fetch?: Fetch, timeoutMs = 2
     return c;
   } catch (e) {
     console.warn(`[coach] key test failed for ${c.provider}: ${e instanceof Error ? e.name : "error"}`);
+    reportCoach("key_test_failed", c.provider, e);
     return { ok: false, error: i18n.t("coach:validate.testFailed") };
   } finally {
     clearTimeout(timer);

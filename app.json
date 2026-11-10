@@ -48,6 +48,11 @@
         "android.permission.health.READ_HEALTH_DATA_IN_BACKGROUND",
         "android.permission.POST_NOTIFICATIONS",
         "android.permission.REQUEST_INSTALL_PACKAGES"
+      ],
+      "blockedPermissions": [
+        "android.permission.ACTIVITY_RECOGNITION",
+        "android.permission.SYSTEM_ALERT_WINDOW",
+        "com.google.android.c2dm.permission.RECEIVE"
       ]
     },
     "plugins": [
@@ -85,6 +90,7 @@
       "./plugins/withHighRefreshRate.js",
       "./plugins/withAppShortcuts.js",
       "./plugins/withWidgets.js",
+      "./plugins/withSentryUpload.js",
       "react-native-health-connect",
       [
         "react-native-ble-plx",

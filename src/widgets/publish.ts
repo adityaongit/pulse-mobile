@@ -4,6 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import type { QueryCtx } from "@/queries/ctx";
 import { storedRecentHeartRate } from "@/health/live";
 import { getHome } from "@/queries/home";
+import { reportError } from "@/lib/telemetry";
 import { SOURCE_KEY } from "@/state/source";
 import { buildWidgetSnapshot } from "./model";
 
@@ -25,7 +26,10 @@ export function refreshWidgets(ctx: QueryCtx, source: "health_connect" | "demo",
     const snapshot = buildWidgetSnapshot(home, { timeZone: ctx.timeZone, generatedAt: ctx.now, lastSyncTs: ctx.sync.lastSyncTs, source }, reading);
     if ((await AsyncStorage.getItem(SOURCE_KEY)) !== source) return;
     await publishSnapshot(JSON.stringify(snapshot), epoch);
-  }).catch(() => { /* Best effort; keep the last snapshot's original sync timestamp, never log health payloads. */ });
+  }).catch((e: unknown) => {
+    // Best effort; keep the last snapshot's original sync timestamp, never log health payloads (the report names the error only).
+    void reportError("widgets.publish_failed", e);
+  });
   return queue;
 }
 
