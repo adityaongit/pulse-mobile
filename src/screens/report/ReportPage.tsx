@@ -2,12 +2,14 @@
 // person writes what went wrong; Send passes their words and the screen's route to Sentry as feedback (sendFeedback).
 // No screenshot: the screens show health data.
 import { useState } from "react";
+import { View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { sendFeedback } from "@/lib/telemetry";
 import { Button } from "@/ui/Button";
 import { goBack } from "@/ui/navigate";
 import { TaskPage } from "@/ui/shells/TaskPage";
+import { Text } from "@/ui/Text";
 import { toast } from "@/ui/Toast";
 import { TextField } from "@/screens/settings/controls";
 
@@ -29,7 +31,6 @@ export function ReportPage() {
   return (
     <TaskPage
       title={t("report.title")}
-      description={t("report.description")}
       done={sent ? { title: t("report.sentTitle"), body: t("report.sentBody"), onDone: goBack } : null}
       footer={
         <Button disabled={sending || !text.trim()} onPress={() => void send()}>
@@ -37,7 +38,10 @@ export function ReportPage() {
         </Button>
       }
     >
-      <TextField accessibilityLabel={t("report.title")} value={text} onChangeText={setText} multiline maxLength={MAX} autoFocus placeholder={t("report.placeholder")} />
+      <View className="gap-3">
+        <TextField accessibilityLabel={t("report.title")} value={text} onChangeText={setText} multiline maxLength={MAX} autoFocus placeholder={t("report.placeholder")} />
+        <Text className="text-[13px] leading-5 text-muted-foreground">{t("report.description")}</Text>
+      </View>
     </TaskPage>
   );
 }
