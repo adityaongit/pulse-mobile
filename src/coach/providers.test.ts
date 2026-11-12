@@ -207,4 +207,11 @@ describe("your own server on Azure OpenAI", () => {
     expect(calls[0].body.max_tokens).toBeUndefined();
     expect(calls[0].body.max_output_tokens).toBe(16);
   });
+
+  it("treats the resource's Foundry address the same way", async () => {
+    const { fetch, calls } = refuse();
+    await run("custom", "gpt-6.1-sol", fetch, { baseUrl: "https://example.services.ai.azure.com/openai/v1" }).catch(() => {});
+    expect(calls[0].url).toBe("https://example.services.ai.azure.com/openai/v1/responses");
+    expect(JSON.stringify(calls[0].headers)).toContain(KEY);
+  });
 });
