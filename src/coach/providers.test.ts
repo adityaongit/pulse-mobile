@@ -179,3 +179,32 @@ describe("key test", () => {
     expect(refused.calls).toHaveLength(1);
   });
 });
+
+describe("your own server on Azure OpenAI", () => {
+  const AZURE = "https://example.openai.azure.com/openai/v1";
+  const refuse = () => fakeFetch([{ status: 401, json: { error: { message: "bad key" } } }]);
+
+  it("asks an Azure OpenAI resource over the Responses API, with the key and the tools", async () => {
+    const { fetch, calls } = refuse();
+    await run("custom", "gpt-6.1-sol", fetch, { baseUrl: AZURE }).catch(() => {});
+    expect(calls.length).toBeGreaterThan(0);
+    expect(calls[0].url).toBe(`${AZURE}/responses`);
+    expect(JSON.stringify(calls[0].headers)).toContain(KEY);
+    expect(calls[0].body).toMatchObject({ model: "gpt-6.1-sol" });
+    expect((calls[0].body.tools as { name: string }[]).map((t) => t.name)).toContain("get_profile");
+  });
+
+  it("keeps chat completions for a server that only has the name inside its address", async () => {
+    const { fetch, calls } = refuse();
+    await run("custom", "llama3.1:8b", fetch, { baseUrl: "https://openai.azure.com.example.net/v1" }).catch(() => {});
+    expect(calls[0].url).toBe("https://openai.azure.com.example.net/v1/chat/completions");
+  });
+
+  it("the connection test sends an Azure OpenAI resource no max_tokens", async () => {
+    const { fetch, calls } = refuse();
+    expect(await testKey({ provider: "custom", model: "gpt-6.1-sol", apiKey: KEY, baseUrl: AZURE }, fetch)).toEqual({ ok: false, error: TEST_FAILED });
+    expect(calls[0].url).toBe(`${AZURE}/responses`);
+    expect(calls[0].body.max_tokens).toBeUndefined();
+    expect(calls[0].body.max_output_tokens).toBe(16);
+  });
+});
