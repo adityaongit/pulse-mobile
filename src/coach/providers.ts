@@ -28,16 +28,14 @@ export type Provider = {
 };
 
 /**
- * Whether the person's server is an Azure OpenAI (Microsoft Foundry) resource, https://<resource>.openai.azure.com/openai/v1.
- * Its reasoning models refuse `max_tokens` and tools on chat completions and take both on the Responses API (#50).
+ * An Azure OpenAI (Microsoft Foundry) resource: https://<resource>.openai.azure.com/openai/v1, or the same resource under
+ * its Foundry name, https://<resource>.services.ai.azure.com/openai/v1. Its reasoning models refuse `max_tokens` and
+ * tools on chat completions and take both on the Responses API (#50). Matched on the address itself, so it does not
+ * depend on the runtime's URL parser.
  */
-function onAzureOpenAI(baseUrl: string): boolean {
-  try {
-    return new URL(baseUrl).hostname.endsWith(".openai.azure.com");
-  } catch {
-    return false;
-  }
-}
+const AZURE_OPENAI = /^https:\/\/[^/?#@]+\.(?:openai\.azure\.com|services\.ai\.azure\.com)(?::\d+)?(?:\/|$)/i;
+
+const onAzureOpenAI = (baseUrl: string) => AZURE_OPENAI.test(baseUrl);
 
 export const PROVIDERS: Provider[] = [
   {
