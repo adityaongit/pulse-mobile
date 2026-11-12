@@ -27,6 +27,18 @@ export type Provider = {
   create: (apiKey: string | null, model: string, fetch?: Fetch, baseUrl?: string) => LanguageModel;
 };
 
+/**
+ * Whether the person's server is an Azure OpenAI (Microsoft Foundry) resource, https://<resource>.openai.azure.com/openai/v1.
+ * Its reasoning models refuse `max_tokens` and tools on chat completions and take both on the Responses API (#50).
+ */
+function onAzureOpenAI(baseUrl: string): boolean {
+  try {
+    return new URL(baseUrl).hostname.endsWith(".openai.azure.com");
+  } catch {
+    return false;
+  }
+}
+
 export const PROVIDERS: Provider[] = [
   {
     id: "anthropic",
@@ -70,8 +82,12 @@ export const PROVIDERS: Provider[] = [
     },
     model: "llama3.1:8b",
     custom: true,
-    // No key, no Authorization header: a local Ollama takes none.
-    create: (apiKey, model, fetch, baseUrl) => createOpenAICompatible({ name: "custom", baseURL: baseUrl!, apiKey: apiKey || undefined, fetch })(model),
+    // No key, no Authorization header: a local Ollama takes none. An Azure OpenAI resource goes through the OpenAI
+    // client instead, which asks over the Responses API at the same URL.
+    create: (apiKey, model, fetch, baseUrl) =>
+      onAzureOpenAI(baseUrl!)
+        ? createOpenAI({ baseURL: baseUrl!, apiKey: apiKey || undefined, fetch })(model)
+        : createOpenAICompatible({ name: "custom", baseURL: baseUrl!, apiKey: apiKey || undefined, fetch })(model),
   },
 ];
 
