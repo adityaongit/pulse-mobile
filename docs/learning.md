@@ -947,3 +947,7 @@ The accelerometer comes from `expo-sensors` (SDK 57's Expo module) rather than a
 
 References: [SDK 57 Accelerometer](https://docs.expo.dev/versions/v57.0.0/sdk/accelerometer/), [Android sensor rate limiting](https://developer.android.com/develop/sensors-and-location/sensors/sensors_overview#sensors-rate-limiting).
 
+
+## Local time without an Intl call each time
+
+`wall()` (`src/lib/time.ts`) turns an instant into the zone's local day and time for every step minute, interval record and nightly reading a sync maps, and for both ends of every sleep stage in stage 2's sleep consistency. `Intl.DateTimeFormat.formatToParts` is slow under Hermes, so the zone's offset is read from Intl once per UTC hour (its first and last second) and the wall time is worked out with `Date` arithmetic; an hour in which the offset changes is read from Intl instant by instant, and `src/lib/time.test.ts` checks the results against Intl's (in Node; Hermes has not been measured). `addDays` moves a plain `YYYY-MM-DD` day with `Date.UTC` instead of `Date.parse` and `toISOString`; anything else still goes through `Date.parse`, whose rules differ between Hermes and V8. On a local Node benchmark with synthetic Fitbit-like records (heart rate every 5 seconds, Asia/Kolkata), a sync and scoring run seven hours after the last went from about 11,000 `formatToParts` calls to a dozen, and a first 180-day import from about 327,000 to 8,700.

@@ -4,7 +4,44 @@
 const formatters = new Map<string, Intl.DateTimeFormat>();
 
 /** Local wall-clock reading of instant `s`: the day, `HH:mm:ss`, and that wall time read as if it were UTC. */
-export function wall(s: number, tz: string) {
+export function wall(s: number, tz: string): { day: string; time: string; asUtc: number } {
+  const offset = s >= FAST_FROM && s < FAST_TO ? offsetIn(Math.floor(s / HOUR), tz) : null;
+  if (offset === null) return intlWall(s, tz);
+  const asUtc = Math.floor(s) + offset;
+  const iso = new Date(asUtc * 1000).toISOString();
+  return { day: iso.slice(0, 10), time: iso.slice(11, 19), asUtc };
+}
+
+// wall() runs for every step minute, interval record and nightly reading a sync maps, and for both ends of every sleep
+// stage in stage 2's sleep consistency: hundreds of thousands of times on a first import. Intl's formatToParts is slow (under Hermes most of all), so the zone's offset is read from Intl
+// once per UTC hour and the wall time is worked out from it. An hour whose first and last second have the same offset
+// has it throughout (a zone changes its offset at most once in an hour); an hour with a change in it is read from Intl
+// instant by instant, so every result is the one Intl gives.
+const HOUR = 3600;
+/** The instants the shortcut covers, 1970 to 9998: toISOString prints their days as Intl's en-CA does. */
+const FAST_FROM = 0;
+const FAST_TO = Date.UTC(9999, 0, 1) / 1000;
+const offsets = new Map<string, Map<number, number | null>>();
+
+/** `tz`'s offset in seconds throughout UTC hour `hour`, or null when it changes within it. */
+function offsetIn(hour: number, tz: string): number | null {
+  let byHour = offsets.get(tz);
+  if (!byHour) offsets.set(tz, (byHour = new Map()));
+  let offset = byHour.get(hour);
+  if (offset === undefined) {
+    const first = hour * HOUR;
+    const last = first + HOUR - 1;
+    const a = intlWall(first, tz).asUtc - first;
+    offset = intlWall(last, tz).asUtc - last === a ? a : null;
+    // About five years of hours per zone, then start again.
+    if (byHour.size >= 50_000) byHour.clear();
+    byHour.set(hour, offset);
+  }
+  return offset;
+}
+
+/** wall() read from Intl: exact for every instant, and slow. */
+function intlWall(s: number, tz: string) {
   let f = formatters.get(tz);
   if (!f) {
     f = new Intl.DateTimeFormat("en-CA", {
@@ -31,8 +68,29 @@ export function wall(s: number, tz: string) {
 /** The local day containing instant `s`. */
 export const localDay = (s: number, tz: string) => wall(s, tz).day;
 
-export const addDays = (day: string, n: number) =>
-  new Date(Date.parse(`${day}T00:00:00Z`) + n * 86_400_000).toISOString().slice(0, 10);
+const DAY_RE = /^\d{4}-\d{2}-\d{2}$/;
+const MONTH_DAYS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+const isLeap = (y: number) => (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
+const pad2 = (x: number) => (x < 10 ? `0${x}` : `${x}`);
+
+/**
+ * `day` moved by `n` days. Stage 1's day keys move along whole baseline windows for every day of the history on each run,
+ * so a real calendar day and a whole `n` (every caller) are done in arithmetic; anything else takes the Date.parse path
+ * it always did, so it gives what the running engine's Date.parse gives.
+ */
+export function addDays(day: string, n: number): string {
+  if (Number.isInteger(n) && DAY_RE.test(day)) {
+    const y = +day.slice(0, 4);
+    const m = +day.slice(5, 7);
+    const d = +day.slice(8, 10);
+    if (y >= 1000 && m >= 1 && m <= 12 && d >= 1 && d <= (m === 2 && isLeap(y) ? 29 : MONTH_DAYS[m - 1])) {
+      const t = new Date(Date.UTC(y, m - 1, d + n));
+      const ty = t.getUTCFullYear();
+      if (ty >= 1000 && ty <= 9999) return `${ty}-${pad2(t.getUTCMonth() + 1)}-${pad2(t.getUTCDate())}`;
+    }
+  }
+  return new Date(Date.parse(`${day}T00:00:00Z`) + n * 86_400_000).toISOString().slice(0, 10);
+}
 
 /** Whole days from `from` to `to`. */
 export const daysBetween = (from: string, to: string) => Math.round((Date.parse(to) - Date.parse(from)) / 86_400_000);
