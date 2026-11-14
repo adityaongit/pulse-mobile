@@ -863,6 +863,14 @@ That switch also adds the app to Android's exemption list, so `expo-battery`'s `
 reads it, and Settings › Notifications & background shows a Battery row: "Unrestricted", or a note and an Open button
 that opens Pulse's App info (`Linking.openSettings()`), where every maker puts the battery choice.
 
+A third part showed only in release builds. A cold background run of 0.5.0 on a Pixel 8 failed before any JavaScript
+ran: Expo couldn't load its headless app loader, `RNHeadlessAppLoader`, by the class name in its manifest
+(`ClassNotFoundException` in logcat). That is the R8 bug fixed in `expo-modules-core` 57.0.25 (expo/expo#52109): in
+57.0.21 only the class's constructor is marked `@DoNotStrip`, and R8 is on since `7a92057`. `expo-background-task`
+57.0.21 then waits for the failed dispatch until JobScheduler stops the job at 10 minutes. That day JobScheduler counted
+46 timeouts for Pulse and logged it as "considered buggy". A run in a process where the app is still loaded skips the
+loader, and debug builds aren't minified.
+
 Each run is also cheaper:
 
 - **Nothing new, nothing read.** When Health Connect's changes feed reports no record written or deleted since the
