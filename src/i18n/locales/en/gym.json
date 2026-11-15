@@ -2,11 +2,17 @@
   "tab": "Gym",
   "card": {
     "title": "Today’s workout",
+    "upNext": "Up next",
+    "inProgress": "In progress",
+    "done": "Done today",
     "start": "Start {{name}}",
     "startEmpty": "Start a workout",
     "resume": "Resume {{name}}",
     "lastDone": "Last done {{when}}",
-    "doneToday": "{{name}} · done today",
+    "progress": "{{done}} of {{total}} sets · {{time}}",
+    "summary_one": "{{time}} · {{count}} set",
+    "summary_other": "{{time}} · {{count}} sets",
+    "noTemplate": "Pick a template or start empty",
     "exercises_one": "{{count}} exercise",
     "exercises_other": "{{count}} exercises",
     "logWeight": "Log weight"
@@ -138,7 +144,9 @@
     "cancel": "Cancel",
     "superset": "Superset",
     "supersetWith": "Superset with {{name}}",
-    "removeSuperset": "Remove superset"
+    "removeSuperset": "Remove superset",
+    "skip": "Skip",
+    "remove": "Remove"
   },
   "reorder": {
     "templates": "Reorder templates",

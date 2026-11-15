@@ -8,22 +8,18 @@ import { cardInfo } from "@/ui/shells/cardInfo";
 import { CalendarRange, Check, ChevronRight, CircleAlert, Info, Maximize2, Moon, Plus, Sun, TriangleAlert } from "lucide-react-native";
 import { isDashboardKey } from "@/lib/dashboard";
 import { dashboardChoice } from "@/actions/dashboard";
-import { actionCtx, dataChanged } from "@/state/app";
 import type { QueryCtx } from "@/queries/ctx";
 import { addDays } from "@/lib/time";
-import { ago, clock, DAY, formatDay, formatValue, MISSING, rangeLabel } from "@/lib/format";
+import { clock, DAY, formatDay, formatValue, MISSING, rangeLabel } from "@/lib/format";
 import { reasonCopy } from "@/lib/reasons";
 import { activityHref, dayHref, napHref } from "@/lib/url";
 import { getHome } from "@/queries/home";
 import { dashboardKeys, getHomeDashboard, type HomeDashboard } from "@/queries/homeExtras";
-import { getHomeGym } from "@/queries/homeGym";
-import { startSession } from "@/actions/gym";
 import type { HomeVM, KeyStat, StressLevel } from "@/queries/types";
 import { EnergyBankChart } from "@/ui/charts/EnergyBankChart";
 import { StrainRecoveryChart } from "@/ui/charts/StrainRecoveryChart";
 import { StressChart } from "@/ui/charts/StressChart";
 import { cn } from "@/ui/cn";
-import { Button } from "@/ui/Button";
 import { CARD_BUTTON, CARD_CLASS, CardFill, SECONDARY_ROW, useCardStyle } from "@/ui/Card";
 import { Icon } from "@/ui/Icon";
 import { ActivityCard } from "@/ui/metrics/ActivityCard";
@@ -57,6 +53,7 @@ import { useScreenReady } from "@/ui/shells/useScreenReady";
 import { preloadWhenIdle, useScreen } from "../useScreen";
 import { EditDashboardButton } from "./EditDashboard";
 import { OfficeCard } from "./OfficeCard";
+import { GymToday } from "./GymToday";
 import { DetectedRow } from "../activity/ActivityCost";
 import { HeartRateTile } from "./HeartRateTile";
 import { HomeInsight } from "./HomeInsight";
@@ -287,56 +284,6 @@ function Home({ vm, timeZone }: { vm: HomePageVM; timeZone: string }) {
         ),
       }}
     />
-  );
-}
-
-function GymToday() {
-  const { t } = useTranslation("gym");
-  const { data } = useScreen(getHomeGym, ["home-gym"]);
-  const [pending, setPending] = useState(false);
-  const [now] = useState(() => Date.now());
-  if (!data) return null;
-  const { active, suggested, doneToday } = data;
-  const start = async () => {
-    if (pending) return;
-    setPending(true);
-    try {
-      const res = await startSession(actionCtx(), suggested && !active ? { routineId: suggested.routineId } : {});
-      if (!res.ok) return;
-      dataChanged("gym");
-      push(`/gym/session/${res.data.session.id}`);
-    } finally {
-      setPending(false);
-    }
-  };
-  const meta = active
-    ? t("home.inProgress")
-    : suggested
-      ? `${t("card.lastDone", { when: ago(suggested.lastTs * 1000, now) })} · ${t("card.exercises", { count: suggested.exercises })}`
-      : doneToday
-        ? t("card.lastDone", { when: ago(doneToday.endTs * 1000, now) })
-        : null;
-  return (
-    <SectionShell variant="card" title={t("card.title")}>
-      <View className="gap-2">
-        {active || suggested || !doneToday ? (
-          <Button onPress={() => void start()} disabled={pending}>
-            {active ? t("card.resume", { name: active.name }) : suggested ? t("card.start", { name: suggested.name }) : t("card.startEmpty")}
-          </Button>
-        ) : (
-          <View className="h-12 flex-row items-center justify-center gap-2 rounded-full bg-optimal/15 px-4">
-            <Icon icon={Check} size={18} tone="optimal-text" strokeWidth={2.6} />
-            <Text className="min-w-0 text-[15px] font-semibold text-optimal-text" numberOfLines={1}>
-              {t("card.doneToday", { name: doneToday.name })}
-            </Text>
-          </View>
-        )}
-        {!!meta && <Text className={cn(CAPTION, "text-center")}>{meta}</Text>}
-        <Button variant="secondary" onPress={() => push("/scale")}>
-          {t("card.logWeight")}
-        </Button>
-      </View>
-    </SectionShell>
   );
 }
 

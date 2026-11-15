@@ -2,10 +2,11 @@
 // the amount dialog a numeric habit opens. Pulse's tokens, in the habit tracker's own layout.
 import { useState } from "react";
 import { Modal, Pressable, View } from "react-native";
-import { Check, Minus, X, type LucideIcon } from "lucide-react-native";
+import { Check, Minus, X } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import type { Habit, HabitColor } from "@/core/habits/types";
 import type { DayState } from "@/core/habits/logic";
+import type { ActivityKind } from "@/queries/habits";
 import { DAY, formatDay } from "@/lib/format";
 import { Button } from "@/ui/Button";
 import { Gradient } from "@/ui/Gradient";
@@ -16,6 +17,7 @@ import { cn } from "@/ui/cn";
 import { useTheme } from "@/ui/theme";
 import type { Palette } from "@/ui/palette";
 import { Input } from "@/screens/log/fields";
+import { ACTIVITY_LOOK } from "./activity";
 
 /** The theme colour a habit was given, in the scheme in force. */
 export const habitColor = (c: Palette, color: HabitColor) => c[color];
@@ -52,14 +54,45 @@ export function DayMark({ habit, state, color, size = 26, today }: { habit: Habi
   );
 }
 
-/** An exercise day: the workout's glyph in a filled disc when done, a bare ring for today, nothing otherwise. */
-export function ExerciseMark({ icon, color, done, today }: { icon: LucideIcon; color: string; done: boolean; today: boolean }) {
+/** Where each bubble of a day's cluster sits in its 36 px box: [left, top, size]. */
+const CLUSTER: [number, number, number][][] = [
+  [],
+  [[5, 5, 26]],
+  [[1, 1, 22], [13, 13, 22]],
+  [[0, 1, 19], [17, 1, 19], [8.5, 16, 19]],
+];
+
+/**
+ * A day of the Activity row: a bubble per kind of workout, in its colour. One fills the cell, two overlap, three make a
+ * triangle, and a fourth or more shows as "+N". A day with none is a bare ring, today's in the accent.
+ */
+export function ActivityCluster({ kinds, today }: { kinds: ActivityKind[]; today: boolean }) {
+  const { c } = useTheme();
+  if (!kinds.length) {
+    return <View className={cn("size-6 rounded-full border", today && "border-2")} style={{ borderColor: today ? c.strain : "rgba(128,128,128,0.45)" }} />;
+  }
+  const shown = kinds.slice(0, 3);
+  const extra = kinds.length - shown.length;
   return (
-    <View
-      className={cn("items-center justify-center rounded-full border", today && "border-2")}
-      style={{ width: 24, height: 24, borderColor: done ? color : today ? color : "rgba(128,128,128,0.45)", backgroundColor: done ? color : "transparent" }}
-    >
-      {done && <Icon icon={icon} size={13} tone="background" strokeWidth={2.4} />}
+    <View style={{ width: 36, height: 36 }}>
+      {shown.map((kind, i) => {
+        const [left, top, size] = CLUSTER[shown.length][i];
+        const look = ACTIVITY_LOOK[kind];
+        return (
+          <View
+            key={kind}
+            className="absolute items-center justify-center rounded-full"
+            style={{ left, top, width: size, height: size, backgroundColor: c[look.color], borderWidth: shown.length > 1 ? 1.5 : 0, borderColor: c.card }}
+          >
+            <Icon icon={look.icon} size={Math.round(size * 0.52)} tone="background" strokeWidth={2.4} />
+          </View>
+        );
+      })}
+      {extra > 0 && (
+        <View className="absolute -bottom-0.5 -right-0.5 size-4 items-center justify-center rounded-full bg-foreground" style={{ borderWidth: 1.5, borderColor: c.card }}>
+          <Text className="font-numeric text-[9px] font-bold leading-3 text-background">{`+${extra}`}</Text>
+        </View>
+      )}
     </View>
   );
 }

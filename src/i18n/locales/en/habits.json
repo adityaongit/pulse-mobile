@@ -150,7 +150,8 @@
     "noneFound": "No new food orders"
   },
   "widget": {
-    "choose": "Choose a habit",    "chooseBody": "Pick the habit this widget shows.",
+    "choose": "Choose a habit",
+    "chooseBody": "Pick the habit this widget shows.",
     "noHabits": "Add a habit in Pulse first.",
     "help": "Widgets",
     "helpTitle": "Habit widgets",
@@ -163,5 +164,23 @@
     "history": "History",
     "empty": "Choose a habit",
     "emptyBody": "Long-press the widget to pick one."
+  },
+  "activity": {
+    "title": "Activity",
+    "week_one": "{{count}} day this week",
+    "week_other": "{{count}} days this week",
+    "empty": "No workouts this day.",
+    "all": "All activities",
+    "kind": {
+      "walk": "Walking",
+      "run": "Running",
+      "ride": "Cycling",
+      "strength": "Strength",
+      "elliptical": "Elliptical",
+      "racket": "Racket sports",
+      "swim": "Swimming",
+      "yoga": "Yoga",
+      "other": "Workout"
+    }
   }
 }

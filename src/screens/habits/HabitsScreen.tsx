@@ -4,10 +4,10 @@
 import { useState } from "react";
 import { ScrollView, View } from "react-native";
 import { useTranslation } from "react-i18next";
-import { Archive, ArchiveRestore, CircleCheckBig, Code2, Pencil, Plus, SkipForward, Trash2, Utensils, type LucideIcon } from "lucide-react-native";
+import { Activity, Archive, ArchiveRestore, CircleCheckBig, Code2, Pencil, Plus, SkipForward, Trash2, Utensils, type LucideIcon } from "lucide-react-native";
 import type { Habit } from "@/core/habits/types";
 import { habitIcon } from "@/core/habits/icons";
-import type { HabitCardVM, ExerciseRowVM } from "@/queries/habits";
+import type { ActivityDayVM, HabitCardVM } from "@/queries/habits";
 import { getHabits } from "@/queries/habits";
 import type { FoodOrdersVM } from "@/queries/foodOrders";
 import { leetcodeView } from "@/leetcode/view";
@@ -16,7 +16,7 @@ import { archiveHabit, clearHabitEntry, deleteHabit, setHabitEntry, skipHabitDay
 import { actionCtx } from "@/state/app";
 import { habitsChanged } from "@/state/habits";
 import { useScreen } from "@/screens/useScreen";
-import { DAY, formatDay } from "@/lib/format";
+import { DAY, clock, formatDay } from "@/lib/format";
 import { Card, CardFill } from "@/ui/Card";
 import { cn } from "@/ui/cn";
 import { Icon } from "@/ui/Icon";
@@ -24,16 +24,17 @@ import { MenuPanel, useMenu } from "@/ui/Menu";
 import { Press } from "@/ui/Press";
 import { Text } from "@/ui/Text";
 import { useTheme } from "@/ui/theme";
-import { ConfirmDialog } from "@/screens/gym/parts";
+import { ConfirmDialog, lengthText } from "@/screens/gym/parts";
 import { EmptyState } from "@/ui/shells/EmptyState";
 import { PageShell } from "@/ui/shells/PageShell";
 import { QueryError } from "@/ui/shells/QueryError";
 import { SectionShell } from "@/ui/shells/SectionShell";
 import { push } from "@/ui/navigate";
 import { toast } from "@/ui/Toast";
-import { DayHeading, DayMark, ExerciseMark, HabitValueDialog, habitColor } from "./parts";
+import { ActivityCluster, DayHeading, DayMark, HabitValueDialog, habitColor } from "./parts";
 import { useFoodOrders } from "./useFoodOrders";
-import { exerciseIcon, exerciseName } from "./exercise";
+import { ACTIVITY_LOOK } from "./activity";
+import { InfoDialog } from "@/ui/shells/InfoDialog";
 
 const nowS = () => Math.floor(Date.now() / 1000);
 
@@ -107,13 +108,14 @@ export function HabitsScreen() {
       ) : (
         <View className="gap-3">
           {data.habits.length === 0 && <EmptyState icon={CircleCheckBig} body={t("emptyBody")} action={{ label: t("new"), onClick: () => push("/habits/edit") }} />}
-          {(data.habits.length > 0 || food.data || data.exercise.length > 0 || leetcode) && (
+          {(data.habits.length > 0 || food.data || data.activityWeek > 0 || Object.keys(data.activity).length > 0 || leetcode) && (
             <HabitGrid
               days={data.days}
               cards={data.habits}
               today={data.today}
               food={food.data ?? null}
-              exercise={data.exercise}
+              activity={data.activity}
+              activityWeek={data.activityWeek}
               leetcode={leetcode}
               onToggle={toggle}
               onSkip={skip}
@@ -181,7 +183,8 @@ function HabitGrid({
   cards,
   today,
   food,
-  exercise,
+  activity,
+  activityWeek,
   leetcode,
   onToggle,
   onSkip,
@@ -192,7 +195,8 @@ function HabitGrid({
   cards: HabitCardVM[];
   today: string;
   food: FoodOrdersVM | null;
-  exercise: ExerciseRowVM[];
+  activity: Record<string, ActivityDayVM>;
+  activityWeek: number;
   leetcode: { day: string; count: number }[] | null;
   onToggle: (habit: Habit, day: string) => Promise<void>;
   onSkip: (habit: Habit, day: string) => Promise<void>;
@@ -202,6 +206,9 @@ function HabitGrid({
   const { t } = useTranslation("habits");
   const { t: tl } = useTranslation("leetcode");
   const { c } = useTheme();
+  const [openDay, setOpenDay] = useState<string | null>(null);
+  // The row stays once there is a workout in the month, so today's empty ring has somewhere to be.
+  const hasActivity = Object.keys(activity).length > 0;
   return (
     <Card className="py-0">
       <CardFill />
@@ -212,10 +219,10 @@ function HabitGrid({
             <HabitNameCell key={card.habit.id} card={card} today={today} first={i === 0} onSkip={onSkip} onDelete={onDelete} onArchive={onArchive} />
           ))}
           {food && <GridNameCell icon={Utensils} label={t("food.title")} first={cards.length === 0} />}
-          {exercise.map((row, i) => (
-            <GridNameCell key={row.type} icon={exerciseIcon(row.type)} label={exerciseName(row.type)} first={cards.length === 0 && !food && i === 0} href="/activities" />
-          ))}
-          {leetcode && <GridNameCell icon={Code2} label={tl("title")} first={cards.length === 0 && !food && exercise.length === 0} href="/leetcode" />}
+          {hasActivity && (
+            <GridNameCell icon={Activity} label={t("activity.title")} sub={t("activity.week", { count: activityWeek })} first={cards.length === 0 && !food} href="/activities" tall />
+          )}
+          {leetcode && <GridNameCell icon={Code2} label={tl("title")} first={cards.length === 0 && !food && !hasActivity} href="/leetcode" />}
         </View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-1">
           <View>
@@ -246,20 +253,23 @@ function HabitGrid({
                 ))}
               </View>
             )}
-            {exercise.map((row, i) => {
-              const Glyph = exerciseIcon(row.type);
-              return (
-                <View key={row.type} className={cn("h-11 flex-row", (cards.length > 0 || !!food || i > 0) && "border-t border-border")}>
-                  {days.map((day) => (
-                    <View key={day} className="h-11 w-10 items-center justify-center">
-                      <ExerciseMark icon={Glyph} color={c.strain} done={(row.days[day] ?? 0) > 0} today={day === today} />
-                    </View>
-                  ))}
-                </View>
-              );
-            })}
+            {hasActivity && (
+              <View className={cn("h-14 flex-row", (cards.length > 0 || !!food) && "border-t border-border")}>
+                {days.map((day) => (
+                  <Press
+                    key={day}
+                    accessibilityRole="button"
+                    accessibilityLabel={`${t("activity.title")} · ${formatDay(day, DAY.long)}`}
+                    onPress={() => setOpenDay(day)}
+                    className="h-14 w-10 items-center justify-center"
+                  >
+                    <ActivityCluster kinds={activity[day]?.kinds ?? []} today={day === today} />
+                  </Press>
+                ))}
+              </View>
+            )}
             {leetcode && (
-              <View className={cn("h-11 flex-row", (cards.length > 0 || !!food || exercise.length > 0) && "border-t border-border")}>
+              <View className={cn("h-11 flex-row", (cards.length > 0 || !!food || hasActivity) && "border-t border-border")}>
                 {leetcode.map((d) => (
                   <CountCell key={d.day} count={d.count} tone="coach" />
                 ))}
@@ -268,7 +278,48 @@ function HabitGrid({
           </View>
         </ScrollView>
       </View>
+      <ActivityDayDialog day={openDay} today={today} items={openDay ? (activity[openDay]?.items ?? []) : []} onClose={() => setOpenDay(null)} />
     </Card>
+  );
+}
+
+/** A day of the Activity row, opened: each workout with its kind, start time and length. */
+function ActivityDayDialog({ day, today, items, onClose }: { day: string | null; today: string; items: ActivityDayVM["items"]; onClose: () => void }) {
+  const { t } = useTranslation("habits");
+  const { t: tc } = useTranslation("common");
+  const { c } = useTheme();
+  return (
+    <InfoDialog
+      open={!!day}
+      onClose={onClose}
+      title={day === today ? tc("today") : day ? formatDay(day, DAY.long) : ""}
+      action={{ label: t("activity.all"), href: "/activities" }}
+      body={
+        items.length ? (
+          <View>
+            {items.map((item, i) => {
+              const look = ACTIVITY_LOOK[item.kind];
+              return (
+                <View key={item.id} className={cn("flex-row items-center gap-3 py-2.5", i > 0 && "border-t border-border")}>
+                  <View className="size-8 items-center justify-center rounded-full" style={{ backgroundColor: c[look.color] }}>
+                    <Icon icon={look.icon} size={16} tone="background" strokeWidth={2.4} />
+                  </View>
+                  <View className="min-w-0 flex-1">
+                    <Text className="text-[15px] font-semibold leading-5" numberOfLines={1}>
+                      {item.name ?? t(`activity.kind.${item.kind}`)}
+                    </Text>
+                    <Text className="font-numeric text-[12px] leading-4 tabular-nums text-muted-foreground">{clock(item.startTs * 1000)}</Text>
+                  </View>
+                  <Text className="font-numeric text-[14px] tabular-nums text-foreground-secondary">{lengthText(Math.max(0, item.endTs - item.startTs))}</Text>
+                </View>
+              );
+            })}
+          </View>
+        ) : (
+          t("activity.empty")
+        )
+      }
+    />
   );
 }
 
@@ -283,18 +334,25 @@ function CountCell({ count, tone }: { count: number; tone: "optimal" | "coach" }
   );
 }
 
-/** A non-habit row's fixed cell: a line icon and the row's name; its screen opens on tap when it has one. */
-function GridNameCell({ icon, label, first, href }: { icon: LucideIcon; label: string; first: boolean; href?: string }) {
+/** A non-habit row's fixed cell: a line icon, the row's name and an optional line under it; its screen opens on tap. */
+function GridNameCell({ icon, label, sub, first, href, tall }: { icon: LucideIcon; label: string; sub?: string; first: boolean; href?: string; tall?: boolean }) {
   const content = (
     <>
       <Icon icon={icon} size={16} tone="foreground-secondary" />
-      <Text className="min-w-0 flex-1 text-[15px] font-semibold leading-5" numberOfLines={1}>
-        {label}
-      </Text>
+      <View className="min-w-0 flex-1">
+        <Text className="text-[15px] font-semibold leading-5" numberOfLines={1}>
+          {label}
+        </Text>
+        {!!sub && (
+          <Text className="text-[11px] leading-4 text-muted-foreground" numberOfLines={1}>
+            {sub}
+          </Text>
+        )}
+      </View>
     </>
   );
   return (
-    <View className={cn("h-11 flex-row items-center px-3", !first && "border-t border-border")}>
+    <View className={cn(tall ? "h-14" : "h-11", "flex-row items-center px-3", !first && "border-t border-border")}>
       {href ? (
         <Press accessibilityRole="link" accessibilityLabel={label} onPress={() => push(href)} className="min-w-0 flex-1 flex-row items-center gap-2">
           {content}

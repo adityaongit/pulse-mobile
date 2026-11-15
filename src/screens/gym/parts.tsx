@@ -92,7 +92,7 @@ export function StatTile({ label, value, aside }: { label: string; value: string
 }
 
 /** A template in the grid: its name, what it holds ("5 × Lat Pulldown (Cable), 5 × …") and when it was last done. */
-export function TemplateCard({ card, onStart, onEdit, onDelete, onReorder }: { card: RoutineCard; onStart: () => void; onEdit: () => void; onDelete: () => void; onReorder: () => void }) {
+export function TemplateCard({ card, next, onStart, onEdit, onDelete, onReorder }: { card: RoutineCard; next?: boolean; onStart: () => void; onEdit: () => void; onDelete: () => void; onReorder: () => void }) {
   const { t } = useTranslation("gym");
   const [now] = useState(() => Math.floor(Date.now() / 1000));
   const cardStyle = useCardStyle();
@@ -129,10 +129,11 @@ export function TemplateCard({ card, onStart, onEdit, onDelete, onReorder }: { c
             onReorder();
           }}
           delayLongPress={350}
-          className={cn(CARD_CLASS, "w-full p-4")}
+          className={cn(CARD_CLASS, "w-full p-4", next && "border border-strain/40")}
           style={cardStyle}
         >
           <View className="gap-2">
+            {next && <Text className="-mb-1.5 text-[11px] font-bold uppercase leading-4 tracking-[0.1em] text-strain-text">{t("card.upNext")}</Text>}
             <View className="flex-row items-start justify-between gap-2">
               <Text className="shrink text-[17px] font-semibold leading-[22px]" numberOfLines={1}>
                 {card.routine.name}
@@ -152,8 +153,8 @@ export function TemplateCard({ card, onStart, onEdit, onDelete, onReorder }: { c
               <Icon icon={Clock} size={12} tone="muted-foreground" />
               <Text className="text-[12px] leading-4 text-muted-foreground">{whenText(card.lastTs, now) || t("home.neverDone")}</Text>
             </View>
-            <View className="size-9 items-center justify-center rounded-full border border-border bg-secondary">
-              <Icon icon={Play} size={16} tone="strain-text" />
+            <View className={cn("size-9 items-center justify-center rounded-full", next ? "bg-foreground" : "border border-border bg-secondary")}>
+              <Icon icon={Play} size={16} tone={next ? "background" : "strain-text"} />
             </View>
           </View>
         </Press>

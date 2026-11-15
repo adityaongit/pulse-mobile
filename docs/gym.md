@@ -8,7 +8,7 @@ Recovery, Strain and Training Load are exactly what they were.
 
 | Route | What it is |
 |---|---|
-| `/gym` (tab) | The templates page: a workout in progress, "My Templates" in one wide column, the last sessions, the week's totals, recent records |
+| `/gym` (tab) | The templates page: a workout in progress, the templates in their saved order with the split's next one first, the last sessions, the week's totals, recent records |
 | `/gym/session/[id]` | The tracking page, and the same page read back after a workout ends. Every edit is saved as it happens |
 | `/gym/history` | Every finished workout, grouped by month |
 | `/gym/exercise/[id]` | One lift: its estimated 1RM, the 1RM curve, and every session it was trained in |
@@ -19,7 +19,33 @@ Recovery, Strain and Training Load are exactly what they were.
 | `/gym/tools` | A set's 1RM with its percentage table, and plate maths |
 | `/gym/import` | Read a Strong export, see what it holds, write it |
 
-The tab replaced Journal, which is still a route: More › Journal, or the round check-in action.
+Home carries the day's workout too: one row with what is up next, in progress or done today (see below).
+
+## Today's workout
+
+Home's tile and the top of the Gym tab name the same template: the next one in the owner's split.
+
+```mermaid
+flowchart TD
+  A[Workout running?] -- yes --> R[Resume it: clock and sets ticked]
+  A -- no --> B[Workout finished today?]
+  B -- yes --> D[Done today: length and sets, no Start]
+  B -- no --> C{Templates named for a split?<br/>push / pull / legs, upper / lower}
+  C -- yes --> N[The step after the last split workout this month<br/>Push → Pull → Legs → Push]
+  C -- no --> L[The template used this month that waited longest]
+  N --> S[Up next]
+  L --> S
+```
+
+- A template plays a step when its name has the word: "Push", "Pull day", "Leg + arms". Other workouts in between (a
+  Cardio day) do not move the split.
+- Only templates trained in the last 30 days count. With nothing this month there is no guess, and the tile offers an
+  empty workout.
+- The code is `nextRoutine` in `src/queries/homeGym.ts`; the tests beside it walk the cases.
+
+The Home tile is one row: a glyph, the label (Up next, In progress, Done today), the name, a line under it, a round
+Log weight key and a round Start (or Resume) key. Tapping the row opens the template, the running workout or the one done
+today.
 
 ## The tracking page
 
@@ -55,17 +81,30 @@ tick at the end of the row, `ADD SET` under it, and the workout's timer under it
 - **The template can be updated while training.** "Update template" in the session menu (or on the finish dialog) opens
   a preview of the change first: exercises added, removed, skipped today, and set/reps changes. Confirm makes the
   session's template match its ticked exercises; the next session from it starts with that shape, not the old exercises.
-- **Home does not offer today's workout twice.** Once a workout is finished, Home's card shows it as done for the rest of
-  the day (name and how long ago, no Start); the next template is suggested tomorrow. Log weight stays on the card.
+- **Progress at a glance.** Under the title, one thin segment per exercise fills as its sets are ticked and turns green
+  when they all are. Each card shows its count ("2/5") beside the name, and Finish turns green once every set is ticked.
+- **Home does not offer today's workout twice.** Once a workout is finished, Home's tile shows it as done for the rest of
+  the day (length and sets, no Start); the split's next template is suggested tomorrow. Log weight stays on the tile.
 
 ## Gestures
 
-- **A template** swipes right to start it, or left for Edit and Delete. Hold it to reorder the templates: the sheet opens
-  with the list, and a held row follows the finger past its neighbours. Keep the three-dot menu for the same actions.
-- **An exercise** in a workout keeps its three-dot menu for move, superset, skip and remove. Hold its name to reorder the
-  workout's exercises. The long press does not fire when the finger moves, so the page still scrolls under it.
-- **A set** swipes left to reveal Delete, and keeps its long press: the set details (warmup, drop, failure, RPE, note,
-  delete) open without hunting for the number. The green row (above) shows what is done.
+| Where | Gesture | Does |
+|---|---|---|
+| Template | swipe right | Start it |
+| Template | swipe left | Edit, Delete |
+| Template | hold | Reorder the templates (the order is kept; the next one in the split still shows first) |
+| Exercise card | swipe right | Its history |
+| Exercise card | swipe left | Skip for today, Remove (with Undo) |
+| Exercise name | hold | Reorder the workout's exercises |
+| Exercise ••• | tap | Move, superset, unit, history, skip, remove |
+| Set | tap the circle | Tick it (the row turns green) |
+| Set | swipe left | Delete, with Undo |
+| Set | hold, or tap its number | Warmup / drop / failure, RPE, note, delete |
+
+- A set row sits inside its exercise card, and both swipe: the finger on a set moves the set, the finger on the card's
+  header or its Add set row moves the card. The swipe needs a deliberate 24 px pull first, so a vertical scroll never
+  opens one.
+- A long press does not fire when the finger moves, so the page still scrolls under it.
 - **The workout page keeps its rows attached while scrolling.** Android's clipped-subview pass detaches and reattaches
   TextInput rows, which can swallow a drag on a long workout; that page opts out (`clipBody={false}` in
   `DetailShell`).

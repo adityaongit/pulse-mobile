@@ -47,9 +47,8 @@ change to the formula would make stale.
 - `/habits` — a table of habits: a fixed column of icons and names, then a month of days with today first that
   scrolls sideways. Tapping a day ticks it (yes/no) or opens the amount dialog (numeric); tapping a name opens the
   habit, holding it opens the menu for edit, skip, archive and delete. After the habits come **Food orders** (a month of
-  per-day counts from the SMS confirmations), the month's **workouts** by Health Connect exercise type (badminton,
-  strength training, elliptical, …; a glyph marks each day with a session) and, when a profile is connected,
-  **LeetCode** (a month of submissions). A workout or LeetCode name opens `/activities` or `/leetcode`; **Scan** beside
+  per-day counts from the SMS confirmations), one **Activity** row for the month's workouts (see below) and, when a profile is connected,
+  **LeetCode** (a month of submissions). The Activity or LeetCode name opens `/activities` or `/leetcode`; **Scan** beside
   New habit reads new food orders (`docs/food-orders.md`).
 - `/habits/[id]` — the large strength ring, current and best streaks, the last 20 weeks as a calendar, the 90-day score
   curve, the question and notes.
@@ -89,3 +88,28 @@ removes its stored habit choice; deleting a habit leaves the widget showing "Cho
 `src/core/habits/logic.test.ts` pins the score to Loop's published values (0.655747 after 20 daily ticks, 0.596033 with
 three skips), weekly completion, numeric targets and streaks. `src/actions/habits.test.ts` covers the writes, and
 `src/data/db.contract.test.ts` runs the SQLite round-trip.
+
+## The Activity row
+
+Every workout Health Connect holds for the month sits in one row, not a row per exercise type. Each day shows a bubble
+per kind of workout done that day, in that kind's colour and glyph:
+
+| Kind | Health Connect types | Colour |
+|---|---|---|
+| Walking | walking, hiking | optimal green |
+| Running | running, treadmill | red |
+| Cycling | biking, cycling | strain blue |
+| Strength | strength training, weightlifting, calisthenics, HIIT | violet |
+| Elliptical | elliptical | amber |
+| Racket sports | badminton, tennis, squash, padel, table tennis | coach blue |
+| Swimming | pool, open water | sleep blue |
+| Yoga | yoga, pilates, stretching | yellow |
+| Workout | anything else | grey |
+
+One kind fills the cell, two overlap, three make a triangle, and more show "+N". A day with none is a bare ring, today's
+in blue. The name cell says how many days this week (Monday on) had a workout. Tapping a day opens its sessions with
+start time and length, and a link to all activities.
+
+Folding types into kinds is `activityKind` in `src/queries/habits.ts`; the colours and glyphs are
+`src/screens/habits/activity.ts`.
+

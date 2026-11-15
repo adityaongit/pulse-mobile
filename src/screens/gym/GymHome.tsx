@@ -1,5 +1,6 @@
-// The gym tab `/gym`: Strong's Workout page. The owner's templates in one wide column, the workout in progress above
-// them, then the last sessions and the week's totals. Tapping a template starts it; "Start empty" starts a blank one.
+// The gym tab `/gym`: the owner's templates in their saved order, the split's next one first, the workout in progress
+// above them, then the last sessions and the week's totals. Tapping a template starts it; "Start empty" starts a blank
+// one. Swipe a template right to start it, left to edit or delete it; hold it to reorder.
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
@@ -98,6 +99,7 @@ export function GymHome() {
                   <TemplateCard
                     key={card.routine.id}
                     card={card}
+                    next={card.routine.id === data.nextId}
                     onStart={() => void start(card.routine.id)}
                     onEdit={() => push(`/gym/routine/${card.routine.id}`)}
                     onDelete={() => setRemoving({ id: card.routine.id, name: card.routine.name })}

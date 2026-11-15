@@ -37,24 +37,27 @@ describe("the habits list's day grid", () => {
   });
 });
 
-describe("the habits table's exercise rows", () => {
-  it("groups the month's workouts by type, the most days first, with each day's sessions", async () => {
+describe("the habits table's Activity row", () => {
+  it("puts the month's workouts in one row: each day's kinds once, strength types merged, oldest session first", async () => {
     const store: Store = openMemoryStore();
-    const exercise = (id: string, day: string, type: string) => ({ id, day, startTs: 1, endTs: 2, type, name: null, calories: null, distanceM: null });
+    const exercise = (id: string, day: string, type: string, startTs: number) => ({ id, day, startTs, endTs: startTs + 60, type, name: null, calories: null, distanceM: null });
     await store.upsertExercises([
-      exercise("e1", TODAY, "BADMINTON"),
-      exercise("e2", "2026-11-11", "STRENGTH_TRAINING"),
-      exercise("e3", "2026-11-11", "BADMINTON"),
-      exercise("e4", "2026-10-01", "ELLIPTICAL"),
+      exercise("e1", TODAY, "BADMINTON", 10),
+      exercise("e2", "2026-11-11", "WEIGHTLIFTING", 30),
+      exercise("e3", "2026-11-11", "WALKING", 10),
+      exercise("e5", "2026-11-11", "STRENGTH_TRAINING", 50),
+      exercise("e4", "2026-10-01", "ELLIPTICAL", 10),
     ]);
     const now = Date.parse(`${TODAY}T09:00:00Z`) / 1000;
     const ctx: QueryCtx = { store, profile: PROFILE, timeZone: "UTC", today: TODAY, now, sync: { lastSyncTs: null, firstDay: null, lastError: null } };
     const vm = await getHabits(ctx);
     expect(vm.days).toHaveLength(30);
     expect(vm.days[0]).toBe(TODAY);
-    expect(vm.exercise).toEqual([
-      { type: "BADMINTON", days: { [TODAY]: 1, "2026-11-11": 1 } },
-      { type: "STRENGTH_TRAINING", days: { "2026-11-11": 1 } },
-    ]);
+    expect(Object.keys(vm.activity).sort()).toEqual(["2026-11-11", TODAY].sort());
+    expect(vm.activity[TODAY].kinds).toEqual(["racket"]);
+    expect(vm.activity["2026-11-11"].kinds).toEqual(["walk", "strength"]);
+    expect(vm.activity["2026-11-11"].items.map((i) => i.id)).toEqual(["e3", "e2", "e5"]);
+    // 2026-11-12 is a Thursday: the 11th and the 12th are this week, 1 October is not.
+    expect(vm.activityWeek).toBe(2);
   });
 });

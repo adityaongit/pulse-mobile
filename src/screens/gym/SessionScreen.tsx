@@ -345,9 +345,9 @@ export function SessionScreen() {
                     setConfirmAt(nowS());
                     setConfirm("finish");
                   }}
-                  className="h-11 items-center justify-center px-2"
+                  className={cn("h-9 items-center justify-center rounded-full px-4", !empty && pending === 0 ? "bg-optimal" : "bg-secondary")}
                 >
-                  <Text className="text-[12px] font-bold uppercase tracking-[0.1em] text-strain-deep dark:text-strain-text">{t("session.finish")}</Text>
+                  <Text className={cn("text-[12px] font-bold uppercase tracking-[0.1em]", !empty && pending === 0 ? "text-background" : "text-foreground")}>{t("session.finish")}</Text>
                 </Press>
               )}
               <View ref={menuRef} collapsable={false}>
@@ -373,6 +373,7 @@ export function SessionScreen() {
           }
           primary={
             <View className="gap-4">
+              {!session.finished && vm.blocks.length > 0 && <Progress blocks={vm.blocks} isDone={isDone} />}
               {session.finished && !empty && (
                 <Card className="gap-4 px-4 py-4">
                   <CardFill />
@@ -454,6 +455,7 @@ export function SessionScreen() {
                     finished={session.finished}
                     allDone={block.sets.every((s) => isDone(s))}
                     someDone={block.sets.some((s) => isDone(s))}
+                    doneSets={block.sets.filter(isDone).length}
                     canUp={index > 0}
                     canDown={index < vm.blocks.length - 1}
                     prSetIds={vm.prSetIds}
@@ -607,6 +609,22 @@ export function SessionScreen() {
   );
 }
 
+/** The workout's progress: a segment per exercise, filling as its sets are ticked and turning green when all are. */
+function Progress({ blocks, isDone }: { blocks: Block[]; isDone: (s: GymSet) => boolean }) {
+  return (
+    <View className="-mt-1 flex-row gap-1" accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+      {blocks.map((block) => {
+        const share = block.sets.length ? block.sets.filter(isDone).length / block.sets.length : 0;
+        return (
+          <View key={block.exercise.id} className="h-1 flex-1 overflow-hidden rounded-full bg-secondary">
+            <View className={cn("h-full rounded-full", share === 1 ? "bg-optimal" : "bg-strain")} style={{ width: `${share * 100}%` }} />
+          </View>
+        );
+      })}
+    </View>
+  );
+}
+
 /** One switch in the finish dialog: skip what was not done, or make the template match today. */
 function FinishOption({ label, hint, value, onChange }: { label: string; hint: string; value: boolean; onChange: (v: boolean) => void }) {
   return (
@@ -640,6 +658,7 @@ function BlockCard({
   finished,
   allDone,
   someDone,
+  doneSets,
   canUp,
   canDown,
   prSetIds,
@@ -665,6 +684,8 @@ function BlockCard({
   finished: boolean;
   allDone: boolean;
   someDone: boolean;
+  /** Sets ticked so far, for the count beside the name. */
+  doneSets: number;
   canUp: boolean;
   canDown: boolean;
   prSetIds: string[];
@@ -689,8 +710,16 @@ function BlockCard({
   const allTicked = workSets.length > 0 && workSets.every((s) => s.completed);
   const delta = allTicked && lastVolume > 0 && nowVolume > 0 ? Math.round(((nowVolume - lastVolume) / lastVolume) * 100) : null;
 
+  // Swipe the card for the exercise's actions; a set row's own swipe (delete) wins where the finger lands on a set.
+  const cardLeft = [{ label: t("exercise.history"), icon: History, onPress: () => push(`/gym/exercise/${exercise.id}`) }];
+  const cardRight = [
+    ...(!finished && !allDone ? [{ label: t("session.skip"), icon: SkipForward, onPress: () => onSkip(block) }] : []),
+    { label: t("session.remove"), icon: Trash2, tone: "danger" as const, onPress: () => setRemove(true) },
+  ];
+
   return (
-    <Card className="px-3 py-4">
+    <SwipeActions left={cardLeft} right={cardRight}>
+      <Card className="px-3 py-4">
         <CardFill />
         <View className="mb-3 flex-row items-center gap-2 px-1">
           <Press
@@ -708,6 +737,7 @@ function BlockCard({
               {exercise.name}
             </Text>
           </Press>
+          <Text className={cn("font-numeric text-[12px] font-semibold tabular-nums", allDone ? "text-optimal-text" : "text-muted-foreground")}>{`${doneSets}/${block.sets.length}`}</Text>
           {!!supersetId && (
             <View className="h-5 items-center justify-center rounded-full bg-secondary px-2">
               <Text className="text-[10px] font-bold uppercase tracking-[0.06em] text-muted-foreground">{t("session.superset")}</Text>
@@ -763,69 +793,70 @@ function BlockCard({
                   onMenu={() => setNoting(set)}
                 />
               </View>
-            </SwipeActions>
-          ))}
+          </SwipeActions>
+        ))}
         </View>
 
         <Press accessibilityRole="button" onPress={() => onAddSet(block)} className="mt-1 h-11 items-center justify-center">
-          <Text className="text-[12px] font-bold uppercase tracking-[0.1em] text-foreground-secondary">{t("session.addSet")}</Text>
+        <Text className="text-[12px] font-bold uppercase tracking-[0.1em] text-foreground-secondary">{t("session.addSet")}</Text>
         </Press>
 
         <MenuPanel anchor={anchor} onClose={closeMenu} align="end">
-          {canUp && <MenuItem icon={ArrowUp} label={t("session.moveUp")} onPress={() => (closeMenu(), onMove(block, -1))} />}
-          {canDown && <MenuItem icon={ArrowDown} label={t("session.moveDown")} onPress={() => (closeMenu(), onMove(block, 1))} />}
-          {supersetId ? (
-            <MenuItem icon={Scale} label={t("session.removeSuperset")} onPress={() => (closeMenu(), onSuperset(block, null, false))} />
-          ) : next ? (
-            <MenuItem icon={Plus} label={t("session.supersetWith", { name: next.exercise.name })} onPress={() => (closeMenu(), onSuperset(block, next, true))} />
-          ) : null}
-          <MenuItem icon={Scale} label={t("session.changeUnit", { unit: unit === "kg" ? "LB" : "KG" })} onPress={() => (closeMenu(), void setUnit(exercise, unit === "kg" ? "lb" : "kg"))} />
-          <MenuItem icon={History} label={t("exercise.history")} onPress={() => (closeMenu(), push(`/gym/exercise/${exercise.id}`))} />
-          {!finished && !allDone && <MenuItem icon={SkipForward} label={t("session.skipToday")} onPress={() => (closeMenu(), onSkip(block))} />}
-          <MenuItem icon={Trash2} label={t("session.removeExercise")} danger onPress={() => (closeMenu(), setRemove(true))} />
+        {canUp && <MenuItem icon={ArrowUp} label={t("session.moveUp")} onPress={() => (closeMenu(), onMove(block, -1))} />}
+        {canDown && <MenuItem icon={ArrowDown} label={t("session.moveDown")} onPress={() => (closeMenu(), onMove(block, 1))} />}
+        {supersetId ? (
+          <MenuItem icon={Scale} label={t("session.removeSuperset")} onPress={() => (closeMenu(), onSuperset(block, null, false))} />
+        ) : next ? (
+          <MenuItem icon={Plus} label={t("session.supersetWith", { name: next.exercise.name })} onPress={() => (closeMenu(), onSuperset(block, next, true))} />
+        ) : null}
+        <MenuItem icon={Scale} label={t("session.changeUnit", { unit: unit === "kg" ? "LB" : "KG" })} onPress={() => (closeMenu(), void setUnit(exercise, unit === "kg" ? "lb" : "kg"))} />
+        <MenuItem icon={History} label={t("exercise.history")} onPress={() => (closeMenu(), push(`/gym/exercise/${exercise.id}`))} />
+        {!finished && !allDone && <MenuItem icon={SkipForward} label={t("session.skipToday")} onPress={() => (closeMenu(), onSkip(block))} />}
+        <MenuItem icon={Trash2} label={t("session.removeExercise")} danger onPress={() => (closeMenu(), setRemove(true))} />
         </MenuPanel>
 
         <ConfirmDialog
-          open={remove}
-          title={t("session.removeExercise")}
-          body={t("session.removeExerciseBody", { count: block.sets.length })}
-          confirm={t("session.removeExercise")}
-          onCancel={() => setRemove(false)}
-          onConfirm={() => {
-            setRemove(false);
-            onRemoveExercise(block);
-          }}
+        open={remove}
+        title={t("session.removeExercise")}
+        body={t("session.removeExerciseBody", { count: block.sets.length })}
+        confirm={t("session.removeExercise")}
+        onCancel={() => setRemove(false)}
+        onConfirm={() => {
+          setRemove(false);
+          onRemoveExercise(block);
+        }}
         />
         {noting && (
-          <NoteDialog
-            number={noting.setNo}
-            initial={noting.note ?? ""}
-            type={noting.type}
-            rpe={noting.rpe}
-            onClose={() => setNoting(null)}
-            onSave={(type, note, rpe) => {
-              onDetails(noting, { type, note, rpe });
-              setNoting(null);
-            }}
-            onDelete={() => {
-              onRemoveSet(noting);
-              setNoting(null);
-            }}
-          />
+        <NoteDialog
+          number={noting.setNo}
+          initial={noting.note ?? ""}
+          type={noting.type}
+          rpe={noting.rpe}
+          onClose={() => setNoting(null)}
+          onSave={(type, note, rpe) => {
+            onDetails(noting, { type, note, rpe });
+            setNoting(null);
+          }}
+          onDelete={() => {
+            onRemoveSet(noting);
+            setNoting(null);
+          }}
+        />
         )}
         {/* A note or an RPE on any set shows under the exercise: the file's notes, and the ones typed here. */}
         {block.sets.some((s) => s.note || s.rpe) && (
-          <View className="mt-1 gap-1 px-1">
-            {block.sets
-              .filter((s) => s.note || s.rpe)
-              .map((s) => (
-                <Text key={s.id} className="text-[12px] leading-4 text-muted-foreground" onPress={() => setNoting(s)}>
-                  {`${s.setNo}. ${[s.note, s.rpe ? `${t("session.rpe")} ${s.rpe}` : null].filter(Boolean).join(" · ")}`}
-                </Text>
-              ))}
-          </View>
+        <View className="mt-1 gap-1 px-1">
+          {block.sets
+            .filter((s) => s.note || s.rpe)
+            .map((s) => (
+              <Text key={s.id} className="text-[12px] leading-4 text-muted-foreground" onPress={() => setNoting(s)}>
+                {`${s.setNo}. ${[s.note, s.rpe ? `${t("session.rpe")} ${s.rpe}` : null].filter(Boolean).join(" · ")}`}
+              </Text>
+            ))}
+        </View>
         )}
       </Card>
+    </SwipeActions>
   );
 }
 

@@ -9,6 +9,7 @@ import { MEASUREMENTS } from "@/core/gym/types";
 import type { Store } from "@/data/store";
 import type { GymImportState, GymMeasurement, GymRoutine } from "@/data/gym";
 import type { QueryCtx } from "./ctx";
+import { nextRoutine } from "./homeGym";
 
 export { CATALOGUE };
 
@@ -71,7 +72,10 @@ export type RoutineCard = {
 export type GymHomeVM = {
   today: string;
   active: { session: GymSession; setCount: number; done: number; volumeKg: number; exercises: string[] } | null;
+  /** The owner's templates in their saved order, the split's next one lifted to the top. */
   routines: RoutineCard[];
+  /** The template Home suggests today (the split's next), or null. */
+  nextId: string | null;
   recent: SessionCard[];
   week: { sessions: number; sets: number; volumeKg: number; seconds: number; unit: WeightUnit };
   records: { exercise: GymExercise; record: PersonalRecord }[];
@@ -106,14 +110,11 @@ export async function getGymHome(ctx: QueryCtx): Promise<GymHomeVM> {
     };
   });
 
-  // Templates read like a "last used" list: the one trained two days ago first, then last week's, then the ones never
-  // started, in their own saved order.
-  cards.sort((a, b) => {
-    if (a.lastTs && b.lastTs) return b.lastTs - a.lastTs;
-    if (a.lastTs) return -1;
-    if (b.lastTs) return 1;
-    return a.routine.position - b.routine.position;
-  });
+  // The owner's saved order (the reorder sheet writes it), with the split's next template first: the one to start
+  // today is the first card, the same one Home suggests.
+  const known = new Set(routines.routines.map((r) => r.id));
+  const next = nextRoutine(routines.routines, sessions.filter((s) => s.finished && !!s.routineId && known.has(s.routineId)), ctx.now);
+  cards.sort((a, b) => Number(b.routine.id === next?.id) - Number(a.routine.id === next?.id) || a.routine.position - b.routine.position);
 
   const totals = new Map<string, { record: PersonalRecord; name: GymExercise }>();
   for (const [id, record] of recordsOf(all)) totals.set(id, { record, name: map.get(id) ?? ghost(id) });
@@ -134,6 +135,7 @@ export async function getGymHome(ctx: QueryCtx): Promise<GymHomeVM> {
         }
       : null,
     routines: cards,
+    nextId: next?.id ?? null,
     recent: sessions
       .filter((s) => s.finished && hasWork(bySession.get(s.id) ?? []))
       .slice(0, 5)
