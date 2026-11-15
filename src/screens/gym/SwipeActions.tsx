@@ -46,6 +46,9 @@ export function SwipeActions({ children, left, right }: { children: ReactNode; l
       friction={2}
       leftThreshold={42}
       rightThreshold={42}
+      // A sideways drift of 10 px was enough to open a row mid-scroll: ask for a deliberate pull.
+      dragOffsetFromLeftEdge={24}
+      dragOffsetFromRightEdge={24}
       overshootLeft={false}
       overshootRight={false}
       renderLeftActions={left ? (_p, _t, methods) => <Actions actions={left} methods={methods} /> : undefined}

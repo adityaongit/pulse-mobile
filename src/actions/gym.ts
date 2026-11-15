@@ -4,6 +4,7 @@
 import { BY_ID, resolveExerciseId } from "@/core/gym/catalogue";
 import { importStrongCsv, type ImportSummary } from "@/core/gym/csv";
 import { estimate1Rm } from "@/core/gym/load";
+import { planItemsOf } from "@/core/gym/plan";
 import { groupByExercise, isWorkSet, previousSets } from "@/core/gym/stats";
 import type { BodyPart, Equipment, GymExercise, GymMeasurement, GymRoutine, GymRoutineItem, GymSession, GymSet, MeasurementKind, SetType, WeightUnit } from "@/core/gym/types";
 import { MEASUREMENTS } from "@/core/gym/types";
@@ -388,18 +389,6 @@ export async function reorderRoutines(store: Store, ordered: string[], now: numb
   }
 }
 
-/** A session's working exercises as template rows: each exercise's set count and its most common reps. */
-function routineItemsOf(sets: readonly GymSet[]) {
-  return groupByExercise(sets)
-    .map((g, position) => {
-      const counts = new Map<number, number>();
-      for (const s of g.sets) counts.set(s.reps, (counts.get(s.reps) ?? 0) + 1);
-      const reps = [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? 10;
-      return { exerciseId: g.exerciseId, position, sets: g.sets.length, reps };
-    })
-    .filter((i) => i.exerciseId);
-}
-
 /**
  * Turns a finished workout into a template: its working exercises, the sets each was done for, and the most common
  * reps. The next session with that name then opens with the same shape. A name already in the templates gets a number.
@@ -407,7 +396,7 @@ function routineItemsOf(sets: readonly GymSet[]) {
 export async function saveSessionAsRoutine(store: Store, session: GymSession, now: number): Promise<GymRoutine | null> {
   const sets = (await store.gymSets([session.id])).filter(isWorkSet);
   if (!sets.length) return null;
-  const items = routineItemsOf(sets);
+  const items = planItemsOf(sets);
   if (!items.length) return null;
   const { routines } = await store.gymRoutines();
   const taken = new Set(routines.map((r) => r.name.toLowerCase()));
@@ -434,7 +423,7 @@ export async function updateRoutineFromSession(store: Store, session: GymSession
   const { routines } = await store.gymRoutines();
   const routine = routines.find((r) => r.id === session.routineId);
   if (!routine) return null;
-  const items = routineItemsOf(sets);
+  const items = planItemsOf(sets);
   if (!items.length) return null;
   const res = await saveRoutine(store, { id: routine.id, name: routine.name, notes: routine.notes, items: items.map(({ exerciseId, sets: count, reps }) => ({ exerciseId, sets: count, reps })) }, now);
   return res.ok ? res.data : null;

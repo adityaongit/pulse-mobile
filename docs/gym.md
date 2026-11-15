@@ -49,10 +49,12 @@ tick at the end of the row, `ADD SET` under it, and the workout's timer under it
 - **The +% badge** is today's volume against that same session's. Strong's "+0%", computed from the sets, not a stored
   number.
 - **The finish card** sums the workout, celebrates the sets that beat an earlier 1RM, and turns a free workout into a
-  template. A workout with no ticked working set is discarded rather than saved as an empty day.
-- **The template can be updated while training.** "Update template" in the session menu (or on the finish dialog) makes
-  the session's template match its ticked exercises, sets and most common reps; the next session from it starts with
-  that shape, not the old exercises.
+  template. It opens as the "what I did" summary: one row per exercise with its set count and best set, then duration,
+  sets and volume, with the full set-by-set page behind a Details toggle. A workout with no ticked working set is
+  discarded rather than saved as an empty day.
+- **The template can be updated while training.** "Update template" in the session menu (or on the finish dialog) opens
+  a preview of the change first: exercises added, removed, skipped today, and set/reps changes. Confirm makes the
+  session's template match its ticked exercises; the next session from it starts with that shape, not the old exercises.
 - **Home does not offer today's workout twice.** Once a workout is finished, Home's card shows it as done for the rest of
   the day (name and how long ago, no Start); the next template is suggested tomorrow. Log weight stays on the card.
 
@@ -60,11 +62,10 @@ tick at the end of the row, `ADD SET` under it, and the workout's timer under it
 
 - **A template** swipes right to start it, or left for Edit and Delete. Hold it to reorder the templates: the sheet opens
   with the list, and a held row follows the finger past its neighbours. Keep the three-dot menu for the same actions.
-- **An exercise** in a workout swipes right to tick or untick all its sets, or left to skip it for today or remove it.
-  Hold its name to reorder the workout's exercises. The long press does not fire when the finger moves, so the page still
-  scrolls under it.
-- **A set** keeps its long press: the set details (warmup, drop, failure, RPE, note, delete) open without hunting for the
-  number. The green row (above) shows what is done.
+- **An exercise** in a workout keeps its three-dot menu for move, superset, skip and remove. Hold its name to reorder the
+  workout's exercises. The long press does not fire when the finger moves, so the page still scrolls under it.
+- **A set** swipes left to reveal Delete, and keeps its long press: the set details (warmup, drop, failure, RPE, note,
+  delete) open without hunting for the number. The green row (above) shows what is done.
 - **The workout page keeps its rows attached while scrolling.** Android's clipped-subview pass detaches and reattaches
   TextInput rows, which can swallow a drag on a long workout; that page opts out (`clipBody={false}` in
   `DetailShell`).

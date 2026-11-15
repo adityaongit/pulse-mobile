@@ -3,6 +3,7 @@
 import { CATALOGUE } from "@/core/gym/catalogue";
 import { estimate1Rm } from "@/core/gym/load";
 import { bestSet, groupByExercise, hasWork, isRepSet, isWorkSet, oneRmSeries, previousSets, recentExercises, recordsOf, setsRecord, volumeOf, type PersonalRecord } from "@/core/gym/stats";
+import { planDiff, planItemsOf, type PlanItem } from "@/core/gym/plan";
 import type { GymExercise, GymSession, GymSet, MeasurementKind, WeightUnit } from "@/core/gym/types";
 import { MEASUREMENTS } from "@/core/gym/types";
 import type { Store } from "@/data/store";
@@ -357,4 +358,36 @@ export async function getGymRoutine(ctx: QueryCtx, id: string): Promise<RoutineV
 
 export async function getGymRoutineList(ctx: QueryCtx): Promise<{ routines: GymRoutine[] }> {
   return { routines: (await ctx.store.gymRoutines()).routines };
+}
+
+/** What updating a session's template would change, before it is written: exercises added, removed, skipped or reshaped. */
+export type RoutineUpdateVM = {
+  routine: GymRoutine;
+  added: { exercise: GymExercise; sets: number; reps: number }[];
+  removed: { exercise: GymExercise; sets: number; reps: number }[];
+  /** Still in today's workout but with no ticked set: the update drops it from the template too. */
+  skipped: { exercise: GymExercise; sets: number; reps: number }[];
+  changed: { exercise: GymExercise; from: PlanItem; to: PlanItem }[];
+  unchanged: number;
+};
+
+export async function getGymRoutineUpdate(ctx: QueryCtx, sessionId: string): Promise<RoutineUpdateVM | null> {
+  const [map, data, sessions, sets] = await Promise.all([exerciseMap(ctx.store), ctx.store.gymRoutines(), ctx.store.gymSessions(), ctx.store.gymSets([sessionId])]);
+  const session = sessions.find((s) => s.id === sessionId);
+  if (!session) return null;
+  const routine = data.routines.find((r) => r.id === session.routineId);
+  if (!routine) return null;
+  const current = data.items.filter((i) => i.routineId === routine.id).sort((a, b) => a.position - b.position);
+  const diff = planDiff(current, planItemsOf(sets.filter(isWorkSet)));
+  // An exercise with rows in today's workout but no ticked set was skipped, not left out of the plan.
+  const today = new Set(sets.map((s) => s.exerciseId));
+  const row = (i: PlanItem) => ({ exercise: map.get(i.exerciseId) ?? ghost(i.exerciseId), sets: i.sets, reps: i.reps });
+  return {
+    routine,
+    added: diff.added.map(row),
+    removed: diff.removed.filter((i) => !today.has(i.exerciseId)).map(row),
+    skipped: diff.removed.filter((i) => today.has(i.exerciseId)).map(row),
+    changed: diff.changed.map(({ from, to }) => ({ exercise: map.get(to.exerciseId) ?? ghost(to.exerciseId), from, to })),
+    unchanged: diff.unchanged,
+  };
 }
