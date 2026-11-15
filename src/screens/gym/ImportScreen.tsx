@@ -20,6 +20,7 @@ import { ProgressBar } from "@/ui/ProgressBar";
 import { DAY, formatDay } from "@/lib/format";
 import { toast } from "@/ui/Toast";
 import { ConfirmDialog, StatTile } from "./parts";
+import { attempt } from "@/lib/attempt";
 
 export function ImportScreen() {
   const { t } = useTranslation("gym");
@@ -34,7 +35,7 @@ export function ImportScreen() {
 
   const choose = async () => {
     setBusy(true);
-    try {
+    await attempt(async () => {
       const picked = await File.pickFileAsync({ mimeTypes: ["text/csv", "text/plain", "application/vnd.ms-excel", "text/comma-separated-values", "*/*"] });
       if (picked.canceled) return;
       const content = await picked.result.text();
@@ -46,18 +47,18 @@ export function ImportScreen() {
       setText(content);
       setPreview(res.data);
       setDone(null);
-    } catch {
+    }, { catch: () => {
       toast.error(t("import.error"));
-    } finally {
+    }, finally: () => {
       setBusy(false);
-    }
+    } });
   };
 
   const run = async () => {
     if (!text) return;
     setBusy(true);
     setProgress({ done: 0, total: preview?.result.sessions.length ?? 0 });
-    try {
+    await attempt(async () => {
       const res = await importStrong(actionCtx(), text, setProgress);
       if (!res.ok) {
         toast.error(t("import.nothing"));
@@ -67,10 +68,10 @@ export function ImportScreen() {
       setPreview(null);
       dataChanged("gym");
       toast.success(t("import.done", { count: res.data.sessions }));
-    } finally {
+    }, { finally: () => {
       setBusy(false);
       setProgress(null);
-    }
+    } });
   };
 
   const s = done ?? preview?.result.summary ?? null;
@@ -81,7 +82,7 @@ export function ImportScreen() {
   const runUndo = async () => {
     if (!confirmUndo) return;
     setUndoing(true);
-    try {
+    await attempt(async () => {
       await undoStrongImport(actionCtx().store, confirmUndo);
       dataChanged("gym");
       setDone(null);
@@ -89,9 +90,9 @@ export function ImportScreen() {
       setText(null);
       setConfirmUndo(null);
       toast.success(t("import.undone"));
-    } finally {
+    }, { finally: () => {
       setUndoing(false);
-    }
+    } });
   };
 
   return (

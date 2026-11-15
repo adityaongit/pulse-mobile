@@ -1,5 +1,5 @@
 // Shared by the Trends, Metric detail and Reports screens (web: trends/parts.tsx and the loading shapes).
-import { useMemo, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { View } from "react-native";
 import Animated, { useAnimatedStyle, withTiming } from "react-native-reanimated";
 import { router } from "expo-router";
@@ -116,16 +116,18 @@ export function HistoryChartSkeleton() {
   );
 }
 
-function History({ points, ...p }: HistoryChartProps & { points: HistoryPoint[] }) {
+/** The range's bars, average and month segments (the compiler memoises the call on `points` and `range`). */
+function historyFrame(points: HistoryPoint[], range: TrendRange) {
+  const days = points.slice(-RANGE_DAYS[range]);
+  // Today's running total is drawn, not averaged (the Trend View's rule).
+  const settled = days.map((d) => ({ day: d.date, value: d.provisional ? null : d.value }));
+  const bars: TrendViewBar[] = days.map((d) => ({ from: d.date, to: d.date, value: d.value, ...(d.provisional && { provisional: true }), ...(d.parts !== undefined && { parts: d.parts }) }));
+  return { bars, average: mean(settled.map((d) => d.value)), segments: byMonth(range) ? wholeMonths(monthSegments(settled)) : null };
+}
+
+function History({ points, range, ...p }: HistoryChartProps & { points: HistoryPoint[] }) {
   const { t } = useTranslation("trends");
-  const { range } = p;
-  const frame = useMemo(() => {
-    const days = points.slice(-RANGE_DAYS[range]);
-    // Today's running total is drawn, not averaged (the Trend View's rule).
-    const settled = days.map((d) => ({ day: d.date, value: d.provisional ? null : d.value }));
-    const bars: TrendViewBar[] = days.map((d) => ({ from: d.date, to: d.date, value: d.value, ...(d.provisional && { provisional: true }), ...(d.parts !== undefined && { parts: d.parts }) }));
-    return { bars, average: mean(settled.map((d) => d.value)), segments: byMonth(range) ? wholeMonths(monthSegments(settled)) : null };
-  }, [points, range]);
+  const frame = historyFrame(points, range);
   const delta = p.deltas[range] ?? null;
   const tone = delta === null || delta === 0 || p.direction === "neutral" ? null : deltaTone(p.direction, delta, 0).tone;
   const chart = p.series ? "stack" : p.level ? "line" : "bars";

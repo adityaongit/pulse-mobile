@@ -78,6 +78,29 @@ const subscribeAppState = (fn: () => void) => {
 };
 const appActive = () => AppState.currentState !== "background" && AppState.currentState !== "inactive";
 
+// One linear clock drives every ambient loop (see OrbLayers); these touch only the ambient state and the clock.
+type Ambient = { running: boolean; idle: ReturnType<typeof setTimeout> | null };
+
+function settleAmbient(s: Ambient, clock: SharedValue<number>) {
+  if (s.idle) clearTimeout(s.idle);
+  if (s.running) cancelAnimation(clock);
+  s.running = false;
+  s.idle = null;
+}
+
+function wakeAmbient(s: Ambient, clock: SharedValue<number>) {
+  if (s.idle) clearTimeout(s.idle);
+  // WCAG 2.2.2: ambient motion settles after a while; a touch or coming back into view wakes it.
+  s.idle = setTimeout(() => settleAmbient(s, clock), ORB.idleSeconds * 1000);
+  if (s.running) return;
+  s.running = true;
+  scheduleOnUI(() => {
+    "worklet";
+    const from = clock.get();
+    clock.set(withRepeat(withTiming(from + M.loop, { duration: M.loop * 1000, easing: Easing.linear }), -1, false));
+  });
+}
+
 /**
  * The orb's moving parts: the glow and body breathe, the core shimmers, the rim's particles twinkle and sway, the inner
  * particles (those that can turn without crossing the lobed outline) drift in two layers turning opposite ways and
@@ -112,34 +135,14 @@ function OrbLayers({ delta, size, compact }: { delta: number | null; size: numbe
 
   // One linear clock drives every ambient loop. It keeps its reading across pauses, and each run is a whole number of
   // every wave's cycles and every drift's turns, so a restart is seamless. Driven imperatively: a touch never re-renders.
-  const ambient = useRef<{ running: boolean; idle: ReturnType<typeof setTimeout> | null }>({ running: false, idle: null });
-  const settle = () => {
-    const s = ambient.current;
-    if (s.idle) clearTimeout(s.idle);
-    if (s.running) cancelAnimation(clock);
-    s.running = false;
-    s.idle = null;
-  };
-  const wake = () => {
-    const s = ambient.current;
-    if (s.idle) clearTimeout(s.idle);
-    // WCAG 2.2.2: ambient motion settles after a while; a touch or coming back into view wakes it.
-    s.idle = setTimeout(settle, ORB.idleSeconds * 1000);
-    if (s.running) return;
-    s.running = true;
-    scheduleOnUI(() => {
-      "worklet";
-      const from = clock.get();
-      clock.set(withRepeat(withTiming(from + M.loop, { duration: M.loop * 1000, easing: Easing.linear }), -1, false));
-    });
-  };
+  const ambient = useRef<Ambient>({ running: false, idle: null });
+  const wake = () => wakeAmbient(ambient.current, clock);
   useEffect(() => {
     if (!live) return;
-    wake();
-    return settle;
-    // wake and settle only touch the ref and the clock.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [live]);
+    const s = ambient.current;
+    wakeAmbient(s, clock);
+    return () => settleAmbient(s, clock);
+  }, [live, clock]);
   useEffect(
     () => () => {
       cancelAnimation(spin);
@@ -212,9 +215,8 @@ function OrbLayers({ delta, size, compact }: { delta: number | null; size: numbe
       };
       return drawOrb(size, delta, small, rgb, VALUES[scheme]["orb-lift"], VALUES[scheme]["orb-sparkle"]);
     },
-    // c is the palette of `scheme`.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [size, delta, small, scheme],
+    // c is the palette of `scheme`, so it changes only with it.
+    [size, delta, small, scheme, c],
   );
   const place = (half: number): ViewStyle => ({ position: "absolute", left: size / 2 - half, top: size / 2 - half, width: 2 * half, height: 2 * half });
 

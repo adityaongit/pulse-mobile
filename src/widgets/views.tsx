@@ -118,20 +118,23 @@ function Streak({ view, theme }: { view: HabitWidgetView; theme: Theme }) {
   );
 }
 
-/** 4x3: the last ten weeks, a column per week, Monday at the top. */
-function History({ view, theme }: { view: HabitWidgetView; theme: Theme }) {
-  const { habit, days } = view;
-  const byDay = new Map(days.map((d) => [d.day, d.state]));
+/** The weeks the days span, Monday first, as a column of seven days each. */
+function weeksOf(days: HabitWidgetView["days"]): string[][] {
   const first = days[0]?.day ?? "";
-  const monday = (() => {
-    const dow = new Date(`${first}T00:00:00Z`).getUTCDay();
-    return addDays(first, -((dow + 6) % 7));
-  })();
+  const dow = new Date(`${first}T00:00:00Z`).getUTCDay();
+  const monday = addDays(first, -((dow + 6) % 7));
   const weeks: string[][] = [];
   for (let start = monday; start <= (days[days.length - 1]?.day ?? first); start = addDays(start, 7)) {
     weeks.push(Array.from({ length: 7 }, (_, i) => addDays(start, i)));
   }
-  const shown = weeks.slice(-10);
+  return weeks;
+}
+
+/** 4x3: the last ten weeks, a column per week, Monday at the top. */
+function History({ view, theme }: { view: HabitWidgetView; theme: Theme }) {
+  const { habit, days } = view;
+  const byDay = new Map(days.map((d) => [d.day, d.state]));
+  const shown = weeksOf(days).slice(-10);
   return (
     <FlexWidget style={shell(theme)} {...openHabit(habit)}>
       <TextWidget text={`${habitIcon(habit)} ${habit.name}`} maxLines={1} truncate="END" style={{ fontSize: 13, fontWeight: "600", color: fg(theme) }} allowFontScaling={false} />

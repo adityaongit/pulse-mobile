@@ -50,9 +50,8 @@ export function BreathCircle({ stages, startAt, size, color, children }: Props) 
     params.set({ ms: stages.map((s) => s.ms), levels: stages.map((s) => s.level), start: startAt, stepped: reduce });
     frame.setActive(true);
     return () => frame.setActive(false);
-    // `frame` is a stable ref object.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [startAt, stages, reduce, params, level]);
+    // `frame` is the same ref object on every render, so listing it never re-runs the effect.
+  }, [startAt, stages, reduce, params, level, frame]);
 
   const core = useAnimatedStyle(() => ({ transform: [{ scale: MIN_SCALE + (1 - MIN_SCALE) * level.value }] }));
   const glow = useAnimatedStyle(() => ({

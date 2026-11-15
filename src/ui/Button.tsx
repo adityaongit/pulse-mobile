@@ -44,7 +44,9 @@ export type ButtonProps = {
   haptic?: boolean;
 };
 
-export function Button({ variant = "default", size = "touch", onPress, disabled, children, className, textClassName, accessibilityLabel, haptic: feel = variant === "default" }: ButtonProps) {
+export function Button({ variant = "default", size = "touch", onPress, disabled, children, className, textClassName, accessibilityLabel, haptic: hapticProp }: ButtonProps) {
+  // In the body, not a default in the parameters: the React Compiler skips a component whose default reads another prop.
+  const feel = hapticProp ?? variant === "default";
   const { c } = useTheme();
   const v = VARIANT[variant];
   const s = SIZE[size];

@@ -2,8 +2,9 @@
 // (pulse's src/server/queries) onto halo's common.ts and Store: Recovery's "today vs. the last 30 days" rows and its
 // Behavior Insights chips, the Sleep page's Restorative Sleep row and Sleep Efficiency card, and a nap's own page.
 import { i18n } from "@/i18n/config";
-import { journalImpact, journalImpactConfig, type ImpactLabel } from "@/core/algorithms/journalImpact";
+import { journalImpactConfig, journalImpactSteps, type ImpactLabel } from "@/core/algorithms/journalImpact";
 import { addDays, localMinutes } from "@/lib/time";
+import { sliced } from "@/lib/yield";
 import { trendHref } from "@/lib/url";
 import { activityKind, type DayRow, exercisesBetween, type ExerciseRow, finite, fromReason, loadDays, meanSd, ms, ok, priorStats, type QueryCtx, sleepMetric, todayOf, activityStrainOf, dayStrainOf } from "./common";
 import { contributors } from "./recovery";
@@ -47,22 +48,29 @@ export async function getRecoveryExtras(day: string, ctx: QueryCtx): Promise<{ s
       href: trendHref(key),
     } satisfies KeyStat;
   });
-  return { summary, behaviors: row?.recovery?.value == null ? [] : behaviors(rows, exs, day, ctx.timeZone) };
+  return { summary, behaviors: row?.recovery?.value == null ? [] : await behaviors(rows, exs, day, ctx.timeZone) };
 }
 
 /** The behaviour days of journal impact's window before `day`, and the chips for `day`. */
-function behaviors(rows: Map<string, DayRow>, exs: ExerciseRow[], day: string, tz: string): BehaviorChip[] {
+async function behaviors(rows: Map<string, DayRow>, exs: ExerciseRow[], day: string, tz: string): Promise<BehaviorChip[]> {
+  // Each night's wake time once: a day reads the 14 before it, and each read is an Intl call (slow on Hermes).
+  const wakes = new Map<string, number | null>();
   const wake = (d: string) => {
+    if (wakes.has(d)) return wakes.get(d)!;
     const m = rows.get(d)?.sleep?.main;
-    return m ? localMinutes(m.end, tz) : null;
+    const w = m ? localMinutes(m.end, tz) : null;
+    wakes.set(d, w);
+    return w;
   };
+  const exsByDay = new Map<string, ExerciseRow[]>();
+  for (const e of exs) exsByDay.set(e.day, [...(exsByDay.get(e.day) ?? []), e]);
   const days: { day: string; holds: Partial<Record<BehaviorKey, boolean>> }[] = [];
   for (let d = addDays(day, -journalImpactConfig.windowDays); d < day; d = addDays(d, 1)) {
     const r = rows.get(d);
     const perf = rows.get(addDays(d, 1))?.sleep?.performance;
     const strain = dayStrainOf(r?.s1);
     const worn = (r?.s1?.hrCount ?? 0) > 0;
-    const workouts = exs.filter((e) => e.day === d);
+    const workouts = exsByDay.get(d) ?? [];
     const w = wake(addDays(d, 1));
     const usual = Array.from({ length: 14 }, (_, k) => wake(addDays(d, -k))).filter((x): x is number => x !== null).sort((a, b) => a - b);
     days.push({
@@ -77,14 +85,18 @@ function behaviors(rows: Map<string, DayRow>, exs: ExerciseRow[], day: string, t
   }
   const yesterday = days.find((x) => x.day === addDays(day, -1));
   if (!yesterday) return [];
-  const impact = journalImpact(
-    days.map((x) => ({ day: x.day, tags: Object.fromEntries(Object.entries(x.holds).filter(([, v]) => v !== undefined)) as Record<string, boolean> })),
+  // Only the behaviours yesterday held become chips. Each tag's bootstrap is seeded by its own name, so leaving the
+  // others out changes none of these results, and saves a thousand resamples per tag left out. Sliced: it is the
+  // longest computation on Recovery.
+  const held = new Set(Object.keys(yesterday.holds).filter((k) => yesterday.holds[k as BehaviorKey]));
+  const impact = await sliced(journalImpactSteps(
+    days.map((x) => ({ day: x.day, tags: Object.fromEntries(Object.entries(x.holds).filter(([k, v]) => v !== undefined && held.has(k))) as Record<string, boolean> })),
     Array.from({ length: journalImpactConfig.windowDays + 1 }, (_, k) => {
       const d = addDays(day, -k);
       return { day: d, recovery: rows.get(d)?.recovery?.value ?? null, hrvZ: null, sleepPerf: null };
     }),
     day,
-  );
+  ));
   return (["sleep86", "strain7", "earlyWorkout", "consistentWake"] as const satisfies readonly BehaviorKey[])
     .filter((k) => yesterday.holds[k])
     .map((key) => ({ key, label: i18n.t(`health:behavior.${key}`), effect: EFFECT[impact.find((t) => t.tag === key)?.effects.recovery.label ?? "not_enough_data"] }));

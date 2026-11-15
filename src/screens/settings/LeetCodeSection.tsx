@@ -15,6 +15,7 @@ import { Text } from "@/ui/Text";
 import { toast } from "@/ui/Toast";
 import { haptic } from "@/ui/haptics";
 import { BODY, ConfirmDialog, Field, TextField } from "./controls";
+import { attempt } from "@/lib/attempt";
 
 export function LeetCodeSection() {
   const { t } = useTranslation("leetcode");
@@ -41,7 +42,7 @@ export function LeetCodeSection() {
     haptic.tap();
     setBusy(true);
     setError(null);
-    try {
+    await attempt(async () => {
       const result = await connectLeetCode(name);
       if (result.ok) {
         setDraft(result.snapshot.username);
@@ -49,39 +50,39 @@ export function LeetCodeSection() {
       } else {
         setError(leetcodeErrorCopy(result.error));
       }
-    } catch {
+    }, { catch: () => {
       setError(leetcodeErrorCopy("offline"));
-    } finally {
+    }, finally: () => {
       setBusy(false);
-    }
+    } });
   };
 
   const sync = async () => {
     haptic.tap();
     setBusy(true);
-    try {
+    await attempt(async () => {
       const result = await refreshLeetCode(true);
       if (!result) return;
       if (result.ok) toast.success(t("settings.synced"));
       else toast.error(t("settings.syncFailed", { error: leetcodeErrorCopy(result.error) }));
-    } catch {
+    }, { catch: () => {
       toast.error(t("settings.syncFailed", { error: leetcodeErrorCopy("offline") }));
-    } finally {
+    }, finally: () => {
       setBusy(false);
-    }
+    } });
   };
 
   const disconnect = async () => {
     setBusy(true);
-    try {
+    await attempt(async () => {
       await disconnectLeetCode();
       setConfirm(false);
       setDraft("");
       setError(null);
       toast.success(t("settings.disconnected"));
-    } catch {
+    }, { catch: () => {
       toast.error(t("settings.disconnectFailed"));
-    }
+    } });
     setBusy(false);
   };
 

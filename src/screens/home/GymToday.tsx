@@ -32,14 +32,12 @@ export function GymToday() {
     if (active) return push(`/gym/session/${active.sessionId}`);
     setPending(true);
     haptic.tap();
-    try {
-      const res = await startSession(actionCtx(), suggested ? { routineId: suggested.routineId } : {});
-      if (!res.ok) return;
-      dataChanged("gym");
-      push(`/gym/session/${res.data.session.id}`);
-    } finally {
-      setPending(false);
-    }
+    // No try/finally: the React Compiler skips a component that has one.
+    const res = await startSession(actionCtx(), suggested ? { routineId: suggested.routineId } : {}).catch(() => null);
+    setPending(false);
+    if (!res || !res.ok) return;
+    dataChanged("gym");
+    push(`/gym/session/${res.data.session.id}`);
   };
   const open = () =>
     push(active ? `/gym/session/${active.sessionId}` : doneToday ? `/gym/session/${doneToday.sessionId}` : suggested ? `/gym/routine/${suggested.routineId}` : "/gym");

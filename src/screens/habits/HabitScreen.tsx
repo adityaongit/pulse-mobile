@@ -184,6 +184,15 @@ function Stat({ label, value }: { label: string; value: string }) {
   );
 }
 
+/** Whole weeks of days from `first` up to the week holding `last`. Outside the component: the React Compiler skips one with this loop in it. */
+function weeksFrom(first: string, last: string): string[][] {
+  const weeks: string[][] = [];
+  for (let start = first; start <= last; start = addDays(start, 7)) {
+    weeks.push(Array.from({ length: 7 }, (_, i) => addDays(start, i)));
+  }
+  return weeks;
+}
+
 /** The last 20 weeks, Monday to Sunday, oldest first: a filled square for a done day, faint for none, a dash for skip. */
 function HistoryGrid({ habit, days, today, onDay }: { habit: Habit; days: { day: string; state: DayState }[]; today: string; onDay: (day: string, state: DayState) => void }) {
   const { c } = useTheme();
@@ -194,10 +203,7 @@ function HistoryGrid({ habit, days, today, onDay }: { habit: Habit; days: { day:
     const dow = new Date(`${day}T00:00:00Z`).getUTCDay();
     return addDays(day, -((dow + 6) % 7));
   })();
-  const weeks: string[][] = [];
-  for (let start = first; start <= today; start = addDays(start, 7)) {
-    weeks.push(Array.from({ length: 7 }, (_, i) => addDays(start, i)));
-  }
+  const weeks = weeksFrom(first, today);
   const shown = weeks.slice(-20);
   return (
     <View className="gap-2">

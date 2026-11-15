@@ -109,7 +109,7 @@ export function LiveBleProvider({ children }: { children: React.ReactNode }) {
       }
       if (s.rrMs.length) r.beats.push(...stampRr(s.rrMs, s.t));
       r.contact = s.contact;
-      timer ??= setTimeout(flush, Math.max(0, FLUSH_MS - (Date.now() - flushedAt)));
+      timer = timer ?? setTimeout(flush, Math.max(0, FLUSH_MS - (Date.now() - flushedAt)));
     });
     return () => {
       off();

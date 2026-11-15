@@ -12,6 +12,7 @@ import { cn } from "@/ui/cn";
 import { Press } from "@/ui/Press";
 import { Text } from "@/ui/Text";
 import { BODY, Field, HINT, TextField } from "@/screens/settings/controls";
+import { attempt } from "@/lib/attempt";
 
 const HEADING = "text-[22px] font-bold leading-7 text-foreground";
 const ERROR = "text-[13px] leading-[18px] text-recovery-red-text";
@@ -64,13 +65,13 @@ export function ConnectProvider({ current, onSaved }: { current: CoachSetup; onS
       setTesting(false);
       return setError(r.error);
     }
-    try {
+    await attempt(async () => {
       await saveProvider(r);
       setKey("");
       onSaved?.();
-    } catch {
+    }, { catch: () => {
       setError(t("setup.keySaveFailed"));
-    }
+    } });
     setTesting(false);
   };
 

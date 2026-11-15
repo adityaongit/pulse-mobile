@@ -25,6 +25,7 @@ import { workoutNativeAvailable } from "../../../modules/pulse-workouts";
 import { useTheme } from "@/ui/theme";
 import { cn } from "@/ui/cn";
 import { ACTIVITY_GLYPH, activityName, CAPS, usePulse } from "./activityKit";
+import { attempt } from "@/lib/attempt";
 
 export function StartActivityScreen() {
   const { t } = useTranslation("workouts");
@@ -61,15 +62,15 @@ export function StartActivityScreen() {
     if (!start || startingRef.current) return;
     startingRef.current = true;
     setStarting(true);
-    try {
+    await attempt(async () => {
       // Asked here, while a screen is open, so Finish can save the workout to Health Connect; recording works without it.
       await exerciseWriteAllowed(true);
       // The state.active effect above opens the live screen, and only while this screen is still up.
       if (await workoutRecorder.start(type, { ...start, target: targetOn ? start.target : null })) haptic.success();
-    } finally {
+    }, { finally: () => {
       startingRef.current = false;
       setStarting(false);
-    }
+    } });
   };
   const halo = width * 0.56;
   const disc = width * 0.33;

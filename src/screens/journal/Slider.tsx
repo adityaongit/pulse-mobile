@@ -2,7 +2,7 @@
 // touch area), one thumb. A gesture-handler pan (horizontal only, so a vertical swipe still scrolls the sheet) and a tap
 // set the value; the thumb sits where `value` puts it. The platform's own sliders are not used: they would draw
 // Material and iOS controls instead of the web's.
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { runOnJS } from "react-native-reanimated";
@@ -27,17 +27,13 @@ export function Slider({ min, max, step, value, onChange, label, valueText }: Sl
   const travel = Math.max(1, width - THUMB);
   const snap = (x: number) => Math.min(max, Math.max(min, min + Math.round((Math.min(1, Math.max(0, (x - THUMB / 2) / travel)) * (max - min)) / step) * step));
   const emit = (x: number) => onChange(snap(x));
-  const gesture = useMemo(
-    () =>
-      Gesture.Pan()
-        .minDistance(0)
-        .activeOffsetX([-4, 4])
-        .failOffsetY([-12, 12])
-        .onBegin((e) => runOnJS(emit)(e.x))
-        .onUpdate((e) => runOnJS(emit)(e.x)),
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- `emit` is rebuilt from exactly these
-    [min, max, step, travel, onChange],
-  );
+  // The compiler memoises the gesture on what `emit` reads (min, max, step, travel, onChange).
+  const gesture = Gesture.Pan()
+    .minDistance(0)
+    .activeOffsetX([-4, 4])
+    .failOffsetY([-12, 12])
+    .onBegin((e) => runOnJS(emit)(e.x))
+    .onUpdate((e) => runOnJS(emit)(e.x));
 
   const at = max === min ? 0 : (value - min) / (max - min);
   return (

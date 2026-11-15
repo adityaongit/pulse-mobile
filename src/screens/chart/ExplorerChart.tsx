@@ -236,14 +236,15 @@ export function ExplorerChart(p: ExplorerChartProps) {
   const y2Ticks = useSharedValue((p.domain2?.ticks ?? []).map((v, i) => ({ v, text: p.y2Labels[i] ?? "" })));
 
   const timing = { duration: MOVE_MS, easing: Easing.out(Easing.cubic) };
-  const glide = (sv: typeof start, to: number) => {
+  // Effect events read this render's values without being dependencies, so each effect below runs only on its key.
+  const glide = React.useEffectEvent((sv: typeof start, to: number) => {
     if (reduce) sv.set(to);
     else sv.set(withTiming(to, timing));
-  };
+  });
 
   // New data (another metric, day or compare): everything jumps into place and the series draws in again. Declared
   // first, so the glides below find their values already there.
-  React.useEffect(() => {
+  const jumpToData = React.useEffectEvent(() => {
     cancelAnimation(start);
     cancelAnimation(span);
     start.set(p.window.start);
@@ -260,35 +261,35 @@ export function ExplorerChart(p: ExplorerChartProps) {
       progress.set(0);
       progress.set(withTiming(1, { duration: 600, easing: Easing.out(Easing.cubic) }));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [p.dataKey]);
+  });
+  React.useEffect(() => jumpToData(), [p.dataKey]);
   React.useEffect(() => {
     homeStart.set(p.home.start);
     homeSpan.set(p.home.span);
   }, [p.home.start, p.home.span, homeStart, homeSpan]);
   // A new range glides there (a viewport a gesture settled on comes back here already on screen).
+  const winStart = p.window.start;
+  const winSpan = p.window.span;
   React.useEffect(() => {
-    if (Math.abs(start.get() - p.window.start) < 1e-6 && Math.abs(span.get() - p.window.span) < 1e-6) return;
+    if (Math.abs(start.get() - winStart) < 1e-6 && Math.abs(span.get() - winSpan) < 1e-6) return;
     cancelAnimation(start);
     cancelAnimation(span);
-    glide(start, p.window.start);
-    glide(span, p.window.span);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [p.window.start, p.window.span]);
+    glide(start, winStart);
+    glide(span, winSpan);
+  }, [winStart, winSpan, start, span]);
   // The y axes refit to the window: the grid and labels slide to their new rows.
+  const { domain, yLabels, domain2, y2Labels } = p;
   React.useEffect(() => {
-    yTicks.set(p.domain.ticks.map((v, i) => ({ v, text: p.yLabels[i] ?? "" })));
-    glide(lo, p.domain.lo);
-    glide(hi, p.domain.hi);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [p.domain, p.yLabels]);
+    yTicks.set(domain.ticks.map((v, i) => ({ v, text: yLabels[i] ?? "" })));
+    glide(lo, domain.lo);
+    glide(hi, domain.hi);
+  }, [domain, yLabels, yTicks, lo, hi]);
   React.useEffect(() => {
-    if (!p.domain2) return;
-    y2Ticks.set(p.domain2.ticks.map((v, i) => ({ v, text: p.y2Labels[i] ?? "" })));
-    glide(lo2, p.domain2.lo);
-    glide(hi2, p.domain2.hi);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [p.domain2, p.y2Labels]);
+    if (!domain2) return;
+    y2Ticks.set(domain2.ticks.map((v, i) => ({ v, text: y2Labels[i] ?? "" })));
+    glide(lo2, domain2.lo);
+    glide(hi2, domain2.hi);
+  }, [domain2, y2Labels, y2Ticks, lo2, hi2]);
 
   // --- Series geometry (data space, built once per series) ---
   const prim = React.useMemo(() => dataPaths(p.primary), [p.primary]);
@@ -772,8 +773,8 @@ export function ExplorerChart(p: ExplorerChartProps) {
         );
       });
     return Gesture.Race(Gesture.Exclusive(doubleTap, tap), scrub, Gesture.Simultaneous(pan, pinch));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [plotW, LEFT, min, max, minSpan, full, notify]);
+    // The shared values are the same objects on every render; listing them never rebuilds the gestures.
+  }, [plotW, LEFT, min, max, minSpan, full, notify, start, span, pinching, pinchSpan, focal, cursor, homeStart, homeSpan]);
 
   // --- The readout box: text per point, measured once ---
   const r = p.readout;

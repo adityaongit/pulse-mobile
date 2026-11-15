@@ -62,7 +62,11 @@ function useDrafts<K extends string>() {
   };
   const blur = (k: K) => {
     if (errors[k]) return; // keep the rejected text in view with its error
-    setDrafts(({ [k]: _, ...rest }) => rest as Partial<Record<K, string>>);
+    setDrafts((d) => {
+      const rest = { ...d };
+      delete rest[k];
+      return rest;
+    });
   };
   const clear = () => (setDrafts({}), setErrors({}));
   return { drafts, errors, type, blur, clear };

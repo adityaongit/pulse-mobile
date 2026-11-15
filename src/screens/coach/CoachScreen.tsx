@@ -66,7 +66,11 @@ export function CoachScreen() {
   const brief = param(params.brief) === "1";
   const sendNow = param(params.send) === "1";
   const n = param(params.n);
-  const fresh = useMemo(() => generateId(), [n]); // eslint-disable-line react-hooks/exhaustive-deps
+  // A new id per `?n=`, held in state: the compiler memoises on what a memo reads, so `useMemo(generateId, [n])` would
+  // keep the first id for good.
+  const [freshFor, setFreshFor] = useState(() => ({ n, id: generateId() }));
+  if (freshFor.n !== n) setFreshFor({ n, id: generateId() });
+  const fresh = freshFor.id;
   const workoutId = param(params.workout);
   const sleepDay = param(params.sleep);
   const napId = param(params.nap);

@@ -28,7 +28,7 @@ export function useScreenReady() {
     };
     const probe = (now: number) => {
       const gap = now - previous;
-      if (gap > 32) gaps++;
+      if (gap > 32) gaps += 1;
       maxGap = Math.max(maxGap, gap);
       previous = now;
       frame = requestAnimationFrame(probe);
@@ -54,7 +54,7 @@ export function useScreenReady() {
       if (__DEV__ && started !== undefined) {
         const now = performance.now();
         const gap = now - previous;
-        if (gap > 32) gaps++;
+        if (gap > 32) gaps += 1;
         maxGap = Math.max(maxGap, gap);
         console.info(`[screen] ${route.name} transition-end closing=${data.closing} ms=${Math.round(now - started)} js-gaps=${gaps} js-max-gap-ms=${Math.round(maxGap)}`);
         started = undefined;

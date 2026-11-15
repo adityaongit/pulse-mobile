@@ -28,6 +28,7 @@ import { SectionShell } from "@/ui/shells/SectionShell";
 import { Text } from "@/ui/Text";
 import { toast } from "@/ui/Toast";
 import { HINT, ROW, ROW_LABEL, ROW_RULE, ROW_VALUE, SmallButton, SwitchRow } from "./controls";
+import { attempt } from "@/lib/attempt";
 
 /** Settings and the notification permission, loaded once and re-read when the app returns from system settings. */
 function useNotificationSettings() {
@@ -122,23 +123,23 @@ function BackgroundCard({ s, timeZone }: { s: Prefs; timeZone: string }) {
   };
   const allow = async () => {
     setBusy(true);
-    try {
+    await attempt(async () => {
       const p = await askBackgroundPermission().catch(() => null);
       setBackground(p ? p.background : null);
       if (p?.background) toast.success(t("bg.allowedToast"));
       else toast.error(t("bg.notAllowedToast"));
-    } finally {
+    }, { finally: () => {
       setBusy(false);
-    }
+    } });
   };
   const runNow = async () => {
     setBusy(true);
-    try {
+    await attempt(async () => {
       await runBackgroundTask();
       await refresh();
-    } finally {
+    }, { finally: () => {
       setBusy(false);
-    }
+    } });
   };
 
   const access = background === null ? t("bg.checkingHc") : background ? t("bg.allowed") : t("bg.notAllowed");

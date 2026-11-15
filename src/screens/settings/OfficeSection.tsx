@@ -14,6 +14,7 @@ import { SectionShell } from "@/ui/shells/SectionShell";
 import { Text } from "@/ui/Text";
 import { useScreen } from "../useScreen";
 import { HINT, ROW, ROW_LABEL, ROW_RULE, ROW_VALUE, SelectRow } from "./controls";
+import { attempt } from "@/lib/attempt";
 
 type Permission = "checking" | "granted" | "foreground" | "denied";
 
@@ -25,14 +26,14 @@ export function OfficeSection() {
   const [error, setError] = useState<string | null>(null);
 
   const readPermission = async () => {
-    try {
+    await attempt(async () => {
       const fg = await Location.getForegroundPermissionsAsync();
       if (!fg.granted) return setPermission("denied");
       const bg = await Location.getBackgroundPermissionsAsync();
       setPermission(bg.granted ? "granted" : "foreground");
-    } catch {
+    }, { catch: () => {
       setPermission("denied");
-    }
+    } });
   };
   useEffect(() => {
     // The permission changes only through this screen or the system settings; the read is async, so it lands after paint.
@@ -76,32 +77,32 @@ export function OfficeSection() {
   const locate = async () => {
     setBusy(true);
     setError(null);
-    try {
+    await attempt(async () => {
       const fg = await Location.requestForegroundPermissionsAsync();
       if (!fg.granted) return setError(t("places.permissionDenied"));
       const pos = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
       await save({ latitude: pos.coords.latitude, longitude: pos.coords.longitude, habitId: office?.habitId ?? null });
-    } catch {
+    }, { catch: () => {
       setError(t("places.locateFailed"));
-    } finally {
+    }, finally: async () => {
       await readPermission();
       setBusy(false);
-    }
+    } });
   };
 
   const allowBackground = async () => {
     setBusy(true);
     setError(null);
-    try {
+    await attempt(async () => {
       await Location.requestBackgroundPermissionsAsync();
-    } catch {
+    }, { catch: () => {
       // Android may refuse without a settings trip; the row keeps saying what is missing.
-    } finally {
+    }, finally: async () => {
       await readPermission();
       // The fence registers only with the permission; a grant now makes it live.
       if (office) await setOffice(office);
       setBusy(false);
-    }
+    } });
   };
 
   return (

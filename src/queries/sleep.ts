@@ -179,9 +179,15 @@ const median = (xs: number[]) => (xs.length ? [...xs].sort((a, b) => a - b)[Math
 export function consistencyOf(rows: Map<string, DayRow>, day: string, tz: string, noScore: SleepVM["performance"]["reason"], average: number | null): SleepVM["consistency"] {
   const pct = rows.get(day)?.sleep?.consistency;
   if (!finite(pct)) return none(noScore ?? "calibrating");
+  // One formatter, and each of the 19 nights read once (a night is read by up to 15 others): Intl is slow under Hermes.
+  const weekday = new Intl.DateTimeFormat(getLocale(), { weekday: "short", timeZone: "UTC" });
+  const seen = new Map<string, { day: string; label: string; bed: number; wake: number } | null>();
   const night = (d: string) => {
+    if (seen.has(d)) return seen.get(d)!;
     const m = rows.get(d)?.sleep?.main;
-    return m ? { day: d, label: new Intl.DateTimeFormat(getLocale(), { weekday: "short", timeZone: "UTC" }).format(new Date(`${d}T12:00:00Z`)), bed: bedMin(m.start, tz), wake: localMinutes(m.end, tz) } : null;
+    const n = m ? { day: d, label: weekday.format(new Date(`${d}T12:00:00Z`)), bed: bedMin(m.start, tz), wake: localMinutes(m.end, tz) } : null;
+    seen.set(d, n);
+    return n;
   };
   const withTypical = (d: string) => {
     const n = night(d);

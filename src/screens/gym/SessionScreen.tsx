@@ -2,7 +2,7 @@
 // time's numbers beside the weight and reps, a tick at the end of each row, and (when a session still carries one) the
 // rest timer floating above the list. Every tick and every edit is its own write, so a killed app comes back to the
 // same workout.
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { KeyboardAvoidingView, Modal, Platform, Pressable, TextInput, View } from "react-native";
 import Animated, { Easing, useAnimatedStyle, useReducedMotion, useSharedValue, withTiming } from "react-native-reanimated";
@@ -125,7 +125,7 @@ export function SessionScreen() {
         dataChanged("gym");
       })(),
     );
-  /** A tick draws at once (the row's own state); this writes it and refreshes the numbers behind it. */
+  /** A tick draws at once (the row's own state); this writes it and refreshes the numbers behind it. True when written. */
   const tick = (set: GymSet, draft: Draft, on: boolean): Promise<boolean> =>
     track(
       (async (): Promise<boolean> => {
@@ -135,19 +135,14 @@ export function SessionScreen() {
         }
         const at = nowS();
         markTicked(set.id, on);
-        let saved: Awaited<ReturnType<typeof saveSet>>;
-        try {
-          saved = await saveSet(store, { ...set, ...draft, completed: on, ts: on ? at : null });
-        } catch (e) {
-          markTicked(set.id, !on);
-          throw e;
-        }
-        if (!saved.ok) {
+        // No try/catch here: the React Compiler skips a whole component for one, and this page must stay compiled.
+        const saved = await saveSet(store, { ...set, ...draft, completed: on, ts: on ? at : null }).catch(() => null);
+        if (!saved || !saved.ok) {
           markTicked(set.id, !on);
           return false;
         }
         dataChanged("gym");
-        return on;
+        return true;
       })(),
     );
   /** Tick or untick every set of one exercise, through the same write a row's own tick uses. */
@@ -778,23 +773,21 @@ function BlockCard({
 
         <View>
           {block.sets.map((set, i) => (
-            <SwipeActions key={set.id} right={[{ label: t("session.delete"), icon: Trash2, tone: "danger", onPress: () => onRemoveSet(set) }]}>
-              <View className="rounded-lg bg-card">
-                <SetRow
-                  set={set}
-                  prev={block.prev[i] ?? null}
-                  unit={unit}
-                  cardio={cardio}
-                  hold={hold}
-                  pr={prSetIds.includes(set.id)}
-                  flashAt={flash?.ids.includes(set.id) ? flash.at : 0}
-                  onSave={(d, completed) => onSave(set, d, completed)}
-                  onTick={(d, on) => onTick(set, d, on)}
-                  onMenu={() => setNoting(set)}
-                />
-              </View>
-          </SwipeActions>
-        ))}
+            <SetItem
+              key={set.id}
+              set={set}
+              prev={block.prev[i] ?? null}
+              unit={unit}
+              cardio={cardio}
+              hold={hold}
+              pr={prSetIds.includes(set.id)}
+              flashAt={flash?.ids.includes(set.id) ? flash.at : 0}
+              onSave={onSave}
+              onTick={onTick}
+              onMenu={setNoting}
+              onRemove={onRemoveSet}
+            />
+          ))}
         </View>
 
         <Press accessibilityRole="button" onPress={() => onAddSet(block)} className="mt-1 h-11 items-center justify-center">
@@ -860,6 +853,35 @@ function BlockCard({
   );
 }
 
+type SetRowProps = {
+  set: GymSet;
+  prev: GymSet | null;
+  unit: "kg" | "lb";
+  cardio: boolean;
+  hold: boolean;
+  pr: boolean;
+  flashAt: number;
+  onSave: (set: GymSet, d: Draft, completed: boolean) => void;
+  onTick: (set: GymSet, d: Draft, on: boolean) => Promise<boolean>;
+  onMenu: (set: GymSet) => void;
+};
+
+/**
+ * One set and its swipe to delete. Memoised on the set's own data and the screen's handlers (the same functions from
+ * render to render), so a tick, an edit or a reload renders the rows whose set changed and leaves the others alone.
+ */
+const SetItem = memo(function SetItem({ onRemove, ...row }: SetRowProps & { onRemove: (set: GymSet) => void }) {
+  const { t } = useTranslation("gym");
+  const { set } = row;
+  return (
+    <SwipeActions right={[{ label: t("session.delete"), icon: Trash2, tone: "danger", onPress: () => onRemove(set) }]}>
+      <View className="rounded-lg bg-card">
+        <SetRow {...row} />
+      </View>
+    </SwipeActions>
+  );
+});
+
 /** One set: number, last time, weight, reps, tick. */
 function SetRow({
   set,
@@ -872,20 +894,10 @@ function SetRow({
   onSave,
   onTick,
   onMenu,
-}: {
-  set: GymSet;
-  prev: GymSet | null;
-  unit: "kg" | "lb";
-  cardio: boolean;
-  hold: boolean;
-  pr: boolean;
-  flashAt: number;
-  onSave: (d: Draft, completed: boolean) => void;
-  onTick: (d: Draft, on: boolean) => Promise<boolean>;
-  onMenu: () => void;
-}) {
+}: SetRowProps) {
   const { t } = useTranslation("gym");
   const reduce = useReducedMotion();
+  const menu = () => onMenu(set);
   const glow = useSharedValue(0);
   // A row an Undo has just brought back pulses once, so the eye finds it. No pulse under reduced motion.
   useEffect(() => {
@@ -937,7 +949,7 @@ function SetRow({
     const key = textKey();
     if (key === lastSaved.current) return;
     lastSaved.current = key;
-    onSave(draft(), done);
+    onSave(set, draft(), done);
   };
   const toggle = async () => {
     if (busy.current) return;
@@ -945,19 +957,16 @@ function SetRow({
     busy.current = true;
     setDone(on);
     if (on) haptic.tap();
-    try {
-      if (await onTick(draft(), on)) {
-        // The write took the typed numbers too: a later blur has nothing left to save.
-        typed.current = false;
-        lastSaved.current = textKey();
-      } else {
-        setDone(!on);
-      }
-    } catch {
+    // No try/finally: the React Compiler skips a component that has one, and every row would then render on every tap.
+    const written = await onTick(set, draft(), on).catch(() => false);
+    if (written) {
+      // The write took the typed numbers too: a later blur has nothing left to save.
+      typed.current = false;
+      lastSaved.current = textKey();
+    } else {
       setDone(!on);
-    } finally {
-      busy.current = false;
     }
+    busy.current = false;
   };
   const prevText = prev
     ? hold
@@ -968,9 +977,9 @@ function SetRow({
     : "—";
 
   return (
-    <Press onLongPress={onMenu} delayLongPress={350} accessible={false} className={cn("flex-row items-center gap-3 rounded-lg px-1 py-1", done && "bg-optimal/15")}>
+    <Press onLongPress={menu} delayLongPress={350} accessible={false} className={cn("flex-row items-center gap-3 rounded-lg px-1 py-1", done && "bg-optimal/15")}>
       <Animated.View pointerEvents="none" className="absolute inset-0 rounded-lg bg-strain" style={glowStyle} />
-      <Press onPress={onMenu} hitSlop={10} className="w-8 items-center justify-center" accessibilityRole="button" accessibilityLabel={`${t("session.set")} ${set.setNo}`}>
+      <Press onPress={menu} hitSlop={10} className="w-8 items-center justify-center" accessibilityRole="button" accessibilityLabel={`${t("session.set")} ${set.setNo}`}>
         <Text className={cn("font-numeric text-[13px] font-semibold", done ? "text-optimal-text" : "text-foreground-secondary")}>{set.type === "warmup" ? "W" : set.type === "drop" ? "D" : set.type === "failure" ? "F" : set.setNo}</Text>
       </Press>
       <View className="w-[74px] flex-row items-center justify-end gap-1">

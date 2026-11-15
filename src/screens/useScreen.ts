@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useEffectEvent, useState, useSyncExternalStore } from "react";
 import { i18n } from "@/i18n/config";
 import type { QueryCtx } from "@/queries/ctx";
 import { dataChanged, dataVersion, queryCtx, useDataVersion } from "@/state/app";
@@ -110,15 +110,16 @@ export function useScreen<T>(query: (ctx: QueryCtx) => Promise<T>, key: ScreenKe
     setTick((t) => t + 1);
   }, [k]);
 
+  // Inline queries change identity each render; their dependencies are in the key, so the effect reads the latest one.
+  const read = useEffectEvent((key: string) => load(key, query));
   useEffect(() => {
     if (fresh(cache.get(k), ms)) return;
     let live = true;
-    load(k, query).catch((e: unknown) => live && setError({ k, error: e instanceof Error ? e : new Error(String(e)) }));
+    read(k).catch((e: unknown) => live && setError({ k, error: e instanceof Error ? e : new Error(String(e)) }));
     return () => {
       live = false;
     };
-    // Inline queries change identity each render; their dependencies are in the key. `ready` re-checks on focus.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // `v` (the data version), `ready` (a re-check on focus) and `tick` (reload) re-run it.
   }, [k, v, ready, tick, ms]);
 
   const shown = sameLanguage(entry) && settled ? (entry.data as T) : undefined;

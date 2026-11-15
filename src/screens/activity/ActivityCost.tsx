@@ -48,7 +48,9 @@ function CostRow({ e, minSessions }: { e: ActivityCostEntry; minSessions: number
 }
 
 /** Activities' "Recovery cost": a row per kind (`items`, all by default), then what they are measured against. */
-export function ActivityCostList({ vm, items = vm.items }: { vm: ActivityCostVM; items?: ActivityCostEntry[] }) {
+export function ActivityCostList({ vm, items: only }: { vm: ActivityCostVM; items?: ActivityCostEntry[] }) {
+  // In the body, not a default in the parameters: the React Compiler skips a component whose default reads another prop.
+  const items = only ?? vm.items;
   const { t } = useTranslation("strain");
   const base = baselineText(vm);
   return (

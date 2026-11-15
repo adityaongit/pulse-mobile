@@ -76,17 +76,14 @@ function Editor({ id, isNew, initial }: { id: string; isNew: boolean; initial: R
   const persist = async (): Promise<GymRoutine | null> => {
     if (saving) return null;
     setSaving(true);
-    try {
-      const res = await saveRoutine(
-        actionCtx().store,
-        { id: isNew ? undefined : id, name: name.trim() || t("routine.new"), items: items.map((i) => ({ exerciseId: i.exercise.id, sets: i.sets, reps: i.reps })) },
-        Math.floor(Date.now() / 1000),
-      );
-      if (!res.ok) return null;
-      return res.data;
-    } finally {
-      setSaving(false);
-    }
+    // No try/finally: the React Compiler skips a component that has one.
+    const res = await saveRoutine(
+      actionCtx().store,
+      { id: isNew ? undefined : id, name: name.trim() || t("routine.new"), items: items.map((i) => ({ exerciseId: i.exercise.id, sets: i.sets, reps: i.reps })) },
+      Math.floor(Date.now() / 1000),
+    ).catch(() => null);
+    setSaving(false);
+    return res && res.ok ? res.data : null;
   };
 
   const save = async () => {

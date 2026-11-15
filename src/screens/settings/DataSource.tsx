@@ -27,6 +27,7 @@ import { toast } from "@/ui/Toast";
 import { useTheme } from "@/ui/theme";
 import { DURATION } from "@/ui/motion";
 import { BODY, ConfirmDialog, HINT, ProgressBar, ROW_LABEL, ROW_RULE } from "./controls";
+import { attempt } from "@/lib/attempt";
 
 /** Health Connect's record types as Settings lists them: the key of each label in `settings:recordType`. The words resolve at use. */
 const TYPE_KEY = {
@@ -215,12 +216,12 @@ export function DataSource({ now }: { now: number }) {
 
   const dataCheck = async () => {
     setChecking(true);
-    try {
+    await attempt(async () => {
       const { text } = await runDataCheck(appStore(), { timeZone: appState().profile?.timeZone ?? "UTC" });
       await Share.share({ message: text, title: t("source.checkShareTitle") });
-    } catch {
+    }, { catch: () => {
       toast.error(t("source.checkFailed"));
-    }
+    } });
     setChecking(false);
   };
 

@@ -46,8 +46,9 @@ export type SessionCard = {
   routineId: string | null;
 };
 
+/** `sets` are the session's own (a caller that holds every set groups them by session once, not once per card). */
 export function cardOf(session: GymSession, sets: readonly GymSet[], map: Map<string, GymExercise>): SessionCard {
-  const mine = sets.filter((s) => s.sessionId === session.id);
+  const mine = sets.every((s) => s.sessionId === session.id) ? sets : sets.filter((s) => s.sessionId === session.id);
   return {
     id: session.id,
     name: session.name,
@@ -139,7 +140,7 @@ export async function getGymHome(ctx: QueryCtx): Promise<GymHomeVM> {
     recent: sessions
       .filter((s) => s.finished && hasWork(bySession.get(s.id) ?? []))
       .slice(0, 5)
-      .map((s) => cardOf(s, all, map)),
+      .map((s) => cardOf(s, bySession.get(s.id) ?? [], map)),
     week: { sessions: weekSessions.length, sets: weekSets.filter((s) => isWorkSet(s)).length, volumeKg: volumeOf(weekSets), seconds: weekSets.length ? weekSessions.reduce((n, s) => n + Math.max(0, (s.endTs ?? s.startTs) - s.startTs), 0) : 0, unit: unitOfSets(weekSets, map) },
     records,
   };
@@ -158,7 +159,7 @@ export async function getGymHistory(ctx: QueryCtx): Promise<HistoryVM> {
   }
   const cards = sessions
     .filter((s) => s.finished && hasWork(bySession.get(s.id) ?? []))
-    .map((s) => cardOf(s, all, map));
+    .map((s) => cardOf(s, bySession.get(s.id) ?? [], map));
   const months: { month: string; cards: SessionCard[] }[] = [];
   for (const card of cards) {
     const month = card.day.slice(0, 7);
@@ -200,8 +201,10 @@ export async function getGymSession(ctx: QueryCtx, id: string): Promise<SessionV
   const sets = await ctx.store.gymSets([id]);
   const ids = [...new Set(sets.map((s) => s.exerciseId))];
   const earlier = ids.length ? await ctx.store.gymExerciseSets(ids, session.startTs) : [];
-  const records = recordsOf([...earlier, ...sets]);
-  const prSetIds = sets.filter((s) => setsRecord([...earlier, ...sets], s)).map((s) => s.id);
+  // One list for both checks: the history can be thousands of sets, and this query runs after every tick.
+  const everything = [...earlier, ...sets];
+  const records = recordsOf(everything);
+  const prSetIds = sets.filter((s) => setsRecord(everything, s)).map((s) => s.id);
   const best = new Map<string, { exercise: GymExercise; oneRm: number; weightKg: number; reps: number }>();
   for (const s of sets) {
     if (!prSetIds.includes(s.id) || !isRepSet(s) || s.weightKg <= 0 || s.reps <= 0) continue;

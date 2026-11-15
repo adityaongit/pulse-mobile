@@ -16,6 +16,7 @@ import { Text } from "@/ui/Text";
 import { useTheme } from "@/ui/theme";
 import { ConnectButton, TextButton } from "./buttons";
 import { Frame } from "./Frame";
+import { attempt } from "@/lib/attempt";
 
 // What the read permissions in src/health/connect.ts READ_TYPES let Pulse read, in the person's words, with the app's
 // icons. Titles only, so the screen fits without scrolling; Health Connect's own sheet has the detail.
@@ -49,14 +50,14 @@ export function ConnectFlow({ sample, onCancel }: { sample?: boolean; onCancel: 
     if (availability === "unavailable") return haptic.error();
     setWaiting(true);
     setError(null);
-    try {
+    await attempt(async () => {
       const perms = await connectHealth();
       // Granted: the app state starts the import, and onboarding shows its progress.
       setRefused(!!perms && perms.granted.length === 0);
-    } catch (e) {
+    }, { catch: (e) => {
       setError(e instanceof Error ? e.message : t("connect.openFailed"));
       haptic.error();
-    }
+    } });
     setWaiting(false);
   };
 

@@ -160,6 +160,14 @@ function optimalPath(points: ({ x: number; y: number } | null)[], k: number) {
 /** The plot's height: the web's h-52. */
 const PLOT_H = 208;
 
+/** The consistency chart's axis, in minutes from midnight. Outside the component: the React Compiler fails on it there. */
+function axisOf(beds: number[], wakes: number[]): { lo: number; hi: number } {
+  return {
+    lo: Math.min(-180, Math.floor((Math.min(...beds) - 60 + 180) / 240) * 240 - 180),
+    hi: Math.max(780, Math.ceil((Math.max(...wakes) + 60 - 780) / 240) * 240 + 780),
+  };
+}
+
 export function SleepConsistency({ vm }: { vm: Pick<SleepVM, "consistency" | "summary"> }) {
   const { t: tr } = useTranslation("sleep");
   const { c } = useTheme();
@@ -172,8 +180,7 @@ export function SleepConsistency({ vm }: { vm: Pick<SleepVM, "consistency" | "su
   const wakes = nights.flatMap((n) => [n.wake, ...(n.typicalWake != null ? [n.typicalWake] : [])]);
   // The reference app's fixed axis, 21:00 to 13:00 in 4-hour steps, stretched by whole steps only when a night falls
   // outside it.
-  const lo = Math.min(-180, Math.floor((Math.min(...beds) - 60 + 180) / 240) * 240 - 180);
-  const hi = Math.max(780, Math.ceil((Math.max(...wakes) + 60 - 780) / 240) * 240 + 780);
+  const { lo, hi } = axisOf(beds, wakes);
   const pctOf = (min: number) => ((min - lo) / (hi - lo)) * 100;
   const yOf = (min: number) => (pctOf(min) / 100) * PLOT_H;
   const ticks = Array.from({ length: Math.floor((hi - lo) / 240) + 1 }, (_, i) => lo + i * 240);

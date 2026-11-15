@@ -264,14 +264,18 @@ export default function ChartExplorer() {
   const [settled, setSettled] = React.useState<{ key: string; start: number; span: number } | null>(null);
   const v = model && home ? (settled && settled.key === viewKey ? settled : { key: viewKey, ...home }) : null;
   const onViewport = React.useCallback((start: number, span: number) => setSettled({ key: viewKey, start, span }), [viewKey]);
-  const win = React.useMemo(() => (v ? { start: v.start, span: v.span } : { start: 0, span: 1 }), [v?.start, v?.span]); // eslint-disable-line react-hooks/exhaustive-deps
+  // `v` is a new object on most renders; what follows keys on its two numbers, so a re-render with the same window
+  // reuses the same window, axes and summary.
+  const vStart = v ? v.start : null;
+  const vSpan = v ? v.span : null;
+  const win = React.useMemo(() => (vStart !== null && vSpan !== null ? { start: vStart, span: vSpan } : { start: 0, span: 1 }), [vStart, vSpan]);
 
   // --- Axes and summary for the visible window (refit when a gesture settles, never per frame) ---
   const axes = React.useMemo(() => {
-    if (!model || !v) return null;
-    const from = v.start;
-    const to = v.start + v.span;
-    const bars = drawsBars(model.primary, v.span);
+    if (!model || vStart === null || vSpan === null) return null;
+    const from = vStart;
+    const to = vStart + vSpan;
+    const bars = drawsBars(model.primary, vSpan);
     const domain = yDomain(model.primary, from, to, { bars, extra: [model.goal?.y, model.shade?.lo, model.shade?.hi], count: 3 });
     const domain2 = model.compare ? compareDomain(model.compare, from, to, domain.ticks.length) : null;
     const stats = summaryOf(model.primary, from, to);
@@ -283,7 +287,7 @@ export default function ChartExplorer() {
     const basis = { baseline: model.baseline, goal: model.goal && model.personalGoal && !model.baseline ? model.goal.y : null, average: stats.avg };
     const notes = model.primary.ys.map((y, i) => (model.primary.partial?.[i] ? i18n.t("trends:soFarToday") : (model.viewNotes?.[i] ?? noteFor(y, format, unit, basis))));
     return { from, to, domain, domain2, stats, running, cStats, yLabels, y2Labels, notes };
-  }, [model, v?.start, v?.span, format, unit]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [model, vStart, vSpan, format, unit]);
   const readout = React.useMemo(() => (model && axes ? { dates: model.dates, values: model.values, compares: model.compares, notes: axes.notes, colors: model.colors, compareColors: model.compareColors } : null), [model, axes]);
 
   // --- Layout ---

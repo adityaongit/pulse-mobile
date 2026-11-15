@@ -116,12 +116,20 @@ export type DataScope = "scores" | "logs" | "journal" | "gym" | "habits" | "disp
 
 let version = 0;
 let scoresVersion = 0;
+/**
+ * The version the read memo and the day rows follow: every write but the gym log's. The gym's tables are read only by
+ * the gym queries, which are not memoised, so a ticked set must not throw away the health tables already in memory
+ * (the next screen would read and parse every one of them again), and it has nothing to tell the widgets either.
+ */
+let healthVersion = 0;
 const versionListeners = new Set<() => void>();
 const scoresListeners = new Set<() => void>();
 /** Bumps every screen's query. `scores` also bumps the score cache; the other scopes leave it alone. */
 export function dataChanged(scope: DataScope = "scores") {
   version++;
   for (const l of versionListeners) l();
+  if (scope === "gym") return;
+  healthVersion++;
   if (scope !== "scores") {
     if (state.store && state.profile && state.source && state.onboarded) void refreshWidgets(queryCtx(), state.source);
     return;
@@ -156,8 +164,8 @@ let dayReads: { version: number; map: Map<string, Promise<Map<string, DayRow>>> 
 export function queryCtx(nowS = Math.floor(Date.now() / 1000)): QueryCtx {
   const { store, profile, sync } = state;
   if (!store || !profile) throw new Error("profile_missing");
-  readStore ??= memoStore(store, dataVersion, scoresDataVersion);
-  const v = dataVersion();
+  readStore ??= memoStore(store, () => healthVersion, scoresDataVersion);
+  const v = healthVersion;
   if (!dayReads || dayReads.version !== v) dayReads = { version: v, map: new Map() };
   return { store: readStore, profile, timeZone: profile.timeZone, today: localDay(nowS, profile.timeZone), now: nowS, sync, days: dayReads.map };
 }

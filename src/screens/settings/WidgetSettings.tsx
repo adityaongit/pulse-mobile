@@ -8,18 +8,19 @@ import { Text } from "@/ui/Text";
 import { toast } from "@/ui/Toast";
 import { SectionShell } from "@/ui/shells/SectionShell";
 import { BODY, HINT } from "./controls";
+import { attempt } from "@/lib/attempt";
 
 export function WidgetSettings() {
   const { t } = useTranslation("widgets");
   const add = async (size: "small" | "medium" | "large") => {
     if (!widgetsAvailable()) return toast.error(t("rebuild"));
-    try {
+    await attempt(async () => {
       const { source, profile } = appState();
       if (source && profile) await refreshWidgets(queryCtx(), source, { force: true });
       toast.success(t(requestWidget(size) ? "added" : "manual"));
-    } catch {
+    }, { catch: () => {
       toast.error(t("manual"));
-    }
+    } });
   };
   return (
     <SectionShell variant="card" title={t("title")}>

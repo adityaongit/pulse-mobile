@@ -34,6 +34,15 @@ NativeWind lets you put Tailwind classes on React Native views with `className`.
 
 `app.json` sets `experiments.reactCompiler`. The compiler memoizes components for you, so there is no hand-written `useMemo` or `useCallback` to keep render cost down. `experiments.typedRoutes` types route paths for `Link` and `router`.
 
+The compiler skips a component it cannot handle, and it does so silently: the component and everything under it then render on every change, which on a slow phone is the delay between a tap and the screen. `node scripts/compiler-skips.cjs` runs it with the options `babel-preset-expo` passes and lists each skip with its reason; keep it at 0. What makes it skip:
+
+- `try … finally`, a `try` without `catch`, or a conditional inside a `try` in a handler: write it with `attempt` (`src/lib/attempt.ts`).
+- `// eslint-disable-next-line react-hooks/...` anywhere in the component. An effect that runs on one key and reads the latest of everything else uses `useEffectEvent` (React 19.2) for the part that reads; stable things (shared values, refs, `useFrameCallback`'s object) go in the deps.
+- A hand-written `useMemo` keyed on narrower deps than it reads (`[v?.start]` when it reads `v`): key it on derived primitives, or move the work into a module function and let the compiler memoize the call.
+- A parameter default that reads another prop, `x ??= y`, `x++` on a local, a `for` loop that steps a value through a function call (move it into a module function).
+
+`eslint-disable-line` is not detected as a suppression: the component compiles, but the compiler memoizes on the deps it infers, not the written ones. `useMemo(() => generateId(), [n])` then keeps its first id for good, so an id per key lives in state instead.
+
 ## expo-sqlite, async only
 
 `expo-sqlite` is the on-device database, used through its async API only (halo's `src/data/db.ts`): every read and write runs on a background thread, never on the JS thread. There is no ORM and there are no migration files: the schema is `create table if not exists`, and a column added later is an `alter table` that fails harmlessly once it exists. See Storage below.

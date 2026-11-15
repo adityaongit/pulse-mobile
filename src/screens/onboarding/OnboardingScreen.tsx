@@ -29,6 +29,7 @@ import { ConnectButton, TextButton } from "./buttons";
 import { HeartbeatMark } from "./HeartbeatMark";
 import { ProfileForm, SaveButton } from "./ProfileForm";
 import { Field, TextField } from "../settings/controls";
+import { attempt } from "@/lib/attempt";
 
 type Step = "welcome" | "profile" | "extras" | "connect";
 
@@ -174,7 +175,7 @@ function Extras({ onDone }: { onDone: () => void }) {
     if (!username) return setLcError(t("leetcode:error.invalidUsername"));
     setLcBusy(true);
     setLcError(null);
-    try {
+    await attempt(async () => {
       // A first run may reach this before the idle boot load set the module's Store.
       await initLeetCode(appStore());
       const result = await connectLeetCode(username);
@@ -184,11 +185,11 @@ function Extras({ onDone }: { onDone: () => void }) {
       } else {
         setLcError(leetcodeErrorCopy(result.error));
       }
-    } catch {
+    }, { catch: () => {
       setLcError(leetcodeErrorCopy("offline"));
-    } finally {
+    }, finally: () => {
       setLcBusy(false);
-    }
+    } });
   };
 
   const strongMessage = (code: string) =>
@@ -198,7 +199,7 @@ function Extras({ onDone }: { onDone: () => void }) {
     if (strongBusy) return;
     setStrongError(null);
     setStrongBusy(true);
-    try {
+    await attempt(async () => {
       const picked = await File.pickFileAsync({ mimeTypes: ["text/csv", "text/plain", "application/vnd.ms-excel", "text/comma-separated-values", "*/*"] });
       if (picked.canceled) return;
       const content = await picked.result.text();
@@ -210,18 +211,18 @@ function Extras({ onDone }: { onDone: () => void }) {
       setStrongText(content);
       setStrongPreview(res.data);
       setStrongDone(null);
-    } catch {
+    }, { catch: () => {
       setStrongError(t("gym:import.error"));
-    } finally {
+    }, finally: () => {
       setStrongBusy(false);
-    }
+    } });
   };
 
   const runStrong = async () => {
     if (!strongText || strongBusy) return;
     setStrongBusy(true);
     setStrongError(null);
-    try {
+    await attempt(async () => {
       const res = await importStrong(actionCtx(), strongText, setStrongProgress);
       if (!res.ok) {
         setStrongError(res.error === "nothingToImport" && strongPreview ? t("gym:import.nothing") : strongMessage(res.error));
@@ -232,12 +233,12 @@ function Extras({ onDone }: { onDone: () => void }) {
       setStrongText(null);
       dataChanged("gym");
       haptic.success();
-    } catch {
+    }, { catch: () => {
       setStrongError(t("gym:import.error"));
-    } finally {
+    }, finally: () => {
       setStrongBusy(false);
       setStrongProgress(null);
-    }
+    } });
   };
 
   const summary = strongPreview?.result.summary;

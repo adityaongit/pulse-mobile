@@ -22,6 +22,7 @@ import { Text } from "@/ui/Text";
 import { cn } from "@/ui/cn";
 import { ROW, ROW_LABEL, ROW_RULE, ROW_VALUE, SmallButton } from "./controls";
 import { push } from "@/ui/navigate";
+import { attempt } from "@/lib/attempt";
 
 export function ProfileCard({ profile }: { profile: SettingsVM["profile"] }) {
   const { t } = useTranslation("settings");
@@ -69,17 +70,17 @@ function PhotoButtons() {
   const { ref, anchor, open, close } = useMenu();
   const run = async (from: "camera" | "library") => {
     setPending(true);
-    try {
+    await attempt(async () => {
       const uri = await pickPhoto(from);
       if (uri) {
         await setPhoto(uri);
         toast.success(t("profile.photoUpdated"));
       }
-    } catch (e) {
+    }, { catch: (e) => {
       toast.error(e instanceof Error && e.message === "camera_denied" ? t("profile.cameraDenied") : t("profile.photoFailed"));
-    } finally {
+    }, finally: () => {
       setPending(false);
-    }
+    } });
   };
   const remove = async () => {
     await setPhoto(null);

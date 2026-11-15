@@ -51,15 +51,13 @@ export function GymHome() {
       return;
     }
     setPending(true);
-    try {
-      const res = await startSession(actionCtx(), routineId ? { routineId } : {});
-      if (!res.ok) return;
-      dataChanged("gym");
-      void preloadSession(res.data.session.id);
-      push(`/gym/session/${res.data.session.id}`);
-    } finally {
-      setPending(false);
-    }
+    // No try/finally: the React Compiler skips a component that has one, and the whole tab would render on every change.
+    const res = await startSession(actionCtx(), routineId ? { routineId } : {}).catch(() => null);
+    setPending(false);
+    if (!res || !res.ok) return;
+    dataChanged("gym");
+    void preloadSession(res.data.session.id);
+    push(`/gym/session/${res.data.session.id}`);
   };
 
   return (

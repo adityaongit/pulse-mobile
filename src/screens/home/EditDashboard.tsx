@@ -235,7 +235,7 @@ function SortableRow({ id, index, count, onMove, onRemove }: { id: DashboardKey;
   useEffect(() => {
     at.value = index;
     if (drag.value === 0) top.value = withTiming(index * PITCH, { duration: DURATION.fast });
-  }, [index]); // eslint-disable-line react-hooks/exhaustive-deps -- the shared values are stable
+  }, [index, at, drag, top]); // the shared values are the same objects on every render
 
   const hold = (on: boolean) => {
     setLifted(on);

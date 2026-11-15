@@ -177,6 +177,11 @@ export function MetricSection({ s, ...c }: Ctx & { s: Section }) {
   }
 }
 
+/** The hour with the most in it. Outside the component: the React Compiler skips one with this comparison in it. */
+function peakOf<T extends { value: number | null }>(hours: T[]): T | undefined {
+  return hours.reduce((a, h) => ((h.value ?? 0) > (a?.value ?? 0) ? h : a), hours[0]);
+}
+
 function Hourly({ s, vm, timeZone }: Ctx & { s: Extract<Section, { kind: "hourly" }> }) {
   const { t } = useTranslation("trends");
   const sedentary = vm.key === "sedentary_minutes";
@@ -185,7 +190,7 @@ function Hourly({ s, vm, timeZone }: Ctx & { s: Extract<Section, { kind: "hourly
       <MetricState metric={s.hours} skeleton={<ColumnChart.Skeleton />} renderReason={() => <EmptyState body={t("section.noMinuteSteps")} className="py-10" />}>
         {(hours) => {
           const done = hours.filter((h) => h.value !== null);
-          const peak = done.reduce((a, h) => ((h.value ?? 0) > (a?.value ?? 0) ? h : a), done[0]);
+          const peak = peakOf(done);
           return (
             <>
               <ColumnChart

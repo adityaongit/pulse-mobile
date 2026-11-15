@@ -25,6 +25,7 @@ import {
 import { availability, askWritePermissions, writePermissionState } from "@/health/connect";
 import { scaleClientRecordId, type ScaleWeighIn } from "@/health/healthRecord";
 import { writeScaleWeighIn } from "@/health/healthWrite";
+import { attempt } from "@/lib/attempt";
 import {
   leFuScale,
   type LeFuReading,
@@ -220,7 +221,7 @@ export function LeFuScaleProvider({ children }: { children: React.ReactNode }) {
 
   /** Writes everything waiting, stopping at the first permission/unavailable/error so the screen can explain it. */
   const flushHealth = React.useCallback(async (prompt = false) => {
-    try {
+    await attempt(async () => {
       if ((await availability()) !== "available") {
         setHealth("unavailable");
         return;
@@ -236,11 +237,10 @@ export function LeFuScaleProvider({ children }: { children: React.ReactNode }) {
         pendingHealth.current.delete(id);
         setHealth("saved");
       }
-    } catch {
-      setHealth("failed");
-    } finally {
-      setHealthPending(pendingHealth.current.size);
-    }
+    }, {
+      catch: () => setHealth("failed"),
+      finally: () => setHealthPending(pendingHealth.current.size),
+    });
   }, []);
 
   /** Queue a saved weigh-in for Health Connect; `prompt` is for an explicit Save tap, never a history burst. */
@@ -251,16 +251,14 @@ export function LeFuScaleProvider({ children }: { children: React.ReactNode }) {
   }, [flushHealth]);
 
   const refreshHealth = React.useCallback(async () => {
-    try {
+    await attempt(async () => {
       if ((await availability()) !== "available") {
         setHealth("unavailable");
         return;
       }
       const permission = await writePermissionState();
       setHealth(permission.missing.length > 0 ? "permission" : "ready");
-    } catch {
-      setHealth("unknown");
-    }
+    }, { catch: () => setHealth("unknown") });
   }, []);
 
   React.useEffect(() => {
@@ -421,7 +419,7 @@ export function LeFuScaleProvider({ children }: { children: React.ReactNode }) {
     savingRef.current = true;
     setSave("saving");
     setSaveError(null);
-    try {
+    await attempt(async () => {
       const { composition } = compositionOf(r.frame, p, athleteRef.current);
       const fatPct = composition?.bodyFatPercent ?? null;
       const c = actionCtx();
@@ -437,12 +435,15 @@ export function LeFuScaleProvider({ children }: { children: React.ReactNode }) {
         setSave("failed");
         setSaveError(result.error);
       }
-    } catch (e) {
-      setSave("failed");
-      setSaveError(e instanceof Error ? e.message : i18n.t("scale:error.saveFailed"));
-    } finally {
-      savingRef.current = false;
-    }
+    }, {
+      catch: (e) => {
+        setSave("failed");
+        setSaveError(e instanceof Error ? e.message : i18n.t("scale:error.saveFailed"));
+      },
+      finally: () => {
+        savingRef.current = false;
+      },
+    });
   }, [queueHealth]);
 
   const control = React.useMemo<ScaleControl>(() => {
