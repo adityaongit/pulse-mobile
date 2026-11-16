@@ -1,0 +1,67 @@
+name: Build Android APK
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '**/*.md'
+permissions:
+  contents: read
+concurrency:
+  group: apk-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      CI: '1'
+      NODE_ENV: production
+      SENTRY_DISABLE_AUTO_UPLOAD: 'true'
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: pnpm install --frozen-lockfile --prod=false
+      - name: Check source
+        run: |
+          echo '/// <reference types="expo/types" />' > expo-env.d.ts
+          pnpm typecheck
+          pnpm lint
+          pnpm test
+      - name: Generate Android project
+        run: pnpm exec expo prebuild --platform android --no-install
+      # Release bundles JavaScript into the APK and runs without Metro.
+      # Expo's generated debug signing key is for test installs only.
+      - name: Build standalone ARM64 test APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew :app:assembleRelease -PreactNativeArchitectures=arm64-v8a --no-daemon --max-workers=2 --console=plain
+      - name: Collect APK and checksum
+        run: |
+          mkdir -p artifacts
+          cp android/app/build/outputs/apk/release/app-release.apk artifacts/pulse-arm64-test.apk
+          cd artifacts
+          sha256sum pulse-arm64-test.apk > SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pulse-arm64-test-${{ github.run_number }}
+          path: artifacts/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Build notes
+        run: |
+          echo '### ARM64 test APK' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Download the artifact above and extract the APK. This is a test-signed standalone build for devices such as Pixel 9 Pro XL.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'This workflow packages the checked-out source. Gemini Nano coaching requires its implementation in that source; the workflow does not add it or bundle model weights.' >> "$GITHUB_STEP_SUMMARY"
+
