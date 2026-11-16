@@ -1,6 +1,5 @@
 <!-- Pulse tokens (src/ui/palette.ts LIGHT; scripts/widgets.test.ts keeps them equal). values-night holds DARK. -->
 <resources>
-  <color name="pulse_widget_choice_checked">#0078be</color>
   <color name="pulse_widget_bg_top">#f6f8f9</color>
   <color name="pulse_widget_bg">#e9edf0</color>
   <color name="pulse_widget_card_top">#ffffff</color>
