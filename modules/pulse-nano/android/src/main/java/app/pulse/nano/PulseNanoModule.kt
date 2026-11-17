@@ -40,7 +40,7 @@ class PulseNanoModule : Module() {
       try {
         withContext(Dispatchers.IO) {
           val response = client().generateContent(com.google.mlkit.genai.prompt.generateContentRequest(TextPart(prompt)) {
-            this.maxOutputTokens = maxOutputTokens.coerceIn(16, 1024)
+            this.maxOutputTokens = maxOutputTokens.coerceIn(1, 256)
             temperature = 0.3f
           })
           response.candidates.firstOrNull()?.text ?: throw IllegalStateException("nano_empty_response")

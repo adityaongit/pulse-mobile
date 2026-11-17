@@ -39,7 +39,8 @@
     "profile": "Configure seu perfil primeiro.",
     "provider": "Seu provedor recusou a solicitação (chave, cota ou cobrança). Verifique sua conta com ele.",
     "network": "Não foi possível alcançar seu provedor. Verifique sua conexão e tente de novo.",
-    "default": "Não foi possível obter uma resposta. Tente de novo."
+    "default": "Não foi possível obter uma resposta. Tente de novo.",
+    "nano": "O Gemini Nano nao conseguiu gerar uma resposta. Tente novamente ou escolha outro provedor."
   },
   "chat": {
     "toolFailed": "Não foi possível ler essa parte dos seus dados.",

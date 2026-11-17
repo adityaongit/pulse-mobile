@@ -68,5 +68,5 @@ jobs:
         run: |
           echo '### ARM64 test APK' >> "$GITHUB_STEP_SUMMARY"
           echo 'Download the artifact above and extract the APK. This is a test-signed standalone build for devices such as Pixel 9 Pro XL.' >> "$GITHUB_STEP_SUMMARY"
-          echo 'This workflow packages the checked-out source. Gemini Nano coaching requires its implementation in that source; the workflow does not add it or bundle model weights.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'This APK includes the Gemini Nano on-device coach provider. The Nano model is managed by Android on supported devices and is not bundled in the APK.' >> "$GITHUB_STEP_SUMMARY"
 

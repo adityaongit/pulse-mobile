@@ -39,7 +39,8 @@
     "profile": "Richte zuerst dein Profil ein.",
     "provider": "Dein Anbieter hat die Anfrage abgelehnt (Schlüssel, Kontingent oder Abrechnung). Prüfe dein Konto bei ihm.",
     "network": "Dein Anbieter war nicht erreichbar. Prüfe deine Verbindung und versuch es noch einmal.",
-    "default": "Es kam keine Antwort. Versuch es noch einmal."
+    "default": "Es kam keine Antwort. Versuch es noch einmal.",
+    "nano": "Gemini Nano konnte keine Antwort erstellen. Versuch es erneut oder waehle einen anderen Anbieter."
   },
   "chat": {
     "toolFailed": "Dieser Teil deiner Daten konnte nicht gelesen werden.",

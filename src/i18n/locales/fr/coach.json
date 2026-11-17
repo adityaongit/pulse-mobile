@@ -39,7 +39,8 @@
     "profile": "Configure d’abord ton profil.",
     "provider": "Ton fournisseur a refusé la requête (clé, quota ou facturation). Vérifie ton compte chez lui.",
     "network": "Impossible de joindre ton fournisseur. Vérifie ta connexion et réessaie.",
-    "default": "Impossible d’obtenir une réponse. Réessaie."
+    "default": "Impossible d’obtenir une réponse. Réessaie.",
+    "nano": "Gemini Nano n’a pas pu generer de reponse. Reessayez ou choisissez un autre fournisseur."
   },
   "chat": {
     "toolFailed": "Impossible de lire cette partie de tes données.",

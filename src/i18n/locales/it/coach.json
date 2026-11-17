@@ -39,7 +39,8 @@
     "profile": "Prima imposta il tuo profilo.",
     "provider": "Il tuo provider ha rifiutato la richiesta (chiave, quota o fatturazione). Controlla il tuo account presso di loro.",
     "network": "Impossibile raggiungere il tuo provider. Controlla la connessione e riprova.",
-    "default": "Impossibile ottenere una risposta. Riprova."
+    "default": "Impossibile ottenere una risposta. Riprova.",
+    "nano": "Gemini Nano non e riuscito a generare una risposta. Riprova o scegli un altro provider."
   },
   "chat": {
     "toolFailed": "Impossibile leggere quella parte dei tuoi dati.",

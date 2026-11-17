@@ -39,7 +39,8 @@
     "profile": "Najpierw skonfiguruj swój profil.",
     "provider": "Twój dostawca odrzucił żądanie (klucz, limit lub płatności). Sprawdź swoje konto u niego.",
     "network": "Nie udało się połączyć z Twoim dostawcą. Sprawdź połączenie i spróbuj ponownie.",
-    "default": "Nie udało się uzyskać odpowiedzi. Spróbuj ponownie."
+    "default": "Nie udało się uzyskać odpowiedzi. Spróbuj ponownie.",
+    "nano": "Gemini Nano nie moze wygenerowac odpowiedzi. Sprobuj ponownie lub wybierz innego dostawce."
   },
   "chat": {
     "toolFailed": "Nie udało się odczytać tej części Twoich danych.",

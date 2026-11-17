@@ -21,9 +21,9 @@ function getNative(): Native | null {
 export const nanoModuleAvailable = () => getNative() !== null;
 export const nanoStatus = (): Promise<NanoStatus> => getNative()?.status() ?? Promise.resolve({ state: "unsupported", model: null, reason: "native_module_missing" });
 export const prepareNano = (): Promise<NanoStatus> => getNative()?.prepare() ?? Promise.resolve({ state: "unsupported", model: null, reason: "native_module_missing" });
-export const generateNano = (prompt: string, maxOutputTokens = 512, signalId = "request"): Promise<string> => {
+export const generateNano = (prompt: string, maxOutputTokens = 256, signalId = "request"): Promise<string> => {
   const native = getNative();
   if (!native) return Promise.reject(new Error("nano_unavailable"));
-  return native.generate(prompt, maxOutputTokens, signalId);
+  return native.generate(prompt, Math.max(1, Math.min(maxOutputTokens, 256)), signalId);
 };
 export const cancelNano = (signalId: string) => getNative()?.cancel(signalId);

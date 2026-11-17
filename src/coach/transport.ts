@@ -16,7 +16,7 @@ import { selectedActivity } from "./activityChat";
 /** What a turn can fail with before any answer streams; the screen maps each to a sentence (Coach.tsx ERRORS). */
 export type CoachProblem = "limit" | "key" | "profile" | "bad_request";
 /** What a failure while streaming becomes (the UI stream's errorText). */
-export type StreamProblem = "provider" | "network";
+export type StreamProblem = "provider" | "network" | "nano";
 
 export type CoachModel = { model: LanguageModel; provider: string; instructions: string | null; cacheKey?: string };
 
@@ -129,7 +129,7 @@ async function turn(deps: CoachDeps, chatId: string, messages: UIMessage[], abor
     onError: (e) => {
       const problem = streamProblem(e);
       if (!abortSignal?.aborted) reportCoach(problem, m.provider, e);
-      return problem;
+      return m.provider === "pulse.gemini-nano" ? "nano" : problem;
     },
   });
 }

@@ -39,7 +39,8 @@
     "profile": "Configura primero tu perfil.",
     "provider": "Tu proveedor rechazó la solicitud (clave, cuota o facturación). Revisa tu cuenta con ellos.",
     "network": "No se pudo contactar a tu proveedor. Revisa tu conexión e inténtalo de nuevo.",
-    "default": "No se pudo obtener una respuesta. Inténtalo de nuevo."
+    "default": "No se pudo obtener una respuesta. Inténtalo de nuevo.",
+    "nano": "Gemini Nano no pudo generar una respuesta. Intentalo de nuevo o elige otro proveedor."
   },
   "chat": {
     "toolFailed": "No se pudo leer esa parte de tus datos.",

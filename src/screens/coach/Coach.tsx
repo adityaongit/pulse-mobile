@@ -30,7 +30,7 @@ const SUGGESTION_ICONS: Record<CoachSuggestion["key"], LucideIcon> = { brief: Ac
 /** The tools with a progress line (`coach:running.<tool>`); any other tool reads the default. */
 const RUNNING = ["get_day", "get_sleep", "get_activity", "get_trend", "get_activities", "get_journal_impacts", "get_health", "get_report", "get_profile"];
 
-const PROBLEMS = ["limit", "key", "profile", "provider", "network"] as const;
+const PROBLEMS = ["limit", "key", "profile", "provider", "network", "nano"] as const;
 /** The composer's least gap to the screen's bottom edge, and its gap above the keyboard. */
 const COMPOSER_GAP = 12;
 
