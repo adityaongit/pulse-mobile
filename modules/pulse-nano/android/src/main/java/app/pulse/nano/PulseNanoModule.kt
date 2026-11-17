@@ -6,6 +6,7 @@ import com.google.mlkit.genai.prompt.GenerativeModel
 import com.google.mlkit.genai.prompt.TextPart
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.kotlin.functions.Coroutine
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.currentCoroutineContext
@@ -19,8 +20,8 @@ class PulseNanoModule : Module() {
 
   override fun definition() = ModuleDefinition {
     Name("PulseNano")
-    AsyncFunction("status") { status() }
-    AsyncFunction("prepare") {
+    AsyncFunction("status") Coroutine { status() }
+    AsyncFunction("prepare") Coroutine {
       val client = client()
       when (client.checkStatus()) {
         FeatureStatus.AVAILABLE -> status()
@@ -32,7 +33,7 @@ class PulseNanoModule : Module() {
         else -> mapOf("state" to "unavailable", "model" to null)
       }
     }
-    AsyncFunction("generate") { prompt: String, maxOutputTokens: Int, requestId: String ->
+    AsyncFunction("generate") Coroutine { prompt: String, maxOutputTokens: Int, requestId: String ->
       if (client().checkStatus() != FeatureStatus.AVAILABLE) throw IllegalStateException("nano_unavailable")
       val job = currentCoroutineContext()[Job]
       if (job != null) jobs[requestId] = job
