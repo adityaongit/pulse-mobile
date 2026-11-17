@@ -84,9 +84,10 @@ export function CoachScreen() {
   const seed = useMemo(() => activityChatSeed(activity, question, preview), [activity, question, preview]);
   const { data } = useScreen(async (ctx) => ({ suggestions: await coachSuggestions(ctx), today: todayOf(ctx) }), ["coach"]);
   const [extraQuestions, setExtraQuestions] = useState<{ source: typeof data; questions: string[] }>();
+  const localSuggestions = !!setup?.consent && (setup.provider === "nano" || !!setup.onDeviceSuggestions);
   useFocusEffect(useCallback(() => {
     setExtraQuestions(undefined);
-    if (!(setup?.provider === "nano" || setup?.onDeviceSuggestions) || !setup.consent || !data) return;
+    if (!localSuggestions || !data) return;
     const controller = new AbortController();
     void nanoSuggestions(queryCtx(), controller.signal).then((questions) => {
       if (!controller.signal.aborted) setExtraQuestions({ source: data, questions });
@@ -94,7 +95,7 @@ export function CoachScreen() {
       if (!controller.signal.aborted) setExtraQuestions({ source: data, questions: [] });
     });
     return () => controller.abort();
-  }, [setup?.provider, setup?.consent, setup?.onDeviceSuggestions, data]));
+  }, [localSuggestions, data]));
   const [headerH, setHeaderH] = useState(0);
   // The chat on screen. No `?c=`: a fresh one (a new one per `?n=`). `?c=` naming the chat on screen keeps it running
   // (a new chat records its id after its first answer); naming another loads it from the Store first.

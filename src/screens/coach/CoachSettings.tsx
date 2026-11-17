@@ -8,8 +8,8 @@ import { i18n } from "@/i18n/config";
 import { MAX_NOTES } from "@/coach/instructions";
 import { providerLabel, providerOf } from "@/coach/providers";
 import { useCoachSetup } from "@/coach/session";
-import { deleteAllChats, removeAllProviders, removeProvider, setAutoAnalysis, setConsent, setInstructions } from "@/coach/storage";
-import { activateProvider, setOnDeviceActivities, setOnDeviceSuggestions } from "@/coach/storage";
+import { deleteAllChats, removeAllProviders, removeProvider, setAutoAnalysis, setConsent, setInstructions , activateProvider, setOnDeviceActivities, setOnDeviceSuggestions } from "@/coach/storage";
+
 import { Card } from "@/ui/Card";
 import { Text } from "@/ui/Text";
 import { toast } from "@/ui/Toast";
