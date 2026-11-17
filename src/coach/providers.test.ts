@@ -95,11 +95,13 @@ async function run(provider: string, model: string, fetch: Fetch, choice: { apiK
 }
 
 describe("providers", () => {
-  it("lists the web's five providers and the person's own server, Anthropic defaulting to the current Claude model", () => {
-    expect(PROVIDERS.map((p) => p.id)).toEqual(["anthropic", "openai", "google", "gateway", "openrouter", "custom"]);
+  it("lists cloud providers, the person's server and on-device Nano", () => {
+    expect(PROVIDERS.map((p) => p.id)).toEqual(["anthropic", "openai", "google", "gateway", "openrouter", "custom", "nano"]);
     expect(providerOf("anthropic")?.model).toBe("claude-opus-5-5");
     expect(modelFor({ provider: "anthropic", model: "claude-opus-5-5", apiKey: null })).toBeNull();
     expect(modelFor({ provider: "nope", model: "x", apiKey: KEY })).toBeNull();
+    expect(modelFor({ provider: "nano", model: "gemini-nano", apiKey: null })).toMatchObject({ provider: "pulse.gemini-nano", modelId: "gemini-nano" });
+    expect(coachReady({ consent: true, provider: "nano", last4: null })).toBe(true);
   });
 
   it("Anthropic: Messages API with the key header, a tool round trip, then streamed text", async () => {

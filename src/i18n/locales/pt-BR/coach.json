@@ -4,7 +4,8 @@
   "chatsTitle": "Conversas",
   "providerFallback": "seu provedor",
   "provider": {
-    "custom": "Seu próprio servidor"
+    "custom": "Seu próprio servidor",
+    "nano": "Gemini Nano · local"
   },
   "suggestions": {
     "brief": "Resumo de hoje",
@@ -141,7 +142,10 @@
     "testing": "Testando…",
     "testAndSave": "Testar e salvar",
     "checkServer": "O Pulse verifica o servidor com uma solicitação mínima antes de salvá-lo.",
-    "checkKey": "O Pulse verifica a chave com uma solicitação mínima antes de salvá-la."
+    "checkKey": "O Pulse verifica a chave com uma solicitação mínima antes de salvá-la.",
+    "nanoBody": "Funciona neste celular com o Gemini Nano. O Pulse verifica a compatibilidade do dispositivo e prepara o modelo. A configuração inicial pode precisar de internet e espaço de armazenamento.",
+    "nanoOffline": "Após a configuração, perguntas e dados de saúde permanecem neste celular. A inferência local funciona somente enquanto o Pulse está aberto.",
+    "prepareNano": "Preparar Gemini Nano e salvar"
   },
   "validate": {
     "pickProvider": "Escolha um provedor.",
@@ -151,7 +155,8 @@
     "pasteKey": "Cole sua chave de API.",
     "keyShort": "Essa chave parece curta demais.",
     "keyLong": "Essa chave parece longa demais.",
-    "testFailed": "Não funcionou: verifique a chave e o id do modelo, e se a sua conta tem crédito."
+    "testFailed": "Não funcionou: verifique a chave e o id do modelo, e se a sua conta tem crédito.",
+    "nanoUnavailable": "O Gemini Nano não está pronto neste celular. Verifique a compatibilidade do dispositivo e o AICore e tente novamente."
   },
   "evidence": {
     "basedOn": "Com base em {{what}}",

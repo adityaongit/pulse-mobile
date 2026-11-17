@@ -3,7 +3,10 @@
   "settingsTitle": "Réglages du Coach",
   "chatsTitle": "Discussions",
   "providerFallback": "ton fournisseur",
-  "provider": { "custom": "Ton propre serveur" },
+  "provider": {
+    "custom": "Ton propre serveur",
+    "nano": "Gemini Nano · local"
+  },
   "suggestions": {
     "brief": "Le point du jour",
     "sync": "Que puis-je faire pendant que le sommeil de cette nuit se synchronise ?",
@@ -139,7 +142,10 @@
     "testing": "Test…",
     "testAndSave": "Tester et enregistrer",
     "checkServer": "Pulse vérifie le serveur avec une toute petite requête avant de l’enregistrer.",
-    "checkKey": "Pulse vérifie la clé avec une toute petite requête avant de l’enregistrer."
+    "checkKey": "Pulse vérifie la clé avec une toute petite requête avant de l’enregistrer.",
+    "nanoBody": "Fonctionne sur ce téléphone avec Gemini Nano. Pulse vérifie la compatibilité et prépare le modèle. La première configuration peut nécessiter une connexion Internet et de l’espace de stockage.",
+    "nanoOffline": "Après la configuration, les questions et les données de santé restent sur ce téléphone. Le traitement local fonctionne uniquement lorsque Pulse est ouvert.",
+    "prepareNano": "Préparer Gemini Nano et enregistrer"
   },
   "validate": {
     "pickProvider": "Choisis un fournisseur.",
@@ -149,7 +155,8 @@
     "pasteKey": "Colle ta clé API.",
     "keyShort": "Cette clé semble trop courte.",
     "keyLong": "Cette clé semble trop longue.",
-    "testFailed": "Ça n’a pas marché : vérifie la clé et l’identifiant du modèle, et que ton compte a du crédit."
+    "testFailed": "Ça n’a pas marché : vérifie la clé et l’identifiant du modèle, et que ton compte a du crédit.",
+    "nanoUnavailable": "Gemini Nano n’est pas prêt sur ce téléphone. Vérifiez la compatibilité de l’appareil et AICore, puis réessayez."
   },
   "evidence": {
     "basedOn": "Basé sur {{what}}",

@@ -59,7 +59,7 @@ export function streamProblem(e: unknown): StreamProblem {
 }
 
 /** The provider's kind for telemetry: never its URL, key or model id. */
-const PROVIDER_KIND: Record<string, string> = { google: "gemini", openai: "openai", anthropic: "anthropic", gateway: "openai-compatible", openrouter: "openai-compatible", custom: "custom" };
+const PROVIDER_KIND: Record<string, string> = { google: "gemini", nano: "on-device", openai: "openai", anthropic: "anthropic", gateway: "openai-compatible", openrouter: "openai-compatible", custom: "custom" };
 
 /** Reports a coach failure as `coach.<problem>` with the provider's kind and the HTTP status (0 without one). */
 export function reportCoach(problem: string, provider: string | null | undefined, e?: unknown): void {

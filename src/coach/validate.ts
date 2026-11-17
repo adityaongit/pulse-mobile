@@ -4,6 +4,7 @@ import { generateText } from "ai";
 import { i18n } from "@/i18n/config";
 import { modelFor, providerOf, type Fetch } from "./providers";
 import { reportCoach } from "./transport";
+import { nanoStatus, prepareNano, generateNano } from "../../modules/pulse-nano";
 
 export type ProviderInput = { provider: string; model: string; apiKey: string; baseUrl?: string };
 export type Checked = { ok: true; provider: string; model: string; apiKey: string | null; baseUrl: string | null } | { ok: false; error: string };
@@ -24,6 +25,7 @@ export function serverUrl(raw: string): string | null {
  */
 export function checkProvider(input: ProviderInput): Checked {
   const p = providerOf(input.provider);
+  if (p?.local) return { ok: true, provider: input.provider, model: p.model, apiKey: null, baseUrl: null };
   const model = input.model.trim();
   const apiKey = input.apiKey.trim();
   if (!p) return { ok: false, error: i18n.t("coach:validate.pickProvider") };
@@ -47,6 +49,17 @@ export const TEST_FAILED = "That didn’t work: check the key and the model id, 
 export async function testKey(input: ProviderInput, fetch?: Fetch, timeoutMs = 20_000): Promise<Checked> {
   const c = checkProvider(input);
   if (!c.ok) return c;
+  if (providerOf(c.provider)?.local) {
+    let status = await nanoStatus();
+    if (status.state === "downloadable") status = await prepareNano();
+    if (status.state !== "available") return { ok: false, error: i18n.t("coach:validate.nanoUnavailable") };
+    try {
+      await generateNano("Reply with OK.", 16, `test-${Date.now()}`);
+      return c;
+    } catch {
+      return { ok: false, error: i18n.t("coach:validate.nanoUnavailable") };
+    }
+  }
   const model = modelFor(c, fetch);
   if (!model) return { ok: false, error: i18n.t("coach:validate.pickProvider") };
   const ctl = new AbortController();

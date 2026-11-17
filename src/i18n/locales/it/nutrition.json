@@ -164,7 +164,8 @@
     "estimateFromDescription": "Stima dalla descrizione",
     "privacy": "La tua foto o descrizione va solo a {{provider}}, con la tua chiave, per questa stima. Pulse non salva la foto.",
     "enterTitle": "Oppure inseriscilo tu",
-    "typeFood": "Scrivi il cibo e i suoi numeri"
+    "typeFood": "Scrivi il cibo e i suoi numeri",
+    "nanoPhotoUnavailable": "Gemini Nano stima i pasti da una descrizione scritta. Le stime dalle foto richiedono un provider cloud."
   },
   "problem": {
     "timeoutTitle": "Ci ha messo troppo",

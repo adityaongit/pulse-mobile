@@ -153,6 +153,7 @@
     "estimateTitle": "Estimate with AI",
     "takePhoto": "Take photo",
     "choosePhoto": "Choose photo",
+    "nanoPhotoUnavailable": "Gemini Nano supports estimates from a written description. Photo estimates need a cloud provider.",
     "gettingPhoto": "Getting the photo ready…",
     "describeLabel": "Or describe it",
     "describeHint": "(what and how much)",

@@ -3,7 +3,10 @@
   "settingsTitle": "Coach-Einstellungen",
   "chatsTitle": "Chats",
   "providerFallback": "deinem Anbieter",
-  "provider": { "custom": "Dein eigener Server" },
+  "provider": {
+    "custom": "Dein eigener Server",
+    "nano": "Gemini Nano · lokal"
+  },
   "suggestions": {
     "brief": "Das Briefing für heute",
     "sync": "Was kann ich tun, während der Schlaf der letzten Nacht synchronisiert?",
@@ -139,7 +142,10 @@
     "testing": "Wird getestet…",
     "testAndSave": "Testen und speichern",
     "checkServer": "Pulse prüft den Server mit einer winzigen Anfrage, bevor er gespeichert wird.",
-    "checkKey": "Pulse prüft den Schlüssel mit einer winzigen Anfrage, bevor er gespeichert wird."
+    "checkKey": "Pulse prüft den Schlüssel mit einer winzigen Anfrage, bevor er gespeichert wird.",
+    "nanoBody": "Läuft mit Gemini Nano auf diesem Smartphone. Pulse prüft die Geräteunterstützung und richtet das Modell ein. Für die erste Einrichtung werden möglicherweise Internet und Speicherplatz benötigt.",
+    "nanoOffline": "Nach der Einrichtung bleiben Fragen und Gesundheitsdaten auf diesem Smartphone. Die lokale Ausführung funktioniert nur, solange Pulse geöffnet ist.",
+    "prepareNano": "Gemini Nano einrichten und speichern"
   },
   "validate": {
     "pickProvider": "Wähle einen Anbieter.",
@@ -149,7 +155,8 @@
     "pasteKey": "Füge deinen API-Schlüssel ein.",
     "keyShort": "Der Schlüssel wirkt zu kurz.",
     "keyLong": "Der Schlüssel wirkt zu lang.",
-    "testFailed": "Das hat nicht geklappt: Prüfe den Schlüssel und die Modell-ID und ob dein Konto Guthaben hat."
+    "testFailed": "Das hat nicht geklappt: Prüfe den Schlüssel und die Modell-ID und ob dein Konto Guthaben hat.",
+    "nanoUnavailable": "Gemini Nano ist auf diesem Smartphone nicht verfügbar. Prüfe die Geräteunterstützung und AICore und versuche es erneut."
   },
   "evidence": {
     "basedOn": "Basierend auf {{what}}",

@@ -164,7 +164,8 @@
     "estimateFromDescription": "Estimar desde la descripción",
     "privacy": "Tu foto o descripción va solo a {{provider}}, con tu propia clave, para esta estimación. Pulse no guarda la foto.",
     "enterTitle": "O ingrésala tú mismo",
-    "typeFood": "Escribe la comida y sus números"
+    "typeFood": "Escribe la comida y sus números",
+    "nanoPhotoUnavailable": "Gemini Nano permite estimar alimentos a partir de una descripción escrita. Las estimaciones con fotos requieren un proveedor en la nube."
   },
   "problem": {
     "timeoutTitle": "Tardó demasiado",

@@ -200,6 +200,7 @@ function Sheet({ edit, at: at0, meal: meal0, timeZone, today }: { edit: FoodItem
   const { t } = useTranslation("nutrition");
   const setup = useCoachSetup();
   const hasKey = coachReady(setup);
+  const localNano = setup?.provider === "nano";
   const provider = providerLabel(setup?.provider ?? null);
 
   const [step, setStep] = useState<Step>(edit ? "manual" : "start");
@@ -554,9 +555,10 @@ function Sheet({ edit, at: at0, meal: meal0, timeZone, today }: { edit: FoodItem
         {notice === "no_key" ? noKey : null}
         <Section title={t("food.estimateTitle")}>
           <View className="flex-row gap-2">
-            <MethodTile icon={Camera} label={t("food.takePhoto")} onPress={() => void fromPhoto("camera")} disabled={busy || !hasKey} />
-            <MethodTile icon={ImagePlus} label={t("food.choosePhoto")} onPress={() => void fromPhoto("library")} disabled={busy || !hasKey} />
+            <MethodTile icon={Camera} label={t("food.takePhoto")} onPress={() => void fromPhoto("camera")} disabled={busy || !hasKey || localNano} />
+            <MethodTile icon={ImagePlus} label={t("food.choosePhoto")} onPress={() => void fromPhoto("library")} disabled={busy || !hasKey || localNano} />
           </View>
+          {localNano && <Text className={CAPTION}>{t("food.nanoPhotoUnavailable")}</Text>}
           {busy && (
             <View accessibilityLiveRegion="polite" className="flex-row items-center gap-2.5">
               <ActivityIndicator />

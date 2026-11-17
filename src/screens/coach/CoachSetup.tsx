@@ -98,31 +98,32 @@ export function ConnectProvider({ current, onSaved }: { current: CoachSetup; onS
           );
         })}
       </View>
+      {p.local && <Text className={BODY}>{t("setup.nanoBody")}</Text>}
       {p.custom && (
         <Field label={t("setup.serverLabel")} hint={t("setup.serverHint")}>
           <TextField accessibilityLabel={t("setup.serverLabel")} value={server} onChangeText={setServer} autoCapitalize="none" autoCorrect={false} spellCheck={false} keyboardType="url" maxLength={300} placeholder="http://192.168.1.20:11434/v1" />
         </Field>
       )}
-      <Field label={t("setup.keyLabel")} hint={p.custom ? t("setup.keyHintOptional") : t("setup.keyHint")} optional={p.custom}>
+      {!p.local && <Field label={t("setup.keyLabel")} hint={p.custom ? t("setup.keyHintOptional") : t("setup.keyHint")} optional={p.custom}>
         <TextField accessibilityLabel={t("setup.keyLabel")} value={key} onChangeText={setKey} secureTextEntry autoCapitalize="none" autoCorrect={false} spellCheck={false} maxLength={500} placeholder={current.last4 && current.provider === provider ? `••••${current.last4}` : t("setup.keyPlaceholder")} />
-      </Field>
+      </Field>}
       {!!p.keyUrl && (
         <Text accessibilityRole="link" onPress={() => void Linking.openURL(p.keyUrl!).catch(() => {})} className="-mt-3 text-[13px] font-semibold text-coach-text">
           {t("setup.getKey", { provider: p.label })}
         </Text>
       )}
-      <Field label={t("setup.modelLabel")} hint={t("setup.modelHint")}>
+      {!p.local && <Field label={t("setup.modelLabel")} hint={t("setup.modelHint")}>
         <TextField accessibilityLabel={t("setup.modelLabel")} value={model} onChangeText={setModel} autoCapitalize="none" autoCorrect={false} spellCheck={false} maxLength={120} />
-      </Field>
+      </Field>}
       {!!error && (
         <Text accessibilityRole="alert" className={ERROR}>
           {error}
         </Text>
       )}
-      <Button disabled={testing || (p.custom ? !server.trim() : !key.trim())} onPress={() => void save()}>
-        {testing ? t("setup.testing") : t("setup.testAndSave")}
+      <Button disabled={testing || (!p.local && (p.custom ? !server.trim() : !key.trim()))} onPress={() => void save()}>
+        {testing ? t("setup.testing") : p.local ? t("setup.prepareNano") : t("setup.testAndSave")}
       </Button>
-      <Text className={HINT}>{p.custom ? t("setup.checkServer") : t("setup.checkKey")}</Text>
+      <Text className={HINT}>{p.local ? t("setup.nanoOffline") : p.custom ? t("setup.checkServer") : t("setup.checkKey")}</Text>
     </View>
   );
 }

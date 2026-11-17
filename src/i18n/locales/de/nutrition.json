@@ -161,7 +161,8 @@
     "estimateFromDescription": "Aus Beschreibung schätzen",
     "privacy": "Dein Foto oder deine Beschreibung geht für diese Schätzung nur an {{provider}}, mit deinem eigenen Schlüssel. Pulse speichert das Foto nicht.",
     "enterTitle": "Oder gib es selbst ein",
-    "typeFood": "Tippe das Essen und seine Zahlen ein"
+    "typeFood": "Tippe das Essen und seine Zahlen ein",
+    "nanoPhotoUnavailable": "Mit Gemini Nano kannst du Schätzungen anhand einer Beschreibung erstellen. Fotoschätzungen benötigen einen Cloud-Anbieter."
   },
   "problem": {
     "timeoutTitle": "Das hat zu lange gedauert",
