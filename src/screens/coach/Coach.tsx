@@ -21,6 +21,7 @@ import { useTheme } from "@/ui/theme";
 import { Evidence } from "./Evidence";
 import { Prose } from "./Prose";
 import { push } from "@/ui/navigate";
+import { Shimmer } from "@/ui/Skeleton";
 
 type Part = UIMessage["parts"][number];
 
@@ -153,7 +154,7 @@ function AssistantMessage({ m, done, onRegenerate }: { m: UIMessage; done: boole
   );
 }
 
-function Empty({ providerLabel, suggestions, today, onAsk }: { providerLabel: string; suggestions: CoachSuggestion[]; today: string; onAsk: (text: string) => void }) {
+function Empty({ providerLabel, suggestions, suggestionsLoading, today, onAsk }: { providerLabel: string; suggestions: CoachSuggestion[]; suggestionsLoading?: boolean; today: string; onAsk: (text: string) => void }) {
   const { t } = useTranslation("coach");
   return (
     <View className="flex-1 items-center justify-center py-8">
@@ -173,6 +174,7 @@ function Empty({ providerLabel, suggestions, today, onAsk }: { providerLabel: st
           </Press>
         ))}
       </View>
+      {suggestionsLoading && <Shimmer className="mt-2 h-44 w-full rounded-2xl" />}
       <Press accessibilityRole="button" onPress={() => push(`/checkin?d=${today}`)} className="mt-3 h-10 flex-row items-center gap-2 rounded-full px-4">
         <Icon icon={NotebookPen} size={16} tone="foreground-secondary" />
         <Text className="text-[14px] font-medium text-foreground-secondary">{t("chat.checkIn")}</Text>
@@ -191,12 +193,13 @@ export type CoachProps = {
   activity?: CoachActivity;
   providerLabel: string;
   suggestions: CoachSuggestion[];
+  suggestionsLoading?: boolean;
   today: string;
   /** After the first answer of a new chat: the screen records the chat's id (`/coach?c=`). */
   onSaved: (id: string) => void;
 };
 
-export function Coach({ id, initial, prefill, auto, activity, providerLabel, suggestions, today, onSaved }: CoachProps) {
+export function Coach({ id, initial, prefill, auto, activity, providerLabel, suggestions, suggestionsLoading, today, onSaved }: CoachProps) {
   const { t } = useTranslation("coach");
   const { c } = useTheme();
   const bottom = Math.max(useSafeAreaInsets().bottom, COMPOSER_GAP);
@@ -248,7 +251,7 @@ export function Coach({ id, initial, prefill, auto, activity, providerLabel, sug
     <View ref={keyboardRef} onLayout={measureKeyboard} style={{ flex: 1, paddingBottom: keyboardInset }}>
       <ScrollView ref={scroll} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" className="flex-1" contentContainerClassName="grow px-4 pb-6 pt-2">
         {messages.length === 0 ? (
-          <Empty providerLabel={providerLabel} suggestions={suggestions} today={today} onAsk={send} />
+          <Empty providerLabel={providerLabel} suggestions={suggestions} suggestionsLoading={suggestionsLoading} today={today} onAsk={send} />
         ) : (
           <View accessibilityLabel={t("chat.chatLabel")} className="mt-2 gap-6">
             {messages.map((m, i) =>

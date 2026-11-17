@@ -951,3 +951,8 @@ References: [SDK 57 Accelerometer](https://docs.expo.dev/versions/v57.0.0/sdk/ac
 
 The Android only Nano bridge is a local Expo module backed by ML Kit's Prompt API and AICore. Check runtime feature status before generation, and let the person prepare downloadable model assets from Coach setup. Inference is allowed only while Pulse is the foreground app. Keep a smaller recent chat window and avoid sending images until the native bridge supports them. See [ML Kit direct model access](https://developers.google.com/ml-kit/genai/prompt/android/get-started) and [background usage limits](https://developers.google.com/ml-kit/genai#background_usage).
 
+
+## Coach provider persistence and suggestion placeholders
+
+Provider keys are stored separately in SecureStore. The existing active key migrates before switching providers; selecting a saved provider reuses its model and URL. Suggestion placeholders reuse the UI-thread CSS animation approach from Skeleton and respect reduced motion.
+

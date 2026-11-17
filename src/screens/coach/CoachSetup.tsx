@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { Linking, View } from "react-native";
 import { PROVIDERS, providerOf } from "@/coach/providers";
 import { testDeviceKey } from "@/coach/session";
-import { saveProvider, setConsent, type CoachSetup } from "@/coach/storage";
+import { apiKey, saveProvider, setConsent, type CoachSetup } from "@/coach/storage";
 import { Button } from "@/ui/Button";
 import { cn } from "@/ui/cn";
 import { Press } from "@/ui/Press";
@@ -45,6 +45,7 @@ export function ConnectProvider({ current, onSaved }: { current: CoachSetup; onS
   const { t } = useTranslation("coach");
   const [provider, setProvider] = useState(providerOf(current.provider)?.id ?? PROVIDERS[0].id);
   const p = providerOf(provider)!;
+  const savedLast4 = current.profiles?.[provider]?.last4 ?? (current.provider === provider ? current.last4 : null);
   const [model, setModel] = useState(current.provider === provider && current.model ? current.model : p.model);
   const [key, setKey] = useState("");
   const [server, setServer] = useState(current.baseUrl ?? "");
@@ -52,14 +53,18 @@ export function ConnectProvider({ current, onSaved }: { current: CoachSetup; onS
   const [error, setError] = useState<string | null>(null);
 
   const pick = (id: string) => {
+    const profile = current.profiles?.[id];
     setProvider(id as typeof provider);
-    setModel(providerOf(id)!.model);
+    setModel(profile?.model ?? (id === current.provider ? current.model : null) ?? providerOf(id)!.model);
+    setServer(profile?.baseUrl ?? (id === current.provider ? current.baseUrl : null) ?? "");
+    setKey("");
     setError(null);
   };
   const save = async () => {
     setTesting(true);
     setError(null);
-    const r = await testDeviceKey({ provider, model, apiKey: key, baseUrl: server });
+    const savedKey = key.trim() || await apiKey(provider) || "";
+    const r = await testDeviceKey({ provider, model, apiKey: savedKey, baseUrl: server });
     if (!r.ok) {
       setTesting(false);
       return setError(r.error);
@@ -105,7 +110,7 @@ export function ConnectProvider({ current, onSaved }: { current: CoachSetup; onS
         </Field>
       )}
       {!p.local && <Field label={t("setup.keyLabel")} hint={p.custom ? t("setup.keyHintOptional") : t("setup.keyHint")} optional={p.custom}>
-        <TextField accessibilityLabel={t("setup.keyLabel")} value={key} onChangeText={setKey} secureTextEntry autoCapitalize="none" autoCorrect={false} spellCheck={false} maxLength={500} placeholder={current.last4 && current.provider === provider ? `••••${current.last4}` : t("setup.keyPlaceholder")} />
+        <TextField accessibilityLabel={t("setup.keyLabel")} value={key} onChangeText={setKey} secureTextEntry autoCapitalize="none" autoCorrect={false} spellCheck={false} maxLength={500} placeholder={savedLast4 ? `••••${savedLast4}` : t("setup.keyPlaceholder")} />
       </Field>}
       {!!p.keyUrl && (
         <Text accessibilityRole="link" onPress={() => void Linking.openURL(p.keyUrl!).catch(() => {})} className="-mt-3 text-[13px] font-semibold text-coach-text">
@@ -120,7 +125,7 @@ export function ConnectProvider({ current, onSaved }: { current: CoachSetup; onS
           {error}
         </Text>
       )}
-      <Button disabled={testing || (!p.local && (p.custom ? !server.trim() : !key.trim()))} onPress={() => void save()}>
+      <Button disabled={testing || (!p.local && (p.custom ? !server.trim() : !key.trim() && !current.profiles?.[provider]?.last4 && !(current.provider === provider && current.last4)))} onPress={() => void save()}>
         {testing ? t("setup.testing") : p.local ? t("setup.prepareNano") : t("setup.testAndSave")}
       </Button>
       <Text className={HINT}>{p.local ? t("setup.nanoOffline") : p.custom ? t("setup.checkServer") : t("setup.checkKey")}</Text>

@@ -12,7 +12,7 @@ import { createActivityGlance, type CoachActivity } from "./activity";
 export async function deviceModel(): Promise<CoachModel | null> {
   const s = await coachSetup();
   if (!coachReady(s) || !s.provider || !s.model) return null;
-  const model = modelFor({ provider: s.provider, model: s.model, apiKey: await apiKey(), baseUrl: s.baseUrl }, deviceFetch);
+  const model = modelFor({ provider: s.provider, model: s.model, apiKey: await apiKey(s.provider), baseUrl: s.baseUrl }, deviceFetch);
   return model ? { model, provider: s.provider, instructions: s.instructions, cacheKey: JSON.stringify([s.provider, s.model, s.baseUrl, s.last4]) } : null;
 }
 

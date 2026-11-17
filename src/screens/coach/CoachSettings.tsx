@@ -8,7 +8,7 @@ import { i18n } from "@/i18n/config";
 import { MAX_NOTES } from "@/coach/instructions";
 import { providerLabel, providerOf } from "@/coach/providers";
 import { useCoachSetup } from "@/coach/session";
-import { deleteAllChats, removeProvider, setAutoAnalysis, setConsent, setInstructions } from "@/coach/storage";
+import { deleteAllChats, removeAllProviders, removeProvider, setAutoAnalysis, setConsent, setInstructions } from "@/coach/storage";
 import { Card } from "@/ui/Card";
 import { Text } from "@/ui/Text";
 import { toast } from "@/ui/Toast";
@@ -75,7 +75,7 @@ export function CoachSettings() {
       ? { title: t("settings.disconnectTitle"), description: t("settings.disconnectBody"), label: t("settings.disconnect"), go: () => run(removeProvider, t("settings.disconnected")) }
       : { title: t(local ? "settings.disconnectTitle" : "settings.removeKeyTitle"), description: t(local ? "settings.disconnectBody" : "settings.removeKeyBody"), label: t(local ? "settings.disconnect" : "settings.removeKey"), go: () => run(removeProvider, t(local ? "settings.disconnected" : "settings.keyRemoved")) },
     chats: { title: t("settings.deleteChatsTitle"), description: t("settings.deleteChatsBody"), label: t("settings.deleteChats"), go: () => run(deleteAllChats, t("settings.chatsDeleted")) },
-    off: { title: t("settings.turnOffTitle"), description: t("settings.turnOffBody"), label: t("settings.turnOff"), go: () => run(async () => (await removeProvider(), await setConsent(false)), t("settings.turnedOff")) },
+    off: { title: t("settings.turnOffTitle"), description: t("settings.turnOffBody"), label: t("settings.turnOff"), go: () => run(async () => (await removeAllProviders(), await setConsent(false)), t("settings.turnedOff")) },
   } as const;
 
   const body =
