@@ -4,7 +4,7 @@ import { generateId, type LanguageModel } from "ai";
 type AnyRecord = Record<string, any>;
 const flatten = (parts: AnyRecord[] | string = []) => typeof parts === "string" ? parts : parts.map((part) => {
   if (part.type === "text") return part.text;
-  if (part.type === "tool-call") return `Tool result ${part.toolName}: ${part.input ?? ""}`;
+  if (part.type === "tool-call") return `Tool request ${part.toolName}: ${typeof part.input === "string" ? part.input : JSON.stringify(part.input ?? {})}`;
   if (part.type === "tool-result") return `Tool result ${part.toolName}: ${JSON.stringify(part.output ?? part.result ?? "")}`;
   return "";
 }).filter(Boolean).join("\n");
@@ -14,7 +14,7 @@ function promptOf(options: AnyRecord): string {
   const system = prompt.filter((m: AnyRecord) => m.role === "system").map((m: AnyRecord) => flatten(m.content)).join("\n").slice(0, 2400);
   const messages = prompt.filter((m: AnyRecord) => m.role !== "system").map((m: AnyRecord) => `${m.role.toUpperCase()}: ${flatten(m.content)}`).join("\n\n").slice(-6200);
   const tools = (options.tools ?? []).filter((t: AnyRecord) => t.type === "function").map((t: AnyRecord) => ({ name: t.name, description: t.description, inputSchema: t.inputSchema })).filter((t: AnyRecord) => t.name);
-  const toolInstructions = tools.length ? `Available read-only tools. If a tool is needed, respond with exactly one JSON object {"toolCall":{"name":"...","arguments":{...}}}; otherwise answer in plain text. Tool definitions: ${JSON.stringify(tools)}`.slice(0, 2800) : "";
+  const toolInstructions = tools.length ? `Available read-only tools. If a tool is needed, respond with exactly one JSON object {"toolCall":{"name":"...","arguments":{...}}}; otherwise answer in plain text. Tool definitions: ${JSON.stringify(tools)}` : "";
   const jsonInstructions = options.responseFormat?.type === "json" ? `Return only valid JSON matching this schema: ${JSON.stringify(options.responseFormat.schema ?? {})}` : "";
   return [system, toolInstructions, jsonInstructions, messages].filter(Boolean).join("\n\n").slice(0, 11800);
 }
@@ -34,10 +34,11 @@ export function nanoLanguageModel(): LanguageModel {
     }
     let content: AnyRecord[] = [{ type: "text", text }];
     try {
-      const parsed = JSON.parse(text.trim());
+      const normalized = text.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
+      const parsed = JSON.parse(normalized);
       const call = parsed?.toolCall;
       const known = (options.tools ?? []).some((t: AnyRecord) => t.type === "function" && t.name === call?.name);
-      if (known && call && typeof call.arguments === "object") content = [{ type: "tool-call", toolCallId: generateId(), toolName: call.name, input: call.arguments }];
+      if (known && call && call.arguments && typeof call.arguments === "object" && !Array.isArray(call.arguments)) content = [{ type: "tool-call", toolCallId: generateId(), toolName: call.name, input: JSON.stringify(call.arguments) }];
     } catch { /* Plain text is the normal response shape. */ }
     return { content, finishReason: { unified: content[0].type === "tool-call" ? "tool-calls" : "stop", raw: undefined }, usage: { inputTokens: { total: undefined, noCache: undefined, cacheRead: undefined, cacheWrite: undefined }, outputTokens: { total: undefined, text: undefined, reasoning: undefined }, raw: undefined }, request: { body: { prompt: options.prompt } }, warnings: [] };
   };

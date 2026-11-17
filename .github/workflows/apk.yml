@@ -6,7 +6,7 @@ on:
     paths-ignore:
       - '**/*.md'
 permissions:
-  contents: read
+  contents: write
 concurrency:
   group: apk-${{ github.ref }}
   cancel-in-progress: true
@@ -58,15 +58,20 @@ jobs:
           cp android/app/build/outputs/apk/release/app-release.apk artifacts/pulse-arm64-test.apk
           cd artifacts
           sha256sum pulse-arm64-test.apk > SHA256SUMS.txt
-      - uses: actions/upload-artifact@v4
-        with:
-          name: pulse-arm64-test-${{ github.run_number }}
-          path: artifacts/
-          if-no-files-found: error
-          retention-days: 14
+      - name: Publish individual APK and checksum downloads
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="nano-test-${GITHUB_RUN_NUMBER}"
+          gh release create "$tag" \
+            artifacts/pulse-arm64-test.apk \
+            artifacts/SHA256SUMS.txt \
+            --title "Gemini Nano test build ${GITHUB_RUN_NUMBER}" \
+            --notes "Standalone ARM64 test APK for supported devices, including Pixel 9 Pro XL. The Gemini Nano model is provided by Android and is not bundled in the APK." \
+            --prerelease
       - name: Build notes
         run: |
           echo '### ARM64 test APK' >> "$GITHUB_STEP_SUMMARY"
-          echo 'Download the artifact above and extract the APK. This is a test-signed standalone build for devices such as Pixel 9 Pro XL.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Download the APK and SHA256SUMS.txt individually from the GitHub release created by this run. This is a test-signed standalone build for devices such as Pixel 9 Pro XL.' >> "$GITHUB_STEP_SUMMARY"
           echo 'This APK includes the Gemini Nano on-device coach provider. The Nano model is managed by Android on supported devices and is not bundled in the APK.' >> "$GITHUB_STEP_SUMMARY"
 
