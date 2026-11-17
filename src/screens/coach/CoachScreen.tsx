@@ -10,9 +10,9 @@ import { History, Settings2, SquarePen } from "lucide-react-native";
 import { CHAT_ID } from "@/coach/chats";
 import { providerLabel } from "@/coach/providers";
 import { useChatCount, useCoachSetup } from "@/coach/session";
-import { activateProvider, loadChat } from "@/coach/storage";
-import { Press } from "@/ui/Press";
-import { Text } from "@/ui/Text";
+import { loadChat } from "@/coach/storage";
+
+
 import { coachSuggestions, nanoSuggestions } from "@/coach/suggestions";
 import { queryCtx } from "@/state/app";
 import { activityChatSeed } from "@/coach/activityChat";
@@ -121,12 +121,7 @@ export function CoachScreen() {
     <View className="flex-1 bg-background">
       <DetailHeader title={t("title")} action={<BarActions chatCount={chatCount ?? 0} chatOpen={!!c} onNew={newChat} />} onHeight={setHeaderH} />
       <View className="flex-1" style={{ paddingTop: headerH }}>
-        {!!setup.profiles && <View className="flex-row flex-wrap gap-2 px-4 py-2">
-          {Object.values(setup.profiles).map((profile) => <Press key={profile.provider} accessibilityRole="radio" accessibilityState={{ selected: profile.provider === setup.provider }} onPress={() => void activateProvider(profile.provider)} className="rounded-full border border-border px-3 py-2">
-            <Text className={profile.provider === setup.provider ? "text-coach-text" : "text-muted-foreground"}>{providerLabel(profile.provider)}</Text>
-          </Press>)}
-          <Press onPress={() => push("/coach/settings")} className="rounded-full border border-border px-3 py-2"><Text>{t("settings.change")}</Text></Press>
-        </View>}
+
         {chat && data ? (
           <Coach
             key={chat.id}
@@ -137,7 +132,7 @@ export function CoachScreen() {
             activity={activity}
             providerLabel={providerLabel(setup.provider)}
             suggestions={[...data.suggestions, ...(setup.provider === "nano" && extraQuestions?.source === data ? extraQuestions.questions : []).filter((text) => !data.suggestions.some((s) => s.text === text)).map((text) => ({ key: "brief" as const, text }))]}
-            suggestionsLoading={setup.provider === "nano" && extraQuestions?.source !== data}
+            suggestionsLoading={setup.provider === "nano" && extraQuestions?.source !== data} dynamicStart={setup.provider === "nano" ? data.suggestions.length : undefined}
             today={data.today}
             onSaved={(id) => router.setParams({ c: id, q: undefined, brief: undefined, send: undefined, workout: undefined, sleep: undefined, nap: undefined, preview: undefined })}
           />

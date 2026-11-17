@@ -142,7 +142,7 @@
     "modelHint": "Any model your provider offers.",
     "testing": "Testing…",
     "testAndSave": "Test and save",
-    "nanoBody": "Runs on this phone using Gemini Nano. Pulse checks device support and prepares the model; the first setup may need internet and storage.",
+    "nanoBody": "On-device AI has limited performance and may give less detailed or accurate answers than cloud models. Runs on this phone using Gemini Nano. Pulse checks device support and prepares the model; the first setup may need internet and storage.",
     "nanoOffline": "After setup, prompts and health data stay on this phone. Local inference works only while Pulse is open.",
     "prepareNano": "Prepare Gemini Nano and save",
     "checkServer": "Pulse checks the server with one tiny request before saving it.",

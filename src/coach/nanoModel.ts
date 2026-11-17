@@ -26,7 +26,7 @@ function promptOf(options: AnyRecord): string {
   const tools = (hasResults ? [] : options.tools ?? []).filter((t: AnyRecord) => t.type === "function").map((t: AnyRecord) => ({ name: t.name, description: t.description, inputSchema: t.inputSchema })).filter((t: AnyRecord) => t.name);
   const toolInstructions = tools.length ? `Available read-only tools. If a tool is needed, respond with exactly one JSON object {"toolCall":{"name":"...","arguments":{...}}}; otherwise answer in plain text. Tool definitions: ${JSON.stringify(tools)}` : "";
   const jsonInstructions = options.responseFormat?.type === "json" ? `Return only valid JSON matching this schema: ${JSON.stringify(options.responseFormat.schema ?? {})}` : "";
-  return [hasResults ? "Explain the supplied health facts in under 120 words. Never output JSON or request more tools. Missing recovery is unavailable, not a low score. Use the dates supplied. Give one practical next step." : system, toolInstructions, jsonInstructions, messages].filter(Boolean).join("\n\n");
+  return [hasResults ? "Explain the supplied health facts in under 120 words. Never output JSON or request more tools. Missing recovery is unavailable, not a low score. Use the dates supplied to identify the correct data, but refer to the current day simply as today. Do not announce today's calendar date. Give one practical next step." : system, toolInstructions, jsonInstructions, messages].filter(Boolean).join("\n\n");
 }
 
 export function nanoLanguageModel(): LanguageModel {

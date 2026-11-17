@@ -21,6 +21,8 @@ import { getSleep } from "@/queries/sleep";
 import { getStrain } from "@/queries/strain";
 import { TREND_METRICS, trendMetric, type TrendMetricKey } from "@/queries/trends";
 import { defaultTexts, type Texts } from "./texts";
+import { getNutrition } from "@/queries/nutrition";
+import { NO_CUSTOM } from "@/nutrition/targets";
 
 const round = (v: number, dp = 0) => Math.round(v * 10 ** dp) / 10 ** dp;
 
@@ -138,6 +140,11 @@ export function coachTools(ctx: QueryCtx, t: Texts = defaultTexts) {
       description: t("tool.get_day"),
       inputSchema: z.object({ day: Day(t("tool.get_day.day")) }),
       execute: async ({ day }) => dayDigest(ctx, await dayOf(ctx, day)),
+    }),
+    get_nutrition: tool({
+      description: "Read today's logged nutrition. Missing food logs do not mean no food was eaten.",
+      inputSchema: z.object({}),
+      execute: async () => getNutrition(ctx, NO_CUSTOM),
     }),
     get_sleep: tool({
       description: t("tool.get_sleep"),

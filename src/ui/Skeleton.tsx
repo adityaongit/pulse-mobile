@@ -39,6 +39,14 @@ export function Shimmer({ className }: { className?: string }) {
   );
 }
 
+export function SuggestionReveal({ children, index }: { children: React.ReactNode; index: number }) {
+  const still = useReducedMotion();
+  return <View style={{ position: "relative" }}>
+    <Animated.View style={(!still ? { overflow: "hidden", animationName: { from: { maxWidth: "0%", opacity: 0 }, to: { maxWidth: "100%", opacity: 1 } }, animationDuration: "550ms", animationDelay: `${index * 160}ms`, animationFillMode: "both", animationTimingFunction: "ease-out" } : {}) as ViewStyle}>{children}</Animated.View>
+    {!still && <Animated.View pointerEvents="none" style={{ position: "absolute", right: 0, top: 0, height: 20, overflow: "hidden", animationName: { from: { width: "100%" }, to: { width: "0%" } }, animationDuration: "550ms", animationDelay: `${index * 160}ms`, animationFillMode: "both", animationTimingFunction: "ease-out" } as ViewStyle}><Shimmer className="h-5 w-full rounded-md" /></Animated.View>}
+  </View>;
+}
+
 /**
  * A text bar for one line of a type role. The web sizes it with `h-[1lh]` and a bar 0.72em tall; React Native has no
  * `lh` unit, so the role's line height `lh` and font size `fs` (px) are given. Width goes in `className` (w-40, w-full).

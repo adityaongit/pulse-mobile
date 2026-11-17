@@ -75,7 +75,7 @@ export const PROVIDERS: Provider[] = [
     // No key, no Authorization header: a local Ollama takes none.
     create: (apiKey, model, fetch, baseUrl) => createOpenAICompatible({ name: "custom", baseURL: baseUrl!, apiKey: apiKey || undefined, fetch })(model),
   },
-  { id: "nano", label: "Gemini Nano · On-device", model: "gemini-nano", local: true, create: () => nanoLanguageModel() },
+  { id: "nano", label: "On device", model: "gemini-nano", local: true, create: () => nanoLanguageModel() },
 ];
 
 export const providerOf = (id: string | null | undefined) => PROVIDERS.find((p) => p.id === id) ?? null;
