@@ -166,7 +166,7 @@ function Empty({ providerLabel, suggestions, today, onAsk }: { providerLabel: st
       </Text>
       <View className="mt-8 w-full gap-2">
         {suggestions.map((s) => (
-          <Press key={s.key} accessibilityRole="button" onPress={() => onAsk(s.text)} className="min-h-14 flex-row items-center gap-3 rounded-2xl border border-border px-4 py-3">
+          <Press key={s.text} accessibilityRole="button" onPress={() => onAsk(s.text)} className="min-h-14 flex-row items-center gap-3 rounded-2xl border border-border px-4 py-3">
             <Icon icon={SUGGESTION_ICONS[s.key]} size={20} tone="coach-text" />
             <Text className="flex-1 text-[15px] leading-5 text-foreground">{s.text}</Text>
             <Icon icon={ChevronRight} size={16} tone="muted-foreground" />
@@ -258,7 +258,7 @@ export function Coach({ id, initial, prefill, auto, activity, providerLabel, sug
                 <AssistantMessage key={m.id} m={m} done={!busy || i < messages.length - 1} onRegenerate={!busy && m.id === lastAnswer ? () => again(m.id) : undefined} />
               ),
             )}
-            {status === "submitted" && (
+            {busy && (
               <Caption live>{t("chat.thinking")}</Caption>
             )}
           </View>

@@ -129,7 +129,7 @@ async function turn(deps: CoachDeps, chatId: string, messages: UIMessage[], abor
     onError: (e) => {
       const problem = streamProblem(e);
       if (!abortSignal?.aborted) reportCoach(problem, m.provider, e);
-      return m.provider === "pulse.gemini-nano" ? "nano" : problem;
+      return m.provider === "nano" ? "nano" : problem;
     },
   });
 }

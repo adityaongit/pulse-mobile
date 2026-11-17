@@ -11,7 +11,8 @@ import { CHAT_ID } from "@/coach/chats";
 import { providerLabel } from "@/coach/providers";
 import { useChatCount, useCoachSetup } from "@/coach/session";
 import { loadChat } from "@/coach/storage";
-import { coachSuggestions } from "@/coach/suggestions";
+import { coachSuggestions, nanoSuggestions } from "@/coach/suggestions";
+import { queryCtx } from "@/state/app";
 import { activityChatSeed } from "@/coach/activityChat";
 import type { CoachActivity } from "@/coach/activity";
 import { todayOf } from "@/queries/common";
@@ -80,6 +81,15 @@ export function CoachScreen() {
   const question = (param(params.q) ?? "").slice(0, 500);
   const seed = useMemo(() => activityChatSeed(activity, question, preview), [activity, question, preview]);
   const { data } = useScreen(async (ctx) => ({ suggestions: await coachSuggestions(ctx), today: todayOf(ctx) }), ["coach"]);
+  const [extraQuestions, setExtraQuestions] = useState<{ source: typeof data; questions: string[] }>();
+  useEffect(() => {
+    if (setup?.provider !== "nano" || !setup.consent || !data) return;
+    const controller = new AbortController();
+    void nanoSuggestions(queryCtx(), controller.signal).then((questions) => {
+      if (!controller.signal.aborted) setExtraQuestions({ source: data, questions });
+    }).catch(() => {});
+    return () => controller.abort();
+  }, [setup?.provider, setup?.consent, data]);
   const [headerH, setHeaderH] = useState(0);
   // The chat on screen. No `?c=`: a fresh one (a new one per `?n=`). `?c=` naming the chat on screen keeps it running
   // (a new chat records its id after its first answer); naming another loads it from the Store first.
@@ -116,7 +126,7 @@ export function CoachScreen() {
             auto={(brief || sendNow) && !c}
             activity={activity}
             providerLabel={providerLabel(setup.provider)}
-            suggestions={data.suggestions}
+            suggestions={[...data.suggestions, ...(setup.provider === "nano" && extraQuestions?.source === data ? extraQuestions.questions : []).filter((text) => !data.suggestions.some((s) => s.text === text)).map((text) => ({ key: "brief" as const, text }))]}
             today={data.today}
             onSaved={(id) => router.setParams({ c: id, q: undefined, brief: undefined, send: undefined, workout: undefined, sleep: undefined, nap: undefined, preview: undefined })}
           />
