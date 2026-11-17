@@ -9,6 +9,7 @@ import { MAX_NOTES } from "@/coach/instructions";
 import { providerLabel, providerOf } from "@/coach/providers";
 import { useCoachSetup } from "@/coach/session";
 import { deleteAllChats, removeAllProviders, removeProvider, setAutoAnalysis, setConsent, setInstructions } from "@/coach/storage";
+import { activateProvider, setOnDeviceActivities, setOnDeviceSuggestions } from "@/coach/storage";
 import { Card } from "@/ui/Card";
 import { Text } from "@/ui/Text";
 import { toast } from "@/ui/Toast";
@@ -97,6 +98,7 @@ export function CoachSettings() {
             {!local && <Row label={t("settings.apiKey")} value={setup.last4 ? `••••${setup.last4}` : custom ? t("settings.none") : t("settings.notSaved")} />}
           </Card>
           <View className="flex-row flex-wrap gap-2">
+            {Object.values(setup.profiles ?? {}).map((profile) => <SmallButton key={profile.provider} label={`${profile.provider === setup.provider ? "✓ " : ""}${providerLabel(profile.provider)}`} onPress={() => void activateProvider(profile.provider).catch(failed)} />)}
             <SmallButton label={t("settings.change")} onPress={() => setChanging(true)} />
             <SmallButton label={custom || local ? t("settings.disconnect") : t("settings.removeKey")} onPress={() => setConfirm("key")} />
           </View>
@@ -105,7 +107,9 @@ export function CoachSettings() {
         <View className="gap-2">
           <Text className={GROUP_LABEL}>{t("settings.activities")}</Text>
           <SwitchRow rule={false} label={t("settings.analyze")} hint={t("settings.analyzeHint")} value={setup.autoAnalysis} onChange={(on) => void setAutoAnalysis(on).catch(failed)} />
+          {!local && <SwitchRow rule={false} label={t("settings.localActivities")} hint={t("settings.localOverrideHint")} value={!!setup.onDeviceActivities} onChange={(on) => void setOnDeviceActivities(on).catch(failed)} />}
         </View>
+        {!local && <View className="gap-2"><Text className={GROUP_LABEL}>{t("settings.suggestedQuestions")}</Text><SwitchRow rule={false} label={t("settings.localSuggestions")} hint={t("settings.localOverrideHint")} value={!!setup.onDeviceSuggestions} onChange={(on) => void setOnDeviceSuggestions(on).catch(failed)} /></View>}
         <View className="gap-2">
           <Text className={GROUP_LABEL}>{t("settings.chats")}</Text>
           <Text className={HINT}>{t("settings.chatsHint")}</Text>

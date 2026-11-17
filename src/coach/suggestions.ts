@@ -11,7 +11,7 @@ import { getFitness } from "@/queries/health";
 import { getNutrition } from "@/queries/nutrition";
 import { NO_CUSTOM } from "@/nutrition/targets";
 
-const nanoCache = new Map<string, string[]>();
+let suggestionVisit = 0;
 let cancelSuggestions: (() => void) | undefined;
 export const interruptNanoSuggestions = () => cancelSuggestions?.();
 
@@ -31,12 +31,10 @@ export async function nanoSuggestions(ctx: QueryCtx, signal: AbortSignal): Promi
     fitness.vo2.value ? `What does my current fitness estimate mean for my training?` : "What data would help estimate my fitness?",
     "What do my logged meals tell me about today's nutrition?",
   ];
-  const rotation = Math.floor(Date.parse(today) / 86400000) % candidates.length;
+  const rotation = suggestionVisit++ % candidates.length;
   const fallback = [0, 1, 2].map((offset) => candidates[(rotation + offset) % candidates.length]);
   const context = JSON.stringify(nutrition, (key, value) => ["entries", "meals", "points", "days"].includes(key) ? undefined : typeof value === "number" ? Math.round(value * 10) / 10 : value).slice(0, 1800);
-  const key = JSON.stringify([today, i18n.language, candidates, context]);
-  const cached = nanoCache.get(key);
-  if (cached) return cached;
+
   const id = generateId();
   const cancel = () => cancelNano(id);
   cancelSuggestions?.();
@@ -45,14 +43,11 @@ export async function nanoSuggestions(ctx: QueryCtx, signal: AbortSignal): Promi
   const timer = setTimeout(cancel, 20000);
   try {
     if (signal.aborted) return fallback;
-    const answer = await generateNano(`Choose three distinct useful questions for today in ${i18n.language}, one per line. Consider recovery, sleep, strain, today's workouts, fitness and logged nutrition. Use the candidate topics and nutrition context below. Rephrase naturally without inventing facts, diagnoses or numbers. Do not infer missing logs mean no food eaten. Keep missing measurements unavailable. No JSON or explanation.\nCandidates:\n${candidates.join("\n")}\nNutrition context: ${context}`, 160, id);
+    const answer = await generateNano(`Choose three distinct useful questions for today in ${i18n.language}, one per line. Consider recovery, sleep, strain, today's workouts, fitness and logged nutrition. Use the candidate topics and nutrition context below. Rephrase naturally without inventing facts, diagnoses or numbers. Do not infer missing logs mean no food eaten. Keep missing measurements unavailable. No JSON or explanation.\nCandidates:\n${[...candidates.slice(rotation), ...candidates.slice(0, rotation)].join("\n")}\nNutrition context: ${context}`, 160, id);
     const lines = answer.trim().split(/\n+/).map((s) => s.replace(/^\s*[-*\d.)]+\s*/, "").trim());
     const valid = lines.length === 3 && new Set(lines).size === 3 && lines.every((s) => s.length > 12 && s.length < 140 && !/[{}\[\]\d]/.test(s) && /[?？]$/.test(s));
     const result = valid ? lines : fallback;
-    if (!signal.aborted) {
-      nanoCache.clear();
-      nanoCache.set(key, result);
-    }
+
     return result;
   } catch {
     return fallback;

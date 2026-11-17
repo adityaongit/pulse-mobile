@@ -1,10 +1,10 @@
 // Coach `/coach` (spec §7.21), ported from pulse src/app/(app)/coach/page.tsx via halo: consent, then a provider and
 // key (BYOK), then the chat. `?c=` opens a saved chat, `?q=` fills the composer without sending, `?brief=1` asks for
 // today's brief at once, `?send=1` asks `?q=` at once, `?n=` starts a fresh chat.
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
-import { router, useLocalSearchParams } from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { generateId, type UIMessage } from "ai";
 import { History, Settings2, SquarePen } from "lucide-react-native";
 import { CHAT_ID } from "@/coach/chats";
@@ -84,8 +84,9 @@ export function CoachScreen() {
   const seed = useMemo(() => activityChatSeed(activity, question, preview), [activity, question, preview]);
   const { data } = useScreen(async (ctx) => ({ suggestions: await coachSuggestions(ctx), today: todayOf(ctx) }), ["coach"]);
   const [extraQuestions, setExtraQuestions] = useState<{ source: typeof data; questions: string[] }>();
-  useEffect(() => {
-    if (setup?.provider !== "nano" || !setup.consent || !data) return;
+  useFocusEffect(useCallback(() => {
+    setExtraQuestions(undefined);
+    if (!(setup?.provider === "nano" || setup?.onDeviceSuggestions) || !setup.consent || !data) return;
     const controller = new AbortController();
     void nanoSuggestions(queryCtx(), controller.signal).then((questions) => {
       if (!controller.signal.aborted) setExtraQuestions({ source: data, questions });
@@ -93,7 +94,7 @@ export function CoachScreen() {
       if (!controller.signal.aborted) setExtraQuestions({ source: data, questions: [] });
     });
     return () => controller.abort();
-  }, [setup?.provider, setup?.consent, data]);
+  }, [setup?.provider, setup?.consent, setup?.onDeviceSuggestions, data]));
   const [headerH, setHeaderH] = useState(0);
   // The chat on screen. No `?c=`: a fresh one (a new one per `?n=`). `?c=` naming the chat on screen keeps it running
   // (a new chat records its id after its first answer); naming another loads it from the Store first.
@@ -131,8 +132,8 @@ export function CoachScreen() {
             auto={(brief || sendNow) && !c}
             activity={activity}
             providerLabel={providerLabel(setup.provider)}
-            suggestions={[...data.suggestions, ...(setup.provider === "nano" && extraQuestions?.source === data ? extraQuestions.questions : []).filter((text) => !data.suggestions.some((s) => s.text === text)).map((text) => ({ key: "brief" as const, text }))]}
-            suggestionsLoading={setup.provider === "nano" && extraQuestions?.source !== data} dynamicStart={setup.provider === "nano" ? data.suggestions.length : undefined}
+            suggestions={[...data.suggestions, ...((setup.provider === "nano" || setup.onDeviceSuggestions) && extraQuestions?.source === data ? extraQuestions.questions : []).filter((text) => !data.suggestions.some((s) => s.text === text)).map((text) => ({ key: "brief" as const, text }))]}
+            suggestionsLoading={(setup.provider === "nano" || setup.onDeviceSuggestions) && extraQuestions?.source !== data} dynamicStart={(setup.provider === "nano" || setup.onDeviceSuggestions) ? data.suggestions.length : undefined}
             today={data.today}
             onSaved={(id) => router.setParams({ c: id, q: undefined, brief: undefined, send: undefined, workout: undefined, sleep: undefined, nap: undefined, preview: undefined })}
           />

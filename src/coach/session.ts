@@ -37,7 +37,15 @@ export function deviceTransport(): CoachTransport {
 }
 
 const activityGlance = createActivityGlance();
-export const deviceActivityGlance = (activity: CoachActivity) => activityGlance({ ctx: currentCtx, model: deviceModel }, activity);
+export const deviceActivityGlance = (activity: CoachActivity) => activityGlance({ ctx: currentCtx, model: async () => {
+  const setup = await coachSetup();
+  if (!setup.consent) return null;
+  if (setup.onDeviceActivities) {
+    const model = modelFor({ provider: "nano", model: "gemini-nano", apiKey: null, baseUrl: null }, deviceFetch);
+    return model ? { model, provider: "nano", instructions: setup.instructions, cacheKey: "nano-activity" } : null;
+  }
+  return deviceModel();
+} }, activity);
 
 /** The tiny test request, from the phone. */
 export const testDeviceKey = (input: ProviderInput) => testKey(input, deviceFetch);

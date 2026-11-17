@@ -10,6 +10,8 @@ import { CHAT_PAGE, titleOf, type ChatCursor, type ChatRow } from "./chats";
 
 /** What the screens may know about the setup: never the key itself. */
 export type CoachSetup = {
+  onDeviceActivities?: boolean;
+  onDeviceSuggestions?: boolean;
   profiles?: Record<string, { provider: string; model: string; last4: string | null; baseUrl: string | null }>;
   provider: string | null;
   model: string | null;
@@ -59,6 +61,8 @@ export const setConsent = (on: boolean) => patchSetup({ consent: on });
 export const setInstructions = (notes: string | null) => patchSetup({ instructions: notes?.trim() || null });
 
 export const setAutoAnalysis = (on: boolean) => patchSetup({ autoAnalysis: on });
+export const setOnDeviceActivities = (on: boolean) => patchSetup({ onDeviceActivities: on });
+export const setOnDeviceSuggestions = (on: boolean) => patchSetup({ onDeviceSuggestions: on });
 
 /**
  * Stores the provider, model and server URL, and the key in secure storage (call only after the test request worked).

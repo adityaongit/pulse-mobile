@@ -84,6 +84,10 @@
     "deleting": "Wird gelöscht…"
   },
   "settings": {
+    "localActivities": "Use on-device AI for activity analysis",
+    "localSuggestions": "Use on-device AI for suggested questions",
+    "suggestedQuestions": "Suggested questions",
+    "localOverrideHint": "Uses on-device AI independently of your selected chat provider. Requires a supported, prepared on-device model.",
     "saveFailed": "Konnte auf diesem Handy nicht gespeichert werden. Versuch es noch einmal.",
     "aboutYou": "Über dich",
     "aboutHint": "Wie der Coach mit dir sprechen soll und was er wissen soll. Die Sicherheitsregeln des Coachs ändert das nie.",
