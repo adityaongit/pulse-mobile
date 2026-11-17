@@ -20,8 +20,8 @@ class PulseNanoModule : Module() {
 
   override fun definition() = ModuleDefinition {
     Name("PulseNano")
-    AsyncFunction("status") Coroutine { status() }
-    AsyncFunction("prepare") Coroutine {
+    AsyncFunction("status") Coroutine { -> status() }
+    AsyncFunction("prepare") Coroutine { ->
       val client = client()
       when (client.checkStatus()) {
         FeatureStatus.AVAILABLE -> status()
