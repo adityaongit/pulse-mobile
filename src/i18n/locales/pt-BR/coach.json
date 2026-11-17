@@ -84,10 +84,10 @@
     "deleting": "Apagando…"
   },
   "settings": {
-    "localActivities": "Use on-device AI for activity analysis",
-    "localSuggestions": "Use on-device AI for suggested questions",
-    "suggestedQuestions": "Suggested questions",
-    "localOverrideHint": "Uses on-device AI independently of your selected chat provider. Requires a supported, prepared on-device model.",
+    "localActivities": "Usar a IA do dispositivo para analisar atividades",
+    "localSuggestions": "Usar a IA do dispositivo para perguntas sugeridas",
+    "suggestedQuestions": "Perguntas sugeridas",
+    "localOverrideHint": "Usa a IA do dispositivo independentemente do provedor de conversa selecionado. Requer um modelo local compatível e configurado.",
     "saveFailed": "Não foi possível salvar isso neste celular. Tente de novo.",
     "aboutYou": "Sobre você",
     "aboutHint": "Como você quer que o Coach fale e o que ele deve saber. Isso nunca muda as regras de segurança do Coach.",

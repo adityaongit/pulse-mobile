@@ -84,10 +84,10 @@
     "deleting": "Удаляю…"
   },
   "settings": {
-    "localActivities": "Use on-device AI for activity analysis",
-    "localSuggestions": "Use on-device AI for suggested questions",
-    "suggestedQuestions": "Suggested questions",
-    "localOverrideHint": "Uses on-device AI independently of your selected chat provider. Requires a supported, prepared on-device model.",
+    "localActivities": "Использовать ИИ на устройстве для анализа активности",
+    "localSuggestions": "Использовать ИИ на устройстве для предлагаемых вопросов",
+    "suggestedQuestions": "Предлагаемые вопросы",
+    "localOverrideHint": "Использует ИИ на устройстве независимо от выбранного провайдера чата. Требуется поддерживаемая и настроенная локальная модель.",
     "saveFailed": "Не удалось сохранить это на телефоне. Попробуй ещё раз.",
     "aboutYou": "О тебе",
     "aboutHint": "Как тебе нравится, чтобы Coach говорил, и что ему стоит знать. Это никогда не меняет правила безопасности Coach.",
