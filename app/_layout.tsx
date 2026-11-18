@@ -173,6 +173,9 @@ function Screens({ onboarded }: { onboarded: boolean }) {
           <Stack.Screen name="strain" />
           <Stack.Screen name="trend/[key]" />
           <Stack.Screen name="trends" />
+          <Stack.Screen name="timeline" />
+          <Stack.Screen name="timeline/edit" />
+          <Stack.Screen name="places/edit" />
           <Stack.Screen name="workout/start" options={{ animation: "slide_from_bottom" }} />
           <Stack.Screen name="workout/live" options={{ gestureEnabled: false }} />
           <Stack.Screen name="workout/[id]" />

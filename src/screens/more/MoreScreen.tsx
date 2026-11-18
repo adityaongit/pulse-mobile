@@ -3,7 +3,7 @@
 // Help, Your data, then About. The account row is Profile (no accounts); Coach opens the coach's settings.
 import { View } from "react-native";
 import { useTranslation } from "react-i18next";
-import { Activity, Archive, Bluetooth, BotMessageSquare, BookOpen, Calculator, CalendarDays, CalendarRange, ChartLine, Code2, Database, Dumbbell, FileUp, MapPin, Palette, Plug, Ruler, Scale, Target, Trophy, UserRound, Wind } from "lucide-react-native";
+import { Activity, Archive, Bluetooth, BotMessageSquare, BookOpen, Calculator, CalendarDays, CalendarRange, ChartLine, Code2, Database, Dumbbell, FileUp, MapPin, Palette, Plug, Route, Ruler, Scale, Target, Trophy, UserRound, Wind } from "lucide-react-native";
 import { i18n } from "@/i18n/config";
 import { formatDay, rangeLabel } from "@/lib/format";
 import { SCORING_VERSION } from "@/pipeline";
@@ -67,7 +67,7 @@ export function MoreScreen() {
               { icon: Archive, label: t("row.allReports") },
             ]}
           />
-          <LinkListSkeleton title={t("group.trends")} rows={[{ icon: ChartLine, label: t("row.trends") }]} />
+          <LinkListSkeleton title={t("group.trends")} rows={[{ icon: ChartLine, label: t("row.trends") }, { icon: Route, label: i18n.t("places:timeline.title") }]} />
           <LinkListSkeleton title={t("group.live")} rows={live} />
           <LinkListSkeleton title={i18n.t("gym:more.group")} rows={gym} />
           <LinkListSkeleton title={t("group.help")} rows={[{ icon: BookOpen, label: t("row.howPulseWorks") }]} />
@@ -88,7 +88,7 @@ export function MoreScreen() {
       <View className={MORE_COLUMN}>
         <LinkList title={t("group.accountSettings")} rows={settings} />
         <LinkList title={t("group.reports")} rows={reports} />
-        <LinkList title={t("group.trends")} rows={[{ icon: ChartLine, label: t("row.trends"), aside: t("row.trendsAside"), href: "/trends" }]} />
+        <LinkList title={t("group.trends")} rows={[{ icon: ChartLine, label: t("row.trends"), aside: t("row.trendsAside"), href: "/trends" }, { icon: Route, label: i18n.t("places:timeline.title"), href: "/timeline" }]} />
         <LinkList title={t("group.live")} rows={live} />
         <LinkList title={i18n.t("gym:more.group")} rows={gym} />
         <LinkList title={t("group.help")} rows={[{ icon: BookOpen, label: t("row.howPulseWorks"), aside: t("row.scoresAside", { count: SCORE_DOCS.length }), href: "/more/how-it-works" }]} />

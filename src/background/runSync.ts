@@ -19,6 +19,7 @@ import { setForeground } from "@/lib/yield";
 import { runPipeline, SCORING_VERSION } from "@/pipeline";
 import { notifyAfterRun } from "./alerts";
 import { maintainStorage } from "./maintenance";
+import { maintainTimeline } from "./timeline";
 import { releaseLock, takeLock, waitForLock, type RunOwner } from "./lock";
 
 export type Source = "health_connect" | "demo";
@@ -148,6 +149,10 @@ async function runSteps(store: Store, profile: Profile, source: Source, opts: Ru
     await timed(`maintenance (${opts.owner})`, () => maintainStorage(store, Date.now() / 1000)).catch((e) => {
       console.warn("[maintenance]", e instanceof Error ? e.message : String(e));
       void reportError("maintenance.failed", e);
+    });
+    // The location timeline's frozen days and old fixes (docs/timeline.md); independent of the health data.
+    await timed(`timeline (${opts.owner})`, () => maintainTimeline(store, opts.timeZone, Math.floor(Date.now() / 1000))).catch((e) => {
+      void reportError("places.upkeep_failed", e);
     });
     // At most once a day, without holding up the run: what Health Connect has that Pulse did not store, and scores
     // stuck on one reason (src/health/dataGaps.ts). Only codes and counts are sent.

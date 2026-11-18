@@ -169,16 +169,5 @@
     "moved": "{{label}} moved to position {{position}} of {{total}}",
     "removed": "{{label}} removed from Home",
     "added": "{{label}} added at position {{position}}"
-  },
-  "office": {
-    "title": "Office",
-    "manage": "Manage",
-    "inAt": "In {{time}}",
-    "atOffice": "At the office now",
-    "stayed": "{{duration}} at the office",
-    "none": "No visit today",
-    "last": "Last: {{day}} {{time}}",
-    "empty": "Walk into the office and Pulse logs it.",
-    "week": "Days this week: {{count}}"
   }
 }

@@ -52,7 +52,7 @@ import { strainKey, strainQuery } from "../strain/StrainScreen";
 import { useScreenReady } from "@/ui/shells/useScreenReady";
 import { preloadWhenIdle, useScreen } from "../useScreen";
 import { EditDashboardButton } from "./EditDashboard";
-import { OfficeCard } from "./OfficeCard";
+import { TimelineCard } from "./TimelineCard";
 import { GymToday } from "./GymToday";
 import { DetectedRow } from "../activity/ActivityCost";
 import { HeartRateTile } from "./HeartRateTile";
@@ -206,7 +206,7 @@ function Home({ vm, timeZone }: { vm: HomePageVM; timeZone: string }) {
               <View className="gap-3">
                 {vm.outlook && <DayBanner outlook={vm.outlook} />}
                 {vm.isToday && <GymToday />}
-                {vm.isToday && <OfficeCard />}
+                {vm.isToday && <TimelineCard />}
                 <SectionShell variant="card" title={vm.activities.title} info={vm.isToday ? false : cardInfo("Activities")} action={<IconLink href="/activities" label={t("activities.all")} icon={Maximize2} />}>
                   {vm.activities.items.length || vm.activities.detected.length || recorded.length ? (
                     <View className="gap-1.5">

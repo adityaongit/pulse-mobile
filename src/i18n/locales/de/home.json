@@ -169,16 +169,5 @@
     "moved": "{{label}} auf Position {{position}} von {{total}} verschoben",
     "removed": "{{label}} vom Start entfernt",
     "added": "{{label}} auf Position {{position}} hinzugefügt"
-  },
-  "office": {
-    "title": "Büro",
-    "manage": "Verwalten",
-    "inAt": "Seit {{time}} da",
-    "atOffice": "Jetzt im Büro",
-    "stayed": "{{duration}} im Büro",
-    "none": "Heute kein Besuch",
-    "last": "Zuletzt: {{day}} {{time}}",
-    "empty": "Geh ins Büro und Pulse notiert es.",
-    "week": "Tage diese Woche: {{count}}"
   }
 }

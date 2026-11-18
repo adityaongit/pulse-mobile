@@ -175,16 +175,5 @@
     "moved": "{{label}} se movió a la posición {{position}} de {{total}}",
     "removed": "{{label}} quitada de Inicio",
     "added": "{{label}} añadida en la posición {{position}}"
-  },
-  "office": {
-    "title": "Oficina",
-    "manage": "Gestionar",
-    "inAt": "Desde las {{time}}",
-    "atOffice": "Ahora en la oficina",
-    "stayed": "{{duration}} en la oficina",
-    "none": "Sin visita hoy",
-    "last": "Última: {{day}} {{time}}",
-    "empty": "Entra en la oficina y Pulse lo anotará.",
-    "week": "Días esta semana: {{count}}"
   }
 }

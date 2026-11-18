@@ -9,7 +9,7 @@ import type { CoachChatRow, DayRange, EntrySource, JournalTagChange, JournalTagR
 import type { GymExercise, GymImportState, GymMeasurement, GymRoutine, GymRoutineItem, GymSession, GymSet, SetType } from "./gym";
 import type { Habit, HabitEntry } from "./habits";
 import type { FoodOrder } from "./foodOrders";
-import type { OfficeEvent } from "@/core/office";
+import { DEFAULT_MODE, MOVE_BUCKET_S, TRACKING_MODES, type Fix, type FrozenStay, type MoveBucket, type Place, type PlaceEvent, type PlaceIcon, type TimelineOverride, type TimelineState, type TrackingMode } from "@/core/places/types";
 import type { BloodPressureQuality, BloodPressureReading, DailyValue, Exercise, HealthRecord, HrSample, HrvSample, JournalEntry, Metrics, Profile, Segment, Session, StepsMinute, SyncState } from "./types";
 import type { LeetCodeSnapshot } from "@/leetcode/types";
 import type { ActivityCostResult } from "@/core/algorithms/activityCost";
@@ -119,10 +119,26 @@ create table if not exists food_orders (
   id text primary key, key text not null unique, day text not null, ts integer not null, merchant text not null, source text not null
 );
 create index if not exists food_orders_day on food_orders(day);
-create table if not exists office_events (
-  id text primary key, kind text not null, ts integer not null, day text not null
+-- The location timeline (src/core/places, docs/timeline.md). Fixes are pruned after RAW_FIX_DAYS; frozen stays and
+-- movement slots keep a day's timeline after that.
+create table if not exists places (
+  id text primary key, name text not null, icon text not null, latitude real not null, longitude real not null,
+  radius_m real not null, created_at integer not null
 );
-create index if not exists office_events_ts on office_events (ts);
+create table if not exists place_events (id text primary key, place_id text not null, kind text not null, ts integer not null, day text not null);
+create index if not exists place_events_ts on place_events (ts);
+create table if not exists location_fixes (ts integer primary key, latitude real not null, longitude real not null, accuracy_m real);
+create table if not exists timeline_stays (
+  day text not null, start_ts integer not null, end_ts integer not null, place_id text, latitude real, longitude real,
+  capped integer not null default 0, primary key (day, start_ts)
+);
+create table if not exists timeline_moves (bucket integer primary key, metres real not null);
+create table if not exists timeline_overrides (
+  id text primary key, kind text not null, start_ts integer not null, end_ts integer not null, place_id text, label text,
+  latitude real, longitude real, created_at integer not null
+);
+create index if not exists timeline_overrides_start on timeline_overrides (start_ts);
+create table if not exists timeline_state (id integer primary key check (id = 1), mode text not null, frozen_through text);
 `;
 
 /**
@@ -166,13 +182,19 @@ const MIGRATIONS: Migration[] = [
   { sql: "create index if not exists blood_pressure_ts on blood_pressure_readings (ts)" },
   // An unused view an earlier build created.
   { sql: "drop view if exists blood_pressure" },
+  // The office geofence becomes one saved place of the location timeline, with its arrivals and departures. Its habit
+  // tick is dropped. The base SCHEMA has made the timeline's tables by now.
+  { sql: "insert or ignore into places (id, name, icon, latitude, longitude, radius_m, created_at) select 'office', 'Office', 'work', json_extract(office, '$.latitude'), json_extract(office, '$.longitude'), 200, cast(strftime('%s', 'now') as integer) from profile where id = 1 and office is not null and json_extract(office, '$.latitude') is not null and json_extract(office, '$.longitude') is not null" },
+  { sql: "insert or ignore into place_events (id, place_id, kind, ts, day) select id, 'office', kind, ts, day from office_events where exists (select 1 from places where id = 'office')" },
+  { sql: "update profile set office = null" },
+  { sql: "drop table if exists office_events" },
 ];
 
 /** The columns the app reads unconditionally; checked after the migrations so a half-applied schema cannot boot. */
 const REQUIRED_COLUMNS: Record<string, string[]> = {
   logged_entries: ["source"],
   daily_scores: ["detected", "hrv_status", "training"],
-  profile: ["name", "photo", "sleep_goal", "display", "office"],
+  profile: ["name", "photo", "sleep_goal", "display"],
   hr_days: ["minute"],
   gym_sets: ["superset_id"],
   habits: ["interval_days", "weekdays_only", "start_day"],
@@ -395,18 +417,17 @@ class SqliteStore implements Store {
   async getProfile() {
     const r = await this.db.getFirstAsync<{
       birth_date: string; sex: Profile["sex"]; max_hr: number | null; height_cm: number | null; waist_cm: number | null; time_zone: string;
-      name: string | null; photo: string | null; sleep_goal: string | null; display: string | null; office: string | null;
-    }>("select birth_date, sex, max_hr, height_cm, waist_cm, time_zone, name, photo, sleep_goal, display, office from profile where id = 1");
+      name: string | null; photo: string | null; sleep_goal: string | null; display: string | null;
+    }>("select birth_date, sex, max_hr, height_cm, waist_cm, time_zone, name, photo, sleep_goal, display from profile where id = 1");
     return r && {
       birthDate: r.birth_date, sex: r.sex, maxHr: r.max_hr, heightCm: r.height_cm, waistCm: r.waist_cm, timeZone: r.time_zone, name: r.name, photo: r.photo,
       sleepGoal: parse<NonNullable<Profile["sleepGoal"]>>(r.sleep_goal),
       display: parse<NonNullable<Profile["display"]>>(r.display),
-      office: parse<NonNullable<Profile["office"]>>(r.office),
     };
   }
   async setProfile(p: Profile) {
-    await this.tx((db) => db.runAsync("insert or replace into profile (id, birth_date, sex, max_hr, height_cm, waist_cm, time_zone, name, photo, sleep_goal, display, office) values (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [
-      p.birthDate, p.sex, p.maxHr, p.heightCm, p.waistCm ?? null, p.timeZone, p.name ?? null, p.photo ?? null, json(p.sleepGoal), json(p.display), json(p.office ?? null),
+    await this.tx((db) => db.runAsync("insert or replace into profile (id, birth_date, sex, max_hr, height_cm, waist_cm, time_zone, name, photo, sleep_goal, display) values (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [
+      p.birthDate, p.sex, p.maxHr, p.heightCm, p.waistCm ?? null, p.timeZone, p.name ?? null, p.photo ?? null, json(p.sleepGoal), json(p.display),
     ]));
   }
   async getSyncState(): Promise<SyncState> {
@@ -1142,15 +1163,82 @@ class SqliteStore implements Store {
     await this.db.runAsync("delete from food_orders");
   }
 
-  async officeEvents(fromTs: number, toTs: number) {
-    const rows = await this.db.getAllAsync<OfficeEventRow>("select * from office_events where ts >= ? and ts < ? order by ts, id", [fromTs, toTs]);
-    return rows.map((r): OfficeEvent => ({ id: r.id, kind: r.kind === "exit" ? "exit" : "enter", ts: r.ts, day: r.day }));
+  // ── The location timeline ─────────────────────────────────────────────
+
+  async places() {
+    const rows = await this.db.getAllAsync<PlaceRow>("select * from places order by created_at, id");
+    return rows.map(placeOf);
   }
-  async addOfficeEvent(e: OfficeEvent) {
-    await this.db.runAsync("insert or ignore into office_events (id, kind, ts, day) values (?, ?, ?, ?)", [e.id, e.kind, e.ts, e.day]);
+  async putPlace(p: Place) {
+    await this.db.runAsync("insert or replace into places (id, name, icon, latitude, longitude, radius_m, created_at) values (?, ?, ?, ?, ?, ?, ?)", [p.id, p.name, p.icon, p.latitude, p.longitude, p.radiusM, p.createdAt]);
   }
-  async clearOffice() {
-    await this.db.runAsync("delete from office_events");
+  async deletePlace(id: string) {
+    await this.db.runAsync("delete from places where id = ?", [id]);
+  }
+  async placeEvents(fromTs: number, toTs: number) {
+    const rows = await this.db.getAllAsync<PlaceEventRow>("select * from place_events where ts >= ? and ts < ? order by ts, id", [fromTs, toTs]);
+    return rows.map((r): PlaceEvent => ({ id: r.id, placeId: r.place_id, kind: r.kind === "exit" ? "exit" : "enter", ts: r.ts, day: r.day }));
+  }
+  async addPlaceEvent(e: PlaceEvent) {
+    await this.db.runAsync("insert or ignore into place_events (id, place_id, kind, ts, day) values (?, ?, ?, ?, ?)", [e.id, e.placeId, e.kind, e.ts, e.day]);
+  }
+  async locationFixes(fromTs: number, toTs: number) {
+    const rows = await this.db.getAllAsync<FixRow>("select * from location_fixes where ts >= ? and ts < ? order by ts", [fromTs, toTs]);
+    return rows.map((r): Fix => ({ ts: r.ts, latitude: r.latitude, longitude: r.longitude, accuracyM: r.accuracy_m }));
+  }
+  async addLocationFixes(fixes: Fix[]) {
+    if (!fixes.length) return;
+    await this.tx((db) => this.many(db, "insert or ignore into location_fixes (ts, latitude, longitude, accuracy_m) values (?, ?, ?, ?)", fixes.map((f) => [f.ts, f.latitude, f.longitude, f.accuracyM])));
+  }
+  async pruneLocationFixes(beforeTs: number) {
+    const r = await this.db.runAsync("delete from location_fixes where ts < ?", [beforeTs]);
+    return r.changes;
+  }
+  async frozenStays(from: string, to: string) {
+    const rows = await this.db.getAllAsync<FrozenRow>("select * from timeline_stays where day >= ? and day <= ? order by start_ts", [from, to]);
+    return rows.map((r): FrozenStay => ({ day: r.day, start: r.start_ts, end: r.end_ts, placeId: r.place_id, latitude: r.latitude, longitude: r.longitude, capped: !!r.capped }));
+  }
+  async moveBuckets(fromTs: number, toTs: number) {
+    const rows = await this.db.getAllAsync<{ bucket: number; metres: number }>("select bucket, metres from timeline_moves where bucket >= ? and bucket < ? order by bucket", [Math.ceil(fromTs / MOVE_BUCKET_S), Math.ceil(toTs / MOVE_BUCKET_S)]);
+    return rows.map((r): MoveBucket => ({ bucket: r.bucket, metres: r.metres }));
+  }
+  async freezeDay(day: string, stays: FrozenStay[], fromTs: number, toTs: number, buckets: MoveBucket[]) {
+    await this.tx(async (db) => {
+      await db.runAsync("delete from timeline_stays where day = ?", [day]);
+      await db.runAsync("delete from timeline_moves where bucket >= ? and bucket < ?", [Math.ceil(fromTs / MOVE_BUCKET_S), Math.ceil(toTs / MOVE_BUCKET_S)]);
+      await this.many(db, "insert or replace into timeline_stays (day, start_ts, end_ts, place_id, latitude, longitude, capped) values (?, ?, ?, ?, ?, ?, ?)", stays.map((x) => [day, x.start, x.end, x.placeId, x.latitude, x.longitude, bool(x.capped)]));
+      await this.many(db, "insert or replace into timeline_moves (bucket, metres) values (?, ?)", buckets.map((b) => [b.bucket, b.metres]));
+    });
+  }
+  async timelineOverrides(fromTs: number, toTs: number) {
+    const rows = await this.db.getAllAsync<OverrideRow>("select * from timeline_overrides where start_ts < ? and end_ts > ? order by created_at, id", [toTs, fromTs]);
+    return rows.map((r): TimelineOverride => ({ id: r.id, kind: r.kind === "clear" ? "clear" : "stay", start: r.start_ts, end: r.end_ts, placeId: r.place_id, label: r.label, latitude: r.latitude, longitude: r.longitude, createdAt: r.created_at }));
+  }
+  async putTimelineOverride(o: TimelineOverride) {
+    await this.db.runAsync("insert or replace into timeline_overrides (id, kind, start_ts, end_ts, place_id, label, latitude, longitude, created_at) values (?, ?, ?, ?, ?, ?, ?, ?, ?)", [o.id, o.kind, o.start, o.end, o.placeId, o.label, o.latitude, o.longitude, o.createdAt]);
+  }
+  async deleteTimelineOverride(id: string) {
+    await this.db.runAsync("delete from timeline_overrides where id = ?", [id]);
+  }
+  async getTimelineState(): Promise<TimelineState> {
+    return this.getTimelineStateIn(this.db);
+  }
+  async setTimelineState(patch: Partial<TimelineState>) {
+    await this.tx(async (db) => {
+      const cur = await this.getTimelineStateIn(db);
+      const next = { ...cur, ...patch };
+      await db.runAsync("insert or replace into timeline_state (id, mode, frozen_through) values (1, ?, ?)", [next.mode, next.frozenThrough]);
+    });
+  }
+  private async getTimelineStateIn(db: SQLiteDatabase): Promise<TimelineState> {
+    const r = await db.getFirstAsync<{ mode: string; frozen_through: string | null }>("select mode, frozen_through from timeline_state where id = 1");
+    const mode = (TRACKING_MODES as readonly string[]).includes(r?.mode ?? "") ? (r!.mode as TrackingMode) : DEFAULT_MODE;
+    return { mode, frozenThrough: r?.frozen_through ?? null };
+  }
+  async clearPlaces() {
+    await this.tx(async (db) => {
+      for (const t of ["places", "place_events", "location_fixes", "timeline_stays", "timeline_moves", "timeline_overrides", "timeline_state"]) await db.runAsync(`delete from ${t}`);
+    });
   }
 
   async clearAll() {
@@ -1193,7 +1281,12 @@ type HabitRow = {
   target: number; target_type: string; unit: string | null; position: number; archived: number; created_at: number; updated_at: number;
 };
 type HabitEntryRow = { habit_id: string; day: string; value: number; skip: number; note: string | null; updated_at: number };
-type OfficeEventRow = { id: string; kind: string; ts: number; day: string };
+type PlaceRow = { id: string; name: string; icon: string; latitude: number; longitude: number; radius_m: number; created_at: number };
+type PlaceEventRow = { id: string; place_id: string; kind: string; ts: number; day: string };
+type FixRow = { ts: number; latitude: number; longitude: number; accuracy_m: number | null };
+type FrozenRow = { day: string; start_ts: number; end_ts: number; place_id: string | null; latitude: number | null; longitude: number | null; capped: number };
+type OverrideRow = { id: string; kind: string; start_ts: number; end_ts: number; place_id: string | null; label: string | null; latitude: number | null; longitude: number | null; created_at: number };
+const placeOf = (r: PlaceRow): Place => ({ id: r.id, name: r.name, icon: r.icon as PlaceIcon, latitude: r.latitude, longitude: r.longitude, radiusM: r.radius_m, createdAt: r.created_at });
 type FoodOrderRow = { id: string; key: string; day: string; ts: number; merchant: string; source: string };
 
 const foodOrderOf = (r: FoodOrderRow): FoodOrder => ({ id: r.id, key: r.key, day: r.day, ts: r.ts, merchant: r.merchant, source: r.source });

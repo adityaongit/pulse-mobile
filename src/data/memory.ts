@@ -7,7 +7,7 @@ import type { BloodPressureReading, DailyValue, Exercise, HealthRecord, HrSample
 import type { GymExercise, GymImportState, GymMeasurement, GymRoutine, GymRoutineItem, GymSession, GymSet } from "./gym";
 import type { Habit, HabitEntry } from "./habits";
 import type { FoodOrder } from "./foodOrders";
-import type { OfficeEvent } from "@/core/office";
+import { DEFAULT_MODE, type Fix, type FrozenStay, type MoveBucket, type Place, type PlaceEvent, type TimelineOverride, type TimelineState } from "@/core/places/types";
 import type { LeetCodeSnapshot } from "@/leetcode/types";
 import type { ActivityCostResult } from "@/core/algorithms/activityCost";
 import { minuteHr } from "@/core/engine/context";
@@ -127,7 +127,13 @@ export class MemoryStore implements Store {
   private habitMap = new Map<string, Habit>();
   private habitEntryMap = new Map<string, HabitEntry>();
   private foodOrderMap = new Map<string, FoodOrder>();
-  private officeEventMap = new Map<string, OfficeEvent>();
+  private placeMap = new Map<string, Place>();
+  private placeEventMap = new Map<string, PlaceEvent>();
+  private fixMap = new Map<number, Fix>();
+  private frozen = new Map<string, FrozenStay[]>();
+  private moves = new Map<number, number>();
+  private overrides = new Map<string, TimelineOverride>();
+  private timelineState: TimelineState = { mode: DEFAULT_MODE, frozenThrough: null };
   private bloodPressure = new Map<string, BloodPressureReading>();
 
   async getProfile() {
@@ -517,15 +523,66 @@ export class MemoryStore implements Store {
     this.foodOrderMap.delete(id);
   }
 
-  // ── the office geofence ─────────────────────────────────────────────────────────────────────────────────────────
-  async officeEvents(fromTs: number, toTs: number) {
-    return [...this.officeEventMap.values()].filter((e) => e.ts >= fromTs && e.ts < toTs).sort((a, b) => a.ts - b.ts || a.id.localeCompare(b.id)).map(copy);
+  // ── the location timeline ───────────────────────────────────────────────────────────────────────────────────────
+  async places() {
+    return [...this.placeMap.values()].sort((a, b) => a.createdAt - b.createdAt || a.id.localeCompare(b.id)).map(copy);
   }
-  async addOfficeEvent(event: OfficeEvent) {
-    if (!this.officeEventMap.has(event.id)) this.officeEventMap.set(event.id, copy(event));
+  async putPlace(place: Place) {
+    this.placeMap.set(place.id, copy(place));
   }
-  async clearOffice() {
-    this.officeEventMap.clear();
+  async deletePlace(id: string) {
+    this.placeMap.delete(id);
+  }
+  async placeEvents(fromTs: number, toTs: number) {
+    return [...this.placeEventMap.values()].filter((e) => e.ts >= fromTs && e.ts < toTs).sort((a, b) => a.ts - b.ts || a.id.localeCompare(b.id)).map(copy);
+  }
+  async addPlaceEvent(event: PlaceEvent) {
+    if (!this.placeEventMap.has(event.id)) this.placeEventMap.set(event.id, copy(event));
+  }
+  async locationFixes(fromTs: number, toTs: number) {
+    return [...this.fixMap.values()].filter((f) => f.ts >= fromTs && f.ts < toTs).sort((a, b) => a.ts - b.ts).map(copy);
+  }
+  async addLocationFixes(fixes: Fix[]) {
+    for (const f of fixes) if (!this.fixMap.has(f.ts)) this.fixMap.set(f.ts, copy(f));
+  }
+  async pruneLocationFixes(beforeTs: number) {
+    let n = 0;
+    for (const ts of [...this.fixMap.keys()]) {
+      if (ts >= beforeTs) continue;
+      this.fixMap.delete(ts);
+      n++;
+    }
+    return n;
+  }
+  async frozenStays(from: string, to: string) {
+    return [...this.frozen].filter(([day]) => day >= from && day <= to).flatMap(([, xs]) => xs).sort((a, b) => a.start - b.start).map(copy);
+  }
+  async moveBuckets(fromTs: number, toTs: number) {
+    return [...this.moves].filter(([b]) => b * 300 >= fromTs && b * 300 < toTs).sort((a, b) => a[0] - b[0]).map(([bucket, metres]) => ({ bucket, metres }));
+  }
+  async freezeDay(day: string, stays: FrozenStay[], fromTs: number, toTs: number, buckets: MoveBucket[]) {
+    this.frozen.set(day, stays.map(copy));
+    for (const b of [...this.moves.keys()]) if (b * 300 >= fromTs && b * 300 < toTs) this.moves.delete(b);
+    for (const b of buckets) this.moves.set(b.bucket, b.metres);
+  }
+  async timelineOverrides(fromTs: number, toTs: number) {
+    return [...this.overrides.values()].filter((o) => o.start < toTs && o.end > fromTs).sort((a, b) => a.createdAt - b.createdAt).map(copy);
+  }
+  async putTimelineOverride(o: TimelineOverride) {
+    this.overrides.set(o.id, copy(o));
+  }
+  async deleteTimelineOverride(id: string) {
+    this.overrides.delete(id);
+  }
+  async getTimelineState() {
+    return copy(this.timelineState);
+  }
+  async setTimelineState(patch: Partial<TimelineState>) {
+    this.timelineState = { ...this.timelineState, ...patch };
+  }
+  async clearPlaces() {
+    for (const m of [this.placeMap, this.placeEventMap, this.fixMap, this.frozen, this.moves, this.overrides]) m.clear();
+    this.timelineState = { mode: DEFAULT_MODE, frozenThrough: null };
   }
 
   async compactHr(beforeTs: number) {

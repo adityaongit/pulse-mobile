@@ -325,27 +325,7 @@
     "viewingNote": "Live readings are for viewing; scores use what Pulse reads from Health Connect."
   },
   "places": {
-    "title": "Places",
-    "office": "Office",
-    "status": "Status",
-    "watching": "Watching",
-    "needsBackground": "Needs “all the time”",
-    "noPermission": "No location permission",
-    "checking": "Checking…",
-    "location": "Location",
-    "set": "Set",
-    "notSet": "Not set",
-    "useHere": "Use my current location",
-    "updateHere": "Update my location",
-    "locating": "Finding you…",
-    "allowBackground": "Allow all the time",
-    "habit": "Tick on arrival",
-    "noHabit": "No habit",
-    "remove": "Remove office",
-    "hint": "Pulse keeps a {{radius}} m fence around this spot and logs when you arrive and leave. Android needs “Allow all the time” to notice while Pulse is closed, and deep sleep can still miss one.",
-    "permissionDenied": "Pulse needs location permission to find this spot.",
-    "locateFailed": "Could not read your location. Try again near a window.",
-    "saveFailed": "Could not save the office."
+    "title": "Places"
   },
   "report": {
     "title": "Report a problem",

@@ -164,18 +164,45 @@ describe("SqliteStore contract", () => {
     expect(await store.habitEntries()).toEqual([]);
   });
 
-  it("keeps the office's events in their window and stores the place in the profile", async () => {
-    const office = { latitude: 12.9716, longitude: 77.5946, habitId: "h1" };
-    const profile = { birthDate: "1990-01-01", sex: "male" as const, maxHr: null, heightCm: null, timeZone: "Asia/Kolkata" };
-    await store.setProfile({ ...profile, office });
-    expect((await store.getProfile())?.office).toEqual(office);
-    await store.addOfficeEvent({ id: "a", kind: "enter", ts: 100, day: "2026-11-12" });
-    await store.addOfficeEvent({ id: "b", kind: "exit", ts: 200, day: "2026-11-12" });
-    await store.addOfficeEvent({ id: "c", kind: "enter", ts: 300, day: "2026-11-12" });
-    await store.addOfficeEvent({ id: "b", kind: "exit", ts: 200, day: "2026-11-12" });
-    expect((await store.officeEvents(100, 300)).map((e) => e.id)).toEqual(["a", "b"]);
-    await store.clearOffice();
-    expect(await store.officeEvents(0, 400)).toEqual([]);
+  it("keeps the timeline's places, events, fixes, frozen days, edits and state", async () => {
+    const home = { id: "home", name: "Home", icon: "home" as const, latitude: 12.97, longitude: 77.59, radiusM: 150, createdAt: 1 };
+    await store.putPlace(home);
+    await store.putPlace({ ...home, id: "gym", name: "Gym", icon: "gym", createdAt: 2 });
+    expect((await store.places()).map((p) => p.id)).toEqual(["home", "gym"]);
+    await store.deletePlace("gym");
+    expect(await store.places()).toEqual([home]);
+
+    await store.addPlaceEvent({ id: "a", placeId: "home", kind: "enter", ts: 100, day: "2026-11-12" });
+    await store.addPlaceEvent({ id: "b", placeId: "home", kind: "exit", ts: 200, day: "2026-11-12" });
+    await store.addPlaceEvent({ id: "b", placeId: "home", kind: "exit", ts: 200, day: "2026-11-12" });
+    expect((await store.placeEvents(100, 300)).map((e) => [e.id, e.kind])).toEqual([["a", "enter"], ["b", "exit"]]);
+
+    await store.addLocationFixes([{ ts: 50, latitude: 1, longitude: 2, accuracyM: 10 }, { ts: 60, latitude: 1, longitude: 2, accuracyM: null }]);
+    await store.addLocationFixes([{ ts: 50, latitude: 9, longitude: 9, accuracyM: 99 }]);
+    expect(await store.locationFixes(0, 100)).toEqual([{ ts: 50, latitude: 1, longitude: 2, accuracyM: 10 }, { ts: 60, latitude: 1, longitude: 2, accuracyM: null }]);
+    expect(await store.pruneLocationFixes(55)).toBe(1);
+
+    await store.freezeDay("2026-11-12", [{ day: "2026-11-12", start: 0, end: 600, placeId: "home", latitude: 12.97, longitude: 77.59, capped: true }], 0, 86_400, [{ bucket: 3, metres: 120 }]);
+    await store.freezeDay("2026-11-12", [{ day: "2026-11-12", start: 0, end: 900, placeId: null, latitude: 1, longitude: 2, capped: false }], 0, 86_400, [{ bucket: 4, metres: 80 }]);
+    expect(await store.frozenStays("2026-11-12", "2026-11-12")).toEqual([{ day: "2026-11-12", start: 0, end: 900, placeId: null, latitude: 1, longitude: 2, capped: false }]);
+    expect(await store.moveBuckets(0, 86_400)).toEqual([{ bucket: 4, metres: 80 }]);
+
+    const o = { id: "o1", kind: "stay" as const, start: 100, end: 500, placeId: "home", label: null, latitude: null, longitude: null, createdAt: 7 };
+    await store.putTimelineOverride(o);
+    expect(await store.timelineOverrides(400, 1000)).toEqual([o]);
+    expect(await store.timelineOverrides(500, 1000)).toEqual([]);
+    await store.deleteTimelineOverride("o1");
+    expect(await store.timelineOverrides(0, 1000)).toEqual([]);
+
+    expect(await store.getTimelineState()).toEqual({ mode: "balanced", frozenThrough: null });
+    await store.setTimelineState({ mode: "precise" });
+    await store.setTimelineState({ frozenThrough: "2026-11-12" });
+    expect(await store.getTimelineState()).toEqual({ mode: "precise", frozenThrough: "2026-11-12" });
+
+    await store.clearPlaces();
+    expect(await store.places()).toEqual([]);
+    expect(await store.placeEvents(0, 1000)).toEqual([]);
+    expect(await store.getTimelineState()).toEqual({ mode: "balanced", frozenThrough: null });
   });
 
   it("keeps food orders and replaces a follow-up by key", async () => {

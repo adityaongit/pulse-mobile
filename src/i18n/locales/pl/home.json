@@ -181,16 +181,5 @@
     "moved": "{{label}} przeniesiono na pozycję {{position}} z {{total}}",
     "removed": "Usunięto {{label}} z ekranu głównego",
     "added": "Dodano {{label}} na pozycji {{position}}"
-  },
-  "office": {
-    "title": "Biuro",
-    "manage": "Zarządzaj",
-    "inAt": "Od {{time}}",
-    "atOffice": "Teraz w biurze",
-    "stayed": "{{duration}} w biurze",
-    "none": "Dziś brak wizyty",
-    "last": "Ostatnio: {{day}} {{time}}",
-    "empty": "Wejdź do biura, a Pulse to zapisze.",
-    "week": "Dni w tym tygodniu: {{count}}"
   }
 }

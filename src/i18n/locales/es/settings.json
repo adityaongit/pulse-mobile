@@ -326,27 +326,7 @@
     "viewingNote": "Las lecturas en vivo son solo para ver; las puntuaciones usan lo que Pulse lee de Health Connect."
   },
   "places": {
-    "title": "Lugares",
-    "office": "Oficina",
-    "status": "Estado",
-    "watching": "Vigilando",
-    "needsBackground": "Necesita «Siempre»",
-    "noPermission": "Sin permiso de ubicación",
-    "checking": "Comprobando…",
-    "location": "Ubicación",
-    "set": "Definida",
-    "notSet": "Sin definir",
-    "useHere": "Usar mi ubicación actual",
-    "updateHere": "Actualizar mi ubicación",
-    "locating": "Buscándote…",
-    "allowBackground": "Permitir siempre",
-    "habit": "Marcar al llegar",
-    "noHabit": "Ningún hábito",
-    "remove": "Quitar oficina",
-    "hint": "Pulse mantiene un perímetro de {{radius}} m alrededor de este punto y anota cuándo llegas y sales. Android necesita «Permitir siempre» para notarlo con Pulse cerrado, y el sueño profundo puede omitir una llegada.",
-    "permissionDenied": "Pulse necesita permiso de ubicación para encontrar este punto.",
-    "locateFailed": "No se pudo leer tu ubicación. Inténtalo junto a una ventana.",
-    "saveFailed": "No se pudo guardar la oficina."
+    "title": "Lugares"
   },
   "report": {
     "title": "Informar de un problema",

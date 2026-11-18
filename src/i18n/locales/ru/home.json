@@ -181,16 +181,5 @@
     "moved": "{{label}} перемещён на позицию {{position}} из {{total}}",
     "removed": "{{label}} убран с Главной",
     "added": "{{label}} добавлен на позицию {{position}}"
-  },
-  "office": {
-    "title": "Офис",
-    "manage": "Настроить",
-    "inAt": "С {{time}}",
-    "atOffice": "Сейчас в офисе",
-    "stayed": "{{duration}} в офисе",
-    "none": "Сегодня визита нет",
-    "last": "Последний: {{day}} {{time}}",
-    "empty": "Зайдите в офис, и Pulse это запишет.",
-    "week": "Дней на этой неделе: {{count}}"
   }
 }

@@ -327,27 +327,7 @@
     "viewingNote": "Odczyty na żywo służą do podglądu; wyniki używają tego, co Pulse czyta z Health Connect."
   },
   "places": {
-    "title": "Miejsca",
-    "office": "Biuro",
-    "status": "Stan",
-    "watching": "Obserwuje",
-    "needsBackground": "Wymaga „Zawsze”",
-    "noPermission": "Brak zgody na lokalizację",
-    "checking": "Sprawdzanie…",
-    "location": "Lokalizacja",
-    "set": "Ustawiona",
-    "notSet": "Nieustawiona",
-    "useHere": "Użyj mojej bieżącej lokalizacji",
-    "updateHere": "Zaktualizuj moją lokalizację",
-    "locating": "Szukam cię…",
-    "allowBackground": "Zezwalaj zawsze",
-    "habit": "Odhacz przy przyjściu",
-    "noHabit": "Brak nawyku",
-    "remove": "Usuń biuro",
-    "hint": "Pulse trzyma strefę {{radius}} m wokół tego punktu i zapisuje przyjścia i wyjścia. Android wymaga „Zezwalaj zawsze”, aby zauważyć je przy zamkniętym Pulse, a głęboki sen nadal może pominąć przyjście.",
-    "permissionDenied": "Pulse potrzebuje zgody na lokalizację, aby znaleźć to miejsce.",
-    "locateFailed": "Nie udało się odczytać lokalizacji. Spróbuj ponownie przy oknie.",
-    "saveFailed": "Nie udało się zapisać biura."
+    "title": "Miejsca"
   },
   "report": {
     "title": "Zgłoś problem",

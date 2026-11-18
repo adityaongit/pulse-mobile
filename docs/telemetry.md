@@ -32,7 +32,7 @@ flowchart LR
 - **A random install id** as Sentry's user. It identifies an install, not a person, and Delete Everything replaces it.
 - **Traces** (1 session in 5): app start, time to first display of each screen by its route name (`metric/[key]`, never
   the parameter), and Pulse's own spans: `sync` with its steps `sync.health_connect`, `pipeline` and `maintenance`
-  (`src/lib/perf.ts` `timed()`), each with `owner` (app or task) and `source`.
+  plus `timeline` for the location timeline's upkeep (`src/lib/perf.ts` `timed()`), each with `owner` (app or task) and `source`.
 - **Logs**, only from `log()` in `src/lib/telemetry.ts`: `sync.start`, `sync.read` (how many types were read and how
   many records in all), `sync.done` or `sync.skipped` (duration, warning count, whether anything changed) and
   `sync.error` (a coarse error kind). Console output never becomes a log.
@@ -83,6 +83,10 @@ well inside the free tier's 5M spans; logs are a handful per sync, well inside i
 | `workout.storage_failed` | `kind` | The recorder could not read or write its storage |
 | `workout.ingest_failed` | `kind` | Recorded samples could not be stored |
 | `widgets.publish_failed` | `kind` | The widget summary could not be published |
+| `places.event_failed` | `kind` | A geofence arrival or departure could not be stored |
+| `places.fix_failed` | `kind`, `count` | A batch of location fixes could not be stored (`count`: fixes in the batch) |
+| `places.sync_failed` | `kind` | The fences or the fix task could not be made to match the saved places and mode |
+| `places.upkeep_failed` | `kind` | Freezing old timeline days or pruning old fixes threw |
 | `update.check_failed` | `status` | The daily update check got an error from GitHub |
 | `render.screen` | | A screen's error boundary caught a render error (sent as a crash) |
 

@@ -326,27 +326,7 @@
     "viewingNote": "Les mesures en direct sont pour la consultation ; les scores utilisent ce que Pulse lit depuis Health Connect."
   },
   "places": {
-    "title": "Lieux",
-    "office": "Bureau",
-    "status": "État",
-    "watching": "Surveillé",
-    "needsBackground": "Nécessite « Toujours »",
-    "noPermission": "Pas d’accès à la position",
-    "checking": "Vérification…",
-    "location": "Position",
-    "set": "Définie",
-    "notSet": "Non définie",
-    "useHere": "Utiliser ma position actuelle",
-    "updateHere": "Mettre à jour ma position",
-    "locating": "Localisation…",
-    "allowBackground": "Autoriser toujours",
-    "habit": "Cocher à l’arrivée",
-    "noHabit": "Aucune habitude",
-    "remove": "Supprimer le bureau",
-    "hint": "Pulse garde un périmètre de {{radius}} m autour de ce point et note vos arrivées et départs. Android exige « Autoriser toujours » pour le remarquer quand Pulse est fermé, et le sommeil profond peut manquer une arrivée.",
-    "permissionDenied": "Pulse a besoin de l’accès à la position pour trouver ce point.",
-    "locateFailed": "Impossible de lire votre position. Réessayez près d’une fenêtre.",
-    "saveFailed": "Impossible d’enregistrer le bureau."
+    "title": "Lieux"
   },
   "report": {
     "title": "Signaler un problème",

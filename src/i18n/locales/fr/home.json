@@ -175,16 +175,5 @@
     "moved": "{{label}} déplacé à la position {{position}} sur {{total}}",
     "removed": "{{label}} retiré de l’Accueil",
     "added": "{{label}} ajouté à la position {{position}}"
-  },
-  "office": {
-    "title": "Bureau",
-    "manage": "Gérer",
-    "inAt": "Arrivé à {{time}}",
-    "atOffice": "Au bureau maintenant",
-    "stayed": "{{duration}} au bureau",
-    "none": "Aucune visite aujourd’hui",
-    "last": "Dernière : {{day}} {{time}}",
-    "empty": "Entrez au bureau et Pulse le notera.",
-    "week": "Jours cette semaine : {{count}}"
   }
 }

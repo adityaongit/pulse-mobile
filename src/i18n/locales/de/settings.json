@@ -325,27 +325,7 @@
     "viewingNote": "Live-Messwerte dienen nur der Ansicht; die Werte nutzen, was Pulse aus Health Connect liest."
   },
   "places": {
-    "title": "Orte",
-    "office": "Büro",
-    "status": "Status",
-    "watching": "Wird beobachtet",
-    "needsBackground": "Braucht „Immer“",
-    "noPermission": "Keine Standortfreigabe",
-    "checking": "Wird geprüft…",
-    "location": "Standort",
-    "set": "Gesetzt",
-    "notSet": "Nicht gesetzt",
-    "useHere": "Meinen aktuellen Standort verwenden",
-    "updateHere": "Standort aktualisieren",
-    "locating": "Standort wird ermittelt…",
-    "allowBackground": "Immer erlauben",
-    "habit": "Bei Ankunft abhaken",
-    "noHabit": "Keine Gewohnheit",
-    "remove": "Büro entfernen",
-    "hint": "Pulse hält einen Zaun von {{radius}} m um diesen Ort und notiert Ankunft und Abfahrt. Android braucht „Immer erlauben“, um es bei geschlossenem Pulse zu bemerken; Tiefschlaf kann eine Ankunft trotzdem verpassen.",
-    "permissionDenied": "Pulse braucht die Standortfreigabe, um diesen Ort zu finden.",
-    "locateFailed": "Standort konnte nicht gelesen werden. Versuche es erneut am Fenster.",
-    "saveFailed": "Das Büro konnte nicht gespeichert werden."
+    "title": "Orte"
   },
   "report": {
     "title": "Problem melden",

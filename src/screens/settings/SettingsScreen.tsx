@@ -14,7 +14,7 @@ import { DataSource } from "./DataSource";
 import { DeleteEverything } from "./DeleteEverything";
 import { LiveHeartRate } from "./LiveHeartRate";
 import { NotificationsSection } from "./NotificationsSection";
-import { OfficeSection } from "./OfficeSection";
+import { PlacesSection } from "../places/PlacesSection";
 import { GoalsSettings } from "@/screens/goals/GoalsSettings";
 import { LeetCodeSection } from "./LeetCodeSection";
 import { ProfileCard } from "./ProfileCard";
@@ -124,7 +124,7 @@ export function SettingsScreen() {
             ) : section === "leetcode" ? (
               <LeetCodeSection />
             ) : section === "places" ? (
-              <OfficeSection />
+              <PlacesSection />
             ) : section === "source" ? (
               <DataSource now={now} />
             ) : section === "app" ? (

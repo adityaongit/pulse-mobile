@@ -3,7 +3,7 @@
 // The widget task handler and configuration screen are registered for the same reason: Android may start them without
 // the app's UI.
 import "@/background/task";
-import "@/background/office";
+import "@/background/places";
 import "expo-router/entry";
 import { registerWidgetConfigurationScreen, registerWidgetTaskHandler } from "react-native-android-widget";
 import { HabitWidgetConfig } from "@/widgets/config";

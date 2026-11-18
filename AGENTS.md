@@ -53,7 +53,7 @@ src/
   dev/        development screens (kit); the routes in app/dev/ load them in development builds only
 plugins/      config plugins (withHighRefreshRate); the widget library's plugin is configured in app.json
 scripts/      release tooling
-docs/         rewrite-plan.md, plan.md, design/spec.md, learning.md, onboarding.md, habits.md, runbooks
+docs/         rewrite-plan.md, plan.md, design/spec.md, learning.md, onboarding.md, habits.md, timeline.md, runbooks
 ```
 
 ## Rules

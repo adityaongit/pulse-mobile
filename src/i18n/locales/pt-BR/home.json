@@ -175,16 +175,5 @@
     "moved": "{{label}} movido para a posição {{position}} de {{total}}",
     "removed": "{{label}} removido do Início",
     "added": "{{label}} adicionado na posição {{position}}"
-  },
-  "office": {
-    "title": "Escritório",
-    "manage": "Gerenciar",
-    "inAt": "Desde {{time}}",
-    "atOffice": "No escritório agora",
-    "stayed": "{{duration}} no escritório",
-    "none": "Nenhuma visita hoje",
-    "last": "Última: {{day}} {{time}}",
-    "empty": "Entre no escritório e o Pulse registra.",
-    "week": "Dias esta semana: {{count}}"
   }
 }

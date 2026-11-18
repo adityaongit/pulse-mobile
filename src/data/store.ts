@@ -5,7 +5,7 @@ import type { BloodPressureReading, DailyValue, Exercise, HealthRecord, HrSample
 import type { GymExercise, GymImportState, GymMeasurement, GymRoutine, GymRoutineItem, GymSession, GymSet } from "./gym";
 import type { Habit, HabitEntry } from "./habits";
 import type { FoodOrder } from "./foodOrders";
-import type { OfficeEvent } from "@/core/office";
+import type { Fix, FrozenStay, MoveBucket, Place, PlaceEvent, TimelineOverride, TimelineState } from "@/core/places/types";
 import type { LeetCodeSnapshot } from "@/leetcode/types";
 import type { Stage1Activity, Stage1Day, Stage2Row } from "@/pipeline/types";
 import type { Report } from "@/core/algorithms/reports";
@@ -227,14 +227,40 @@ export interface Store {
   /** Drops every detected order (Delete everything). */
   clearFoodOrders(): Promise<void>;
 
-  // The office geofence (src/core/office): events written by the background task, read by Home and Settings. Local to
-  // the phone; nothing here goes to Health Connect and the health pipeline never reads it.
-  /** Events with fromTs <= ts < toTs, oldest first. */
-  officeEvents(fromTs: number, toTs: number): Promise<OfficeEvent[]>;
+  // The location timeline (src/core/places, docs/timeline.md): saved places, the geofence events and fixes the
+  // background tasks write, frozen days and the owner's edits. Local to the phone; nothing here goes to Health Connect
+  // and the health pipeline never reads it.
+  /** Every saved place, oldest first. */
+  places(): Promise<Place[]>;
+  /** Inserts or replaces one place. */
+  putPlace(place: Place): Promise<void>;
+  /** Removes a place; its events stay, and its stays read as unknown stops. */
+  deletePlace(id: string): Promise<void>;
+  /** Geofence events with fromTs <= ts < toTs, oldest first. */
+  placeEvents(fromTs: number, toTs: number): Promise<PlaceEvent[]>;
   /** Inserts one; a repeated id is a no-op. */
-  addOfficeEvent(event: OfficeEvent): Promise<void>;
-  /** Drops every event (Delete everything). */
-  clearOffice(): Promise<void>;
+  addPlaceEvent(event: PlaceEvent): Promise<void>;
+  /** Fixes with fromTs <= ts < toTs, oldest first. */
+  locationFixes(fromTs: number, toTs: number): Promise<Fix[]>;
+  /** Inserts fixes; one already stored at the same second is kept. */
+  addLocationFixes(fixes: Fix[]): Promise<void>;
+  /** Drops fixes older than `beforeTs`; returns how many. */
+  pruneLocationFixes(beforeTs: number): Promise<number>;
+  /** Frozen stays of the days from..to (inclusive), oldest first. */
+  frozenStays(from: string, to: string): Promise<FrozenStay[]>;
+  /** Movement slots with fromTs <= bucket start < toTs. */
+  moveBuckets(fromTs: number, toTs: number): Promise<MoveBucket[]>;
+  /** Replaces one day's frozen stays and its movement in [fromTs, toTs), in one transaction. */
+  freezeDay(day: string, stays: FrozenStay[], fromTs: number, toTs: number, buckets: MoveBucket[]): Promise<void>;
+  /** Edits overlapping [fromTs, toTs). */
+  timelineOverrides(fromTs: number, toTs: number): Promise<TimelineOverride[]>;
+  putTimelineOverride(o: TimelineOverride): Promise<void>;
+  deleteTimelineOverride(id: string): Promise<void>;
+  /** The tracking mode and the last frozen day; the defaults before anything is saved. */
+  getTimelineState(): Promise<TimelineState>;
+  setTimelineState(patch: Partial<TimelineState>): Promise<void>;
+  /** Drops every place, event, fix, frozen day, edit and the state (Delete everything). */
+  clearPlaces(): Promise<void>;
 
   // Upkeep (src/background/maintenance.ts)
   /**

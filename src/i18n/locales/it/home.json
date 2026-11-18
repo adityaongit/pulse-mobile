@@ -175,16 +175,5 @@
     "moved": "{{label}} spostato alla posizione {{position}} di {{total}}",
     "removed": "{{label}} rimosso dalla Home",
     "added": "{{label}} aggiunto alla posizione {{position}}"
-  },
-  "office": {
-    "title": "Ufficio",
-    "manage": "Gestisci",
-    "inAt": "Dalle {{time}}",
-    "atOffice": "Ora in ufficio",
-    "stayed": "{{duration}} in ufficio",
-    "none": "Nessuna visita oggi",
-    "last": "Ultima: {{day}} {{time}}",
-    "empty": "Entra in ufficio e Pulse lo annota.",
-    "week": "Giorni questa settimana: {{count}}"
   }
 }

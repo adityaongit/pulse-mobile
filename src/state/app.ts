@@ -11,8 +11,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useSyncExternalStore } from "react";
 import { InteractionManager, AppState } from "react-native";
 import { markUiRuntime, registerAppStore, runSync, WAIT_FOR_TASK_MS, type Source } from "@/background/runSync";
-import { syncOfficeGeofence } from "@/background/office";
-import { validOffice, type Office } from "@/core/office";
+import { onPlacesWrite, syncPlaceTracking } from "@/background/places";
 import { releaseLock, takeLock, waitForLock } from "@/background/lock";
 import { cancelRest } from "@/background/notify";
 import { startBackground } from "@/background/startup";
@@ -112,7 +111,7 @@ export const appState = () => state;
  * What a write can change. Scores only move when the pipeline runs (or the profile/source does), so a log, a gym set or
  * a journal answer must not throw away the parsed score rows: it bumps the screen version, not the scores one.
  */
-export type DataScope = "scores" | "logs" | "journal" | "gym" | "habits" | "display";
+export type DataScope = "scores" | "logs" | "journal" | "gym" | "habits" | "display" | "places";
 
 let version = 0;
 let scoresVersion = 0;
@@ -128,7 +127,7 @@ const scoresListeners = new Set<() => void>();
 export function dataChanged(scope: DataScope = "scores") {
   version++;
   for (const l of versionListeners) l();
-  if (scope === "gym") return;
+  if (scope === "gym" || scope === "places") return;
   healthVersion++;
   if (scope !== "scores") {
     if (state.store && state.profile && state.source && state.onboarded) void refreshWidgets(queryCtx(), state.source);
@@ -182,6 +181,25 @@ function swapStore(store: Store, profile: Profile | null, source: Source | null,
   dataChanged("scores");
   // LeetCode is independent of the health source; the sample database has its own copy of the snapshot.
   void initLeetCode(store, true);
+  // Tracking follows the open database's places: the sample one has none, so it stops until the owner's is back.
+  void syncPlaceTracking();
+}
+
+let placesWatched = false;
+let lastFixRefresh = 0;
+/**
+ * A geofence event or a fix written while the app is up refreshes the screens: an event at once, fixes at most every
+ * five minutes (Precise writes one every 90 s, and every mounted screen would read again).
+ */
+function watchPlaces(): void {
+  if (placesWatched) return;
+  placesWatched = true;
+  onPlacesWrite((kind) => {
+    const now = Date.now();
+    if (kind === "fix" && now - lastFixRefresh < 5 * 60_000) return;
+    lastFixRefresh = now;
+    dataChanged("places");
+  });
 }
 
 /** Runs `fn` when the JS thread is idle; a phone that never idles still runs it before the timeout. */
@@ -333,11 +351,12 @@ export async function boot(applyTheme: (theme: string) => void): Promise<void> {
     patch({ theme: theme === "light" || theme === "dark" ? theme : "system" });
     patch({ store: st, profile, source, sync, availability: avail });
     watchForeground();
+    watchPlaces();
     afterIdle(() => {
       void startBackground();
-      // The fence is re-registered from the saved profile (Play Services keeps it across reboots; this also picks up a
-      // place saved on another install of the same database).
-      void syncOfficeGeofence();
+      // The fences and the fix task are made to match the saved places and mode (Play Services keeps fences across
+      // reboots, but an update or a cleared app loses them).
+      void syncPlaceTracking();
       // A source switch inside the idle window has already loaded the other store's snapshot.
       if (state.store === st) void initLeetCode(st);
       void checkForUpdate();
@@ -425,22 +444,6 @@ export async function setDisplay(display: DisplayPrefs): Promise<void> {
   dataChanged("display");
 }
 
-/**
- * Saves or removes the office (Settings › Places) and makes the geofence match. No rescore: it is not a health input.
- * False when the place is not a coordinate pair.
- */
-export async function setOffice(office: Office | null): Promise<boolean> {
-  const { store, profile } = state;
-  if (!store || !profile) return false;
-  if (office && !validOffice(office)) return false;
-  const p = { ...profile, office };
-  await store.setProfile(p);
-  patch({ profile: p });
-  dataChanged("logs");
-  await syncOfficeGeofence();
-  return true;
-}
-
 /** Starts i18next and the formatters' locale in what `choice` means (the phone's language for "auto"). */
 async function applyLanguage(choice: LanguageChoice): Promise<void> {
   const language = resolveChoice(choice);
@@ -488,7 +491,7 @@ export async function exploreSample(): Promise<void> {
       await demoStore!.clearGym();
       await demoStore!.clearHabits();
       await demoStore!.clearFoodOrders();
-      await demoStore!.clearOffice();
+      await demoStore!.clearPlaces();
       const seeded = await seedDemo(demoStore!, { today, timeZone });
       await seedDemoFood(demoStore!, { today, timeZone, now: Math.floor(Date.now() / 1000) });
       await ensureDefaultTags(demoStore!);
@@ -602,7 +605,7 @@ export async function reset(): Promise<void> {
       await store.clearGym();
       await store.clearHabits();
       await store.clearFoodOrders();
-      await store.clearOffice();
+      await store.clearPlaces();
       // clearAll keeps the coach's chats (they are not health rows); "Delete everything" must not.
       await resetCoachState(store);
     }
@@ -611,6 +614,8 @@ export async function reset(): Promise<void> {
   await cancelRest();
   await resetLeetCode();
   await clearHabitWidgetConfigs();
+  // No places are left: the fences and the fix task stop.
+  await syncPlaceTracking();
   // The native workout journal lives outside the two databases; stop its poll and clear its rows in the same reset.
   const { workoutRecorder } = await import("@/live/workoutRecorder");
   if (workoutNativeAvailable) await workoutNative.beginReset();
