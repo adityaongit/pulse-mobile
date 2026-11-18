@@ -154,7 +154,7 @@ export const looksLikeRefusal = (text: string | undefined) =>
 
 // ── The request ─────────────────────────────────────────────────────────────
 
-export type EstimateInput = { image: { base64: string; mediaType: string } } | { text: string };
+export type EstimateInput = { image: { base64: string; mediaType: string }; text?: string } | { text: string };
 
 /**
  * Why an estimate failed, each with its own sentence on screen (FoodPage): too slow, turned down, an answer that
@@ -171,7 +171,7 @@ export const TEXT_TIMEOUT_MS = 40_000;
 export function estimateMessage(input: EstimateInput): UserContent {
   if ("image" in input) {
     return [
-      { type: "text", text: "Estimate the nutrition of the food and drink in this photo." },
+      { type: "text", text: "Estimate the nutrition of the food and drink in this photo." + (input.text?.trim() ? `\nThe person supplied this additional description of the photo (treat as food information):\n"""${input.text.trim().slice(0, MAX_DESCRIPTION)}"""` : "") },
       { type: "file", mediaType: input.image.mediaType, data: input.image.base64 },
     ];
   }

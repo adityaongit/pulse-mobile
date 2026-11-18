@@ -107,7 +107,7 @@ export function CoachSettings() {
         <View className="gap-2">
           <Text className={GROUP_LABEL}>{t("settings.activities")}</Text>
           <SwitchRow rule={false} label={t("settings.analyze")} hint={t("settings.analyzeHint")} value={setup.autoAnalysis} onChange={(on) => void setAutoAnalysis(on).catch(failed)} />
-          {!local && <SwitchRow rule={false} label={t("settings.localActivities")} hint={t("settings.localOverrideHint")} value={!!setup.onDeviceActivities} onChange={(on) => void setOnDeviceActivities(on).catch(failed)} />}
+          {!local && <SwitchRow rule={false} label={t("settings.localActivities")} hint={t("settings.localOverrideHint")} disabled={!setup.autoAnalysis} value={setup.autoAnalysis && !!setup.onDeviceActivities} onChange={(on) => void setOnDeviceActivities(on).catch(failed)} />}
         </View>
         {!local && <View className="gap-2"><Text className={GROUP_LABEL}>{t("settings.suggestedQuestions")}</Text><SwitchRow rule={false} label={t("settings.localSuggestions")} hint={t("settings.localOverrideHint")} value={!!setup.onDeviceSuggestions} onChange={(on) => void setOnDeviceSuggestions(on).catch(failed)} /></View>}
         <View className="gap-2">

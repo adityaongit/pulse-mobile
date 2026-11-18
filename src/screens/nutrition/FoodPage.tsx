@@ -286,18 +286,18 @@ function Sheet({ edit, at: at0, meal: meal0, timeZone, today }: { edit: FoodItem
       return;
     }
     setPhoto(r.photo);
-    void estimate({ image: r.photo }, r.photo);
+    setStep("start");
   };
 
   const fromText = () => {
     const t = text.trim();
-    if (t.length < 2) return;
+    if (busy || !hasKey || (photo && localNano) || (!photo && t.length < 2)) return;
     Keyboard.dismiss();
-    void estimate({ text: t }, null);
+    void estimate(photo ? { image: photo, text: t } : { text: t }, photo);
   };
 
   const retry = () => {
-    if (photo) void estimate({ image: photo }, photo);
+    if (photo && !localNano) void estimate({ image: photo, text: text.trim() }, photo);
     else if (text.trim()) void estimate({ text: text.trim() }, null);
     else setStep("start");
   };
@@ -566,7 +566,11 @@ function Sheet({ edit, at: at0, meal: meal0, timeZone, today }: { edit: FoodItem
             </View>
           )}
           {startNotice}
-          <Field label={t("food.describeLabel")} hint={t("food.describeHint")}>
+          {photo && <View className="gap-2">
+            <Image source={{ uri: `data:${photo.mediaType};base64,${photo.base64}` }} resizeMode="cover" accessibilityLabel={t("food.photoAlt")} className="h-48 w-full rounded-2xl bg-inset" />
+            <Button variant="secondary" onPress={() => setPhoto(null)}>{t("food.removePhoto")}</Button>
+          </View>}
+          <Field label={t(photo ? "food.describePhoto" : "food.describeLabel")} hint={photo ? t("food.optional") : t("food.describeHint")}>
             <Input
               accessibilityLabel={t("food.describeA11y")}
               value={text}
@@ -580,9 +584,9 @@ function Sheet({ edit, at: at0, meal: meal0, timeZone, today }: { edit: FoodItem
               className="text-base"
             />
           </Field>
-          <Button variant="secondary" onPress={fromText} disabled={text.trim().length < 2 || !hasKey}>
+          <Button variant="secondary" onPress={fromText} disabled={busy || !hasKey || (!!photo && localNano) || (!photo && text.trim().length < 2)}>
             <Icon icon={Sparkles} size={16} tone="secondary-foreground" />
-            <Text className="text-[13px] font-bold uppercase tracking-[0.1em] text-secondary-foreground">{t("food.estimateFromDescription")}</Text>
+            <Text className="text-[13px] font-bold uppercase tracking-[0.1em] text-secondary-foreground">{t(photo ? "food.estimateTitle" : "food.estimateFromDescription")}</Text>
           </Button>
           {hasKey && (
             <View className="flex-row items-start gap-2">

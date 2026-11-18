@@ -131,6 +131,8 @@
     "cameraBlockedBody": "Autorise-le dans les réglages Android pour Pulse, ou choisis plutôt une photo.",
     "openSettings": "Ouvrir les réglages Android",
     "photoFailed": "Cette photo n’a pas pu être lue. Essaie-en une autre ou saisis l’aliment toi-même.",
+    "removePhoto": "Retirer la photo",
+    "describePhoto": "Décrire la photo",
     "photoAlt": "Photo de ton repas",
     "estimating": "Estimation avec {{provider}}…",
     "estimatingNote": "En général quelques secondes ; jusqu’à une minute pour une assiette chargée.",

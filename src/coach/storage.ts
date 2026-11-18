@@ -60,8 +60,8 @@ export const setConsent = (on: boolean) => patchSetup({ consent: on });
 /** The person's notes for the coach (null clears them). */
 export const setInstructions = (notes: string | null) => patchSetup({ instructions: notes?.trim() || null });
 
-export const setAutoAnalysis = (on: boolean) => patchSetup({ autoAnalysis: on });
-export const setOnDeviceActivities = (on: boolean) => patchSetup({ onDeviceActivities: on });
+export const setAutoAnalysis = (on: boolean) => patchSetup({ autoAnalysis: on, ...(!on && { onDeviceActivities: false }) });
+export const setOnDeviceActivities = async (on: boolean) => patchSetup({ onDeviceActivities: on && (await coachSetup()).autoAnalysis });
 export const setOnDeviceSuggestions = (on: boolean) => patchSetup({ onDeviceSuggestions: on });
 
 /**
