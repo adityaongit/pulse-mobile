@@ -4,7 +4,8 @@
   "chatsTitle": "Czaty",
   "providerFallback": "Twój dostawca",
   "provider": {
-    "custom": "Twój własny serwer"
+    "custom": "Twój własny serwer",
+    "nano": "Gemini Nano · lokalnie"
   },
   "suggestions": {
     "brief": "Dzisiejsze podsumowanie",
@@ -38,7 +39,8 @@
     "profile": "Najpierw skonfiguruj swój profil.",
     "provider": "Twój dostawca odrzucił żądanie (klucz, limit lub płatności). Sprawdź swoje konto u niego.",
     "network": "Nie udało się połączyć z Twoim dostawcą. Sprawdź połączenie i spróbuj ponownie.",
-    "default": "Nie udało się uzyskać odpowiedzi. Spróbuj ponownie."
+    "default": "Nie udało się uzyskać odpowiedzi. Spróbuj ponownie.",
+    "nano": "Gemini Nano nie moze wygenerowac odpowiedzi. Sprobuj ponownie lub wybierz innego dostawce."
   },
   "chat": {
     "toolFailed": "Nie udało się odczytać tej części Twoich danych.",
@@ -82,6 +84,10 @@
     "deleting": "Usuwanie…"
   },
   "settings": {
+    "localActivities": "Analizuj aktywności za pomocą AI na urządzeniu",
+    "localSuggestions": "Używaj AI na urządzeniu do sugerowanych pytań",
+    "suggestedQuestions": "Sugerowane pytania",
+    "localOverrideHint": "Używa AI na urządzeniu niezależnie od wybranego dostawcy czatu. Wymaga obsługiwanego i skonfigurowanego modelu lokalnego.",
     "saveFailed": "Nie udało się tego zapisać na tym telefonie. Spróbuj ponownie.",
     "aboutYou": "O Tobie",
     "aboutHint": "Jak chcesz, by Coach z Tobą rozmawiał i co powinien wiedzieć. Nigdy nie zmienia to zasad bezpieczeństwa Coacha.",
@@ -141,7 +147,10 @@
     "testing": "Testowanie…",
     "testAndSave": "Przetestuj i zapisz",
     "checkServer": "Przed zapisaniem Pulse sprawdza serwer jednym malutkim żądaniem.",
-    "checkKey": "Przed zapisaniem Pulse sprawdza klucz jednym malutkim żądaniem."
+    "checkKey": "Przed zapisaniem Pulse sprawdza klucz jednym malutkim żądaniem.",
+    "nanoBody": "Działa na tym telefonie z Gemini Nano. Pulse sprawdza obsługę urządzenia i przygotowuje model. Pierwsza konfiguracja może wymagać internetu i wolnego miejsca.",
+    "nanoOffline": "Po konfiguracji pytania i dane o zdrowiu pozostają na tym telefonie. Lokalne wnioskowanie działa tylko wtedy, gdy Pulse jest otwarty.",
+    "prepareNano": "Przygotuj Gemini Nano i zapisz"
   },
   "validate": {
     "pickProvider": "Wybierz dostawcę.",
@@ -151,7 +160,8 @@
     "pasteKey": "Wklej swój klucz API.",
     "keyShort": "Ten klucz wygląda na zbyt krótki.",
     "keyLong": "Ten klucz wygląda na zbyt długi.",
-    "testFailed": "To nie zadziałało: sprawdź klucz i identyfikator modelu oraz czy Twoje konto ma środki."
+    "testFailed": "To nie zadziałało: sprawdź klucz i identyfikator modelu oraz czy Twoje konto ma środki.",
+    "nanoUnavailable": "Gemini Nano nie jest gotowy na tym telefonie. Sprawdź obsługę urządzenia i AICore, a następnie spróbuj ponownie."
   },
   "evidence": {
     "basedOn": "Na podstawie: {{what}}",

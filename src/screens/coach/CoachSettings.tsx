@@ -8,7 +8,8 @@ import { i18n } from "@/i18n/config";
 import { MAX_NOTES } from "@/coach/instructions";
 import { providerLabel, providerOf } from "@/coach/providers";
 import { useCoachSetup } from "@/coach/session";
-import { deleteAllChats, removeProvider, setAutoAnalysis, setConsent, setInstructions } from "@/coach/storage";
+import { deleteAllChats, removeAllProviders, removeProvider, setAutoAnalysis, setConsent, setInstructions , activateProvider, setOnDeviceActivities, setOnDeviceSuggestions } from "@/coach/storage";
+
 import { Card } from "@/ui/Card";
 import { Text } from "@/ui/Text";
 import { toast } from "@/ui/Toast";
@@ -58,6 +59,7 @@ export function CoachSettings() {
 
   // The person's own server: its address shows, and it may have no key to remove.
   const custom = providerOf(setup?.provider)?.custom;
+  const local = providerOf(setup?.provider)?.local;
   const run = async (fn: () => Promise<unknown>, done: string) => {
     setPending(true);
     try {
@@ -72,9 +74,9 @@ export function CoachSettings() {
   const DIALOG = {
     key: custom
       ? { title: t("settings.disconnectTitle"), description: t("settings.disconnectBody"), label: t("settings.disconnect"), go: () => run(removeProvider, t("settings.disconnected")) }
-      : { title: t("settings.removeKeyTitle"), description: t("settings.removeKeyBody"), label: t("settings.removeKey"), go: () => run(removeProvider, t("settings.keyRemoved")) },
+      : { title: t(local ? "settings.disconnectTitle" : "settings.removeKeyTitle"), description: t(local ? "settings.disconnectBody" : "settings.removeKeyBody"), label: t(local ? "settings.disconnect" : "settings.removeKey"), go: () => run(removeProvider, t(local ? "settings.disconnected" : "settings.keyRemoved")) },
     chats: { title: t("settings.deleteChatsTitle"), description: t("settings.deleteChatsBody"), label: t("settings.deleteChats"), go: () => run(deleteAllChats, t("settings.chatsDeleted")) },
-    off: { title: t("settings.turnOffTitle"), description: t("settings.turnOffBody"), label: t("settings.turnOff"), go: () => run(async () => (await removeProvider(), await setConsent(false)), t("settings.turnedOff")) },
+    off: { title: t("settings.turnOffTitle"), description: t("settings.turnOffBody"), label: t("settings.turnOff"), go: () => run(async () => (await removeAllProviders(), await setConsent(false)), t("settings.turnedOff")) },
   } as const;
 
   const body =
@@ -91,20 +93,23 @@ export function CoachSettings() {
           <Text className={GROUP_LABEL}>{t("settings.provider")}</Text>
           <Card>
             <Row first label={t("settings.provider")} value={providerLabel(setup.provider)} />
-            <Row label={t("settings.model")} value={setup.model ?? ""} />
+            {!local && <Row label={t("settings.model")} value={setup.model ?? ""} />}
             {!!custom && <Row label={t("settings.server")} value={setup.baseUrl ?? ""} />}
-            <Row label={t("settings.apiKey")} value={setup.last4 ? `••••${setup.last4}` : custom ? t("settings.none") : t("settings.notSaved")} />
+            {!local && <Row label={t("settings.apiKey")} value={setup.last4 ? `••••${setup.last4}` : custom ? t("settings.none") : t("settings.notSaved")} />}
           </Card>
           <View className="flex-row flex-wrap gap-2">
+            {Object.values(setup.profiles ?? {}).map((profile) => <SmallButton key={profile.provider} label={`${profile.provider === setup.provider ? "✓ " : ""}${providerLabel(profile.provider)}`} onPress={() => void activateProvider(profile.provider).catch(failed)} />)}
             <SmallButton label={t("settings.change")} onPress={() => setChanging(true)} />
-            <SmallButton label={custom ? t("settings.disconnect") : t("settings.removeKey")} onPress={() => setConfirm("key")} />
+            <SmallButton label={custom || local ? t("settings.disconnect") : t("settings.removeKey")} onPress={() => setConfirm("key")} />
           </View>
         </View>
         <Notes key={setup.instructions ?? ""} saved={setup.instructions} />
         <View className="gap-2">
           <Text className={GROUP_LABEL}>{t("settings.activities")}</Text>
           <SwitchRow rule={false} label={t("settings.analyze")} hint={t("settings.analyzeHint")} value={setup.autoAnalysis} onChange={(on) => void setAutoAnalysis(on).catch(failed)} />
+          {!local && <SwitchRow rule={false} label={t("settings.localActivities")} hint={t("settings.localOverrideHint")} disabled={!setup.autoAnalysis} value={setup.autoAnalysis && !!setup.onDeviceActivities} onChange={(on) => void setOnDeviceActivities(on).catch(failed)} />}
         </View>
+        {!local && <View className="gap-2"><Text className={GROUP_LABEL}>{t("settings.suggestedQuestions")}</Text><SwitchRow rule={false} label={t("settings.localSuggestions")} hint={t("settings.localOverrideHint")} value={!!setup.onDeviceSuggestions} onChange={(on) => void setOnDeviceSuggestions(on).catch(failed)} /></View>}
         <View className="gap-2">
           <Text className={GROUP_LABEL}>{t("settings.chats")}</Text>
           <Text className={HINT}>{t("settings.chatsHint")}</Text>

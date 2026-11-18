@@ -1,0 +1,12 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+group = 'app.pulse'
+version = '1.0.0'
+android {
+  namespace "app.pulse.nano"
+  defaultConfig { versionCode 1; versionName '1.0.0'; minSdk 26 }
+}
+// beta2 stays compatible with this app's Kotlin 2.1 toolchain; beta3+ uses Kotlin 2.3 metadata.
+dependencies { implementation 'com.google.mlkit:genai-prompt:1.0.0-beta2' }

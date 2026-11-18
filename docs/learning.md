@@ -947,3 +947,12 @@ The accelerometer comes from `expo-sensors` (SDK 57's Expo module) rather than a
 
 References: [SDK 57 Accelerometer](https://docs.expo.dev/versions/v57.0.0/sdk/accelerometer/), [Android sensor rate limiting](https://developer.android.com/develop/sensors-and-location/sensors/sensors_overview#sensors-rate-limiting).
 
+## Gemini Nano through ML Kit Prompt API
+
+The Android only Nano bridge is a local Expo module backed by ML Kit's Prompt API and AICore. Check runtime feature status before generation, and let the person prepare downloadable model assets from Coach setup. Inference is allowed only while Pulse is the foreground app. Keep a smaller recent chat window and avoid sending images until the native bridge supports them. See [ML Kit direct model access](https://developers.google.com/ml-kit/genai/prompt/android/get-started) and [background usage limits](https://developers.google.com/ml-kit/genai#background_usage).
+
+
+## Coach provider persistence and suggestion placeholders
+
+Provider keys are stored separately in SecureStore. The existing active key migrates before switching providers; selecting a saved provider reuses its model and URL. Suggestion placeholders reuse the UI-thread CSS animation approach from Skeleton and respect reduced motion.
+

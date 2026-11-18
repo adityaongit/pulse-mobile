@@ -3,7 +3,10 @@
   "settingsTitle": "Coach settings",
   "chatsTitle": "Chats",
   "providerFallback": "your provider",
-  "provider": { "custom": "Your own server" },
+  "provider": {
+    "custom": "Your own server",
+    "nano": "Gemini Nano · On-device"
+  },
   "suggestions": {
     "brief": "Today's brief",
     "sync": "What can I do while last night's sleep syncs?",
@@ -36,7 +39,8 @@
     "profile": "Set up your profile first.",
     "provider": "Your provider refused the request (key, quota or billing). Check your account with them.",
     "network": "Couldn’t reach your provider. Check your connection and try again.",
-    "default": "Couldn’t get an answer. Try again."
+    "default": "Couldn’t get an answer. Try again.",
+    "nano": "Gemini Nano couldn't generate a reply. Try again or choose another provider."
   },
   "chat": {
     "toolFailed": "Couldn’t read that part of your data.",
@@ -80,6 +84,10 @@
     "deleting": "Deleting…"
   },
   "settings": {
+    "localActivities": "Use on-device AI for activity analysis",
+    "localSuggestions": "Use on-device AI for suggested questions",
+    "suggestedQuestions": "Suggested questions",
+    "localOverrideHint": "Uses on-device AI independently of your selected chat provider. Requires a supported, prepared on-device model.",
     "saveFailed": "Couldn’t save that on this phone. Try again.",
     "aboutYou": "About you",
     "aboutHint": "How you’d like the coach to talk and what it should know. It never changes the coach’s safety rules.",
@@ -117,7 +125,7 @@
   },
   "setup": {
     "consentTitle": "Before you start",
-    "consentSend": "To answer, the coach sends your questions and the Pulse numbers it looks up (scores, vitals, workouts, journal behaviours) to the AI provider you choose next, straight from this phone, with your own key. Nothing identifies you.",
+    "consentSend": "For cloud providers, the coach sends your questions and the Pulse numbers it looks up (scores, vitals, workouts, journal behaviours) directly from this phone. Gemini Nano runs on this phone. Nothing identifies you.",
     "consentTerms": "Your provider’s terms and pricing apply. Pulse adds no cost.",
     "consentLocal": "Chats are saved on this phone, visible only to you. Delete them any time.",
     "consentAccuracy": "Answers can be wrong, and they are not medical advice.",
@@ -138,6 +146,9 @@
     "modelHint": "Any model your provider offers.",
     "testing": "Testing…",
     "testAndSave": "Test and save",
+    "nanoBody": "On-device AI has limited performance and may give less detailed or accurate answers than cloud models. Runs on this phone using Gemini Nano. Pulse checks device support and prepares the model; the first setup may need internet and storage.",
+    "nanoOffline": "After setup, prompts and health data stay on this phone. Local inference works only while Pulse is open.",
+    "prepareNano": "Prepare Gemini Nano and save",
     "checkServer": "Pulse checks the server with one tiny request before saving it.",
     "checkKey": "Pulse checks the key with one tiny request before saving it."
   },
@@ -149,7 +160,8 @@
     "pasteKey": "Paste your API key.",
     "keyShort": "That key looks too short.",
     "keyLong": "That key looks too long.",
-    "testFailed": "That didn’t work: check the key and the model id, and that your account has credit."
+    "testFailed": "That didn’t work: check the key and the model id, and that your account has credit.",
+    "nanoUnavailable": "Gemini Nano is not ready on this phone. Check that the device supports it, AICore is updated, and try again."
   },
   "evidence": {
     "basedOn": "Based on {{what}}",

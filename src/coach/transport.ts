@@ -16,7 +16,7 @@ import { selectedActivity } from "./activityChat";
 /** What a turn can fail with before any answer streams; the screen maps each to a sentence (Coach.tsx ERRORS). */
 export type CoachProblem = "limit" | "key" | "profile" | "bad_request";
 /** What a failure while streaming becomes (the UI stream's errorText). */
-export type StreamProblem = "provider" | "network";
+export type StreamProblem = "provider" | "network" | "nano";
 
 export type CoachModel = { model: LanguageModel; provider: string; instructions: string | null; cacheKey?: string };
 
@@ -59,7 +59,7 @@ export function streamProblem(e: unknown): StreamProblem {
 }
 
 /** The provider's kind for telemetry: never its URL, key or model id. */
-const PROVIDER_KIND: Record<string, string> = { google: "gemini", openai: "openai", anthropic: "anthropic", gateway: "openai-compatible", openrouter: "openai-compatible", custom: "custom" };
+const PROVIDER_KIND: Record<string, string> = { google: "gemini", nano: "on-device", openai: "openai", anthropic: "anthropic", gateway: "openai-compatible", openrouter: "openai-compatible", custom: "custom" };
 
 /** Reports a coach failure as `coach.<problem>` with the provider's kind and the HTTP status (0 without one). */
 export function reportCoach(problem: string, provider: string | null | undefined, e?: unknown): void {
@@ -129,7 +129,7 @@ async function turn(deps: CoachDeps, chatId: string, messages: UIMessage[], abor
     onError: (e) => {
       const problem = streamProblem(e);
       if (!abortSignal?.aborted) reportCoach(problem, m.provider, e);
-      return problem;
+      return m.provider === "nano" ? "nano" : problem;
     },
   });
 }

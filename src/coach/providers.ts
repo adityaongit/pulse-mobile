@@ -9,8 +9,9 @@ import { createOpenAI } from "@ai-sdk/openai";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { createGateway, type LanguageModel } from "ai";
 import { i18n } from "@/i18n/config";
+import { nanoLanguageModel } from "./nanoModel";
 
-export type ProviderId = "openai" | "anthropic" | "google" | "gateway" | "openrouter" | "custom";
+export type ProviderId = "openai" | "anthropic" | "google" | "gateway" | "openrouter" | "custom" | "nano";
 
 /** The AI SDK's fetch shape; expo/fetch is cast to it where it is created (net.ts). */
 export type Fetch = typeof globalThis.fetch;
@@ -24,6 +25,7 @@ export type Provider = {
   keyUrl?: string;
   /** The person's own OpenAI-compatible server: they give its URL, and a key only if it needs one. */
   custom?: true;
+  local?: true;
   create: (apiKey: string | null, model: string, fetch?: Fetch, baseUrl?: string) => LanguageModel;
 };
 
@@ -73,6 +75,7 @@ export const PROVIDERS: Provider[] = [
     // No key, no Authorization header: a local Ollama takes none.
     create: (apiKey, model, fetch, baseUrl) => createOpenAICompatible({ name: "custom", baseURL: baseUrl!, apiKey: apiKey || undefined, fetch })(model),
   },
+  { id: "nano", label: "On device", model: "gemini-nano", local: true, create: () => nanoLanguageModel() },
 ];
 
 export const providerOf = (id: string | null | undefined) => PROVIDERS.find((p) => p.id === id) ?? null;
@@ -87,10 +90,11 @@ export type ModelChoice = { provider: string; model: string; apiKey: string | nu
 export function modelFor(c: ModelChoice, fetch?: Fetch): LanguageModel | null {
   const p = providerOf(c.provider);
   if (!p) return null;
+  if (p.local) return p.create(null, p.model, fetch);
   if (p.custom) return c.baseUrl ? p.create(c.apiKey, c.model, fetch, c.baseUrl) : null;
   return c.apiKey ? p.create(c.apiKey, c.model, fetch) : null;
 }
 
 /** Whether a saved setup can answer: consent, a provider, and its key, or for the person's own server its URL. */
 export const coachReady = (s: { consent: boolean; provider: string | null; last4: string | null; baseUrl?: string | null } | undefined) =>
-  !!s?.consent && !!s.provider && (providerOf(s.provider)?.custom ? !!s.baseUrl : !!s.last4);
+  !!s?.consent && !!s.provider && (providerOf(s.provider)?.local ? true : providerOf(s.provider)?.custom ? !!s.baseUrl : !!s.last4);

@@ -10,6 +10,9 @@ import { CHAT_PAGE, titleOf, type ChatCursor, type ChatRow } from "./chats";
 
 /** What the screens may know about the setup: never the key itself. */
 export type CoachSetup = {
+  onDeviceActivities?: boolean;
+  onDeviceSuggestions?: boolean;
+  profiles?: Record<string, { provider: string; model: string; last4: string | null; baseUrl: string | null }>;
   provider: string | null;
   model: string | null;
   last4: string | null;
@@ -57,26 +60,64 @@ export const setConsent = (on: boolean) => patchSetup({ consent: on });
 /** The person's notes for the coach (null clears them). */
 export const setInstructions = (notes: string | null) => patchSetup({ instructions: notes?.trim() || null });
 
-export const setAutoAnalysis = (on: boolean) => patchSetup({ autoAnalysis: on });
+export const setAutoAnalysis = (on: boolean) => patchSetup({ autoAnalysis: on, ...(!on && { onDeviceActivities: false }) });
+export const setOnDeviceActivities = async (on: boolean) => patchSetup({ onDeviceActivities: on && (await coachSetup()).autoAnalysis });
+export const setOnDeviceSuggestions = (on: boolean) => patchSetup({ onDeviceSuggestions: on });
 
 /**
  * Stores the provider, model and server URL, and the key in secure storage (call only after the test request worked).
  * The person's own server may take no key; then none is kept.
  */
 export async function saveProvider(c: { provider: string; model: string; apiKey: string | null; baseUrl: string | null }): Promise<void> {
-  if (c.apiKey) await SecureStore.setItemAsync(API_KEY, c.apiKey, { keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY });
-  else await SecureStore.deleteItemAsync(API_KEY).catch(() => {});
-  await patchSetup({ provider: c.provider, model: c.model, last4: c.apiKey ? c.apiKey.slice(-4) : null, baseUrl: c.baseUrl });
+  const setup = await rememberCurrent();
+  const key = `${API_KEY}.${c.provider}`;
+  if (c.apiKey) await SecureStore.setItemAsync(key, c.apiKey, { keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY });
+  else await SecureStore.deleteItemAsync(key);
+  const profile = { provider: c.provider, model: c.model, last4: c.apiKey ? c.apiKey.slice(-4) : null, baseUrl: c.baseUrl };
+  await patchSetup({ ...profile, profiles: { ...setup.profiles, [c.provider]: profile } });
+}
+
+async function rememberCurrent(): Promise<CoachSetup> {
+  const setup = await coachSetup();
+  if (!setup.provider || !setup.model || setup.profiles?.[setup.provider]) return setup;
+  const legacy = await SecureStore.getItemAsync(API_KEY);
+  if (legacy) await SecureStore.setItemAsync(`${API_KEY}.${setup.provider}`, legacy, { keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY });
+  const { provider, model, last4, baseUrl } = setup;
+  const profiles = { ...setup.profiles, [provider]: { provider, model, last4, baseUrl } };
+  await patchSetup({ profiles });
+  // Only remove the legacy key once the profile and its secure key are saved.
+  await SecureStore.deleteItemAsync(API_KEY);
+  return { ...setup, profiles };
+}
+
+export async function activateProvider(provider: string): Promise<void> {
+  const setup = await rememberCurrent();
+  const profile = setup.profiles?.[provider];
+  if (profile) await patchSetup(profile);
+}
+
+export async function removeAllProviders(): Promise<void> {
+  const setup = await rememberCurrent();
+  for (const provider of Object.keys(setup.profiles ?? {})) await SecureStore.deleteItemAsync(`${API_KEY}.${provider}`);
+  await SecureStore.deleteItemAsync(API_KEY);
+  await patchSetup({ provider: null, model: null, last4: null, baseUrl: null, profiles: {} });
 }
 
 export async function removeProvider(): Promise<void> {
+  const setup = await rememberCurrent();
+  if (setup.provider) await SecureStore.deleteItemAsync(`${API_KEY}.${setup.provider}`);
+  const profiles = { ...setup.profiles };
+  if (setup.provider) delete profiles[setup.provider];
   await SecureStore.deleteItemAsync(API_KEY).catch(() => {});
-  await patchSetup({ provider: null, model: null, last4: null, baseUrl: null });
+  await patchSetup({ provider: null, model: null, last4: null, baseUrl: null, profiles });
 }
 
 /** The saved key, or null (none saved, or the keystore can no longer read it: the person adds it again). */
-export async function apiKey(): Promise<string | null> {
-  return SecureStore.getItemAsync(API_KEY).catch(() => null);
+export async function apiKey(provider?: string): Promise<string | null> {
+  const setup = await coachSetup();
+  const id = provider ?? setup.provider;
+  if (!id) return null;
+  return SecureStore.getItemAsync(`${API_KEY}.${id}`).then((key) => key ?? (id === setup.provider && !setup.profiles?.[id] ? SecureStore.getItemAsync(API_KEY) : null)).catch(() => null);
 }
 
 // ── Chats ────────────────────────────────────────────────────────────────────

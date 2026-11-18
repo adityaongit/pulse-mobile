@@ -1,0 +1,77 @@
+name: Build Android APK
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '**/*.md'
+permissions:
+  contents: write
+concurrency:
+  group: apk-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      CI: '1'
+      NODE_ENV: production
+      SENTRY_DISABLE_AUTO_UPLOAD: 'true'
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: pnpm install --frozen-lockfile --prod=false
+      - name: Check source
+        run: |
+          echo '/// <reference types="expo/types" />' > expo-env.d.ts
+          pnpm typecheck
+          pnpm lint
+          pnpm test
+      - name: Generate Android project
+        run: pnpm exec expo prebuild --platform android --no-install
+      # Release bundles JavaScript into the APK and runs without Metro.
+      # Expo's generated debug signing key is for test installs only.
+      - name: Build standalone ARM64 test APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          # docs/widgets.md records release R8/lint exhausting the default 512 MiB metaspace.
+          # Configure the build JVM directly; GRADLE_OPTS alone can affect only the launcher.
+          ./gradlew :app:assembleRelease \
+            -PreactNativeArchitectures=arm64-v8a \
+            '-Dorg.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1536m -Dfile.encoding=UTF-8' \
+            --no-daemon --max-workers=2 --console=plain --stacktrace
+      - name: Collect APK and checksum
+        run: |
+          mkdir -p artifacts
+          cp android/app/build/outputs/apk/release/app-release.apk artifacts/pulse-arm64-test.apk
+          cd artifacts
+          sha256sum pulse-arm64-test.apk > SHA256SUMS.txt
+      - name: Publish individual APK and checksum downloads
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="nano-test-${GITHUB_RUN_NUMBER}"
+          gh release create "$tag" \
+            artifacts/pulse-arm64-test.apk \
+            artifacts/SHA256SUMS.txt \
+            --title "Gemini Nano test build ${GITHUB_RUN_NUMBER}" \
+            --notes "Standalone ARM64 test APK for compatible Android devices with Gemini Nano on-device support. The Gemini Nano model is provided by Android and is not bundled in the APK." \
+            --prerelease
+      - name: Build notes
+        run: |
+          echo '### ARM64 test APK' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Download the APK and SHA256SUMS.txt individually from the GitHub release created by this run. This is a test-signed standalone build for compatible Android devices with Gemini Nano on-device support.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'This APK includes the Gemini Nano on-device coach provider. The Nano model is managed by Android on supported devices and is not bundled in the APK.' >> "$GITHUB_STEP_SUMMARY"
+

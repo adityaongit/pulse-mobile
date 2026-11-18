@@ -131,6 +131,8 @@
     "cameraBlockedBody": "Consentila nelle impostazioni di Android per Pulse, oppure scegli una foto.",
     "openSettings": "Apri le impostazioni di Android",
     "photoFailed": "Impossibile leggere quella foto. Provane un’altra o inserisci il cibo tu.",
+    "removePhoto": "Rimuovi foto",
+    "describePhoto": "Descrivi la foto",
     "photoAlt": "La foto del tuo pasto",
     "estimating": "Stima con {{provider}}…",
     "estimatingNote": "Di solito pochi secondi; fino a un minuto per un piatto ricco.",
@@ -164,7 +166,8 @@
     "estimateFromDescription": "Stima dalla descrizione",
     "privacy": "La tua foto o descrizione va solo a {{provider}}, con la tua chiave, per questa stima. Pulse non salva la foto.",
     "enterTitle": "Oppure inseriscilo tu",
-    "typeFood": "Scrivi il cibo e i suoi numeri"
+    "typeFood": "Scrivi il cibo e i suoi numeri",
+    "nanoPhotoUnavailable": "Gemini Nano stima i pasti da una descrizione scritta. Le stime dalle foto richiedono un provider cloud."
   },
   "problem": {
     "timeoutTitle": "Ci ha messo troppo",

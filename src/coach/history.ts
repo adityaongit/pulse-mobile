@@ -46,6 +46,12 @@ const textOf = (m: UIMessage) =>
 
 export async function coachHistory(messages: UIMessage[], model: LanguageModel, texts: Texts, abortSignal?: AbortSignal): Promise<{ saved: UIMessage[]; modelMessages: ModelMessage[] }> {
   const saved = messages.map((m) => ({ ...m }));
+  // Gemini Nano has a much smaller context window. Keep the complete saved transcript, but send only a bounded recent
+  // window to it; cloud providers retain the existing checkpoint summary behavior below.
+  if (typeof model !== "string" && model.provider === "pulse.gemini-nano") {
+    const modelMessages = await convertToModelMessages(saved.slice(-12));
+    return { saved, modelMessages };
+  }
   const parsed = Summary.safeParse((saved[0]?.metadata as { coachSummary?: unknown } | undefined)?.coachSummary);
   let summary = parsed.success && parsed.data.count < saved.length && parsed.data.hash === fingerprint(saved.slice(0, parsed.data.count)) ? parsed.data : null;
   if (saved.length - (summary?.count ?? 0) > 30) {

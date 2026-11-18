@@ -3,7 +3,10 @@
   "settingsTitle": "Ajustes del Coach",
   "chatsTitle": "Chats",
   "providerFallback": "tu proveedor",
-  "provider": { "custom": "Tu propio servidor" },
+  "provider": {
+    "custom": "Tu propio servidor",
+    "nano": "Gemini Nano · local"
+  },
   "suggestions": {
     "brief": "Resumen de hoy",
     "sync": "¿Qué puedo hacer mientras se sincroniza el sueño de anoche?",
@@ -36,7 +39,8 @@
     "profile": "Configura primero tu perfil.",
     "provider": "Tu proveedor rechazó la solicitud (clave, cuota o facturación). Revisa tu cuenta con ellos.",
     "network": "No se pudo contactar a tu proveedor. Revisa tu conexión e inténtalo de nuevo.",
-    "default": "No se pudo obtener una respuesta. Inténtalo de nuevo."
+    "default": "No se pudo obtener una respuesta. Inténtalo de nuevo.",
+    "nano": "Gemini Nano no pudo generar una respuesta. Intentalo de nuevo o elige otro proveedor."
   },
   "chat": {
     "toolFailed": "No se pudo leer esa parte de tus datos.",
@@ -80,6 +84,10 @@
     "deleting": "Borrando…"
   },
   "settings": {
+    "localActivities": "Usar la IA del dispositivo para analizar actividades",
+    "localSuggestions": "Usar la IA del dispositivo para las preguntas sugeridas",
+    "suggestedQuestions": "Preguntas sugeridas",
+    "localOverrideHint": "Usa la IA del dispositivo independientemente del proveedor de chat seleccionado. Requiere un modelo local compatible y configurado.",
     "saveFailed": "No se pudo guardar en este teléfono. Inténtalo de nuevo.",
     "aboutYou": "Sobre ti",
     "aboutHint": "Cómo quieres que hable el Coach y qué debería saber. Nunca cambia las reglas de seguridad del Coach.",
@@ -139,7 +147,10 @@
     "testing": "Probando…",
     "testAndSave": "Probar y guardar",
     "checkServer": "Pulse comprueba el servidor con una solicitud mínima antes de guardarlo.",
-    "checkKey": "Pulse comprueba la clave con una solicitud mínima antes de guardarla."
+    "checkKey": "Pulse comprueba la clave con una solicitud mínima antes de guardarla.",
+    "nanoBody": "Funciona en este teléfono con Gemini Nano. Pulse comprueba la compatibilidad del dispositivo y prepara el modelo. La configuración inicial puede necesitar conexión a Internet y espacio de almacenamiento.",
+    "nanoOffline": "Tras la configuración, las preguntas y los datos de salud permanecen en este teléfono. La inferencia local solo funciona mientras Pulse está abierto.",
+    "prepareNano": "Preparar Gemini Nano y guardar"
   },
   "validate": {
     "pickProvider": "Elige un proveedor.",
@@ -149,7 +160,8 @@
     "pasteKey": "Pega tu clave de API.",
     "keyShort": "Esa clave parece demasiado corta.",
     "keyLong": "Esa clave parece demasiado larga.",
-    "testFailed": "No funcionó: revisa la clave y el id del modelo, y que tu cuenta tenga crédito."
+    "testFailed": "No funcionó: revisa la clave y el id del modelo, y que tu cuenta tenga crédito.",
+    "nanoUnavailable": "Gemini Nano no está listo en este teléfono. Comprueba la compatibilidad del dispositivo y AICore, e inténtalo de nuevo."
   },
   "evidence": {
     "basedOn": "Basado en {{what}}",

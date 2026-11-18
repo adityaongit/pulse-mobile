@@ -1,6 +1,7 @@
 import { View, type ViewProps, type ViewStyle } from "react-native";
 import Animated, { useReducedMotion } from "react-native-reanimated";
 import { cn } from "./cn";
+import { Gradient } from "./Gradient";
 
 // Skeletons reuse the component's own box (spec §5.19); these are only the bars inside it. A tint of the text colour, not
 // bg-muted: in dark mode muted (#22282c) is the card's own colour (#232629), so a bar inside a card did not show.
@@ -24,6 +25,26 @@ function Bar({ className, style, ...props }: ViewProps) {
 
 export function Skeleton(props: ViewProps) {
   return <Bar {...props} />;
+}
+
+/** A quiet sweep for background suggestions; reduced motion keeps the block still. */
+export function Shimmer({ className }: { className?: string }) {
+  const still = useReducedMotion();
+  return (
+    <View accessibilityState={{ busy: true }} className={cn("overflow-hidden bg-foreground/10", className)}>
+      {!still && <Animated.View style={{ width: 160, height: "100%", animationName: { from: { transform: [{ translateX: -160 }] }, to: { transform: [{ translateX: 500 }] } }, animationDuration: "1.8s", animationIterationCount: "infinite", animationTimingFunction: "linear" } as unknown as ViewStyle}>
+        <Gradient from="transparent" to="rgba(255,255,255,0.12)" />
+      </Animated.View>}
+    </View>
+  );
+}
+
+export function SuggestionReveal({ children, index }: { children: React.ReactNode; index: number }) {
+  const still = useReducedMotion();
+  return <View style={{ position: "relative" }}>
+    {children}
+    {!still && <Animated.View pointerEvents="none" className="bg-background" style={{ position: "absolute", right: 0, top: 0, bottom: 0, overflow: "hidden", animationName: { from: { width: "100%" }, to: { width: "0%" } }, animationDuration: "550ms", animationDelay: `${index * 160}ms`, animationFillMode: "both", animationTimingFunction: "ease-out" } as ViewStyle}><Shimmer className="h-full w-full rounded-md" /></Animated.View>}
+  </View>;
 }
 
 /**

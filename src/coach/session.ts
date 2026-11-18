@@ -12,7 +12,7 @@ import { createActivityGlance, type CoachActivity } from "./activity";
 export async function deviceModel(): Promise<CoachModel | null> {
   const s = await coachSetup();
   if (!coachReady(s) || !s.provider || !s.model) return null;
-  const model = modelFor({ provider: s.provider, model: s.model, apiKey: await apiKey(), baseUrl: s.baseUrl }, deviceFetch);
+  const model = modelFor({ provider: s.provider, model: s.model, apiKey: await apiKey(s.provider), baseUrl: s.baseUrl }, deviceFetch);
   return model ? { model, provider: s.provider, instructions: s.instructions, cacheKey: JSON.stringify([s.provider, s.model, s.baseUrl, s.last4]) } : null;
 }
 
@@ -37,7 +37,15 @@ export function deviceTransport(): CoachTransport {
 }
 
 const activityGlance = createActivityGlance();
-export const deviceActivityGlance = (activity: CoachActivity) => activityGlance({ ctx: currentCtx, model: deviceModel }, activity);
+export const deviceActivityGlance = (activity: CoachActivity) => activityGlance({ ctx: currentCtx, model: async () => {
+  const setup = await coachSetup();
+  if (!setup.consent) return null;
+  if (setup.onDeviceActivities) {
+    const model = modelFor({ provider: "nano", model: "gemini-nano", apiKey: null, baseUrl: null }, deviceFetch);
+    return model ? { model, provider: "nano", instructions: setup.instructions, cacheKey: "nano-activity" } : null;
+  }
+  return deviceModel();
+} }, activity);
 
 /** The tiny test request, from the phone. */
 export const testDeviceKey = (input: ProviderInput) => testKey(input, deviceFetch);
