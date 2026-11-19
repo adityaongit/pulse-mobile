@@ -1,0 +1,174 @@
+
+{
+  "title": "Ana Sayfa",
+  "sync": {
+    "progress": "Eşitleniyor · %{{percent}}",
+    "syncing": "Eşitleniyor…"
+  },
+  "noBand": {
+    "title": "Henüz band verisi yok",
+    "short": "Henüz band verisi yok",
+    "scored": "Uyku, Toparlanma ve Günlük Yük, Fitbit'inizin telefonunuzun ölçemediği kalp atış hızı verilerinden hesaplanır.",
+    "phoneShows": "Fitbit'iniz eşitlenene kadar Ana Sayfa, telefonunuzun saydığı adım, mesafe, kalori ve aktif dakika verilerini gösterir.",
+    "plannerNeeds": "Uyku Planlayıcısı, uyanma saatinizi öğrenmek için 7 gece verisine ihtiyaç duyar."
+  },
+  "vital": {
+    "resp": "Solunum hızı",
+    "spo2": "Kan oksijeni",
+    "restingHr": "Dinlenik kalp atış hızı",
+    "hrv": "Kalp atış hızı değişkenliği",
+    "skinTempDev": "Cilt sıcaklığı",
+    "bp": "Kan basıncı"
+  },
+  "section": {
+    "myDay": "Günüm",
+    "myDashboard": "Gösterge panelim",
+    "myJournal": "Günlüğüm",
+    "tonight": "Bu geceki uyku",
+    "energyBank": "Enerji Deposu",
+    "strainRecovery": "Günlük Yük ve Toparlanma",
+    "weekReview": "Haftalık değerlendirme",
+    "fromPhone": "Telefonunuzdan",
+    "vsAverage": "30 günlük ortalamaya göre",
+    "vsAverageFull": "30 günlük ortalamaya göre"
+  },
+  "activities": {
+    "today": "Bugünkü aktiviteler",
+    "other": "Aktiviteler",
+    "all": "Tüm aktiviteler",
+    "add": "Aktivite ekle",
+    "emptyToday": "Bugün henüz aktivite yok. Antrenmanlar Fitbit eşitlendiğinde görünür.",
+    "emptyDay": "Bu gün için aktivite yok."
+  },
+  "add": {
+    "today": "Bugüne ekle",
+    "day": "{{day}} tarihine ekle",
+    "completeJournal": "Günlük kaydını tamamla"
+  },
+  "tonight": {
+    "openPlanner": "Uyku Planlayıcısını aç",
+    "recommendedBedtime": "Önerilen\nuyku saati",
+    "typicalWake": "Alışılmış\nuyanma",
+    "sleepGoal": "Uyku hedefi",
+    "goalShare": "{{label}}, ihtiyacın %{{percent}}'i",
+    "need": "Bu gece ihtiyaç: <t>{{time}}</t>"
+  },
+  "journal": {
+    "open": "Günlüğü aç",
+    "checkedIn": "{{day}}: günlük kayıt yapıldı",
+    "noCheckIn": "{{day}}: günlük kayıt yapılmadı",
+    "insights": "Davranış içgörüleri"
+  },
+  "monitor": {
+    "title": "Sağlık Monitörü",
+    "noReadings": "Ölçüm yok",
+    "withinRange": "Aralık içinde",
+    "outOfRange": "Aralık dışında",
+    "ofMetrics": "{{n}} / {{total}} ölçüm",
+    "view": "Sağlık Monitörünü görüntüle"
+  },
+  "alert": {
+    "illnessTitle": "Vücudunuz bir şeyle mücadele ediyor olabilir",
+    "flaggedTitle_one": "{{count}} yaşamsal ölçüm normal aralığınızın dışında",
+    "flaggedTitle_other": "{{count}} yaşamsal ölçüm normal aralığınızın dışında",
+    "illnessBody": "Birden fazla yaşamsal ölçüm aynı anda normal aralığınızdan uzaklaştı. Bu örüntü, kendinizi hasta hissetmeden önce ortaya çıkabilir. Daha hafif bir gün geçirmeyi değerlendirin.",
+    "flaggedBody_one": "{{names}} alışılmış aralığınızın dışında. Bu, hastalığın veya yoğun yükün erken belirtisi olabilir.",
+    "flaggedBody_other": "{{names}} alışılmış aralığınızın dışında. Bu, hastalığın veya yoğun yükün erken belirtisi olabilir.",
+    "someVitals": "Bazı yaşamsal ölçümler",
+    "namesAnd": "{{rest}} ve {{last}}"
+  },
+  "stress": {
+    "title": "Stres Monitörü",
+    "notWorn": "Takılmamış",
+    "noneScored": "Henüz stres puanı yok",
+    "today": "Bugün",
+    "thisDay": "Bu gün",
+    "dayAverage": "Günlük ortalama",
+    "lastUpdated": "Son güncelleme <t>{{time}}</t>"
+  },
+  "energy": {
+    "label": "Enerji",
+    "wokeAt": "<t>{{time}}</t> saatinde <t>%{{level}}</t> enerjiyle uyandınız",
+    "charged": "Enerji kazanıldı",
+    "drained": "Enerji harcandı",
+    "drainAt": "{{label}}, <t>{{time}}</t> · <t>{{amount}}</t>"
+  },
+  "heartRate": {
+    "title": "Kalp atış hızı",
+    "none": "Henüz kalp atış hızı verisi yok",
+    "demoNone": "Örnek verilerde henüz ölçüm yok.",
+    "notSynced": "Health Connect'ten henüz veri eşitlenmedi.",
+    "lastMinutes": "Son {{minutes}} dakika",
+    "live": "Anlık kalp atış hızı: dakikada {{bpm}} atım",
+    "reconnecting": "Yeniden bağlanılıyor. Son anlık ölçüm: dakikada {{bpm}} atım",
+    "latest": "Kalp atış hızı: dakikada {{bpm}} atım",
+    "unknown": "bilinmiyor"
+  },
+  "insights": {
+    "label": "İçgörüler",
+    "position": "{{n}} / {{total}}",
+    "dismiss": "Bu içgörüyü kapat ({{left}} kaldı)",
+    "keepLight": "Yükünüzü hafif tutun",
+    "roomForMore": "Daha fazla yük için alan var",
+    "optimal": "Optimal yüke ulaşın",
+    "pastTarget": "Hedefinizi aştınız",
+    "recoveryGreen": "Yüke hazırsınız",
+    "recoveryYellow": "Dengeli bir gün",
+    "recoveryRed": "Toparlanma zamanı",
+    "lastNight": "Dün geceki uyku"
+  },
+  "outlook": {
+    "titleReview": "Günün değerlendirmesi",
+    "titleOutlook": "Günlük görünümünüz",
+    "band": {
+      "green": "yeşil",
+      "yellow": "sarı",
+      "red": "kırmızı"
+    },
+    "recovery": "Toparlanmanız %{{value}}, {{band}}.",
+    "strainTarget": "Bugünkü Günlük Yük hedefiniz {{target}}.",
+    "slept": "İhtiyacınız olan {{need}} sürenin {{asleep}} kadarını uyudunuz.",
+    "strainIs": "Günlük Yükünüz {{value}}.",
+    "strainIsTarget": "Günlük Yükünüz {{value}}, hedefiniz {{target}}.",
+    "strainIsActs_one": "Günlük Yükünüz {{value}}, {{count}} aktiviteyle.",
+    "strainIsActs_other": "Günlük Yükünüz {{value}}, {{count}} aktiviteyle.",
+    "strainIsTargetActs_one": "Günlük Yükünüz {{value}}, hedefiniz {{target}} ve {{count}} aktiviteyle.",
+    "strainIsTargetActs_other": "Günlük Yükünüz {{value}}, hedefiniz {{target}} ve {{count}} aktiviteyle.",
+    "strainWas": "Günlük Yükünüz {{value}} idi.",
+    "strainWasTarget": "Günlük Yükünüz {{value}} idi; hedefiniz {{target}}.",
+    "strainWasActs_one": "Günlük Yükünüz {{value}} idi, {{count}} aktiviteyle.",
+    "strainWasActs_other": "Günlük Yükünüz {{value}} idi, {{count}} aktiviteyle.",
+    "strainWasTargetActs_one": "Günlük Yükünüz {{value}} idi; hedefiniz {{target}}, {{count}} aktiviteyle.",
+    "strainWasTargetActs_other": "Günlük Yükünüz {{value}} idi; hedefiniz {{target}}, {{count}} aktiviteyle.",
+    "recoveryIs": "Toparlanmanız %{{value}}.",
+    "recoveryWas": "Toparlanmanız %{{value}} idi.",
+    "highStress": "{{duration}} boyunca yüksek stres yaşadınız."
+  },
+  "edit": {
+    "customizeLabel": "Gösterge Panelimi Özelleştir",
+    "customize": "Özelleştir",
+    "pageTitle": "Gösterge panelini özelleştir",
+    "success": "Başarılı",
+    "saved": "Tercihleriniz kaydedildi.",
+    "saveFailed": "Gösterge paneliniz kaydedilemedi. Tekrar deneyin.",
+    "saving": "Kaydediliyor…",
+    "myDashboard": "Gösterge panelim",
+    "addAtLeastOne": "Kaydetmek için en az bir ölçüm ekleyin.",
+    "addTo": "Gösterge panelime ekle",
+    "searchPlaceholder": "Ölçüm ara…",
+    "searchLabel": "Ölçüm ara",
+    "add": "{{label}} ekle",
+    "addNoData": "{{label}} ekle, henüz veri yok",
+    "noDataYet": "Henüz veri yok",
+    "noMatch": "{{query}} ile eşleşen ölçüm yok.",
+    "allOnHome": "Tüm ölçümler Ana Sayfa'da.",
+    "remove": "{{label}} öğesini kaldır",
+    "reorder": "{{label}} öğesini yeniden sırala, {{position}} / {{total}} konum",
+    "reorderHint": "Taşımak için sürükleyin veya yukarı/aşağı kaydırın",
+    "moveUp": "Yukarı taşı",
+    "moveDown": "Aşağı taşı",
+    "moved": "{{label}}, {{position}} / {{total}} konumuna taşındı",
+    "removed": "{{label}} Ana Sayfa'dan kaldırıldı",
+    "added": "{{label}}, {{position}} konumuna eklendi"
+  }
+}
