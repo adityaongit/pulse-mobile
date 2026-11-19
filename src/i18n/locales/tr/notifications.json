@@ -1,0 +1,46 @@
+{
+  "recovery": {
+    "title": "Toparlanma hazır",
+    "body": "{{percent}}%: {{band}}"
+  },
+  "cantSync": {
+    "title": "Pulse senkronize olamıyor",
+    "body": "Health Connect {{gap}} süredir senkronize olmadı. Senkronizasyon için Pulse'u aç."
+  },
+  "since": {
+    "hours_one": "{{count}} saat",
+    "hours_other": "{{count}} saat",
+    "days_one": "{{count}} gün",
+    "days_other": "{{count}} gün"
+  },
+  "checkIn": {
+    "title": "Günlük kayıt",
+    "body": "Bugün nasıldı? Günlük kaydın için bir dakikanı ayır."
+  },
+  "strainTarget": {
+    "title": "Günlük yük hedefi tamamlandı",
+    "inside": "Günlük yük {{strain}}, bugünkü {{range}} hedef aralığında.",
+    "past": "Günlük yük {{strain}}, bugünkü {{range}} hedefini aştı. Toparlanmak için bu gece uykuya öncelik ver."
+  },
+  "monitor": {
+    "illnessTitle": "Vücudun bir şeylerle mücadele ediyor olabilir",
+    "illnessBody": "Birden fazla yaşamsal ölçüm aynı anda normal aralığından uzaklaştı. Bu durum genellikle kendini kötü hissetmeden önce görülebilir. Bugün daha hafif bir gün geçirmeyi düşün.",
+    "title_one": "{{count}} yaşamsal ölçüm normal aralığın dışında",
+    "title_other": "{{count}} yaşamsal ölçüm normal aralığın dışında",
+    "body_one": "{{names}} alışılmış aralığının dışında. Bu, hastalığın veya yoğun yükün erken bir işareti olabilir.",
+    "body_other": "{{names}} alışılmış aralığının dışında. Bu, hastalığın veya yoğun yükün erken bir işareti olabilir.",
+    "oneVital": "Bir yaşamsal ölçüm",
+    "namesAnd": "{{list}} ve {{last}}"
+  },
+  "report": {
+    "title": "Haftalık rapor hazır",
+    "recovery": "Ortalama toparlanma: {{value}}%",
+    "strain": "Günlük yük {{value}}",
+    "withParts": "{{range}}: {{parts}}.",
+    "empty": "{{range}} haftan hazır."
+  },
+  "windDown": {
+    "title": "Gevşeme zamanı",
+    "body": "Bu geceki uyku ihtiyacını karşılamak için {{time}} saatine kadar yatağa gir."
+  }
+}
