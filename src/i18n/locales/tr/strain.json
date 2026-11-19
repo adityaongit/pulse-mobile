@@ -1,0 +1,381 @@
+{
+  "sourceNote": "Pulse puanları Fitbit verilerinden hesaplanır.",
+  "training": {
+    "readiness": "Antrenman Hazırlığı",
+    "status": "Antrenman Durumu",
+    "effect": "Antrenman etkisi",
+    "ofHundred": "100 üzerinden",
+    "ofFive": "5 üzerinden"
+  },
+  "trainingInfo": {
+    "readinessP1": "Garmin'in Antrenman Hazırlığı yaklaşımına benzer şekilde, bugün yoğun antrenmana ne kadar hazır olduğunu 1 ile 100 arasında gösterir. En çok dün geceki uyku ve toparlanma süresi (her biri dörtte bir) etkiler; ardından HRV durumu ve yük oranı, son 3 gecedeki uyku ve son 3 gündeki stres gelir. Çok zayıf tek bir etken puanı sınırlar. Dün gece öncesinde çok uzun süre uyanık kalmış olman da puandan 10 düşürür.",
+    "readinessP2": "95-100 Zirve, 75-94 Yüksek, 50-74 Orta, 25-49 Düşük, 1-24 Çok düşük. Uyanınca belirlenir ve antrenman sonrasında toparlanma süresi arttıkça düşer.",
+    "readinessP3": "Toparlanma süresi, başka bir yoğun antrenmana hazır olana kadar gereken süredir: her antrenman, Antrenman Etkisinden saat ekler (3,5 düzeyinde yaklaşık bir gün, 5 düzeyinde üç gün), en fazla 96 saate kadar. İyi uyku sırasında daha hızlı azalır; stresli saatlerde veya kötü bir gecenin ardından daha yavaş azalır.",
+    "readinessP4": "Garmin ağırlıklandırma değerlerini yayımlamıyor; bunlar Pulse'ın değerleridir.",
+    "statusP1": "Garmin'in Antrenman Durumu yaklaşımına benzer şekilde, yakın dönem antrenmanlarının etkisini gösterir: yük oranından (Garmin'in akut ve kronik yük karşılaştırması), Fitbit VO2 maks. değerinin 28 günlük eğiliminden ve HRV Durumundan hesaplanır.",
+    "statusP2": "Verimli: yük alışılmış düzeyde veya üzerinde ve VO2 maks. yükseliyor ya da HRV sabit. Korunuyor: kondisyonu korumaya yetecek düzeyde. Toparlanma: daha hafif bir dönem. Zirve: yük azalırken kondisyon yükseliyor. Verimsiz: yük sabit ancak VO2 maks. düşüyor. Aşırı yüklenme: çok yüksek yük artık olumsuz etkiliyor. Zorlanmış: yük altında HRV düşük. Antrenmansızlaşma: bir hafta boyunca alışılmış yükün çok altında.",
+    "statusP3": "Fitbit'in VO2 maks. değeri yavaş değişir; bu nedenle eğilim Garmin'in 14 günü yerine 28 gün üzerinden değerlendirilir. Yaklaşık 3 haftalık veri ve bir VO2 maks. değeri ya da HRV Durumu gerekir.",
+    "effectP1": "Garmin'in Aerobik Antrenman Etkisine benzer şekilde, bu antrenmanın aerobik kondisyonunu ne kadar geliştirdiğini 0 ile 5 arasında gösterir. Pulse, kalp atış hızından ve VO2 maks. değerinden antrenman sonrası vücudun toparlanmak için kullandığı ek oksijen olan EPOC'u tahmin eder ve bunu kondisyonun ile yakın dönem antrenmanlarının normal düzeyiyle karşılaştırır. Aynı koşu, kondisyonun ve antrenman yoğunluğun arttıkça daha düşük etki sayılır.",
+    "effectP2": "0-0,9 Fayda yok, 1-1,9 Küçük, 2-2,9 Koruyor, 3-3,9 Geliştiriyor, 4-4,9 Çok geliştiriyor, 5 Aşırı yüklenme.",
+    "effectP3": "Garmin EPOC'u yayımlamadığı vuruş-vuruş verileri ve sabitlerle tahmin eder; Pulse ise yalnızca kalp atış hızını kullanır ve Firstbeat'in yayımladığı verilerle uyarlanır. Anaerobik Antrenman Etkisi yoktur; bunun için tempo veya güç verisi gerekir."
+  },
+  "hours": {
+    "whole": "{{h}} sa",
+    "wholeMin": "{{h}} sa {{min}} dk"
+  },
+  "readiness": {
+    "calibrating": "Antrenman Hazırlığı için puanlanmış bir gece ve yaklaşık 3 haftalık antrenman verisi gerekir.",
+    "atWake": "Uyanınca {{score}}",
+    "spoken": "Antrenman Hazırlığı 100 üzerinden {{score}}, {{band}}",
+    "recoveryTime": "Toparlanma süresi",
+    "recovered": "Toparlanmış",
+    "readyAround": "{{time}} civarında yoğun antrenmana hazır",
+    "readyAroundDays_one": "{{count}} gün içinde, {{time}} civarında yoğun antrenmana hazır",
+    "readyAroundDays_other": "{{count}} gün içinde, {{time}} civarında yoğun antrenmana hazır",
+    "spokenRecoveryTime": "Toparlanma süresi {{time}}",
+    "spokenRecovered": "Toparlanma süresi: tamamen toparlandı",
+    "spokenFactor": "{{label}}: 100 üzerinden {{value}}",
+    "spokenFactorNone": "{{label}}: kullanılamıyor"
+  },
+  "status": {
+    "calibrating": "Antrenman Durumu için yaklaşık 3 haftalık antrenman verisi gerekir.",
+    "noData": "Antrenman Durumu için Fitbit'ten bir VO2 maks. değeri veya HRV Durumu gerekir.",
+    "loadRatio": "Yük oranı",
+    "spokenLoad": "Yük oranı {{value}}",
+    "spokenLoadNone": "Yük oranı kullanılamıyor",
+    "vo2Trend": "VO2 maks. eğilimi",
+    "aMonth": "bir ay",
+    "spokenVo2": "VO2 maks. eğilimi, ayda {{value}}",
+    "spokenVo2None": "VO2 maks. eğilimi kullanılamıyor",
+    "hrv": "HRV durumu",
+    "notYet": "Henüz değil",
+    "spokenHrv": "HRV durumu {{value}}",
+    "spokenHrvNone": "HRV durumu henüz yok"
+  },
+  "effect": {
+    "spoken": "Aerobik Antrenman Etkisi 5 üzerinden {{value}}, {{label}}",
+    "mainBenefit": "Ana fayda",
+    "spokenBenefit": "Ana fayda {{benefit}}. {{line}}",
+    "addsRecovery": "Toparlanma süresi ekler",
+    "spokenAdds": "{{time}} toparlanma süresi ekler"
+  },
+  "readinessBand": {
+    "prime": "Zirve",
+    "high": "Yüksek",
+    "moderate": "Orta",
+    "low": "Düşük",
+    "poor": "Çok düşük"
+  },
+  "readinessFactor": {
+    "sleep": "Dün geceki uyku",
+    "recoveryTime": "Toparlanma süresi",
+    "hrv": "HRV durumu",
+    "load": "Yük oranı",
+    "sleepHistory": "Son 3 gecenin uykusu",
+    "stressHistory": "Son 3 günün stresi"
+  },
+  "readinessLimit": {
+    "sleep": "Dün geceki uyku puanını sınırlıyor.",
+    "recoveryTime": "Vücudun yakın dönem antrenmanlarından hâlâ toparlanıyor.",
+    "hrv": "HRV değerinin alışılmış aralığının dışında.",
+    "load": "Yakın dönem yükün senin için yüksek.",
+    "sleepHistory": "Son birkaç gecedeki uyku puanını sınırlıyor.",
+    "stressHistory": "Son birkaç gündeki stres puanını sınırlıyor."
+  },
+  "readinessLongDay": "Dün gece öncesinde çok uzun süre uyanık kalmış olman puanı sınırlıyor.",
+  "readinessAllGood": "Puanı etkileyen tüm etkenler iyi durumda.",
+    "statusWord": {
+    "productive": "Verimli",
+    "maintaining": "Koruyor",
+    "recovery": "Toparlanma",
+    "peaking": "Zirve",
+    "unproductive": "Verimsiz",
+    "overreaching": "Aşırı yüklenme",
+    "strained": "Zorlanmış",
+    "detraining": "Antrenmansızlaşma"
+  },
+  "statusLine": {
+    "productive": "Antrenmanların kondisyonunu geliştiriyor.",
+    "maintaining": "Antrenmanların kondisyonunu mevcut düzeyde tutuyor; daha fazla yük kondisyonunu geliştirir.",
+    "recovery": "Daha hafif bir dönem, vücudunun toparlanmasını ve daha yoğun çalışmaya hazır olmasını sağlar.",
+    "peaking": "Kondisyon yükselirken yük azalıyor: yarış veya test için iyi bir zamanlama.",
+    "unproductive": "Yük sabit ancak kondisyon düşüyor. Uykunu, stresini ve toparlanmanı kontrol et.",
+    "overreaching": "Yük çok yüksek ve artık olumsuz etkiliyor. Biraz hafifle.",
+    "strained": "Bu yük altında HRV düşük: vücudun toparlanmakta zorlanıyor.",
+    "detraining": "Antrenmanların alışılmış düzeyinin çok altında; bu nedenle kondisyonun yavaşça düşebilir."
+  },
+  "teWord": {
+    "noBenefit": "Fayda yok",
+    "minor": "Küçük",
+    "maintaining": "Koruyor",
+    "improving": "Geliştiriyor",
+    "highlyImproving": "Çok geliştiriyor",
+    "overreaching": "Aşırı yüklenme"
+  },
+  "benefitWord": {
+    "recovery": "Toparlanma",
+    "base": "Temel",
+    "tempo": "Tempo",
+    "threshold": "Eşik",
+    "vo2max": "VO2 maks."
+  },
+  "benefitLine": {
+    "recovery": "Toparlanmana yardımcı olan hafif çalışma.",
+    "base": "Aerobik temelini geliştiren dengeli çalışma.",
+    "tempo": "Dayanıklılığını artıran daha yoğun aerobik çalışma.",
+    "threshold": "Sürdürebileceğin hızın sınırını yükselten uzun süreli yoğun çalışma.",
+    "vo2max": "Aerobik kapasitenin üst sınırını yükselten yoğun eforlar."
+  },
+  "hrvWord": {
+    "balanced": "Dengeli",
+    "unbalanced": "Dengesiz",
+    "low": "Düşük"
+  },
+  "hrvLine": {
+    "balanced": "7 günlük ortalaman alışılmış aralığında.",
+    "low": "7 günlük ortalaman alışılmış aralığının oldukça altında: çoğu zaman yük, hastalık veya kötü uyku belirtisi olabilir.",
+    "high": "7 günlük ortalaman alışılmış aralığının üzerinde.",
+    "belowRange": "7 günlük ortalaman alışılmış aralığının biraz altında."
+  },
+  "costKind": {
+    "run_one": "{{count}} koşu",
+    "run_other": "{{count}} koşu",
+    "ride_one": "{{count}} bisiklet sürüşü",
+    "ride_other": "{{count}} bisiklet sürüşü",
+    "walk_one": "{{count}} yürüyüş",
+    "walk_other": "{{count}} yürüyüş",
+    "strength_one": "{{count}} kuvvet antrenmanı",
+    "strength_other": "{{count}} kuvvet antrenmanı",
+    "workout_one": "{{count}} antrenman",
+    "workout_other": "{{count}} antrenman"
+  },
+  "costGerund": {
+    "run": "koşu",
+    "ride": "bisiklet sürme",
+    "walk": "yürüyüş",
+    "strength": "kuvvet antrenmanı",
+    "workout": "antrenman"
+  },
+  "costAgainst": {
+    "rest": "dinlenme günlerin",
+    "all": "ortalaman"
+  },
+  "bounce": {
+    "notEnough": "Henüz yeterli veri yok",
+    "barely": "Ertesi sabahki Toparlanmayı çok az etkiliyor",
+    "higher": "Ertesi sabah daha yüksek Toparlanma",
+    "notBack": "Bir hafta içinde referans değere dönmedi",
+    "back_one": "Ertesi sabah referans değere döndü",
+    "back_other": "Yaklaşık {{count}} gün içinde referans değere döndü"
+  },
+  "costCaption": {
+    "notEnough": "Henüz yeterli veri yok: {{have}} / {{needed}}",
+    "based": "{{bounce}} · {{sessions}}",
+    "early": "{{bounce}} · {{sessions}}, erken tahmin"
+  },
+    "costSentence": {
+    "needs": "Pulse, antrenmanların etkisini ölçmek için ertesi sabah Toparlanma puanı bulunan {{needed}} antrenmana ihtiyaç duyuyor; şu ana kadar {{have}} tane var.",
+    "same": "{{activity}} sonrasında ertesi sabahki Toparlanma, {{against}} günlerindekiyle yaklaşık aynı.",
+    "above": "{{activity}} sonrasında ertesi sabahki Toparlanma ortalama olarak {{against}} değerinden {{pts}}% daha yüksek.",
+    "belowOpen": "{{activity}} sonrasında ertesi sabahki Toparlanma ortalama olarak {{against}} değerinden {{pts}}% daha düşük ve bir hafta sonra da düşük kalıyor.",
+    "belowDays_one": "{{activity}} sonrasında ertesi sabahki Toparlanma ortalama olarak {{against}} değerinden {{pts}}% daha düşük; toparlanmış sayılacak kadar yakın.",
+    "belowDays_other": "{{activity}} sonrasında ertesi sabahki Toparlanma ortalama olarak {{against}} değerinden {{pts}}% daha düşük ve normale dönmesi yaklaşık {{count}} gün sürüyor."
+  },
+  "costBaseline": "{{against}} ile karşılaştırıldı ({{value}}%)",
+  "detectedKind": {
+    "walk": "Yürüyüş",
+    "run": "Koşu",
+    "cardio": "Diğer kardiyo"
+  },
+  "cost": {
+    "spoken": "{{name}}: ertesi sabah Toparlanma {{value}}. {{caption}}",
+    "spokenNone": "{{name}}: {{caption}}",
+    "footer": "{{baseline}}. Geçmişindeki ortalamalar; nedenselliğin kanıtı değildir.",
+    "caveat": "Geçmişindeki ortalamalar; nedenselliğin kanıtı değildir.",
+    "afterThis": "Bu antrenmandan sonraki Toparlanma",
+    "bounceBack": "Tipik toparlanma",
+    "restDay": "Dinlenme günü Toparlanması",
+    "average": "Ortalama Toparlanma",
+    "spokenValue": "Ertesi sabah Toparlanma {{value}}",
+    "nextMorning": "Ertesi sabah Toparlanma"
+  },
+  "detected": {
+    "spoken": "Algılanan aktivite, muhtemelen {{label}}, ortalama kalp atış hızı {{hr}} bpm, {{start}} - {{end}}. Kaydedilmiş bir antrenman değil.",
+    "title": "Algılandı",
+    "line": "{{label}} · ort. {{hr}} bpm",
+    "lineSteps": "{{label}} · ort. {{hr}} bpm · {{steps}} adım",
+    "note": "Algılanan aktivite: kaydedilmiş bir antrenman olmadan, adımlarına göre etiketlenen 12 dakika veya daha uzun süreli yükselmiş kalp atış hızı. Bilgi amaçlı gösterilir ve puanlarına katkıda bulunmaz."
+  },
+  "menu": {
+    "more": "Bu aktivite hakkında daha fazla",
+    "strainForDay": "Bu günün Günlük Yükü",
+    "hrSettings": "Kalp atış hızı ayarları"
+  },
+  "glance": {
+    "ask": "Antrenman hakkında koça sor",
+    "analyzing": "Analiz ediliyor…",
+    "spokenText": "Koç: {{text}}. Bu antrenman hakkında koça sor.",
+    "spokenAnalyzing": "Koç bu antrenmanı analiz ediyor. Bunun hakkında koça sor."
+  },
+  "stat": {
+    "zones13": "Kalp atış hızı bölgeleri 1-3",
+    "zones45": "Kalp atış hızı bölgeleri 4-5",
+    "strength": "Kuvvet aktivitesi süresi",
+    "steps": "Adımlar",
+    "distance": "Mesafe",
+    "pace": "Tempo",
+    "duration": "Süre",
+    "avgHr": "Ort. kalp atış hızı",
+    "maxHr": "Maks. kalp atış hızı",
+    "calories": "Kalori"
+  },
+  "coach": {
+    "rest": "Bugün vücudunun dinlenmeye ihtiyacı var. Günlük Yükünü {{low}} ile {{high}} arasında tut.",
+    "below_one": "Bugünkü hedefin {{range}}. Günlük Yükün {{strain}}; yaklaşık {{count}} dakika orta yoğunlukta aktivite seni hedef aralığına getirir.",
+    "below_other": "Bugünkü hedefin {{range}}. Günlük Yükün {{strain}}; yaklaşık {{count}} dakika orta yoğunlukta aktivite seni hedef aralığına getirir.",
+    "inside": "Bugünkü {{range}} hedef aralığındasın. Bundan sonra daha fazla yük, faydadan çok yükü artırır.",
+    "past": "Bugünkü hedefini aştın. Bu gece toparlanmak için uykuya öncelik ver."
+  },
+  "zoneNote": "Bölgeler maksimum kalp atış hızının yüzdesine göre belirlenir ({{maxHr}} bpm): 1. bölge %50'den, 5. bölge %90'dan başlar.",
+  "hrrWord": {
+    "good": "İyi",
+    "typical": "Tipik",
+    "low": "Düşük"
+  },
+  "zoneInsight": {
+    "hard_one": "4. ve 5. bölgelerde {{count}} dakika geçirdin; hız ve güç geliştiren yoğun çalışma.",
+    "hard_other": "4. ve 5. bölgelerde {{count}} dakika geçirdin; hız ve güç geliştiren yoğun çalışma.",
+    "steady_one": "3. bölgede {{count}} dakika geçirdin; aerobik temelini geliştiren dengeli çalışma.",
+    "steady_other": "3. bölgede {{count}} dakika geçirdin; aerobik temelini geliştiren dengeli çalışma.",
+    "easy_one": "1. ve 2. bölgelerde {{count}} dakika geçirdin; toparlanmana yardımcı olan hafif hareket.",
+    "easy_other": "1. ve 2. bölgelerde {{count}} dakika geçirdin; toparlanmana yardımcı olan hafif hareket."
+  },
+    "screen": {
+    "title": "Günlük Yük",
+    "prior30": "önceki 30 gün",
+    "todayVsPrior": "Bugün ve önceki 30 gün",
+    "exploreInsights": "Günlük Yük içgörülerini keşfet",
+    "heartRate": "Kalp atış hızı",
+    "explore": "Keşfet",
+    "timeInZones": "Bölgelerde geçirilen süre",
+    "activities": "Aktiviteler",
+    "noZonesToday": "Bugün henüz kalp atış hızı bölgeleri yok.",
+    "noZonesDay": "Bu gün kalp atış hızı bölgeleri yok.",
+    "noActivities": "Bu gün aktivite yok.",
+    "liveWorkout": "Canlı antrenman"
+  },
+  "target": {
+    "label": "Günlük Yük hedefi",
+    "range": "{{low}} - {{high}}",
+    "spoken": "Günlük Yük hedefi {{low}} ile {{high}} arasında",
+    "spokenReason": "Günlük Yük hedefi: {{reason}}"
+  },
+  "weekly": {
+    "strain": "Günlük Yük",
+    "zones13": "Kalp atış hızı bölgeleri 1-3",
+    "zones45": "Kalp atış hızı bölgeleri 4-5",
+    "steps": "Adımlar",
+    "calories": "Kalori",
+    "strength": "Kuvvet aktivitesi süresi"
+  },
+  "activities": {
+    "title": "Aktiviteler",
+    "sport": "Spor",
+    "all": "Tümü",
+    "kindRun": "Koşular",
+    "kindRide": "Bisiklet sürüşleri",
+    "kindWalk": "Yürüyüşler",
+    "kindStrength": "Kuvvet antrenmanları",
+    "kindWorkout": "Antrenmanlar",
+    "recoveryCost": "Toparlanma maliyeti",
+    "empty": "Son bir ayda antrenman yok. Fitbit veya telefonunda kaydettiğin antrenmanlar senkronizasyondan sonra burada görünür.",
+    "showOlder": "Daha eski olanları göster",
+    "noOlder": "Daha eski aktivite yok",
+    "lastDays_one": "Son {{count}} gün",
+    "lastDays_other": "Son {{count}} gün",
+    "statActivity_one": "Aktivite",
+    "statActivity_other": "Aktiviteler",
+    "statTime": "Süre",
+    "statAvgStrain": "Ort. Günlük Yük",
+    "steps": "{{value}} adım",
+    "dayStrain": "Günlük Yük <b>{{value}}</b>",
+    "noneToday": "Bugün henüz aktivite yok. Fitbit senkronizasyonundan sonra antrenmanlar burada görünür."
+  },
+  "activity": {
+    "title": "Aktivite",
+    "unavailable": "Bu aktivite kullanılamıyor.",
+    "question": "{{when}} tarihindeki {{name}} aktivitem hakkında bilgi ver.",
+    "subtitle": "{{day}} {{start}} - {{end}}",
+    "heartRate": "Kalp atış hızı",
+    "timeInZones": "Bölgelerde geçirilen süre",
+    "viewHrSettings": "Kalp atış hızı ayarlarını görüntüle",
+    "noZones": "Bu aktivite için kalp atış hızı bölgeleri yok.",
+    "keyStats": "Temel istatistikler",
+    "vsAverage": "30 günlük ortalamaya göre",
+    "hrRecovery": "Kalp atış hızı toparlanması",
+    "recoveryCost": "Toparlanma maliyeti",
+    "heroStrain": "Aktivite yükü",
+    "heroSteps": "Aktivite adımları",
+    "heroDuration": "Süre",
+    "spokenAverage": "Bu aktivite türünün 30 günlük ortalaması {{value}}",
+    "noHrBand": "Bileklik takılmadığı için bu aktivitede kalp atış hızı, bölgeler veya Günlük Yük yok.",
+    "noHrData": "Bu aktivitede kalp atış hızı, bölgeler veya Günlük Yük göstermek için yeterli kalp atış hızı verisi yok.",
+    "hrrNone": "Antrenman sonrasında yeterli kalp atış hızı verisi yok.",
+    "hrrNote": "Durdurduktan sonraki ilk 60 saniyedeki düşüş. Formda yetişkinlerde 20'nin üzeri tipiktir."
+  },
+    "live": {
+    "title": "Canlı antrenman",
+    "infoTitle": "Canlı Antrenman hakkında",
+    "infoBody": "Bilekliğinin canlı kalp atış hızı üzerinden Günlük Yük Koçu. Antrenman yaptıkça Günlük Yük, Pulse'ın geri kalanında kullandığı aynı hesaplama yöntemiyle, bugünkü mevcut yükünden başlayarak artar. Koç bunu bugünkü Günlük Yük hedefinle ve kalp atış hızını bugünkü Toparlanmanın belirlediği aralıkla karşılaştırır: gün için hafif kaldığında daha fazla zorlamanı, hedef aralığına ulaştığında veya Toparlanmanın karşılayabileceğinden daha fazla yüklenmeye başladığında ise yavaşlamanı söyler. Buradaki hiçbir şey puanlarına kaydedilmez; antrenman Fitbit senkronize ettiğinde puanlarına dahil edilir.",
+    "dayStrain": "Günlük Yük",
+    "end": "Antrenmanı bitir",
+    "start": "Antrenmana başla",
+    "startAnother": "Başka bir antrenman başlat",
+    "done": "Tamam",
+    "haptics": "Titreşimli uyarılar",
+    "hapticsHint": "Zorlamak için bir titreşim, yavaşlamak için iki titreşim, hedefinde bir titreşim",
+    "recent": "Son canlı antrenmanlar",
+    "recentEmpty": "Burada koç eşliğinde yaptığın antrenmanlar bu telefonda özetlenir. Antrenmanın kendisi Fitbit tarafından puanlarına senkronize edilir.",
+    "guidanceSpoken": "{{title}}. {{body}}",
+    "elapsed": "Geçen süre",
+    "heartRate": "Kalp atış hızı",
+    "workout": "Antrenman",
+    "noReading": "ölçüm yok",
+    "beatsPerMinute": "Dakikada {{bpm}} atım",
+    "workoutStrainSpoken": "antrenman yükü yüzde {{value}}",
+    "now": "Şimdi",
+    "cellSpoken": "{{label}}: {{spoken}}",
+    "zoneSpoken": "{{zone}}. bölge: {{time}}",
+    "zoneSpokenCurrent": "{{zone}}. bölge, şu an: {{time}}",
+    "zoneShort": "B{{zone}}",
+    "belowZone1": "1. bölgenin altında",
+    "zone": "{{zone}}. bölge",
+    "waiting": "Kalp atışı bekleniyor",
+    "zoneWithBand": "{{zone}} · bugünkü aralık {{floor}}–{{ceiling}} bpm",
+    "today": "Bugün",
+    "readError": "Bugünkü puanlar okunamadı.",
+    "reading": "Bugünkü puanlar okunuyor…",
+    "targetLine": "Bugünkü hedef {{low}} - {{high}}.",
+    "noTarget": "Bugün henüz Günlük Yük hedefi yok: bunun için bugünkü Toparlanma gerekir. Koç yalnızca kalp atış hızı aralığını kullanır.",
+    "recoveryLine": "Toparlanma {{value}}%, koçun ne kadar zorlamana izin vereceğini belirler.",
+    "notSynced": "Bugünkü kalp atış hızı henüz senkronize olmadı; bu nedenle Günlük Yük bu antrenmandan başlayarak hesaplanır.",
+    "connect": "Bilekliğini bağla",
+    "connectBody": "Canlı Antrenman, bilekliğinin kalp atış hızını Bluetooth üzerinden gerektirir. Google Health'te Kalp atış hızını paylaş seçeneğini aç, ardından bağlan.",
+    "noHeartRate": "Henüz kalp atış hızı yok",
+    "workoutStrain": "Antrenman yükü",
+    "time": "Süre",
+    "avgMax": "{{avg}} ort. · {{max}} maks.",
+    "verdictPast": "Bugünkü hedefi aştın: bu gece uykuya öncelik ver.",
+    "verdictInside": "Bugünkü hedef aralığındasın.",
+    "verdictBelow": "Bugünkü hedefin {{value}} altında.",
+    "summary": "Antrenman özeti",
+    "rowSpoken": "{{label}}: {{value}}",
+    "to": "ile",
+    "timeInZones": "Bölgelerde geçirilen süre",
+    "keptOnPhone": "Bu telefonda saklanır; Fitbit antrenmanın kendisini puanlarına senkronize eder.",
+    "when": "{{day}}, {{time}}",
+    "recentSpoken": "{{when}}: {{duration}}, antrenman yükü yüzde {{value}}",
+    "recentLine": "{{duration}} · ort. {{bpm}} bpm",
+    "strain": "Günlük Yük"
+  }
+}
