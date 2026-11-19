@@ -101,7 +101,7 @@
     "vsAvg": "Ortalamaya göre {{diff}}"
   },
   "live": {
-    "reconnectingAria": BANTLA BAĞLANTI YENİDEN KURULUYOR",
+    "reconnectingAria": "BANTLA BAĞLANTI YENİDEN KURULUYOR",
     "liveFrom": "{{name}} üzerinden canlı",
     "liveFromBand": "Bant üzerinden canlı",
     "reconnecting": "Yeniden bağlanılıyor…",
