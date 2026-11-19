@@ -81,8 +81,8 @@
             "compileSdkVersion": 36,
             "targetSdkVersion": 36,
             "minSdkVersion": 26,
-            "enableMinifyInReleaseBuilds": true,
-            "enableShrinkResourcesInReleaseBuilds": true,
+            "enableMinifyInReleaseBuilds": false,
+            "enableShrinkResourcesInReleaseBuilds": false,
             "gifEnabled": false,
             "webpEnabled": false,
             "usesCleartextTraffic": true
@@ -118,7 +118,7 @@
           "microphonePermission": false
         }
       ],
-      ["expo-localization", { "supportedLocales": { "android": ["en", "de", "fr", "es", "pt-BR", "ru", "pl", "it", "tr"] } }]
+      ["expo-localization", { "supportedLocales": { "android": ["en", "de", "fr", "es", "pt-BR", "ru", "pl", "it", "tr", "tr"] } }]
     ],
     "experiments": {
       "typedRoutes": true,
