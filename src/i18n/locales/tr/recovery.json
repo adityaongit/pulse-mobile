@@ -1,0 +1,59 @@
+{
+  "title": "Toparlanma",
+  "loadError": "Bu ekran yüklenemedi.",
+  "legendPeriod": "son 30 gün",
+  "legendSkeleton": "Bugün ve son 30 gün karşılaştırması",
+  "exploreInsights": "Toparlanma verilerini keşfet",
+  "weeklyTitle": {
+    "recovery": "Toparlanma",
+    "hrv": "Kalp Atış Hızı Değişkenliği",
+    "rhr": "Dinlenik Kalp Atış Hızı",
+    "resp": "Solunum Hızı",
+    "sleep": "Uyku Performansı"
+  },
+  "behaviors": {
+    "title": "Davranış analizleri",
+    "body": "Dünkü bazı davranışların bugün Toparlanma puanını etkilemiş olabilir.",
+    "spokenUp": "{{label}}, daha yüksek Toparlanma ile ilişkilendirildi",
+    "spokenDown": "{{label}}, daha düşük Toparlanma ile ilişkilendirildi",
+    "spokenNeutral": "{{label}}, belirgin bir etkisi olmadı"
+  },
+  "subject": {
+    "hrv": "HRV",
+    "rhr": "Dinlenik kalp atış hızı",
+    "resp": "Solunum hızı",
+    "sleep": "Uyku",
+    "skin": "Cilt sıcaklığı"
+  },
+  "driver": {
+    "strongSleep": "İyi bir uyku gecesi",
+    "weakSleep": "İyi bir uyku seviyesinin altında",
+    "typicalSleep": "Normal bir uyku gecesi",
+    "skinWarmer": "Cilt sıcaklığı normalden yüksek",
+    "skinCooler": "Cilt sıcaklığı normalden düşük",
+    "hrvBelow": "HRV referans değerinin altında",
+    "atBaseline": "{{subject}} referans değerinde",
+    "slightlyAbove": "{{subject}} referans değerinin biraz üzerinde",
+    "slightlyBelow": "{{subject}} referans değerinin biraz altında",
+    "above": "{{subject}} referans değerinin üzerinde",
+    "below": "{{subject}} referans değerinin altında"
+  },
+  "phrase": {
+    "hrvGood": "HRV değeriniz referans değerinizin üzerinde",
+    "hrvBad": "HRV değeriniz referans değerinizin altında",
+    "rhrGood": "dinlenik kalp atış hızınız normalden düşük",
+    "rhrBad": "dinlenik kalp atış hızınız normalden yüksek",
+    "respGood": "solunum hızınız dengeli",
+    "respBad": "solunum hızınız yükselmiş",
+    "sleepGood": "iyi uyudunuz",
+    "sleepBad": "uykunuz yeterli değildi",
+    "skinGood": "cilt sıcaklığınız normal",
+    "skinBad": "cilt sıcaklığınız normal değerinizden farklı"
+  },
+  "insight": {
+    "lifted": "{{phrase}}; bu da bugün Toparlanma puanınızı yükseltti.",
+    "heldBack": "{{phrase}}; bu da bugün Toparlanma puanınızı düşürdü.",
+    "mixed": "{{good}}, ancak {{bad}}. Bu ikisi birlikte bugünkü Toparlanma durumunuzu etkiledi.",
+    "steady": "Göstergeleriniz referans değerlerinize yakın; bu nedenle Toparlanma seviyeniz normal düzeyinizde."
+  }
+}
