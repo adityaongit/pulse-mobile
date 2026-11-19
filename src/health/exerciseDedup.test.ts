@@ -29,4 +29,22 @@ describe("cross-source exercise duplicates", () => {
     expect(ids([record("a"), record("b", "com.samsung", 60, 300)])).toHaveLength(2);
     expect(ids([record("a"), record("b", "com.samsung", 1800, 3600)])).toHaveLength(2);
   });
+
+  it("collapses a copy up to five minutes apart from another app or another device of the same app", () => {
+    const watch = { ...record("watch", "com.fitbit", 240, 2040), metadata: { id: "watch", dataOrigin: "com.fitbit", device: { manufacturer: "Fitbit", model: "Air", type: 1 } } };
+    expect(ids([record("phone"), watch])).toEqual(["phone"]);
+    // One app trims the first and last four minutes of an hour-long ride the other app records in full.
+    expect(ids([record("ride", "com.fitbit", 0, 3600), record("copy", "com.strava", 240, 3600)])).toHaveLength(1);
+    // Just beyond the tolerance, and two sessions on the same app and device, stay separate.
+    expect(ids([record("a"), record("b", "com.samsung", 301, 2101)])).toHaveLength(2);
+    expect(ids([record("a"), record("b", "com.fitbit", 240, 2040)])).toHaveLength(2);
+  });
+
+  it("merges equivalent sport codes and a generic other workout", () => {
+    expect(ids([record("run", "com.fitbit", 0, 1800, 56), record("treadmill", "com.samsung", 60, 1800, 57)])).toHaveLength(1);
+    expect(ids([record("bike", "com.fitbit", 0, 1800, 8), record("stationary", "com.samsung", 0, 1800, 9)])).toHaveLength(1);
+    expect(ids([record("generic", "com.fitbit", 0, 1800, 0), record("run2", "com.samsung", 0, 1800, 56)])).toHaveLength(1);
+    // A different sport is still a different session even at the same window.
+    expect(ids([record("run3", "com.fitbit", 0, 1800, 56), record("bike2", "com.samsung", 0, 1800, 8)])).toHaveLength(2);
+  });
 });
