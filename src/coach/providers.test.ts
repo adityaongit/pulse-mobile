@@ -175,7 +175,18 @@ describe("key test", () => {
     expect(okJson.calls[0].body).toMatchObject({ model: "claude-opus-5-5", max_tokens: 16 });
     expect(okJson.calls[0].body.stream).toBeFalsy();
     const refused = fakeFetch([{ status: 401, json: { type: "error", error: { type: "authentication_error", message: "invalid x-api-key" } } }]);
-    expect(await testKey({ provider: "anthropic", model: "claude-opus-5-5", apiKey: KEY }, refused.fetch)).toEqual({ ok: false, error: TEST_FAILED });
+    expect(await testKey({ provider: "anthropic", model: "claude-opus-5-5", apiKey: KEY }, refused.fetch)).toEqual({ ok: false, error: `${TEST_FAILED} (HTTP 401)` });
     expect(refused.calls).toHaveLength(1);
+  });
+
+  it("names a busy provider's status instead of blaming the key, without echoing its body", async () => {
+    const busy = fakeFetch([{ status: 503, json: { type: "error", error: { type: "overloaded_error", message: "model is currently experiencing high demand" } } }]);
+    const result = await testKey({ provider: "anthropic", model: "claude-3.8-flash", apiKey: KEY }, busy.fetch);
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.error).toContain("busy or unavailable");
+      expect(result.error).toContain("(HTTP 503)");
+      expect(result.error).not.toContain("high demand");
+    }
   });
 });

@@ -35,6 +35,9 @@
     "key": "Your key stopped working. Add it again in Coach settings.",
     "profile": "Set up your profile first.",
     "provider": "Your provider refused the request (key, quota or billing). Check your account with them.",
+    "unavailable": "Your provider is busy or unavailable right now. Try again shortly.",
+    "bad_request": "Your provider rejected the request. The model or server may not support this chat format.",
+    "httpStatus": " (HTTP {{status}})",
     "network": "Couldn’t reach your provider. Check your connection and try again.",
     "default": "Couldn’t get an answer. Try again."
   },

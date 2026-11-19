@@ -133,7 +133,7 @@ describe("coach turn", () => {
     await expect(coachTurn(deps(), "chat-0001", answerLast)).rejects.toThrow("bad_request");
   });
 
-  it("a provider failure mid-stream becomes the 'provider' error, a network failure 'network'", async () => {
+  it("a provider failure mid-stream carries its status, a network failure reads 'network'", async () => {
     const failing = (error: unknown) =>
       new MockLanguageModelV4({
         doStream: async () => {
@@ -150,7 +150,10 @@ describe("coach turn", () => {
       }
     };
     const { APICallError } = await import("ai");
-    expect(await errorText(new APICallError({ message: "Unauthorized", url: "https://api.openai.com/v1/responses", requestBodyValues: {}, statusCode: 401, responseBody: "secret echo" }))).toBe("provider");
+    const api = (statusCode: number) => new APICallError({ message: "Provider error", url: "https://api.openai.com/v1/responses", requestBodyValues: {}, statusCode, responseBody: "secret echo" });
+    expect(await errorText(api(401))).toBe("key:401");
+    expect(await errorText(api(503))).toBe("unavailable:503");
+    expect(await errorText(api(400))).toBe("bad_request:400");
     expect(await errorText(new TypeError("Network request failed"))).toBe("network");
     expect(streamProblem(new Error("x"))).toBe("provider");
   });
