@@ -47,4 +47,12 @@ describe("cross-source exercise duplicates", () => {
     // A different sport is still a different session even at the same window.
     expect(ids([record("run3", "com.fitbit", 0, 1800, 56), record("bike2", "com.samsung", 0, 1800, 8)])).toHaveLength(2);
   });
+
+  it("merges a strength session whatever the two apps call it, but not two unknown sports", () => {
+    // Health app says weightlifting (81), Hevy says strength training (70), or names a lift. All one session.
+    expect(ids([record("health", "com.google.android.apps.fitness", 0, 2700, 81), record("hevy", "com.hevy", 60, 2700, 70)])).toHaveLength(1);
+    expect(ids([record("health2", "com.google.android.apps.fitness", 0, 2700, 70), record("bench", "com.hevy", 60, 2700, 6)])).toHaveLength(1);
+    // Two codes the map does not know must stay separate: `undefined === undefined` is not a match.
+    expect(ids([record("breath", "com.google.android.apps.fitness", 0, 2700, 33), record("surf", "com.hevy", 60, 2700, 72)])).toHaveLength(2);
+  });
 });

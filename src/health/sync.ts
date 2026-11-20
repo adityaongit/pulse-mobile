@@ -58,9 +58,11 @@ export { forgetChanges };
  * (HRV, respiratory rate, oxygen saturation) count from the sleep's start through two minutes after its end, where
  * Fitbit stamps its one HRV value for the night. 10: blood pressure readings are imported. 11: a workout copy is
  * recognised across apps or devices up to five minutes apart, and across equivalent sport codes, so a workout written
- * by a watch and its phone app (or as a generic "other workout") is imported once.
+ * by a watch and its phone app (or as a generic "other workout") is imported once. 12: strength sessions merge across
+ * Health Connect's weightlifting, strength-training and named-lift codes, and two unmapped codes no longer count as a
+ * shared sport.
  */
-export const IMPORT_VERSION = 11;
+export const IMPORT_VERSION = 12;
 
 /**
  * How far before the window's first local midnight the reads start. Health Connect returns a record only to a read whose

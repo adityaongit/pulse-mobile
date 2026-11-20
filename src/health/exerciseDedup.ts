@@ -17,22 +17,49 @@ type ExerciseRecord = {
 
 /**
  * The codes a watch and its companion app use for the same sport. Health Connect's types differ (a treadmill run is not
- * a road run), but a workout copied to two apps keeps its window. A generic "other workout" can name any of them.
+ * a road run, and a strength session can be "weightlifting", "strength training" or one named after a lift), but a
+ * workout copied to two apps keeps its window. A generic "other workout" can name any of them.
  */
+const STRENGTH = 70;
 const SPORT_FAMILIES: Record<number, number> = {
+  1: STRENGTH, // BACK_EXTENSION
+  3: STRENGTH, // BARBELL_SHOULDER_PRESS
+  6: STRENGTH, // BENCH_PRESS
+  7: STRENGTH, // BENCH_SIT_UP
   8: 8, // BIKING
   9: 8, // BIKING_STATIONARY
+  15: STRENGTH, // CRUNCH
+  17: STRENGTH, // DEADLIFT
+  18: STRENGTH, // DUMBBELL_CURL_LEFT_ARM
+  19: STRENGTH, // DUMBBELL_CURL_RIGHT_ARM
+  20: STRENGTH, // DUMBBELL_FRONT_RAISE
+  21: STRENGTH, // DUMBBELL_LATERAL_RAISE
+  22: STRENGTH, // DUMBBELL_TRICEPS_EXTENSION_LEFT_ARM
+  23: STRENGTH, // DUMBBELL_TRICEPS_EXTENSION_RIGHT_ARM
+  24: STRENGTH, // DUMBBELL_TRICEPS_EXTENSION_TWO_ARM
+  42: STRENGTH, // LAT_PULL_DOWN
+  43: STRENGTH, // LUNGE
+  49: STRENGTH, // PLANK
   53: 53, // ROWING
   54: 53, // ROWING_MACHINE
   56: 56, // RUNNING
   57: 56, // RUNNING_TREADMILL
+  67: STRENGTH, // SQUAT
   68: 68, // STAIR_CLIMBING
   69: 68, // STAIR_CLIMBING_MACHINE
+  70: STRENGTH, // STRENGTH_TRAINING
   73: 73, // SWIMMING_OPEN_WATER
   74: 73, // SWIMMING_POOL
+  81: STRENGTH, // WEIGHTLIFTING
 };
 const OTHER_WORKOUT = 0;
-const sameSport = (a: number, b: number) => a === b || a === OTHER_WORKOUT || b === OTHER_WORKOUT || SPORT_FAMILIES[a] === SPORT_FAMILIES[b];
+const sameSport = (a: number, b: number) => {
+  if (a === b || a === OTHER_WORKOUT || b === OTHER_WORKOUT) return true;
+  const fa = SPORT_FAMILIES[a];
+  const fb = SPORT_FAMILIES[b];
+  // Two codes the map does not know are not evidence of a shared sport: `undefined === undefined` must not merge them.
+  return fa !== undefined && fa === fb;
+};
 
 /** App plus device, the same source key the steps importer uses: a band and a phone from one app are different sources. */
 const sourceOf = (r: ExerciseRecord) => {
