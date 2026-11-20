@@ -215,7 +215,7 @@
     "strainTarget": "Günlük yük hedefi ulaşıldı",
     "strainTargetHint": "Günlük yük bugünün hedefine ulaştığında günde bir kez.",
     "healthMonitor": "Sağlık monitörü",
-    "healthMonitorHint": "Dün geceki yaşamsal değerler normal aralığından çıktığında veya hastalık belirtisi ortaya çıktığında; durum devam ederken tekrar bildirim göndermez.",
+    "healthMonitorHint": "Dün geceki hayati değerler normal aralığından çıktığında veya hastalık belirtisi ortaya çıktığında; durum devam ederken tekrar bildirim göndermez.",
     "weeklyReport": "Haftalık rapor",
     "weeklyReportHint": "Geçen haftanın raporu hazır olduğunda pazartesi sabahı.",
     "checkIn": "Günlük kayıt",
