@@ -48,7 +48,7 @@
     "activity": "Aktivite",
     "body": "Vücut",
     "nutrition": "Beslenme",
-    "vitals": "Yaşamsal ölçümler"
+    "vitals": "Hayati ölçümler"
   },
   "derivedNote": "Google hesabından alınan değer, Fitbit'in kendi hesaplamasıdır. Health Connect bu değeri sağlamadığı için Pulse, Health Connect'in izin verdiği ölçüde Fitbit'in kurallarını takip ederek bileklik kalp atış hızı ve adım verilerinden hesaplar. Bu nedenle Fitbit'in değeriyle küçük farklılıklar olabilir.",
   "info": {
