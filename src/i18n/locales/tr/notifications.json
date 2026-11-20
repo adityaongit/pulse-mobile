@@ -24,12 +24,12 @@
   },
   "monitor": {
     "illnessTitle": "Vücudun bir şeylerle mücadele ediyor olabilir",
-    "illnessBody": "Birden fazla yaşamsal ölçüm aynı anda normal aralığından uzaklaştı. Bu durum genellikle kendini kötü hissetmeden önce görülebilir. Bugün daha hafif bir gün geçirmeyi düşün.",
-    "title_one": "{{count}} yaşamsal ölçüm normal aralığın dışında",
-    "title_other": "{{count}} yaşamsal ölçüm normal aralığın dışında",
+    "illnessBody": "Birden fazla hayati ölçüm aynı anda normal aralığından uzaklaştı. Bu durum genellikle kendini kötü hissetmeden önce görülebilir. Bugün daha hafif bir gün geçirmeyi düşün.",
+    "title_one": "{{count}} hayati ölçüm normal aralığın dışında",
+    "title_other": "{{count}} hayati ölçüm normal aralığın dışında",
     "body_one": "{{names}} alışılmış aralığının dışında. Bu, hastalığın veya yoğun yükün erken bir işareti olabilir.",
     "body_other": "{{names}} alışılmış aralığının dışında. Bu, hastalığın veya yoğun yükün erken bir işareti olabilir.",
-    "oneVital": "Bir yaşamsal ölçüm",
+    "oneVital": "Bir hayati ölçüm",
     "namesAnd": "{{list}} ve {{last}}"
   },
   "report": {
