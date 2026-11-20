@@ -69,12 +69,12 @@
   },
   "alert": {
     "illnessTitle": "Vücudunuz bir şeyle mücadele ediyor olabilir",
-    "flaggedTitle_one": "{{count}} yaşamsal ölçüm normal aralığınızın dışında",
-    "flaggedTitle_other": "{{count}} yaşamsal ölçüm normal aralığınızın dışında",
-    "illnessBody": "Birden fazla yaşamsal ölçüm aynı anda normal aralığınızdan uzaklaştı. Bu örüntü, kendinizi hasta hissetmeden önce ortaya çıkabilir. Daha hafif bir gün geçirmeyi değerlendirin.",
+    "flaggedTitle_one": "{{count}} hayati ölçüm normal aralığınızın dışında",
+    "flaggedTitle_other": "{{count}} hayati ölçüm normal aralığınızın dışında",
+    "illnessBody": "Birden fazla hayati ölçüm aynı anda normal aralığınızdan uzaklaştı. Bu örüntü, kendinizi hasta hissetmeden önce ortaya çıkabilir. Daha hafif bir gün geçirmeyi değerlendirin.",
     "flaggedBody_one": "{{names}} alışılmış aralığınızın dışında. Bu, hastalığın veya yoğun yükün erken belirtisi olabilir.",
     "flaggedBody_other": "{{names}} alışılmış aralığınızın dışında. Bu, hastalığın veya yoğun yükün erken belirtisi olabilir.",
-    "someVitals": "Bazı yaşamsal ölçümler",
+    "someVitals": "Bazı hayati ölçümler",
     "namesAnd": "{{rest}} ve {{last}}"
   },
   "stress": {
