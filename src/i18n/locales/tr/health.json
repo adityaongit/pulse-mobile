@@ -183,7 +183,7 @@
   },
   "info": {
     "monitorTitle": "Sağlık Monitörü hakkında",
-    "monitorBody": "Sağlık Monitörü, dün geceki yaşamsal ölçümlerinizi kişisel normal aralığınızla karşılaştırır: Son 30 gecenin ortalaması artı veya eksi bir standart sapma. Kandaki oksijen seviyesi için %95'in altındaki değerler de işaretlenir. Birden fazla ölçümde aynı anda görülen değişiklikler hastalığın erken belirtisi olabilir. Pulse tıbbi cihaz değildir; kendinizi iyi hissetmiyorsanız doktorunuza danışın.",
+    "monitorBody": "Sağlık Monitörü, dün geceki hayati ölçümlerinizi kişisel normal aralığınızla karşılaştırır: Son 30 gecenin ortalaması artı veya eksi bir standart sapma. Kandaki oksijen seviyesi için %95'in altındaki değerler de işaretlenir. Birden fazla ölçümde aynı anda görülen değişiklikler hastalığın erken belirtisi olabilir. Pulse tıbbi cihaz değildir; kendinizi iyi hissetmiyorsanız doktorunuza danışın.",
     "stressTitle": "Stres Monitörü hakkında",
     "stressIntro": "Stres Monitörü, vücudunuzun etkinlik düzeyini 0 ile 100 arasında, her 6 dakikada bir puanlar. Bunun için kalp atış hızınızı son 30 gündeki uyanık kalp atış hızınızla; gece ise HRV değerinizi 30 günlük referans değerinizle karşılaştırır.",
     "stressLow": "Düşük, 0 - 29: Sakin, rahat veya uykulu hissediyor olabilirsiniz.",
@@ -193,7 +193,7 @@
     "fitnessTitle": "Kondisyon hakkında",
     "fitnessBody": "VO₂ maks., yoğun egzersiz sırasında vücudunuzun kullanabildiği en yüksek oksijen miktarıdır. Pulse, bunu FRIEND kayıt sistemindeki yaş ve cinsiyet grubunuzdaki kişilerle karşılaştırır. Antrenman yükü, yorgunluğunuzu (yaklaşık bir haftalık antrenman yükü) kondisyonunuza (yaklaşık üç haftalık yük) böler; 1,4 üzerindeki değerler ani artış anlamına gelir.",
     "healthspanTitle": "Sağlıklı yaşam süresi hakkında",
-    "healthspanBody": "Pulse Yaşı, her pazar sona eren 28 günlük dönemdeki dokuz alışkanlık ve yaşamsal ölçüme dayanarak vücudunuzun ne kadar yaşlı davrandığını tahmin eder. Yaşlanma Hızı, Pulse Yaşınızın gerçek yaşınıza oranıdır: 1,0x vücudunuzun yaşınızla uyumlu davrandığını, 1,0x altı daha genç, üzeri ise daha yaşlı davrandığını gösterir. Her ikisi de kişisel içgörü amaçlı tahminlerdir; tıbbi değerlendirme değildir.",
+    "healthspanBody": "Pulse Yaşı, her pazar sona eren 28 günlük dönemdeki dokuz alışkanlık ve hayati ölçüme dayanarak vücudunuzun ne kadar yaşlı davrandığını tahmin eder. Yaşlanma Hızı, Pulse Yaşınızın gerçek yaşınıza oranıdır: 1,0x vücudunuzun yaşınızla uyumlu davrandığını, 1,0x altı daha genç, üzeri ise daha yaşlı davrandığını gösterir. Her ikisi de kişisel içgörü amaçlı tahminlerdir; tıbbi değerlendirme değildir.",
     "hrTitle": "Kalp atış hızı hakkında",
     "hrBody1": "Bandınız gün boyunca kalp atış hızınızı kaydeder. Google Health uygulaması bu verileri Health Connect ile paylaşır ve Pulse da buradan okur.",
     "hrBody2": "Bugünün ekranı açıkken Pulse her dakika yeni ölçüm olup olmadığını kontrol eder. Bir ölçüm genellikle bandınız tarafından alındıktan bir ila üç dakika sonra gelir; bu nedenle en yeni ölçüm bile tam olarak şu anı göstermez.",
@@ -239,7 +239,7 @@
     "countUnavailable": "Aralık içindeki ölçüm sayısı kullanılamıyor: {{reason}}",
     "metricsWithin": "Aralık içindeki ölçümler",
     "illnessTitle": "Olası hastalık belirtisi",
-    "illnessBody": "Birden fazla yaşamsal ölçüm aynı anda normal aralığınızdan uzaklaştı. Bu örüntü, kendinizi hasta hissetmeye başlamadan önce görülebilir. Daha hafif bir gün geçirmeyi ve fazladan uyumayı değerlendirin."
+    "illnessBody": "Birden fazla hayati ölçüm aynı anda normal aralığınızdan uzaklaştı. Bu örüntü, kendinizi hasta hissetmeye başlamadan önce görülebilir. Daha hafif bir gün geçirmeyi ve fazladan uyumayı değerlendirin."
   },
   "stress": {
     "empty": "Bugün henüz stres puanı hesaplanmadı.",
