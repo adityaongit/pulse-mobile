@@ -60,9 +60,11 @@ export { forgetChanges };
  * recognised across apps or devices up to five minutes apart, and across equivalent sport codes, so a workout written
  * by a watch and its phone app (or as a generic "other workout") is imported once. 12: strength sessions merge across
  * Health Connect's weightlifting, strength-training and named-lift codes, and two unmapped codes no longer count as a
- * shared sport.
+ * shared sport. 13: two copies no longer need start and end within five minutes of each other: a manual log the Health
+ * app rounded differently merges when it overlaps most of the shorter session, while a much shorter session inside a
+ * longer one stays.
  */
-export const IMPORT_VERSION = 12;
+export const IMPORT_VERSION = 13;
 
 /**
  * How far before the window's first local midnight the reads start. Health Connect returns a record only to a read whose

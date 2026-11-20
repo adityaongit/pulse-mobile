@@ -140,6 +140,21 @@ describe("syncHealthConnect re-import", () => {
     expect((await store.allExercises()).map((e) => e.id)).toEqual(["valid"]);
   });
 
+  it("keeps one copy when the Health app's manual strength log and Hevy's session differ", async () => {
+    const store = await staleStore();
+    const data = {
+      ...fixture(),
+      ExerciseSession: [
+        { metadata: meta("health", "com.google.android.apps.fitness"), startTime: "2026-10-06T08:00:00Z", endTime: "2026-10-06T08:45:00Z", exerciseType: 81 },
+        { metadata: meta("hevy", "com.hevy"), startTime: "2026-10-06T08:10:00Z", endTime: "2026-10-06T09:10:00Z", exerciseType: 70 },
+      ],
+    };
+    hc.permissionState.mockResolvedValue({ granted: ["ExerciseSession", "SleepSession"], missing: [], history: true, background: true });
+    hc.readAll.mockImplementation(startTimeRead(data));
+    await syncHealthConnect(store, { timeZone: TZ, now: NOW, historyDays: 5 });
+    expect((await store.allExercises()).map((e) => e.id)).toEqual(["hevy"]);
+  });
+
   it("removes a previously imported copy when an incremental read selects another source", async () => {
     const store = await staleStore();
     const a = { metadata: meta("ride-a", FITBIT), startTime: "2026-10-06T08:00:00Z", endTime: "2026-10-06T08:30:00Z", exerciseType: 8, title: undefined as string | undefined };

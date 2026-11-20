@@ -2,10 +2,14 @@ import { PAUSE_EVERY, type Steps } from "@/lib/yield";
 
 export const MIN_EXERCISE_SEC = 2 * 60;
 
-/** How far apart two apps' copies of one workout can start or end and still be the same session (issue #15). */
-const WINDOW_TOLERANCE_MS = 5 * 60_000;
-/** How much of the longer interval the two copies must share. */
+/**
+ * How much of the shorter interval the two copies must share (issue #15). A manual log in the Health app rounds its
+ * start and end, so the two copies of one session need not line up to the minute: they need to overlap for most of the
+ * shorter one.
+ */
 const MIN_OVERLAP = 0.7;
+/** A session much shorter than the other is not its copy: a drill inside a longer workout stays separate. */
+const MIN_LENGTH_RATIO = 0.25;
 
 type ExerciseRecord = {
   metadata?: { id?: string; dataOrigin?: string; device?: { manufacturer?: string; model?: string; type?: number } };
@@ -18,7 +22,7 @@ type ExerciseRecord = {
 /**
  * The codes a watch and its companion app use for the same sport. Health Connect's types differ (a treadmill run is not
  * a road run, and a strength session can be "weightlifting", "strength training" or one named after a lift), but a
- * workout copied to two apps keeps its window. A generic "other workout" can name any of them.
+ * workout copied to two apps keeps its sport and most of its window. A generic "other workout" can name any of them.
  */
 const STRENGTH = 70;
 const SPORT_FAMILIES: Record<number, number> = {
@@ -28,6 +32,8 @@ const SPORT_FAMILIES: Record<number, number> = {
   7: STRENGTH, // BENCH_SIT_UP
   8: 8, // BIKING
   9: 8, // BIKING_STATIONARY
+  12: STRENGTH, // BURPEE
+  13: STRENGTH, // CALISTHENICS
   15: STRENGTH, // CRUNCH
   17: STRENGTH, // DEADLIFT
   18: STRENGTH, // DUMBBELL_CURL_LEFT_ARM
@@ -68,7 +74,7 @@ const sourceOf = (r: ExerciseRecord) => {
   return { app, key: [app, d?.manufacturer ?? "", d?.model ?? "", d?.type ?? ""].join("|") };
 };
 
-/** Cross-source copies of one workout need matching sports and nearly the same interval; an app's own sessions stay. */
+/** Cross-source copies of one workout need matching sports and a shared window; an app's own sessions stay. */
 export function* uniqueExercises<T extends ExerciseRecord>(records: readonly T[]): Steps<T[]> {
   const ranked = records.map((record) => {
     const start = Date.parse(record.startTime);
@@ -94,10 +100,13 @@ export function* uniqueExercises<T extends ExerciseRecord>(records: readonly T[]
       // Two sessions from the same app on the same device can be real; only a different source is a copy.
       if (!otherSource.app || otherSource.key === source.key) continue;
       if (!sameSport(candidate.record.exerciseType, other.record.exerciseType)) continue;
-      if (Math.abs(candidate.start - other.start) > WINDOW_TOLERANCE_MS || Math.abs(candidate.end - other.end) > WINDOW_TOLERANCE_MS) continue;
-      const duration = Math.max(candidate.end - candidate.start, other.end - other.start);
+      const duration = candidate.end - candidate.start;
+      const otherDuration = other.end - other.start;
+      const shorter = Math.min(duration, otherDuration);
+      const longer = Math.max(duration, otherDuration);
+      if (!(shorter > 0) || shorter / longer < MIN_LENGTH_RATIO) continue;
       const overlap = Math.min(candidate.end, other.end) - Math.max(candidate.start, other.start);
-      if (duration > 0 && overlap / duration >= MIN_OVERLAP) {
+      if (overlap / shorter >= MIN_OVERLAP) {
         duplicate = true;
         break;
       }
