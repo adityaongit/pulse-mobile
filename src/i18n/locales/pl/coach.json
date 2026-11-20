@@ -37,6 +37,9 @@
     "key": "Twój klucz przestał działać. Dodaj go ponownie w ustawieniach Coacha.",
     "profile": "Najpierw skonfiguruj swój profil.",
     "provider": "Twój dostawca odrzucił żądanie (klucz, limit lub płatności). Sprawdź swoje konto u niego.",
+    "unavailable": "Twój dostawca jest teraz zajęty lub niedostępny. Spróbuj ponownie za chwilę.",
+    "bad_request": "Twój dostawca odrzucił żądanie. Model lub serwer może nie obsługiwać tego formatu czatu.",
+    "httpStatus": " (HTTP {{status}})",
     "network": "Nie udało się połączyć z Twoim dostawcą. Sprawdź połączenie i spróbuj ponownie.",
     "default": "Nie udało się uzyskać odpowiedzi. Spróbuj ponownie."
   },

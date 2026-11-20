@@ -411,6 +411,15 @@ describe("exercises and daily values", () => {
     expect(exercises).toEqual([expect.objectContaining({ id: "b", name: "Morning ride", calories: 150, distanceM: 5000 })]);
   });
 
+  it("imports one session when the phone and the watch from the same app record it minutes apart", () => {
+    const { exercises } = mapRecords({ ExerciseSession: [
+      { metadata: { ...meta("phone", "com.fitbit"), device: { manufacturer: "Fitbit", model: "Phone" } }, startTime: at("2026-10-02", "07:00:00"), endTime: at("2026-10-02", "07:30:00"), exerciseType: ExerciseType.RUNNING },
+      { metadata: { ...meta("watch", "com.fitbit"), device: { manufacturer: "Fitbit", model: "Air" } }, startTime: at("2026-10-02", "07:04:00"), endTime: at("2026-10-02", "07:34:00"), exerciseType: ExerciseType.RUNNING_TREADMILL },
+    ] }, TZ);
+    expect(exercises).toHaveLength(1);
+    expect(exercises[0].id).toBe("phone");
+  });
+
   it("names the type, sums overlapping active kcal and distance, and drops sessions under 2 minutes", () => {
     const { exercises, dailyValues } = mapRecords(
       {

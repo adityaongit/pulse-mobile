@@ -35,6 +35,9 @@
     "key": "Dein Schlüssel funktioniert nicht mehr. Füge ihn in den Coach-Einstellungen erneut hinzu.",
     "profile": "Richte zuerst dein Profil ein.",
     "provider": "Dein Anbieter hat die Anfrage abgelehnt (Schlüssel, Kontingent oder Abrechnung). Prüfe dein Konto bei ihm.",
+    "unavailable": "Dein Anbieter ist gerade beschäftigt oder nicht erreichbar. Versuche es in Kürze erneut.",
+    "bad_request": "Dein Anbieter hat die Anfrage abgelehnt. Das Modell oder der Server unterstützt dieses Chat-Format möglicherweise nicht.",
+    "httpStatus": " (HTTP {{status}})",
     "network": "Dein Anbieter war nicht erreichbar. Prüfe deine Verbindung und versuch es noch einmal.",
     "default": "Es kam keine Antwort. Versuch es noch einmal."
   },

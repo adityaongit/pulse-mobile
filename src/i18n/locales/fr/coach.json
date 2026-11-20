@@ -35,6 +35,9 @@
     "key": "Ta clé ne fonctionne plus. Ajoute-la de nouveau dans les réglages du Coach.",
     "profile": "Configure d’abord ton profil.",
     "provider": "Ton fournisseur a refusé la requête (clé, quota ou facturation). Vérifie ton compte chez lui.",
+    "unavailable": "Votre fournisseur est occupé ou indisponible. Réessayez dans un instant.",
+    "bad_request": "Votre fournisseur a rejeté la requête. Le modèle ou le serveur ne prend peut-être pas en charge ce format de conversation.",
+    "httpStatus": " (HTTP {{status}})",
     "network": "Impossible de joindre ton fournisseur. Vérifie ta connexion et réessaie.",
     "default": "Impossible d’obtenir une réponse. Réessaie."
   },

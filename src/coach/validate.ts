@@ -2,6 +2,7 @@
 // one tiny test request with the key, so a bad key, model id or empty account is never saved.
 import { generateText } from "ai";
 import { i18n } from "@/i18n/config";
+import { providerFailure } from "./failure";
 import { modelFor, providerOf, type Fetch } from "./providers";
 import { reportCoach } from "./transport";
 
@@ -58,7 +59,11 @@ export async function testKey(input: ProviderInput, fetch?: Fetch, timeoutMs = 2
   } catch (e) {
     console.warn(`[coach] key test failed for ${c.provider}: ${e instanceof Error ? e.name : "error"}`);
     reportCoach("key_test_failed", c.provider, e);
-    return { ok: false, error: i18n.t("coach:validate.testFailed") };
+    // A provider that answered with a status is worth naming: 503 is a busy model, not a bad key. Never the body.
+    const f = providerFailure(e);
+    const base = f.code === "unavailable" ? i18n.t("coach:errors.unavailable") : i18n.t("coach:validate.testFailed");
+    const status = f.status === null ? "" : i18n.t("coach:errors.httpStatus", { status: f.status });
+    return { ok: false, error: base + status };
   } finally {
     clearTimeout(timer);
   }

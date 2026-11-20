@@ -29,4 +29,41 @@ describe("cross-source exercise duplicates", () => {
     expect(ids([record("a"), record("b", "com.samsung", 60, 300)])).toHaveLength(2);
     expect(ids([record("a"), record("b", "com.samsung", 1800, 3600)])).toHaveLength(2);
   });
+
+  it("collapses a copy whose window another app rounded differently, and keeps a much shorter session", () => {
+    const watch = { ...record("watch", "com.fitbit", 240, 2040), metadata: { id: "watch", dataOrigin: "com.fitbit", device: { manufacturer: "Fitbit", model: "Air", type: 1 } } };
+    expect(ids([record("phone"), watch])).toEqual(["phone"]);
+    // One app trims the first and last four minutes of an hour-long ride the other app records in full.
+    expect(ids([record("ride", "com.fitbit", 0, 3600), record("copy", "com.strava", 240, 3600)])).toHaveLength(1);
+    // A manual Health app log rounds its start and end: 18:00-19:00 against Hevy's 18:08-19:12 is one session.
+    expect(ids([record("manual", "com.google.android.apps.fitness", 0, 3600, 81), record("hevy", "com.hevy", 480, 4320, 70)])).toHaveLength(1);
+    // A four-minute session inside a half-hour one is not its copy, and neither are two sessions on the same app and device.
+    expect(ids([record("long", "com.fitbit", 0, 3600), record("short", "com.samsung", 60, 300)])).toHaveLength(2);
+    expect(ids([record("a"), record("b", "com.fitbit", 240, 2040)])).toHaveLength(2);
+  });
+
+  it("merges equivalent sport codes and a generic other workout", () => {
+    expect(ids([record("run", "com.fitbit", 0, 1800, 56), record("treadmill", "com.samsung", 60, 1800, 57)])).toHaveLength(1);
+    expect(ids([record("bike", "com.fitbit", 0, 1800, 8), record("stationary", "com.samsung", 0, 1800, 9)])).toHaveLength(1);
+    expect(ids([record("generic", "com.fitbit", 0, 1800, 0), record("run2", "com.samsung", 0, 1800, 56)])).toHaveLength(1);
+    // A different sport is still a different session even at the same window.
+    expect(ids([record("run3", "com.fitbit", 0, 1800, 56), record("bike2", "com.samsung", 0, 1800, 8)])).toHaveLength(2);
+  });
+
+  it("merges a strength session whatever the two apps call it, but not two unknown sports", () => {
+    // Health app says weightlifting (81), Hevy says strength training (70), or names a lift. All one session.
+    expect(ids([record("health", "com.google.android.apps.fitness", 0, 2700, 81), record("hevy", "com.hevy", 60, 2700, 70)])).toHaveLength(1);
+    expect(ids([record("health2", "com.google.android.apps.fitness", 0, 2700, 70), record("bench", "com.hevy", 60, 2700, 6)])).toHaveLength(1);
+    // Two codes the map does not know must stay separate: `undefined === undefined` is not a match.
+    expect(ids([record("breath", "com.google.android.apps.fitness", 0, 2700, 33), record("surf", "com.hevy", 60, 2700, 72)])).toHaveLength(2);
+  });
+
+  it("merges a manually logged strength session with the app's copy when their windows differ", () => {
+    // Google Health's manual log says weightlifting 18:00-18:45; Hevy ran 18:10-19:10. The two overlap for 35 minutes.
+    expect(ids([record("health", "com.google.android.apps.fitness", 0, 2700, 81), record("hevy", "com.hevy", 600, 4200, 70)])).toHaveLength(1);
+    // A half-hour manual entry against a full-hour app session is still one workout.
+    expect(ids([record("health2", "com.google.android.apps.fitness", 0, 1800, 81), record("lyfta", "com.lyfta", 120, 3600, 6)])).toHaveLength(1);
+    // Two sessions that only clip each other are still two sessions.
+    expect(ids([record("morning", "com.google.android.apps.fitness", 0, 1800, 81), record("evening", "com.hevy", 900, 2700, 70)])).toHaveLength(2);
+  });
 });
