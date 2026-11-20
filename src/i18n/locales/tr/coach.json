@@ -119,7 +119,7 @@
   },
   "setup": {
     "consentTitle": "Başlamadan önce",
-    "consentSend": "Yanıt verebilmek için koç, sorularınızı ve sorguladığı Pulse verilerini (puanlar, yaşamsal ölçümler, antrenmanlar ve günlük davranışları) seçtiğiniz yapay zekâ sağlayıcısına kendi anahtarınızla doğrudan bu telefondan gönderir. Kimliğinizi belirleyen hiçbir bilgi gönderilmez.",
+    "consentSend": "Yanıt verebilmek için koç, sorularınızı ve sorguladığı Pulse verilerini (puanlar, hayati ölçümler, antrenmanlar ve günlük davranışları) seçtiğiniz yapay zekâ sağlayıcısına kendi anahtarınızla doğrudan bu telefondan gönderir. Kimliğinizi belirleyen hiçbir bilgi gönderilmez.",
     "consentTerms": "Sağlayıcınızın kullanım koşulları ve fiyatlandırması geçerlidir. Pulse ek ücret almaz.",
     "consentLocal": "Sohbetler bu telefona kaydedilir ve yalnızca sizin tarafınızdan görülebilir. İstediğiniz zaman silebilirsiniz.",
     "consentAccuracy": "Yanıtlar yanlış olabilir ve tıbbi tavsiye değildir.",
