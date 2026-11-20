@@ -1,0 +1,110 @@
+{
+  "title": "Uyku",
+  "band": {
+    "optimal": "optimal",
+    "sufficient": "yeterli",
+    "poor": "düşük"
+  },
+  "status": {
+    "poor": "Düşük",
+    "sufficient": "Yeterli",
+    "optimal": "Optimal"
+  },
+  "stat": {
+    "hours": "Gerekli süreye göre saat",
+    "consistency": "Uyku düzenliliği",
+    "efficiency": "Uyku verimliliği",
+    "restorative": "Onarıcı uyku",
+    "sleepStress": "Uyku stresi",
+    "timeInBed": "Yatakta geçirilen süre",
+    "wakeEvents": "Uyanma sayısı",
+    "resp": "Solunum hızı",
+    "debt": "Uyku borcu"
+  },
+  "stage": {
+    "awake": "Uyanık",
+    "rem": "REM",
+    "light": "Hafif",
+    "deep": "Derin"
+  },
+  "insight": {
+    "laterBedtime_one": "Uykun {{band}} düzeyindeydi. Düzenlilik en kolay iyileştirme alanı: normalden {{count}} dakika daha geç yattın.",
+    "laterBedtime_other": "Uykun {{band}} düzeyindeydi. Düzenlilik en kolay iyileştirme alanı: normalden {{count}} dakika daha geç yattın.",
+    "earlierBedtime_one": "Uykun {{band}} düzeyindeydi. Düzenlilik en kolay iyileştirme alanı: normalden {{count}} dakika daha erken yattın.",
+    "earlierBedtime_other": "Uykun {{band}} düzeyindeydi. Düzenlilik en kolay iyileştirme alanı: normalden {{count}} dakika daha erken yattın.",
+    "steadier": "Uykun {{band}} düzeyindeydi. Daha düzenli yatış ve kalkış saatleri uyku düzenliliğini artırabilir.",
+    "lessSleep_one": "Uykun {{band}} düzeyindeydi. İhtiyacından {{count}} dakika daha az uyudun; daha erken yatmak yardımcı olabilir.",
+    "lessSleep_other": "Uykun {{band}} düzeyindeydi. İhtiyacından {{count}} dakika daha az uyudun; daha erken yatmak yardımcı olabilir.",
+    "onTrack": "Uykun {{band}} düzeyindeydi. Alışılmış programına uyudun ve ihtiyacına yakın süre uyku aldın.",
+    "explore": "Uyku içgörülerini keşfet"
+  },
+  "cards": {
+    "lastNight": "Dün geceki uyku",
+    "vsPrior30": "Önceki 30 güne göre",
+    "hoursVsNeeded": "Gerekli süreye göre saat",
+    "consistency": "Uyku düzenliliği",
+    "efficiency": "Uyku verimliliği",
+    "tonight": "Bu geceki uyku"
+  },
+  "need": {
+    "hoursOfSleep": "Uyku süresi",
+    "sleepNeeded": "Gerekli uyku",
+    "calibrating": "Uyku ihtiyacın 7 geceden sonra netleşir. O zamana kadar {{need}} kullanılıyor.",
+    "healthyMinimum": "Sağlıklı minimum",
+    "recentStrain": "Yakın dönem Günlük Yük",
+    "sleepDebt": "Uyku borcu",
+    "naps": "Şekerlemeler",
+    "priorAverage": "Önceki 30 gecenin ortalaması {{value}}%"
+  },
+  "consistency": {
+    "optimal": "Optimal yatış/kalkış saatleri",
+    "aria": "Son beş gecenin yatış ve kalkış saatleri",
+    "ariaLast": "Son beş gecenin yatış ve kalkış saatleri; dün gece {{bed}} ile {{wake}} arası"
+  },
+  "efficiency": {
+    "asleep": "Uyuyor",
+    "awake": "Uyanık",
+    "wakeEvents": "Uyanma sayısı"
+  },
+  "planner": {
+    "calibrating": "Uyku Planlayıcısı kalkış saatini öğrenmek için 7 geceye ihtiyaç duyar.",
+    "shareOfNeed": "İhtiyacın %{{pct}}'si",
+    "typicalWake": "Alışılmış kalkış",
+    "weekdayWake": "Hafta içi kalkış saati",
+    "weekendWake": "Hafta sonu kalkış saati",
+    "needTonight": "Bu gece gereken: <n>{{value}}</n>",
+    "plan": {
+      "peak": "En yüksek performans",
+      "perform": "Performans",
+      "getBy": "En geç"
+    }
+  },
+  "weekly": {
+    "sleep": "Uyku Performansı",
+    "hours": "Gerekli süreye göre saat (saat)",
+    "hoursNeed": "Gerekli süreye göre saat (%)",
+    "restorative": "Onarıcı Uyku",
+    "consistency": "Uyku Düzenliliği",
+    "timeInBed": "Yatakta geçirilen süre",
+    "efficiency": "Uyku Verimliliği"
+  },
+  "skeleton": {
+    "healthyMinimum": "Sağlıklı minimum",
+    "recentStrain": "Yakın dönem Günlük Yük",
+    "sleepDebt": "Uyku borcu"
+  },
+  "nap": {
+    "title": "Şekerleme",
+    "notFound": "Bu sayfa bulunamadı.",
+    "when": "{{day}} {{start}} - {{end}}",
+    "activity": "Aktivite",
+    "activityStrain": "Aktivite yükü",
+    "duration": "Süre",
+    "keyStats": "Temel istatistikler",
+    "vs30": "30 günlük ortalamaya göre",
+    "avgHr": "Ortalama kalp atış hızı",
+    "maxHr": "Maksimum kalp atış hızı",
+    "calories": "Kalori",
+    "hrr": "Kalp atış hızı toparlanması"
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "actions": {
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "back": "Geri",
+    "tryAgain": "Tekrar dene",
+    "checkIn": "Günlük kayıt",
+    "close": "Kapat",
+    "later": "Daha sonra",
+    "update": "Güncelle"
+  },
+  "loading": "Yükleniyor…",
+  "today": "Bugün",
+  "yesterday": "Dün",
+  "phrase": {
+    "today": "bugün",
+    "yesterday": "dün",
+    "on": "{{date}} tarihinde"
+  },
+  "duration": {
+    "minutes_one": "{{count}} dakika",
+    "minutes_other": "{{count}} dakika",
+    "hours_one": "{{count}} saat",
+    "hours_other": "{{count}} saat",
+    "hoursMinutes": "{{hours}} {{minutes}}"
+  },
+  "ago": {
+    "justNow": "az önce",
+    "minutes_one": "{{count}} dakika önce",
+    "minutes_other": "{{count}} dakika önce",
+    "hours_one": "{{count}} saat önce",
+    "hours_other": "{{count}} saat önce",
+    "days_one": "{{count}} gün önce",
+    "days_other": "{{count}} gün önce"
+  },
+  "agoShort": {
+    "now": "Şimdi",
+    "minutes": "{{count}} dk",
+    "hours": "{{count}} sa",
+    "days": "{{count}} gün"
+  },
+  "unit": {
+    "min": "dk",
+    "h": "sa"
+  },
+  "unitWords": {
+    "percent": "yüzde",
+    "ms": "milisaniye",
+    "bpm": "dakikadaki kalp atışı",
+    "rpm": "dakikadaki nefes sayısı",
+    "celsius": "derece Celsius",
+    "fahrenheit": "derece Fahrenheit",
+    "kcal": "kalori",
+    "mlKgMin": "dakikada kilogram başına mililitre",
+    "times": "kez",
+    "min": "dakika",
+    "h": "saat",
+    "km": "kilometre",
+    "perKm": "kilometre başına",
+    "mi": "mil",
+    "perMi": "mil başına",
+    "kg": "kilogram",
+    "lb": "libre",
+    "m": "metre",
+    "ft": "fit",
+    "cm": "santimetre",
+    "in": "inç",
+    "ml": "mililitre",
+    "flOz": "sıvı ons"
+  },
+  "spoken": {
+    "minus": "eksi",
+    "noData": "veri yok",
+    "unavailable": "{{label}} kullanılamıyor: {{why}}",
+    "provisional": " geçici,",
+    "soFar": " şu ana kadar",
+    "target": ", hedef yüzde {{from}} ile {{to}} arasında",
+    "band": ", {{band}}",
+    "dialStrain": "{{label}}{{provisional}} {{value}}{{soFar}}{{target}}",
+    "dialValue": "{{label}}{{provisional}} {{value}}{{band}}",
+    "stat": "{{label}} {{value}}",
+    "statVsAverage": "{{label}} {{value}}, {{averageLabel}} olan {{average}} değerinizle karşılaştırıldığında {{relation}}{{tone}}",
+    "above": "üstünde",
+    "below": "altında",
+    "inLineWith": "ile aynı seviyede",
+    "average30": "30 günlük ortalama",
+    "toneGood": ", iyi",
+    "toneBad": ", normalden kötü"
+  },
+  "band": {
+    "green": "Yeşil",
+    "yellow": "Sarı",
+    "red": "Kırmızı"
+  },
+  "stressLevel": {
+    "low": "Düşük",
+    "medium": "Orta",
+    "high": "Yüksek"
+  }
+}

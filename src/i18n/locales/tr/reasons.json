@@ -1,0 +1,36 @@
+{
+  "calibrating": {
+    "short": "Kalibre ediliyor",
+    "long": "Kalibre ediliyor",
+    "longNights_one": "Kalibrasyon: {{count}} gece kaldı",
+    "longNights_other": "Kalibrasyon: {{count}} gece kaldı"
+  },
+  "noHrvLastNight": {
+    "short": "Geçen gece HRV yok",
+    "long": "Geçen geceki uykuda HRV verisi yok"
+  },
+  "awaitingSleepSync": {
+    "short": "Uyku bekleniyor",
+    "long": "Geçen geceki uykunun senkronizasyonu bekleniyor"
+  },
+  "insufficientHrData": {
+    "short": "Yeterli veri yok",
+    "long": "Yeterli kalp atış hızı verisi yok"
+  },
+  "bandNotWorn": {
+    "short": "Takılmamış",
+    "long": "Veri yok: bileklik takılmamış"
+  },
+  "noData": {
+    "short": "--",
+    "long": "Veri yok"
+  },
+  "tag": {
+    "provisionalLabel": "Geçici",
+    "provisionalExplain": "Referans değerlerin oluşturulurken kısa bir veri geçmişine dayanır. Daha fazla gün geldikçe sonuç daha kesin hâle gelir.",
+    "staleBaselineLabel": "Referans değer güncel değil",
+    "staleBaselineExplain": "Referans değerinde 14 veya daha fazla gece eksik. Yeni geceler geldikçe puanlar daha kesin hâle gelir.",
+    "updatedLabel": "Güncellendi",
+    "updatedExplain": "Geç senkronizasyonla yeni veriler eklendikten sonra güncellendi."
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "title": "Ana ekran widget'ları",
+  "about": "Uygulamayı açmadan son senkronize edilen Pulse ölçümlerinizi görün. Widget'lar sağlık bilgilerini ana ekranınızda gösterir; yalnızca görünmesini rahat hissettiğiniz yerlere ekleyin.",
+  "sizes": {
+    "small": "Küçük · tek ölçüm",
+    "medium": "Orta · üç ölçüm",
+    "large": "Büyük · altı ölçüm + kalp atış hızı"
+  },
+  "add": "Widget ekle",
+  "added": "Widget'ı ana ekranınızda onaylayın, ardından ölçümlerini seçin.",
+  "manual": "Başlatıcınız uygulama içinden eklemeyi desteklemiyor. Ana ekranınıza uzun basın, Widget'lar'ı seçin, ardından Pulse'u bulun.",
+  "rebuild": "Bu uygulama sürümünde widget'lar henüz bulunmuyor. Kullanmak için widget modülünü içeren bir sürüm yükleyin.",
+  "refresh": "Widget'lar, Pulse uygulamasında veya mevcut arka plan senkronizasyonuyla eşitleme yapıldığında güncellenir. Arka plan zamanlamasını Android kontrol eder; widget'lar canlı sensör verilerini göstermez.",
+  "configure": "Ölçümleri seç",
+  "choose": "En fazla %1$d ölçüm seçin. Desteklenen bir başlatıcıda widget'a uzun basarak daha sonra yeniden yapılandırabilirsiniz.",
+  "save": "Widget'ı kaydet",
+  "cancel": "İptal",
+  "emptySelection": "En az bir ölçüm seçin.",
+  "tooMany": "En fazla %1$d ölçüm seçebilirsiniz.",
+  "description": "Son senkronize edilen Pulse sağlık özetiniz. Ayrıntılarını açmak için bir ölçüme dokunun.",
+  "state": {
+    "demo": "Örnek veriler",
+    "updated": "Senkronize edildi",
+    "stale": "Eski senkronizasyon · Pulse'u açın",
+    "open": "Verilerinizi görmek için Pulse'u açıp senkronize edin",
+    "today": "Bugünün verilerini görmek için Pulse'u açın",
+    "reading": "Ölçüm",
+    "oldReading": "Eski ölçüm",
+    "noReading": "Kalp atış hızı ölçümü yok",
+    "heartWindow": "Ölçümden önceki 30 dakika"
+  },
+  "chooseLarge": "En fazla %1$d ölçüm seçin. Büyük widget'ta kalp atış hızı her zaman bulunur.",
+  "labels": {
+    "sleep": "Uyku",
+    "recovery": "Toparlanma",
+    "strain": "Günlük Yük",
+    "steps": "Adım",
+    "calories": "Kalori",
+    "hrv": "HRV",
+    "rhr": "Dinlenik kalp atış hızı",
+    "stress": "Stres",
+    "heart_rate": "Kalp atış hızı"
+  }
+}
