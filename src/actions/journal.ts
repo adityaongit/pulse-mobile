@@ -2,10 +2,11 @@ import { i18n } from "@/i18n/config";
 // Journal writes, as halo's src/screens/journal/actions.ts does them (ported from pulse's src/server/actions/journal.ts):
 // the same validation and messages, results returned rather than thrown so a form can show them. Plain TypeScript over
 // the Store, so the tests run in Node. The caller reloads the screens (`dataChanged`) or rescores (`refresh`) after a write.
-import { behavior } from "@/lib/behaviors";
+import { behavior, englishBehaviorLabel } from "@/lib/behaviors";
+import type { JournalTagChange, JournalTagRow } from "@/data/store";
 import { addDays, localDay } from "@/lib/time";
 import type { QueryCtx } from "@/queries/ctx";
-import { addTag, getJournal, MAX_TAGS, tagKey, tagRows } from "@/queries/journal";
+import { addTag, editTags, getJournal, MAX_TAGS, tagKey, tagRows } from "@/queries/journal";
 import type { JournalVM } from "@/queries/types";
 import type { ActionCtx } from "@/state/app";
 
@@ -40,7 +41,7 @@ export async function saveJournalEntry(c: ActionCtx, input: EntryInput): Promise
   // answered", which journal impact keeps apart from an answered "no" (0).
   if (value !== null && typeof value !== "boolean" && !(Number.isInteger(value) && value >= 0 && value <= 1000)) return fail(i18n.t("errors:journal.invalidValue"));
   if (day > todayOf(c)) return fail(i18n.t("errors:log.futureDay"));
-  const known = (await tagRows(c.store)).some((t) => t.tag === tag);
+  const known = (await tagRows(c.store)).some((t) => t.tag === tag && !t.removed);
   if (!known) return fail(i18n.t("errors:journal.unknownTag", { tag }));
   if (value === null) await c.store.deleteJournal(day, tag);
   else await c.store.setJournal({ day, tag, value: Number(value) });
@@ -67,7 +68,7 @@ export async function loadCheckIn(ctx: QueryCtx, day: string): Promise<ActionRes
   return { ok: true, data: { tags, checkIn, strip } };
 }
 
-/** Adds a custom tag; its key is the label as snake_case. Fails when that key already exists. */
+/** Adds a custom tag, or brings back a removed tag with the same key. */
 export async function addCustomTag(c: ActionCtx, input: { label: string }): Promise<ActionResult<{ tag: string }>> {
   const label = typeof input.label === "string" ? input.label.trim() : "";
   if (label.length < 1) return fail(i18n.t("errors:journal.labelEmpty"));
@@ -80,20 +81,36 @@ export async function addCustomTag(c: ActionCtx, input: { label: string }): Prom
   return { ok: true, data: { tag } };
 }
 
-/**
- * Select Behaviors' Save: the journal asks exactly `tags`. Catalogue behaviours not yet added are added; every other
- * behaviour is hidden, its past answers kept.
- */
-export async function saveBehaviors(c: ActionCtx, input: { tags: string[] }): Promise<ActionResult> {
-  const { tags } = input;
-  if (!Array.isArray(tags) || tags.length > 200 || tags.some((t) => typeof t !== "string" || t.length < 1 || t.length > 64)) return fail(i18n.t("errors:journal.invalidInput"));
-  const rows = await tagRows(c.store);
-  const mine = new Set(rows.map((r) => r.tag));
-  const added = [...new Set(tags)].filter((t) => !mine.has(t));
-  if (added.some((t) => !behavior(t))) return fail(i18n.t("errors:journal.unknownBehaviour"));
-  if (mine.size + added.length > MAX_TAGS) return fail(i18n.t("errors:journal.tooManyBehaviours", { count: MAX_TAGS }));
-  await c.store.insertJournalTags(added.map((tag) => ({ tag, label: behavior(tag)!.label, isDefault: false, hidden: false, position: 0 })));
+export type BehaviorSelection = { tags: string[]; remove?: string[]; restore?: string[] };
+
+/** Save the check-in selection and explicit picker removals/restorations together. Past answers keep their tag rows. */
+export async function saveBehaviors(c: ActionCtx, { tags, remove = [], restore = [] }: BehaviorSelection): Promise<ActionResult> {
+  const validTags = (list: string[]) => Array.isArray(list) && list.every((tag) => typeof tag === "string" && tag.length >= 1 && tag.length <= 64);
+  if (![tags, remove, restore].every(validTags) || tags.length > 200) return fail(i18n.t("errors:journal.invalidInput"));
   const shown = new Set(tags);
-  await c.store.updateJournalTags([...mine, ...added].map((tag) => ({ tag, hidden: !shown.has(tag) })));
-  return { ok: true, data: undefined };
+  const removing = new Set(remove);
+  const restoring = new Set(restore);
+  if (remove.some((tag) => shown.has(tag) || restoring.has(tag))) return fail(i18n.t("errors:journal.invalidInput"));
+  return editTags<ActionResult>(c.store, (rows) => {
+    const mine = new Map(rows.map((r) => [r.tag, r]));
+    const changes: JournalTagChange[] = [];
+    const newTags: JournalTagRow[] = [];
+    let available = 0;
+    for (const tag of new Set([...mine.keys(), ...shown, ...removing, ...restoring])) {
+      const row = mine.get(tag);
+      const removed = removing.has(tag) || (!!row?.removed && !restoring.has(tag));
+      const hidden = removed || !shown.has(tag);
+      if (!removed) available++;
+      if (!row) {
+        if (!behavior(tag)) return { result: fail(i18n.t("errors:journal.unknownBehaviour")) };
+        newTags.push({ tag, label: englishBehaviorLabel(tag), isDefault: false, hidden, removed, position: 0 });
+      } else if (!!row.removed !== removed) {
+        changes.push({ tag, removed, hidden });
+      } else if (row.hidden !== hidden) {
+        changes.push({ tag, hidden });
+      }
+    }
+    if (available > MAX_TAGS) return { result: fail(i18n.t("errors:journal.tooManyBehaviours", { count: MAX_TAGS })) };
+    return { result: { ok: true, data: undefined }, update: changes, insert: newTags };
+  });
 }

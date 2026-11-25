@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { openMemoryStore } from "./memory";
 import type { JournalTagRow, LoggedEntryRow } from "./store";
 
-const tag = (t: string, o: Partial<JournalTagRow> = {}): JournalTagRow => ({ tag: t, label: t, isDefault: false, hidden: false, position: 0, ...o });
+const tag = (t: string, o: Partial<JournalTagRow> = {}): JournalTagRow => ({ tag: t, label: t, isDefault: false, hidden: false, removed: false, position: 0, ...o });
 const entry = (id: string, ts: number, createdAt = ts, o: Partial<LoggedEntryRow> = {}): LoggedEntryRow => ({
   id,
   type: "hydration-log",

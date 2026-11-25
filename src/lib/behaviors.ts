@@ -88,6 +88,8 @@ export const BEHAVIORS: readonly Behavior[] = RAW.map((r) => withText({ ...r }, 
 
 const BY_KEY = new Map(BEHAVIORS.map((b) => [b.key, b]))
 export const behavior = (key: string): Behavior | undefined => BY_KEY.get(key)
+/** Catalogue rows store the English label so they can be displayed in the current language later. */
+export const englishBehaviorLabel = (key: string) => i18n.t(`journal:behavior.${key}` as never, { lng: "en" } as never) as unknown as string
 
 /** The journal's question for a tag: the catalogue sentence, or a custom label as a question. */
 export const questionOf = (tag: string, label: string) => behavior(tag)?.question ?? i18n.t("journal:question.custom", { label })

@@ -63,7 +63,7 @@
   },
   "behaviours": {
     "title": "Abitudini",
-    "intro": "Scegli cosa ti chiede il diario. Un’abitudine che escludi mantiene le risposte passate, che contano ancora nei tuoi approfondimenti.",
+    "intro": "Seleziona le abitudini che vuoi nel diario. Usa il cestino per rimuoverne una o ripristinala in «Rimosse». Le risposte passate contano ancora nei tuoi approfondimenti.",
     "ownTitle": "Le tue",
     "addTitle": "Aggiungi un’abitudine",
     "placeholder": "es. Doccia fredda…",
@@ -83,6 +83,9 @@
     "search": "Cerca abitudini",
     "tabAll": "Tutte",
     "tabYours": "Tue",
+    "tabRemoved": "Rimosse",
+    "removeLabel": "Rimuovi {{name}}",
+    "restoreLabel": "Ripristina {{name}}",
     "selected": "Selezionata",
     "notSelected": "Non selezionata",
     "noMatch": "Nessuna abitudine corrisponde a “{{query}}”."

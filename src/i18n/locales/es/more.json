@@ -63,7 +63,7 @@
   },
   "behaviours": {
     "title": "Hábitos",
-    "intro": "Elige lo que pregunta tu diario. Un hábito que dejes fuera conserva sus respuestas pasadas, y siguen contando en tus datos.",
+    "intro": "Marca los hábitos que quieres en tu diario. Usa la papelera para quitar un hábito o recupéralo en «Eliminados». Las respuestas anteriores siguen contando en tus datos.",
     "ownTitle": "Los tuyos",
     "addTitle": "Añadir un hábito",
     "placeholder": "p. ej. Ducha fría…",
@@ -83,6 +83,9 @@
     "search": "Buscar hábitos",
     "tabAll": "Todos",
     "tabYours": "Tuyos",
+    "tabRemoved": "Eliminados",
+    "removeLabel": "Quitar {{name}}",
+    "restoreLabel": "Restaurar {{name}}",
     "selected": "Seleccionado",
     "notSelected": "No seleccionado",
     "noMatch": "Ningún hábito coincide con “{{query}}”."

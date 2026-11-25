@@ -2,7 +2,7 @@ import { MemoryWorkoutStore } from "./workouts";
 // An in-memory Store on Maps: the pipeline tests run on it, and "demo" mode can when nothing need survive a
 // restart. Rows are copied on the way in and out (JSON round-trip), so callers never share objects with the
 // store, as they would not with SQLite.
-import type { DayRange, JournalTagChange, JournalTagRow, LoggedEntryRow, ReportRow, ScoreRow, SeriesKind, Store } from "./store";
+import type { DayRange, JournalTagChange, JournalTagEdit, JournalTagRow, LoggedEntryRow, ReportRow, ScoreRow, SeriesKind, Store } from "./store";
 import type { BloodPressureReading, DailyValue, Exercise, HealthRecord, HrSample, HrvSample, JournalEntry, Metrics, Profile, Segment, Session, StepsMinute, SyncState } from "./types";
 import type { ActivityCostResult } from "@/core/algorithms/activityCost";
 import { minuteHr } from "@/core/engine/context";
@@ -269,24 +269,40 @@ export class MemoryStore implements Store {
   }
 
   async journalTags() {
+    return this.orderedTags();
+  }
+  private orderedTags() {
     const rows = [...this.tags.values()].sort((a, b) => a.position - b.position || a.seq - b.seq);
     return copy(rows.map(({ seq: _, ...r }) => r));
   }
-  async insertJournalTags(rows: JournalTagRow[]) {
+  private insertMissingTags(rows: JournalTagRow[]) {
     const added: string[] = [];
     for (const r of rows) {
       if (this.tags.has(r.tag)) continue;
-      this.tags.set(r.tag, { ...copy(r), seq: ++this.tagSeq });
+      this.tags.set(r.tag, { removed: false, ...copy(r), seq: ++this.tagSeq });
       added.push(r.tag);
     }
     return added;
   }
+  async insertJournalTags(rows: JournalTagRow[]) {
+    return this.insertMissingTags(rows);
+  }
+  async editJournalTags<T>(edit: (rows: JournalTagRow[]) => JournalTagEdit<T>) {
+    const { result, insert = [], update = [] } = edit(this.orderedTags());
+    this.insertMissingTags(insert);
+    this.applyTagChanges(update);
+    return result;
+  }
   async updateJournalTags(changes: JournalTagChange[]) {
+    this.applyTagChanges(changes);
+  }
+  private applyTagChanges(changes: JournalTagChange[]) {
     for (const ch of changes) {
       const t = this.tags.get(ch.tag);
-      if (!t) continue;
+      if (!t || (t.removed && ch.removed === undefined)) continue;
       if (ch.hidden !== undefined) t.hidden = ch.hidden;
       if (ch.position !== undefined) t.position = ch.position;
+      if (ch.removed !== undefined) t.removed = ch.removed;
     }
   }
 

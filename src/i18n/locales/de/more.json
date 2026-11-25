@@ -60,7 +60,7 @@
   },
   "behaviours": {
     "title": "Gewohnheiten",
-    "intro": "Wähle, was dein Journal abfragt. Eine Gewohnheit, die du weglässt, behält ihre bisherigen Antworten, und sie zählen weiter in deinen Einblicken.",
+    "intro": "Wähle die Gewohnheiten für dein Journal aus. Mit dem Papierkorb entfernst du eine Gewohnheit. Unter „Entfernt“ kannst du sie wiederherstellen. Bisherige Antworten zählen weiter in deinen Einblicken.",
     "ownTitle": "Deine eigenen",
     "addTitle": "Gewohnheit hinzufügen",
     "placeholder": "z. B. Kalt duschen…",
@@ -80,6 +80,9 @@
     "search": "Nach Gewohnheiten suchen",
     "tabAll": "Alle",
     "tabYours": "Deine",
+    "tabRemoved": "Entfernt",
+    "removeLabel": "{{name}} entfernen",
+    "restoreLabel": "{{name}} wiederherstellen",
     "selected": "Ausgewählt",
     "notSelected": "Nicht ausgewählt",
     "noMatch": "Keine Gewohnheit passt zu „{{query}}“."

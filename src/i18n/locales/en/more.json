@@ -60,7 +60,7 @@
   },
   "behaviours": {
     "title": "Behaviours",
-    "intro": "Choose what your journal asks. A behaviour you leave out keeps its past answers, and they still count in your insights.",
+    "intro": "Check the behaviours you want in your journal. Use the bin to remove one, or restore it under Removed. Past answers still count in your insights.",
     "ownTitle": "Your own",
     "addTitle": "Add a behaviour",
     "placeholder": "e.g. Cold shower…",
@@ -80,6 +80,9 @@
     "search": "Search for behaviours",
     "tabAll": "All",
     "tabYours": "Yours",
+    "tabRemoved": "Removed",
+    "removeLabel": "Remove {{name}}",
+    "restoreLabel": "Restore {{name}}",
     "selected": "Selected",
     "notSelected": "Not selected",
     "noMatch": "No behaviours match “{{query}}”."
