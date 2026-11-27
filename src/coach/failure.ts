@@ -25,7 +25,8 @@ export function providerFailure(e: unknown): ProviderFailure {
     if (status === 400 || status === 404 || status === 422) return { code: "bad_request", status };
     return { code: "provider", status };
   }
-  if (e instanceof TypeError) return { code: "network", status: null };
+  // Check the unwrapped error: a fetch rejection retried to exhaustion is a RetryError around a TypeError.
+  if (err instanceof TypeError) return { code: "network", status: null };
   return { code: "provider", status: null };
 }
 

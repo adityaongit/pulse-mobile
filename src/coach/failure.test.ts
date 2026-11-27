@@ -24,6 +24,9 @@ describe("providerFailure", () => {
     expect(providerFailure(new Error("unknown"))).toEqual({ code: "provider", status: null });
     const retried = new RetryError({ message: "Retried", reason: "maxRetriesExceeded", errors: [api(503)] });
     expect(providerFailure(retried)).toEqual({ code: "unavailable", status: 503 });
+    // A retried fetch rejection is a RetryError around a TypeError: still a network failure, not a provider refusal.
+    const retriedNetwork = new RetryError({ message: "Retried", reason: "maxRetriesExceeded", errors: [new TypeError("Network request failed")] });
+    expect(providerFailure(retriedNetwork)).toEqual({ code: "network", status: null });
   });
 });
 

@@ -3,7 +3,7 @@
 // then the turn itself: validate the messages against the tools, summarise older turns (history.ts), stream the answer
 // with up to six steps of read-only tool calls, and save the whole chat when the stream ends.
 // Never logs message content, tool output, keys or provider bodies.
-import { APICallError, RetryError, generateId, isStepCount, streamText, toUIMessageStream, validateUIMessages, type ChatTransport, type LanguageModel, type UIMessage, type UIMessageChunk } from "ai";
+import { generateId, isStepCount, streamText, toUIMessageStream, validateUIMessages, type ChatTransport, type LanguageModel, type UIMessage, type UIMessageChunk } from "ai";
 import { report } from "@/lib/telemetry";
 import type { QueryCtx } from "@/queries/ctx";
 import { failureToken, providerFailure, type FailureCode } from "./failure";
@@ -62,9 +62,7 @@ const PROVIDER_KIND: Record<string, string> = { google: "gemini", openai: "opena
 
 /** Reports a coach failure as `coach.<problem>` with the provider's kind and the HTTP status (0 without one). */
 export function reportCoach(problem: string, provider: string | null | undefined, e?: unknown): void {
-  const err = RetryError.isInstance(e) ? e.lastError : e;
-  const status = APICallError.isInstance(err) ? (err.statusCode ?? 0) : 0;
-  void report(`coach.${problem}`, { provider: PROVIDER_KIND[provider ?? ""] ?? "unknown", status });
+  void report(`coach.${problem}`, { provider: PROVIDER_KIND[provider ?? ""] ?? "unknown", status: providerFailure(e).status ?? 0 });
 }
 
 /** The saved first message's metadata (the summary checkpoint) on the first of `messages`, when it is the same message. */

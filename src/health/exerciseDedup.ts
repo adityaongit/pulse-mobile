@@ -79,12 +79,13 @@ export function* uniqueExercises<T extends ExerciseRecord>(records: readonly T[]
   const ranked = records.map((record) => {
     const start = Date.parse(record.startTime);
     const end = Date.parse(record.endTime);
-    return { record, start, end, eligible: Math.floor(end / 1000) - Math.floor(start / 1000) >= MIN_EXERCISE_SEC };
+    // Precompute once: every pair in the loop below needs both, and the loop is O(n²).
+    return { record, start, end, source: sourceOf(record), duration: end - start, eligible: Math.floor(end / 1000) - Math.floor(start / 1000) >= MIN_EXERCISE_SEC };
   });
   ranked.sort((a, b) =>
     Number(b.eligible) - Number(a.eligible) ||
     Number(!!b.record.title?.trim()) - Number(!!a.record.title?.trim()) ||
-    (b.end - b.start) - (a.end - a.start) ||
+    b.duration - a.duration ||
     (a.record.metadata?.dataOrigin ?? "").localeCompare(b.record.metadata?.dataOrigin ?? "") ||
     (a.record.metadata?.id ?? "").localeCompare(b.record.metadata?.id ?? ""),
   );
@@ -92,18 +93,16 @@ export function* uniqueExercises<T extends ExerciseRecord>(records: readonly T[]
   let comparisons = 0;
   for (const candidate of ranked) {
     if (++comparisons % PAUSE_EVERY === 0) yield;
-    const source = sourceOf(candidate.record);
+    const source = candidate.source;
     let duplicate = false;
     if (source.app) for (const other of kept) {
       if (++comparisons % PAUSE_EVERY === 0) yield;
-      const otherSource = sourceOf(other.record);
+      const otherSource = other.source;
       // Two sessions from the same app on the same device can be real; only a different source is a copy.
       if (!otherSource.app || otherSource.key === source.key) continue;
       if (!sameSport(candidate.record.exerciseType, other.record.exerciseType)) continue;
-      const duration = candidate.end - candidate.start;
-      const otherDuration = other.end - other.start;
-      const shorter = Math.min(duration, otherDuration);
-      const longer = Math.max(duration, otherDuration);
+      const shorter = Math.min(candidate.duration, other.duration);
+      const longer = Math.max(candidate.duration, other.duration);
       if (!(shorter > 0) || shorter / longer < MIN_LENGTH_RATIO) continue;
       const overlap = Math.min(candidate.end, other.end) - Math.max(candidate.start, other.start);
       if (overlap / shorter >= MIN_OVERLAP) {
