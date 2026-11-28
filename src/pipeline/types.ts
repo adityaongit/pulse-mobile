@@ -82,8 +82,10 @@ import type { LoadStatus } from "@/core/engine/strain";
  * the sleep-session estimate) instead of the engine's own aggregates of the night's samples.
  * 30: Pulse Age's VO2 max falls back to Pulse's own daily estimate when the 28 days have no Fitbit VO2 max.
  * 31: Blood pressure in Health Monitor (causal spot readings persisted in health_monitor, AHA/ACC classifications).
+ * 32: HRV Status shows from 21 nights of HRV, as its copy says: its baseline needs 14 nights before the 7-night week (it
+ * needed 21 there, so 28 in all).
  */
-export const SCORING_VERSION = 31;
+export const SCORING_VERSION = 32;
 
 export type PipelineOptions = {
   timeZone: string;

@@ -7,9 +7,12 @@ export const hrvStatusConfig = {
   /** The recent average: the last 7 nights, from at least 4 with a value (published 7-day average; the 4 is a guess). */
   weekNights: 7,
   minWeekNights: 4,
-  /** The baseline: the 60 nights before the last 7, from at least 21 (Garmin needs about 3 weeks, published). */
+  /**
+   * The baseline: the 60 nights before the last 7, from at least 14. Garmin shows a status after about 3 weeks of nights
+   * (published), and so does the card's copy: 14 baseline nights and the 7-night week make the 21.
+   */
   baselineNights: 60,
-  minBaselineNights: 21,
+  minBaselineNights: 14,
   /** Balanced within μ ± 0.75σ; Low under μ − 1.5σ (guess, report G-7 / N-1). */
   balancedSd: 0.75,
   lowSd: 1.5,
