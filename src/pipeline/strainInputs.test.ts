@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { MemoryStore } from "@/data/memory";
 import type { Exercise, HrSample, Profile } from "@/data/types";
 import { addDays, localMidnight } from "@/lib/time";
-import { LEARNED_MAX_HR_CHECKED_KEY, LEARNED_MAX_HR_KEY, learnedMaxHr, pipelineOptions, resolveMaxHr } from "./index";
+import { LEARNED_MAX_HR_CHECKED_KEY, LEARNED_MAX_HR_KEY, learnedMaxHr, pipelineOptions, resolveMaxHr, runPipeline } from "./index";
 import { wakingFloorFrom } from "./stage1";
 
 const TZ = "UTC";
@@ -79,6 +79,30 @@ describe("learned max HR", () => {
     await store.putHr(Array.from({ length: 500 }, (_, i) => ({ ts: start + i, bpm: 198 })));
     await store.upsertExercises([{ id: "short", day: TODAY, startTs: start, endTs: start + 499, type: "RUNNING", name: null, calories: null, distanceM: null }]);
     expect(await learnedMaxHr(store, PROFILE, TODAY)).toBeNull();
+  });
+});
+
+describe("a very long workout (issue #70)", () => {
+  // 300,000 readings in one session (a workout left running for days at 1 Hz). Spreading them into one call's arguments
+  // (push(...xs), Math.max(...xs)) overflowed the stack, "Maximum call stack size exceeded", and the history never scored.
+  const N = 300_000;
+  async function longWorkout(store: MemoryStore) {
+    const day = addDays(TODAY, -4);
+    const start = localMidnight(day, TZ) + 18 * 3600;
+    await store.putHr(Array.from({ length: N }, (_, i) => ({ ts: start + i, bpm: 120 + (i % 77) })));
+    await store.upsertExercises([{ id: "long", day, startTs: start, endTs: start + N - 1, type: "RUNNING", name: null, calories: null, distanceM: null }]);
+  }
+
+  it("learns max HR from it", async () => {
+    const store = new MemoryStore();
+    await longWorkout(store);
+    expect(await learnedMaxHr(store, PROFILE, TODAY)).toBe(196);
+  });
+
+  it("scores the days it spans", async () => {
+    const store = new MemoryStore();
+    await longWorkout(store);
+    await expect(runPipeline(store, PROFILE, { today: TODAY })).resolves.toBeDefined();
   });
 });
 

@@ -59,7 +59,8 @@ export async function learnedMaxHr(store: Store, profile: Profile, today: string
   const bpm: number[] = [];
   for (const e of await store.allExercises()) {
     if (e.day < from || e.day > today) continue;
-    bpm.push(...exerciseHrForMax(await store.readHr(e.startTs, e.endTs + 1)));
+    // A loop, not push(...xs): one long workout holds enough readings to overflow the stack as call arguments (#70).
+    for (const b of exerciseHrForMax(await store.readHr(e.startTs, e.endTs + 1))) bpm.push(b);
   }
   const est = estimateHRmax(bpm, null);
   const observed = est.source === "observed" ? Math.round(est.hrmax) : null;
