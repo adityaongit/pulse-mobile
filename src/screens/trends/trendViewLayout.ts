@@ -110,7 +110,8 @@ export function buildModel(p: TrendViewChartProps, fmt: (v: number) => string): 
   }));
   const keys = rows.map((r) => r.key);
   const values = rows.flatMap((r) => (r.value === null ? [] : [r.value]));
-  const pair = p.chart === "pair" && !months && p.series?.length === 2 ? p.series : null;
+  // 6M and 1Y draw month segments of the one value; a pair given none (blood pressure) keeps both lines, faint.
+  const pair = p.chart === "pair" && (!months || !p.segments) && p.series?.length === 2 ? p.series : null;
   const partVals = pair ? rows.flatMap((r) => pair.flatMap((s) => (r.parts?.[s.key] != null ? [r.parts[s.key]] : []))) : [];
   const segVals = (p.segments ?? []).flatMap((s) => (s.value === null ? [] : [s.value]));
 

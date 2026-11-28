@@ -10,18 +10,19 @@ import { cardOf, Divided, period } from "@/screens/trends/parts";
 import { KeyStatRow } from "@/ui/metrics/KeyStatRow";
 import { SectionShell } from "@/ui/shells/SectionShell";
 
-type Props = { ranges: Record<TrendRange, Stats>; format: FormatKey; unit?: string; direction: GoodDirection; total: boolean };
+/** `name`: which of a pair's lines the card reads (blood pressure's systolic or diastolic). */
+type Props = { ranges: Record<TrendRange, Stats>; format: FormatKey; unit?: string; direction: GoodDirection; total: boolean; name?: string };
 
 const metric = (v: number | null): Metric<number> => (v === null ? { value: null, reason: "no_data", provisional: false } : { value: v, reason: null, provisional: false });
 
 /** The card itself, for one range. */
-export function RangeStatsCard({ ranges, format, unit, direction, total, range }: Props & { range: TrendRange }) {
+export function RangeStatsCard({ ranges, format, unit, direction, total, range, name }: Props & { range: TrendRange }) {
   const s = ranges[range];
   const { t } = useTranslation("trends");
   const r = period(range);
   const row = { variant: "row" as const, format, unit };
   return (
-    <SectionShell variant="card" {...cardOf(r.infoId, r.label)}>
+    <SectionShell variant="card" {...cardOf(r.infoId, name ? `${r.label} · ${name}` : r.label)}>
       <Divided>
         <KeyStatRow {...row} label={t("rangeStats.dailyAverage")} caption={r.vsPrior} metric={metric(s.average)} average={s.prior} averageLabel={r.prior} direction={direction} />
         {total && <KeyStatRow {...row} label={t("rangeStats.total")} metric={metric(s.total)} direction="none" />}

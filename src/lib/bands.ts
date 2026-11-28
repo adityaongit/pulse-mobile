@@ -23,6 +23,8 @@ export const DATA_COLORS = {
   "energy-active": { bg: "bg-energy-active", text: "text-energy-active", css: "var(--energy-active)" },
   "energy-resting": { bg: "bg-energy-resting", text: "text-energy-resting", css: "var(--energy-resting)" },
   "chart-5": { bg: "bg-chart-5", text: "text-chart-5", css: "var(--chart-5)" },
+  "bp-systolic": { bg: "bg-bp-systolic", text: "text-bp-systolic", css: "var(--bp-systolic)" },
+  "bp-diastolic": { bg: "bg-bp-diastolic", text: "text-bp-diastolic", css: "var(--bp-diastolic)" },
   muted: { bg: "bg-muted-foreground", text: "text-muted-foreground", css: "var(--muted-foreground)" },
 } as const;
 export type DataColor = keyof typeof DATA_COLORS;
@@ -58,6 +60,9 @@ export function partColor(key: string): string {
     everyday: "energy-resting",
     active: "energy-active",
     workouts: "energy-active",
+    // Blood pressure on Metric detail, as Health Monitor's card draws it.
+    systolic: "bp-systolic",
+    diastolic: "bp-diastolic",
   };
   return DATA_COLORS[named[key] ?? "strain"].css;
 }

@@ -65,6 +65,8 @@ export type HistoryChartProps = {
   deltas: Partial<Record<TrendRange, number | null>>;
   /** Stack parts, bottom first (`parts` keys on each point). */
   series?: readonly { key: string; label: string }[];
+  /** `series` are two lines, the first under the second (blood pressure), not a stack; the average reads "upper/lower". */
+  pair?: boolean;
   /** Shades mean ± 1 SD. */
   baseline?: { mean: number; sd: number } | null;
 };
@@ -124,17 +126,19 @@ function History({ points, ...p }: HistoryChartProps & { points: HistoryPoint[] 
     // Today's running total is drawn, not averaged (the Trend View's rule).
     const settled = days.map((d) => ({ day: d.date, value: d.provisional ? null : d.value }));
     const bars: TrendViewBar[] = days.map((d) => ({ from: d.date, to: d.date, value: d.value, ...(d.provisional && { provisional: true }), ...(d.parts !== undefined && { parts: d.parts }) }));
-    return { bars, average: mean(settled.map((d) => d.value)), segments: byMonth(range) ? wholeMonths(monthSegments(settled)) : null };
-  }, [points, range]);
-  const delta = p.deltas[range] ?? null;
+    const pairText = p.pair && p.series ? [...p.series].reverse().map((s) => formatValue(p.format, mean(days.map((d) => (d.provisional ? null : (d.parts?.[s.key] ?? null)))))).join("/") : null;
+    return { bars, average: mean(settled.map((d) => d.value)), pairText, segments: byMonth(range) && !p.pair ? wholeMonths(monthSegments(settled)) : null };
+  }, [points, range, p.pair, p.series, p.format]);
+  // A pair's change would be one line's only.
+  const delta = p.pair ? null : (p.deltas[range] ?? null);
   const tone = delta === null || delta === 0 || p.direction === "neutral" ? null : deltaTone(p.direction, delta, 0).tone;
-  const chart = p.series ? "stack" : p.level ? "line" : "bars";
+  const chart = p.series ? (p.pair ? "pair" : "stack") : p.level ? "line" : "bars";
   const typical: [number, number] | null = p.baseline ? [p.baseline.mean - p.baseline.sd, p.baseline.mean + p.baseline.sd] : null;
   return (
     <View className="min-w-0 gap-3">
       <View>
         <Text className="text-xs font-bold uppercase leading-4 tracking-[0.1em] text-muted-foreground">{t("average")}</Text>
-        <ValueUnit value={formatValue(p.format, frame.average)} unit={p.unit} className="font-numeric text-[28px] font-bold leading-8" />
+        <ValueUnit value={frame.pairText ?? formatValue(p.format, frame.average)} unit={p.unit} className="font-numeric text-[28px] font-bold leading-8" />
         {delta !== null && (
           <View className="mt-1 flex-row">
             <StatusChip tone={tone === "good" ? "optimal" : tone === "bad" ? "warning" : "neutral"} delta={delta > 0 ? "up" : delta < 0 ? "down" : "flat"}>

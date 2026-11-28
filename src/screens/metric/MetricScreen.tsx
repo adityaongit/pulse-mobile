@@ -35,6 +35,12 @@ const stackOf = (kind: "calories" | "distance"): readonly { key: string; label: 
     ? [{ key: "resting", label: i18n.t("trends:metricScreen.resting") }, { key: "active", label: i18n.t("trends:metricScreen.active") }]
     : [{ key: "everyday", label: i18n.t("trends:metricScreen.everyday") }, { key: "workouts", label: i18n.t("trends:metricScreen.workouts") }];
 
+/** Blood pressure's two lines, diastolic under systolic, in Health Monitor's colours (`partColor`). */
+const bpSeries = () => [
+  { key: "diastolic", label: i18n.t("health:bloodPressure.diastolic") },
+  { key: "systolic", label: i18n.t("health:bloodPressure.systolic") },
+];
+
 /** The chart's 365 points and each range's change, once per loaded view model. */
 function shape(vm: MetricDetailVM) {
   // Rounded as the chip shows it, so 0.04 km reads "+0.04", not "0.00".
@@ -101,11 +107,19 @@ export default function MetricScreen() {
                 direction={vm.direction}
                 data={shaped.data}
                 deltas={shaped.deltas}
-                series={vm.chart.stack ? stackOf(vm.chart.stack) : undefined}
+                series={vm.chart.stack ? stackOf(vm.chart.stack) : vm.chart.pair ? bpSeries() : undefined}
+                pair={vm.chart.pair}
                 baseline={vm.chart.baseline}
               />
             </SectionShell>
-            <RangeStatsCard {...stats} range={range} />
+            {vm.pair ? (
+              <>
+                <RangeStatsCard {...stats} range={range} name={i18n.t("health:bloodPressure.systolic")} />
+                <RangeStatsCard {...stats} ranges={vm.pair.ranges} total={false} range={range} name={i18n.t("health:bloodPressure.diastolic")} />
+              </>
+            ) : (
+              <RangeStatsCard {...stats} range={range} />
+            )}
           </View>
         )
       }
@@ -137,16 +151,18 @@ function Hero({ vm }: { vm: MetricDetailVM }) {
           const avg = vm.average;
           const t = avg !== null ? deltaTone(vm.direction, value, avg, vm.sd) : null;
           const diff = avg !== null ? value - avg : null;
+          // Blood pressure reads systolic/diastolic; a change of one of them alone is left out.
+          const shown = (v: number | null, low?: number | null) => (vm.pair ? `${formatValue(vm.format, v)}/${formatValue(vm.format, low ?? null)}` : formatValue(vm.format, v));
           return (
             <>
-              <ValueUnit value={formatValue(vm.format, value)} unit={vm.unit} className="font-numeric text-[64px] font-bold leading-[64px] tracking-[-0.02em]" unitClassName="text-xl font-semibold leading-7 text-foreground-secondary" />
+              <ValueUnit value={shown(value, vm.pair?.value)} unit={vm.unit} className="font-numeric text-[64px] font-bold leading-[64px] tracking-[-0.02em]" unitClassName="text-xl font-semibold leading-7 text-foreground-secondary" />
               {/* A running total against whole days would always read "below": today shows the average alone. */}
-              {t && diff !== null && !vm.soFar && (
+              {t && diff !== null && !vm.soFar && !vm.pair && (
                 <StatusChip tone={t.tone === "good" ? "optimal" : t.tone === "bad" ? "warning" : "neutral"} delta={t.dir} className="mt-1 self-center">
                   {t.dir === "flat" ? tr("metricScreen.inLine") : tr(t.dir === "up" ? "metricScreen.above" : "metricScreen.below", { diff: `${formatValue(vm.format, Math.abs(diff))}${unitText(vm.unit)}` })}
                 </StatusChip>
               )}
-              <Text className={cn(CAPTION, "text-center")}>{avg === null ? tr("metricScreen.noAverage") : tr("metricScreen.average", { value: `${formatValue(vm.format, avg)}${unitText(vm.unit)}` })}</Text>
+              <Text className={cn(CAPTION, "text-center")}>{avg === null ? tr("metricScreen.noAverage") : tr("metricScreen.average", { value: `${shown(avg, vm.pair?.average)}${unitText(vm.unit)}` })}</Text>
             </>
           );
         }}

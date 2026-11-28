@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { acwrBand, acwrSignal } from "@/core/scoring/readiness";
-import { acwrTone, deltaTone, dialColor, GOOD_DIRECTION, recoveryBand, stressLevel } from "./bands";
+import { acwrTone, deltaTone, dialColor, GOOD_DIRECTION, partColor, recoveryBand, stressLevel } from "./bands";
+
+describe("partColor", () => {
+  it("draws blood pressure as Health Monitor does: systolic rose, diastolic blue", () => {
+    expect(partColor("systolic")).toBe("var(--bp-systolic)");
+    expect(partColor("diastolic")).toBe("var(--bp-diastolic)");
+  });
+});
 
 describe("recoveryBand", () => {
   it("bands at 67 and 34", () => {

@@ -65,6 +65,8 @@ type Config = {
   /** History draws a split (Strain's calorie stack) or the normal range. */
   stack?: "calories" | "distance";
   baseline?: boolean;
+  /** Blood pressure: the diastolic reading beside the systolic `pick`, shown as a pair (Health Monitor's colours). */
+  pair?: (r: DayRow) => number | null | undefined;
 };
 
 /** The 7,000-a-day step reference (Lancet Public Health 2025), and the 150 weekly active minutes (WHO 2020). */
@@ -86,7 +88,7 @@ const CONFIG: Record<DetailKey, Config> = {
   resp: { group: "vitals", baseline: true, sections: ["outliers"] },
   spo2: { group: "vitals", baseline: true, sections: ["outliers"] },
   skin: { group: "vitals", baseline: true, sections: ["outliers"] },
-  bp: { group: "vitals", reading: true, baseline: true, sections: ["outliers"] },
+  bp: { group: "vitals", reading: true, baseline: true, sections: ["outliers"], pair: (r) => r.healthMonitor?.bloodPressure?.diastolic },
   weight: { group: "body", reading: true, sections: ["readings"] },
   body_fat: { group: "body", reading: true, sections: ["readings"] },
   distance: { group: "activity", total: true, stack: "distance", sections: ["weekday"] },
@@ -179,8 +181,13 @@ export type MetricDetailVM = {
   history: Metric<Point[]>;
   ranges: Record<TrendRange, RangeStats>;
   total: boolean;
-  chart: { stack?: "calories" | "distance"; baseline?: { mean: number; sd: number } | null };
+  chart: { stack?: "calories" | "distance"; pair?: boolean; baseline?: { mean: number; sd: number } | null };
   sections: Section[];
+  /**
+   * Blood pressure: `value`, `average`, `ranges` and each point's `value` are systolic; this is the diastolic beside
+   * them, and each history point's `parts` holds both.
+   */
+  pair?: { value: number | null; average: number | null; ranges: Record<TrendRange, RangeStats> };
 };
 /** Alias: the task's name for the metric screen's view model. */
 export type MetricVM = MetricDetailVM;
@@ -210,6 +217,11 @@ export async function getMetricDetail(key: DetailKey, day: string, ctx: QueryCtx
   // Today's running total is not a day's value yet (Trends' rule): a gap in history and stats.
   const val = (d: string) => (m.partialToday && d === today ? null : raw(d));
   const days = Array.from({ length: 2 * SPAN }, (_, k) => addDays(from, k));
+  const low = (d: string) => {
+    const r = rows.get(d);
+    const v = r && m.pair ? m.pair(r) : null;
+    return finite(v) ? v : null;
+  };
 
   let valueDay: string | null = day;
   if (m.reading) valueDay = [...days].reverse().find((d) => raw(d) !== null) ?? null;
@@ -219,7 +231,14 @@ export async function getMetricDetail(key: DetailKey, day: string, ctx: QueryCtx
   const shown: Point[] = days.slice(-SPAN).map((d) => {
     const soFar = m.partialToday && d === today && raw(d) !== null;
     const v = soFar ? raw(d) : val(d);
-    return { day: d, value: v, ...(soFar && { provisional: true }), ...(m.stack && { parts: partsOf(m.stack, rows.get(d), v, exs) }) };
+    const dia = low(d);
+    return {
+      day: d,
+      value: v,
+      ...(soFar && { provisional: true }),
+      ...(m.stack && { parts: partsOf(m.stack, rows.get(d), v, exs) }),
+      ...(m.pair && { parts: v === null || dia === null ? null : { diastolic: dia, systolic: v } }),
+    };
   });
 
   const ranges = Object.fromEntries(RANGES.map((r) => [r, rangeStats(days.map(val), days, RANGE_DAYS[r], !!m.total)])) as Record<TrendRange, RangeStats>;
@@ -234,7 +253,7 @@ export async function getMetricDetail(key: DetailKey, day: string, ctx: QueryCtx
   const built = await Promise.all(m.sections.map((k) => (k === "outliers" ? out : BUILD[k](s, key))));
   return {
     key,
-    label: m.label,
+    label: m.pair ? i18n.t("health:title.bloodPressure") : m.label,
     ...(m.unit && { unit: m.unit }),
     format: m.format,
     direction: m.direction,
@@ -251,8 +270,16 @@ export async function getMetricDetail(key: DetailKey, day: string, ctx: QueryCtx
     history: shown.some((p) => p.value !== null) ? ok(shown) : none("no_data"),
     ranges,
     total: !!m.total,
-    chart: { stack: m.stack, baseline },
+    // A pair's legend names its two lines; one line's typical range would read as both's.
+    chart: { stack: m.stack, ...(m.pair && { pair: true }), baseline: m.pair ? null : baseline },
     sections: built.filter((sec): sec is Section => !!sec),
+    ...(m.pair && {
+      pair: {
+        value: valueDay ? low(valueDay) : null,
+        average: valueDay ? priorStats(rows, valueDay, m.pair).mean : null,
+        ranges: Object.fromEntries(RANGES.map((r) => [r, rangeStats(days.map(low), days, RANGE_DAYS[r], false)])) as Record<TrendRange, RangeStats>,
+      },
+    }),
   };
 }
 
