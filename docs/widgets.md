@@ -8,6 +8,10 @@ Install a native build containing `modules/pulse-widgets`; an OTA JavaScript upd
 
 Launcher grid sizes vary. The target footprints are 2×2, 4×2 and 4×4; providers declare minimum dimensions and can be resized. The widget follows the phone's light/dark appearance (see Light and dark below). Metric labels, missing-value reasons, number formatting and status labels follow Pulse's selected language after a refresh. The native configuration screen and gallery currently use English fallback strings. Sync timestamps use the phone's clock format.
 
+The configuration picker's Save and Cancel actions use separate full-width, content-height rows with explicit 12 dp spacing. Their separation does not depend on the system button background's insets, which vary between phone themes. Selected checkboxes use Pulse blue and unselected outlines use the muted foreground color from the light/dark widget palettes, rather than an OEM accent. The picker remains scrollable with larger system fonts.
+
+Native host-render regression previews on API 36: [dark, normal fonts](images/widget-picker-dark.png) and [light, 200% fonts](images/widget-picker-light-large-font.png). These contain default metric selections and no health data. The Robolectric checks cover API 30/36, light/dark, 100%/200% fonts, 3:1 indicator contrast, button separation and scrolling. They require Java 21; Samsung device confirmation remains a manual check.
+
 ## Data, freshness and privacy
 
 - Widgets use `getHome` and the same stored recent-heart-rate helper as Home through the existing Store interface, not additional Health Connect reads or a second scoring engine. Foreground and existing background sync publish after scoring; app writes/display-language changes and newly imported foreground heart-rate samples also refresh the projection. When no widget is installed, these hooks skip the Home query; Settings can prepare the first summary before pinning. A first widget added through the gallery may prompt you to open Pulse and sync.
