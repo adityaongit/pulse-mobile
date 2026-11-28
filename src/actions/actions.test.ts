@@ -4,7 +4,8 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { openMemoryStore } from "@/data/memory";
 import type { Store } from "@/data/store";
 import type { Profile } from "@/data/types";
-import { DEFAULT_JOURNAL_TAGS, ensureDefaultTags, getBehaviours, MAX_TAGS } from "@/queries/journal";
+import { DEFAULT_JOURNAL_TAGS, ensureDefaultTags, getBehaviours, getJournal, MAX_TAG_ROWS, MAX_TAGS } from "@/queries/journal";
+import { getMore, journalTable } from "@/queries/settings";
 import type { QueryCtx } from "@/queries/ctx";
 import { addCustomTag, loadCheckIn, saveBehaviors, saveCheckIn, saveJournalEntry, type ActionCtx } from "./journal";
 import { deleteLogEntry, logEntry, logFoods, setFoodSeparate, updateFoodEntry } from "./log";
@@ -147,6 +148,60 @@ describe("saveCheckIn", () => {
 });
 
 describe("saveBehaviors", () => {
+  it("removes a custom, default and never-selected catalogue behaviour while keeping past answers and labels", async () => {
+    const day = "2026-10-01";
+    const ctx = q("2026-10-03");
+    const remove = ["cold_plunge", "sauna", "camping"];
+    await addCustomTag(c(), { label: "Cold Plunge!" });
+    await saveCheckIn(c(), day, [{ tag: "cold_plunge", value: true }, { tag: "sauna", value: false }]);
+    expect((await saveBehaviors(c(), { tags: ["alcohol"], remove })).ok).toBe(true);
+    await ensureDefaultTags(store);
+    // An older selection cannot restore a behaviour just removed in the picker.
+    await saveBehaviors(c(), { tags: ["alcohol", "sauna"] });
+    const picker = await getBehaviours(ctx);
+    expect(picker.tags.filter((t) => t.removed).map((t) => t.tag).sort()).toEqual([...remove].sort());
+    expect(picker.tags.find((t) => t.tag === "travel")).toMatchObject({ hidden: true, removed: false });
+    const journal = await getJournal(day, ctx);
+    expect(journal.tags.map((t) => t.tag)).toEqual(["alcohol"]);
+    expect(journal.history).toContainEqual({ day, yes: ["Cold Plunge!"] });
+    expect((await journalTable(ctx)).rows).toEqual([[day, "cold_plunge", "Cold Plunge!", 1], [day, "sauna", "Sauna", 0]]);
+    expect((await getMore(ctx)).behaviours).toEqual({ shown: 1, total: DEFAULT_JOURNAL_TAGS.length - 1 });
+    expect((await saveJournalEntry(c(), { day, tag: "sauna", value: true })).ok).toBe(false);
+    expect((await saveBehaviors(c(), { tags: ["alcohol"], restore: ["sauna"] })).ok).toBe(true);
+    expect((await store.journalTags()).find((t) => t.tag === "sauna")).toMatchObject({ hidden: true, removed: false, isDefault: true });
+    expect((await addCustomTag(c(), { label: "Cold Plunge!" })).ok).toBe(true);
+    expect((await getJournal(day, ctx)).tags.map((t) => t.tag)).toContain("cold_plunge");
+  });
+
+  it("frees a place at the tag limit and leaves the whole selection alone when a restore exceeds it", async () => {
+    for (let i = DEFAULT_JOURNAL_TAGS.length; i < MAX_TAGS; i++) await addCustomTag(c(), { label: `Cap ${i}` });
+    expect((await saveBehaviors(c(), { tags: ["caffeine"], remove: ["travel"] })).ok).toBe(true);
+    const before = await store.journalTags();
+    expect((await saveBehaviors(c(), { tags: ["sauna"], restore: ["travel"] })).ok).toBe(false);
+    expect(await store.journalTags()).toEqual(before);
+    expect((await saveBehaviors(c(), { tags: [], remove: ["unknown"] })).ok).toBe(false);
+    expect(await store.journalTags()).toEqual(before);
+    await saveBehaviors(c(), { tags: [], remove: ["caffeine"] });
+    const competing = await Promise.all([
+      saveBehaviors(c(), { tags: [], restore: ["travel"] }),
+      addCustomTag(c(), { label: "One more" }),
+    ]);
+    expect(competing.filter((r) => r.ok)).toHaveLength(1);
+    expect((await store.journalTags()).filter((t) => !t.removed)).toHaveLength(MAX_TAGS);
+  });
+
+  it("caps tag rows, removed ones included, so insights work stays bounded", async () => {
+    let n = 0;
+    while ((await store.journalTags()).length < MAX_TAG_ROWS) {
+      const { ok, data } = (await addCustomTag(c(), { label: `Row ${n++}` })) as { ok: boolean; data: { tag: string } };
+      expect(ok).toBe(true);
+      expect((await saveBehaviors(c(), { tags: [], remove: [data.tag] })).ok).toBe(true);
+    }
+    expect((await addCustomTag(c(), { label: "One more" })).ok).toBe(false);
+    expect((await saveBehaviors(c(), { tags: ["acupuncture"] })).ok).toBe(false);
+    expect((await addCustomTag(c(), { label: "Row 0" })).ok).toBe(true);
+  });
+
   it("adds catalogue behaviours, hides the rest and keeps their answers", async () => {
     await saveJournalEntry(c(), { day: "2026-10-01", tag: "sauna", value: true });
     expect(await saveBehaviors(c(), { tags: ["alcohol", "caffeine"] })).toEqual({ ok: true, data: undefined });

@@ -47,11 +47,11 @@ export async function getSettings(ctx: QueryCtx): Promise<{ profile: SettingsPro
 
 // ── Behaviours (journal tags) ────────────────────────────────────────────────
 
-export type Behaviour = { tag: string; label: string; custom: boolean; hidden: boolean };
+export type Behaviour = { tag: string; label: string; custom: boolean; hidden: boolean; removed?: boolean };
 
 /** Every behaviour, hidden ones included, in check-in order (the web's journalBehaviours); the defaults are ensured first. */
 export async function behaviours(ctx: QueryCtx): Promise<Behaviour[]> {
-  return (await tagRows(ctx.store)).map((t) => ({ tag: t.tag, label: t.label, custom: !t.isDefault, hidden: t.hidden }));
+  return (await tagRows(ctx.store)).map((t) => ({ tag: t.tag, label: t.label, custom: !t.isDefault, hidden: t.hidden, ...(t.removed && { removed: true }) }));
 }
 
 // ── More ─────────────────────────────────────────────────────────────────────
@@ -63,7 +63,7 @@ export async function getMore(ctx: QueryCtx, mode: Mode = "google"): Promise<Mor
     latestWeek,
     latestMonth,
     reportCount: reports.filter((r) => r.data.days > 0).length,
-    behaviours: { shown: tags.filter((t) => !t.hidden).length, total: tags.length },
+    behaviours: { shown: tags.filter((t) => !t.hidden).length, total: tags.filter((t) => !t.removed).length },
     mode,
     version: APP_VERSION,
     scoringVersion: SCORING_VERSION,

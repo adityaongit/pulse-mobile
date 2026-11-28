@@ -63,7 +63,7 @@
   },
   "behaviours": {
     "title": "Hábitos",
-    "intro": "Escolha o que o seu diário pergunta. Um hábito que você deixa de fora mantém as respostas passadas, que continuam valendo nos seus insights.",
+    "intro": "Marque os hábitos que você quer no diário. Use a lixeira para remover um hábito ou restaure-o em “Removidos”. As respostas anteriores continuam valendo nos seus insights.",
     "ownTitle": "Os seus",
     "addTitle": "Adicionar um hábito",
     "placeholder": "ex.: Banho gelado…",
@@ -83,6 +83,9 @@
     "search": "Buscar hábitos",
     "tabAll": "Todos",
     "tabYours": "Seus",
+    "tabRemoved": "Removidos",
+    "removeLabel": "Remover {{name}}",
+    "restoreLabel": "Restaurar {{name}}",
     "selected": "Selecionado",
     "notSelected": "Não selecionado",
     "noMatch": "Nenhum hábito corresponde a “{{query}}”."

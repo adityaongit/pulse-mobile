@@ -63,7 +63,7 @@
   },
   "behaviours": {
     "title": "Comportements",
-    "intro": "Choisis ce que ton journal demande. Un comportement que tu retires garde ses réponses passées, et elles comptent toujours dans tes analyses.",
+    "intro": "Coche les comportements que tu veux suivre dans ton journal. Utilise la corbeille pour en retirer un. Tu peux le rétablir dans « Retirés ». Tes réponses passées comptent toujours dans tes analyses.",
     "ownTitle": "Les tiens",
     "addTitle": "Ajouter un comportement",
     "placeholder": "ex. Douche froide…",
@@ -83,6 +83,9 @@
     "search": "Rechercher des comportements",
     "tabAll": "Tous",
     "tabYours": "Les tiens",
+    "tabRemoved": "Retirés",
+    "removeLabel": "Retirer {{name}}",
+    "restoreLabel": "Rétablir {{name}}",
     "selected": "Sélectionné",
     "notSelected": "Non sélectionné",
     "noMatch": "Aucun comportement ne correspond à « {{query}} »."

@@ -101,7 +101,9 @@ export function CheckInPage() {
   const tags = loaded?.tags ?? [];
   const saved = loaded?.checkIn.entries ?? {};
   const savedDetails: Record<string, number> = {};
-  const dirty = !!loaded && (changedEntries(values, details, saved, savedDetails).length > 0 || note.trim() !== "");
+  const visibleTags = new Set(tags.map((t) => t.tag));
+  const changes = changedEntries(values, details, saved, savedDetails).filter((a) => visibleTags.has(a.tag));
+  const dirty = !!loaded && (changes.length > 0 || note.trim() !== "");
 
   useEffect(() => {
     let live = true;
@@ -134,6 +136,7 @@ export function CheckInPage() {
     useCallback(() => {
       if (!picked.current) return;
       picked.current = false;
+      setData(null);
       setRequest((r) => ({ day, n: r.n + 1, keep: true }));
     }, [day]),
   );
@@ -191,7 +194,6 @@ export function CheckInPage() {
     if (!loaded) return;
     setSaving(true);
     setSaveError(false);
-    const changes = changedEntries(values, details, saved, savedDetails);
     const r = await saveCheckIn(actionCtx(), loaded.day, changes).catch(() => ({ ok: false as const }));
     setSaving(false);
     if (!r.ok) {
@@ -216,6 +218,7 @@ export function CheckInPage() {
     if (!r.ok) return invalid(r.error.startsWith("Tag already exists") ? tr("checkIn.errExists") : r.error.startsWith("Too many") ? tr("checkIn.errLimit") : tr("checkIn.errAdd"));
     setAddError(null);
     setLabel("");
+    dataChanged();
     // A new behaviour starts as "Yes": you add one because you just did it. It joins the list until the next load.
     setData((d) => d && { ...d, tags: [...d.tags, withQuestion({ tag: r.data.tag, label: name, group: "custom", isDefault: false, hidden: false })] });
     setValues((v) => ({ ...v, [r.data.tag]: 1 }));

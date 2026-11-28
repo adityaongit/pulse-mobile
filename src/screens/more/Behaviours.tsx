@@ -21,23 +21,16 @@ import { Text } from "@/ui/Text";
 import { TextField } from "../settings/controls";
 import { toast } from "@/ui/Toast";
 import { useScreen } from "../useScreen";
-import { BehaviorPicker, saveSelection, shownOf } from "./BehaviorPicker";
+import { BehaviorPicker, saveSelection } from "./BehaviorPicker";
+import { selectionOf, type BehaviorState } from "./behaviorSelection";
 import { DURATION } from "@/ui/motion";
 
 function Behaviours({ vm }: { vm: BehavioursVM }) {
   const { t } = useTranslation("more");
   const insets = useSafeAreaInsets();
-  const [initial, setInitial] = useState(() => shownOf(vm.tags));
-  const [selected, setSelected] = useState(initial);
-  // Stored data wins when it changes (after a save or an add), without an effect.
-  const [last, setLast] = useState(vm.tags);
-  if (vm.tags !== last) {
-    setLast(vm.tags);
-    const shown = shownOf(vm.tags);
-    setInitial(shown);
-    setSelected((s) => new Set([...s, ...[...shown].filter((t) => !initial.has(t))]));
-  }
-  const dirty = selected.size !== initial.size || [...selected].some((t) => !initial.has(t));
+  const [edits, setEdits] = useState(new Map<string, BehaviorState>());
+  const draft = selectionOf(vm.tags, edits);
+  const edit = (tag: string, state: BehaviorState) => setEdits((previous) => new Map(previous).set(tag, state));
   const [saving, setSaving] = useState(false);
   const [label, setLabel] = useState("");
   const [addError, setAddError] = useState<string | null>(null);
@@ -51,18 +44,20 @@ function Behaviours({ vm }: { vm: BehavioursVM }) {
 
   const save = async () => {
     setSaving(true);
-    const e = await saveSelection(selected);
+    const e = await saveSelection(draft.input);
     setSaving(false);
     if (e) return void toast.error(e);
+    setEdits(new Map());
     toast.success(t("behaviours.saved"));
   };
 
   const add = async () => {
+    if (adding || saving) return;
     haptic.tap();
     const name = label.trim();
     if (!name) return;
     if (name.length > 32) return invalid(t("behaviours.tooLong"));
-    if (vm.tags.some((t) => t.label.toLowerCase() === name.toLowerCase())) return invalid(t("behaviours.exists"));
+    if (vm.tags.some((t) => !t.removed && t.label.toLowerCase() === name.toLowerCase())) return invalid(t("behaviours.exists"));
     setAdding(true);
     const r = await addCustomTag(actionCtx(), { label: name }).catch(() => ({ ok: false as const, error: "network" }));
     setAdding(false);
@@ -81,7 +76,7 @@ function Behaviours({ vm }: { vm: BehavioursVM }) {
         primary={
           <View className="w-full gap-6">
             <Text className="text-[15px] leading-[22px] text-foreground-secondary">{t("behaviours.intro")}</Text>
-            <BehaviorPicker tags={vm.tags} initial={initial} selected={selected} onChange={setSelected} />
+            <BehaviorPicker tags={vm.tags} initial={draft.initial} selected={draft.selected} removed={draft.removed} disabled={saving} onChange={edit} />
             <SectionShell variant="card" title={t("behaviours.ownTitle")} info={false}>
               <View className="gap-2">
                 <Text className="text-[15px] font-medium leading-[22px]">{t("behaviours.addTitle")}</Text>
@@ -105,7 +100,7 @@ function Behaviours({ vm }: { vm: BehavioursVM }) {
                     />
                   </View>
                   {/* "Add" fits beside the field on a phone; the name says what it adds (label in name). */}
-                  <Button variant="secondary" disabled={adding || !label.trim()} accessibilityLabel={adding ? undefined : t("behaviours.addLabel")} onPress={add}>
+                  <Button variant="secondary" disabled={adding || saving || !label.trim()} accessibilityLabel={adding ? undefined : t("behaviours.addLabel")} onPress={add}>
                     {adding ? t("behaviours.adding") : t("behaviours.add")}
                   </Button>
                 </View>
@@ -120,9 +115,9 @@ function Behaviours({ vm }: { vm: BehavioursVM }) {
         }
       />
       {/* Pinned over the list once something changed, clear of the round action at the phone's foot. */}
-      {(dirty || saving) && (
+      {(draft.dirty || saving) && (
         <Animated.View entering={FadeInDown.duration(DURATION.base)} exiting={FadeOut.duration(DURATION.fast)} className="absolute inset-x-4" style={{ bottom: Math.max(insets.bottom + 84, 96) }}>
-          <Button disabled={saving} onPress={save}>
+          <Button disabled={saving || adding} onPress={save}>
             {saving ? t("behaviours.saving") : t("behaviours.save")}
           </Button>
         </Animated.View>

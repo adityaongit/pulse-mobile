@@ -2,10 +2,10 @@
 // src/server/queries/journal.ts, with the tag-table helpers of src/server/journalTags.ts. Every Postgres read is a
 // Store read; the VM shapes are the web's (types.ts).
 import { i18n } from "@/i18n/config";
-import { behavior } from "@/lib/behaviors";
+import { behavior, englishBehaviorLabel } from "@/lib/behaviors";
 import type { ImpactMetric, TagImpact } from "@/core/algorithms/journalImpact";
 import type { JournalEntry } from "@/data/types";
-import type { JournalTagRow, Store } from "@/data/store";
+import type { JournalTagEdit, JournalTagRow, Store } from "@/data/store";
 import { addDays } from "@/lib/time";
 import type { JournalImpactRow } from "@/pipeline/types";
 import { finite, loadDays, meanSd, type QueryCtx, todayOf } from "./common";
@@ -27,9 +27,11 @@ export const DEFAULT_JOURNAL_TAGS = [
   { tag: "illness", label: "Illness" },
 ] as const;
 
+const defaultRows: JournalTagRow[] = DEFAULT_JOURNAL_TAGS.map(({ tag, label }) => ({ tag, label, isDefault: true, hidden: false, position: 0 }));
+
 /** Inserts any missing default tag; existing rows (and custom tags) are left alone. Returns rows inserted. */
 export async function ensureDefaultTags(store: Store): Promise<number> {
-  const added = await store.insertJournalTags(DEFAULT_JOURNAL_TAGS.map(({ tag, label }) => ({ tag, label, isDefault: true, hidden: false, position: 0 })));
+  const added = await store.insertJournalTags(defaultRows);
   return added.length;
 }
 
@@ -40,8 +42,14 @@ export const tagKey = (label: string) =>
     .replace(/[^a-z0-9]+/g, "_")
     .replace(/^_|_$/g, "");
 
-/** Most tags (defaults included) a person can have. Insights bootstrap every tag on every recompute, so this bounds that work. */
+/** Maximum number of available tags, including unchecked tags and defaults. */
 export const MAX_TAGS = 60;
+
+/**
+ * Most tag rows, removed ones included. Removing frees a MAX_TAGS place but keeps the row for past answers, and
+ * insights bootstrap every tag answered in the window on every recompute, so this bounds that work.
+ */
+export const MAX_TAG_ROWS = 2 * MAX_TAGS;
 
 /**
  * The tag rows, the defaults first ensured. The web inserts them at sign-up and on the worker's first run; on the
@@ -55,19 +63,33 @@ export async function tagRows(store: Store): Promise<JournalTagRow[]> {
   return store.journalTags();
 }
 
-/** Adds a custom tag at the end of its group. "exists" when the key is taken, "full" at MAX_TAGS. */
+/** Seed missing defaults and edit the resulting list under the same write lock. */
+export function editTags<T>(store: Store, edit: (rows: JournalTagRow[]) => JournalTagEdit<T>) {
+  return store.editJournalTags((rows) => {
+    const have = new Set(rows.map((r) => r.tag));
+    const missing = defaultRows.filter((r) => !have.has(r.tag));
+    if (!missing.length) return edit(rows);
+    const plan = edit([...rows, ...missing]);
+    return { ...plan, insert: [...missing, ...(plan.insert ?? [])] };
+  });
+}
+
+/** Adds a custom tag at the end of its group, or restores the existing row so past answers keep their label. */
 export async function addTag(store: Store, tag: string, label: string): Promise<"added" | "exists" | "full"> {
-  const rows = await tagRows(store);
-  if (rows.some((r) => r.tag === tag)) return "exists";
-  if (rows.length >= MAX_TAGS) return "full";
-  const position = rows.reduce((m, r) => Math.max(m, r.position), 0) + 1;
-  const added = await store.insertJournalTags([{ tag, label, isDefault: false, hidden: false, position }]);
-  return added.length ? "added" : "exists";
+  return editTags<"added" | "exists" | "full">(store, (rows) => {
+    const previous = rows.find((r) => r.tag === tag);
+    if (previous && !previous.removed) return { result: "exists" };
+    if (rows.filter((r) => !r.removed).length >= MAX_TAGS) return { result: "full" };
+    if (!previous && rows.length >= MAX_TAG_ROWS) return { result: "full" };
+    if (previous) return { result: "added", update: [{ tag, hidden: false, removed: false }] };
+    const position = rows.reduce((m, r) => Math.max(m, r.position), 0) + 1;
+    return { result: "added", insert: [{ tag, label, isDefault: false, hidden: false, position }] };
+  });
 }
 
 /** Hides a tag from the check-in sheet or shows it again. Its answers are untouched. False for an unknown tag. */
 export async function setTagHidden(store: Store, tag: string, hidden: boolean): Promise<boolean> {
-  if (!(await tagRows(store)).some((r) => r.tag === tag)) return false;
+  if (!(await tagRows(store)).some((r) => r.tag === tag && !r.removed)) return false;
   await store.updateJournalTags([{ tag, hidden }]);
   return true;
 }
@@ -79,7 +101,7 @@ export async function setTagHidden(store: Store, tag: string, hidden: boolean): 
 export async function reorderTags(store: Store, tags: string[]): Promise<boolean> {
   if (new Set(tags).size !== tags.length) return false;
   if (!tags.length) return true;
-  const known = new Set((await tagRows(store)).map((r) => r.tag));
+  const known = new Set((await tagRows(store)).filter((r) => !r.removed).map((r) => r.tag));
   if (!tags.every((t) => known.has(t))) return false;
   await store.updateJournalTags(tags.map((tag, position) => ({ tag, position })));
   return true;
@@ -106,13 +128,13 @@ const GROUP: Record<string, JournalTag["group"]> = {
  */
 function shownLabel(tag: string, stored: string): string {
   const b = behavior(tag);
-  return b && stored === (i18n.t(`journal:behavior.${tag}` as never, { lng: "en" } as never) as unknown as string) ? b.label : stored;
+  return b && stored === englishBehaviorLabel(tag) ? b.label : stored;
 }
 
 /** Every tag, hidden ones included, in check-in order (position inside a group, then insertion order). */
-async function tagsOf(ctx: QueryCtx): Promise<JournalTag[]> {
+async function tagsOf(ctx: QueryCtx): Promise<(JournalTag & { removed: boolean })[]> {
   const rows = await tagRows(ctx.store);
-  return rows.map((r) => ({ tag: r.tag, label: shownLabel(r.tag, r.label), isDefault: r.isDefault, hidden: r.hidden, group: GROUP[r.tag] ?? "custom" }));
+  return rows.map((r) => ({ tag: r.tag, label: shownLabel(r.tag, r.label), isDefault: r.isDefault, hidden: r.hidden, removed: !!r.removed, group: GROUP[r.tag] ?? "custom" }));
 }
 
 /** More › Behaviours: every tag, hidden ones included, with how many days answered it. */

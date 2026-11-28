@@ -5,7 +5,7 @@ import { SqliteWorkoutStore } from "./workoutDb";
 // row per 1 Hz sample is far too slow over months. Every batch write runs in one exclusive transaction.
 import { deleteDatabaseAsync, openDatabaseAsync, type SQLiteDatabase } from "expo-sqlite";
 import { isDeadConnection } from "./deadConnection";
-import type { CoachChatRow, DayRange, EntrySource, JournalTagChange, JournalTagRow, LoggedEntryRow, ReportRow, ScoreRow, SeriesKind, Store } from "./store";
+import type { CoachChatRow, DayRange, EntrySource, JournalTagChange, JournalTagEdit, JournalTagRow, LoggedEntryRow, ReportRow, ScoreRow, SeriesKind, Store } from "./store";
 import type { BloodPressureQuality, BloodPressureReading, DailyValue, Exercise, HealthRecord, HrSample, HrvSample, JournalEntry, Metrics, Profile, Segment, Session, StepsMinute, SyncState } from "./types";
 import type { ActivityCostResult } from "@/core/algorithms/activityCost";
 import { minuteHr } from "@/core/engine/context";
@@ -53,7 +53,7 @@ create table if not exists activity_cost (id integer primary key check (id = 1),
 create table if not exists pipeline_checkpoint (id integer primary key check (id = 1), data text not null);
 create table if not exists journal_tags (
   tag text primary key, label text not null, is_default integer not null default 0, hidden integer not null default 0,
-  position integer not null default 0, seq integer not null
+  position integer not null default 0, seq integer not null, removed integer not null default 0
 );
 create table if not exists logged_entries (
   id text primary key, type text not null, ts integer not null, day text not null, data text not null, created_at integer not null,
@@ -93,6 +93,7 @@ const MIGRATIONS = [
   "alter table hr_days add column minute integer not null default 0",
   // Units and the clock, JSON { units, hours } (Settings › App).
   "alter table profile add column display text",
+  "alter table journal_tags add column removed integer not null default 0",
   // Blood pressure readings (Health Connect).
   "create table if not exists blood_pressure_readings (id text primary key, ts integer not null, day text not null, systolic_mmhg real not null, diastolic_mmhg real not null, body_position text, measurement_location text, recording_method text, source_platform text, source_application text, source_device text, quality text not null, imported_at integer not null)",
   "create index if not exists blood_pressure_day on blood_pressure_readings (day)",
@@ -715,34 +716,42 @@ class SqliteStore implements Store {
   // ── Journal behaviours and logged entries ────────────────────────────────
 
   async journalTags() {
-    const rows = await this.db.getAllAsync<{ tag: string; label: string; is_default: number; hidden: number; position: number }>(
-      "select tag, label, is_default, hidden, position from journal_tags order by position, seq",
+    const rows = await this.db.getAllAsync<{ tag: string; label: string; is_default: number; hidden: number; position: number; removed: number }>(
+      "select tag, label, is_default, hidden, position, removed from journal_tags order by position, seq",
     );
-    return rows.map((r): JournalTagRow => ({ tag: r.tag, label: r.label, isDefault: !!r.is_default, hidden: !!r.hidden, position: r.position }));
+    return rows.map((r): JournalTagRow => ({ tag: r.tag, label: r.label, isDefault: !!r.is_default, hidden: !!r.hidden, position: r.position, removed: !!r.removed }));
   }
-  async insertJournalTags(rows: JournalTagRow[]) {
-    if (!rows.length) return [];
-    return this.tx(async (db) => {
-      const added: string[] = [];
-      for (const r of rows) {
-        const res = await db.runAsync(
-          `insert or ignore into journal_tags (tag, label, is_default, hidden, position, seq)
-           values (?, ?, ?, ?, ?, (select coalesce(max(seq), 0) + 1 from journal_tags))`,
-          [r.tag, r.label, bool(r.isDefault), bool(r.hidden), r.position],
-        );
-        if (res.changes > 0) added.push(r.tag);
-      }
-      return added;
-    });
+  insertJournalTags(rows: JournalTagRow[]) {
+    return rows.length ? this.tx((db) => this.writeJournalTags(db, rows, [])) : Promise.resolve([]);
   }
   async updateJournalTags(changes: JournalTagChange[]) {
-    if (!changes.length) return;
-    await this.tx(async (db) => {
-      for (const ch of changes) {
-        if (ch.hidden !== undefined) await db.runAsync("update journal_tags set hidden = ? where tag = ?", [bool(ch.hidden), ch.tag]);
-        if (ch.position !== undefined) await db.runAsync("update journal_tags set position = ? where tag = ?", [ch.position, ch.tag]);
-      }
+    if (changes.length) await this.tx((db) => this.writeJournalTags(db, [], changes));
+  }
+  editJournalTags<T>(edit: (rows: JournalTagRow[]) => JournalTagEdit<T>) {
+    return this.tx(async (db) => {
+      const { result, insert = [], update = [] } = edit(await this.journalTags());
+      await this.writeJournalTags(db, insert, update);
+      return result;
     });
+  }
+  private async writeJournalTags(db: SQLiteDatabase, rows: JournalTagRow[], changes: JournalTagChange[]) {
+    const added: string[] = [];
+    for (const r of rows) {
+      const res = await db.runAsync(
+        `insert or ignore into journal_tags (tag, label, is_default, hidden, position, removed, seq)
+         values (?, ?, ?, ?, ?, ?, (select coalesce(max(seq), 0) + 1 from journal_tags))`,
+        [r.tag, r.label, bool(r.isDefault), bool(r.hidden), r.position, bool(!!r.removed)],
+      );
+      if (res.changes > 0) added.push(r.tag);
+    }
+    for (const ch of changes) {
+      await db.runAsync(
+        `update journal_tags set hidden = coalesce(?, hidden), position = coalesce(?, position), removed = coalesce(?, removed)
+         where tag = ? and (removed = 0 or ?)`,
+        [ch.hidden == null ? null : bool(ch.hidden), ch.position ?? null, ch.removed == null ? null : bool(ch.removed), ch.tag, bool(ch.removed !== undefined)],
+      );
+    }
+    return added;
   }
 
   async addLoggedEntries(rows: LoggedEntryRow[]) {

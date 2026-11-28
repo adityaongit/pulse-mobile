@@ -88,8 +88,10 @@ export interface Store {
   journalTags(): Promise<JournalTagRow[]>;
   /** Inserts each row whose tag is new, after every existing one in insertion order; existing tags are left alone. Returns the tags inserted. */
   insertJournalTags(rows: JournalTagRow[]): Promise<string[]>;
-  /** Sets `hidden` and/or `position` on existing tags, in one transaction; unknown tags are skipped. */
+  /** Sets fields on existing tags; unknown tags are skipped. */
   updateJournalTags(changes: JournalTagChange[]): Promise<void>;
+  /** Derives a journal edit from the current rows and applies it in one transaction. */
+  editJournalTags<T>(edit: (rows: JournalTagRow[]) => JournalTagEdit<T>): Promise<T>;
 
   // Entries logged in Pulse (Pulse's `logged_entries`). Kept on the phone only: nothing is written to Health Connect.
   // Entries the sync brings from Health Connect (water, food and cycle logs made in Fitbit) sit in the same table with
@@ -152,9 +154,10 @@ export type CoachChatRow = { id: string; title: string; updatedAt: number };
 
 export type SeriesKind = "hr" | "still_hr" | "stress" | "energy_bank";
 
-/** Mirrors Pulse's journal_tags: a behaviour the check-in can ask about. Defaults are never removed, only hidden. */
-export type JournalTagRow = { tag: string; label: string; isDefault: boolean; hidden: boolean; position: number };
-export type JournalTagChange = { tag: string; hidden?: boolean; position?: number };
+/** Hidden tags are unchecked. Removed tags also leave the picker; their rows still label past answers. */
+export type JournalTagRow = { tag: string; label: string; isDefault: boolean; hidden: boolean; position: number; removed?: boolean };
+export type JournalTagChange = { tag: string; hidden?: boolean; position?: number; removed?: boolean };
+export type JournalTagEdit<T> = { result: T; insert?: JournalTagRow[]; update?: JournalTagChange[] };
 
 /** Where a logged entry was made: in Pulse's Journal, or in another app (Fitbit) and read from Health Connect. */
 export type EntrySource = "pulse" | "health_connect";
