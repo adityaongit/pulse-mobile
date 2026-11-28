@@ -177,6 +177,9 @@ export const wholeTick = (fmt: (v: number) => string) => (v: number) => (Number.
 export function ScrubLayer({ width, height, onScrub, children }: Size & { onScrub: (x: number | null) => void; children?: ReactNode }) {
   const [pinned, setPinned] = useState<number | null>(null);
   useEffect(() => onScrub(pinned), [pinned, onScrub]);
+  // Tapping the pinned point again clears it. Runs on the JS thread: an updater function made in a gesture worklet
+  // does not survive runOnJS, so passing one to setPinned pinned every tap to the first point.
+  const tap = useCallback((x: number) => setPinned((prev) => (prev !== null && Math.abs(prev - x) < 14 ? null : x)), []);
   const gesture = useMemo(
     () =>
       Gesture.Race(
@@ -193,11 +196,10 @@ export function ScrubLayer({ width, height, onScrub, children }: Size & { onScru
         Gesture.Tap()
           .maxDuration(300)
           .onEnd((e, ok) => {
-            // Tapping the pinned point again clears it.
-            if (ok) runOnJS(setPinned)((prev: number | null) => (prev !== null && Math.abs(prev - e.x) < 14 ? null : e.x));
+            if (ok) runOnJS(tap)(e.x);
           }),
       ),
-    [],
+    [tap],
   );
   return (
     <GestureDetector gesture={gesture}>
