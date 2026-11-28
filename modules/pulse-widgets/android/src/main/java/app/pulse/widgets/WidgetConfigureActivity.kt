@@ -4,6 +4,7 @@ import android.app.Activity
 import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.os.Bundle
+import android.view.ViewGroup.LayoutParams
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.LinearLayout
@@ -29,6 +30,7 @@ class WidgetConfigureActivity : Activity() {
     val names = mutableMapOf<String, String>()
     if (snapshot != null) for (i in 0 until snapshot.length()) snapshot.optJSONObject(i)?.let { names[it.optString("key")] = it.optString("label") }
     for (key in METRIC_KEYS.filter { size != WidgetSize.LARGE || it != "heart_rate" }) column.addView(CheckBox(this).apply {
+      buttonTintList = getColorStateList(R.color.pulse_widget_choice_tint)
       text = names[key]?.takeIf { it.isNotBlank() } ?: metricLabel(this@WidgetConfigureActivity, key)
       textSize = 17f
       minHeight = dp(48)
@@ -41,6 +43,7 @@ class WidgetConfigureActivity : Activity() {
       }
     })
     column.addView(Button(this).apply {
+      layoutParams = LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply { topMargin = dp(12) }
       setText(R.string.pulse_widget_save)
       setOnClickListener {
         if (selected.isEmpty()) { Toast.makeText(this@WidgetConfigureActivity, R.string.pulse_widget_empty, Toast.LENGTH_SHORT).show(); return@setOnClickListener }
@@ -50,7 +53,11 @@ class WidgetConfigureActivity : Activity() {
         finish()
       }
     })
-    column.addView(Button(this).apply { setText(R.string.pulse_widget_cancel); setOnClickListener { finish() } })
+    column.addView(Button(this).apply {
+      layoutParams = LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply { topMargin = dp(12) }
+      setText(R.string.pulse_widget_cancel)
+      setOnClickListener { finish() }
+    })
     setContentView(ScrollView(this).apply { addView(column) })
     selection = selected
   }
