@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { arcPath, areaPath, barWidth, equidistantPreserveStart, evenTicks, linePath, linearScale, nearestIndex, preserveStartEnd, segments, tickTextWidth, ticksIn } from "./geometry";
+import { arcPath, areaPath, barWidth, equidistantPreserveStart, evenTicks, linePath, linearScale, nearestIndex, preserveStartEnd, segments, tickTextWidth, ticksIn, tooltipPlace } from "./geometry";
 
 describe("scales", () => {
   it("maps a domain onto a reversed range", () => {
@@ -101,5 +101,39 @@ describe("barWidth (Recharts)", () => {
     expect(barWidth(10.6)).toBe(8);
     expect(barWidth(50, 0.1, 28)).toBe(28);
     expect(barWidth(40, 0.18)).toBe(26);
+  });
+});
+
+describe("tooltipPlace", () => {
+  // A 300 × 200 chart and an 80 × 40 card.
+  const place = (x: number, marks: number[]) => tooltipPlace(x, marks, 80, 40, 300, 200);
+  it("keeps the top spot, centred on x, when the mark is well below it", () => {
+    expect(place(150, [120])).toEqual({ left: 110, top: 0 });
+  });
+  it("keeps the top spot with no marks", () => {
+    expect(place(150, [])).toEqual({ left: 110, top: 0 });
+  });
+  it("drops below a peak the top spot would cover", () => {
+    expect(place(150, [20])).toEqual({ left: 110, top: 32 });
+  });
+  it("drops below the lowest of several marks", () => {
+    expect(place(150, [20, 60])).toEqual({ left: 110, top: 72 });
+  });
+  it("moves beside marks it can fit neither above nor below, right of x when there is room", () => {
+    // A bar from near the top (10) to its base (180): no room above or below.
+    expect(place(100, [10, 180])).toEqual({ left: 112, top: 0 });
+  });
+  it("moves left of x near the right edge", () => {
+    expect(place(260, [10, 180])).toEqual({ left: 168, top: 0 });
+  });
+  it("clamps inside the chart at the edges", () => {
+    expect(place(10, [120])).toEqual({ left: 0, top: 0 });
+    expect(place(295, [120])).toEqual({ left: 220, top: 0 });
+  });
+  it("never covers the scrubbed x when beside the marks", () => {
+    for (const x of [0, 50, 150, 250, 300]) {
+      const { left } = place(x, [5, 195]);
+      expect(x < left || x > left + 80).toBe(true);
+    }
   });
 });

@@ -94,7 +94,7 @@ function Chart({ e }: { e: EnergySeries }) {
             <ScrubLayer width={width} height={height} onScrub={setX} />
             <ScrubTick index={ai} />
             {a && a.value !== null && (
-              <TooltipCard x={tx(a.t)} width={width} title={clock(a.t, tz)}>
+              <TooltipCard x={tx(a.t)} marks={[y(a.value)]} width={width} height={height} title={clock(a.t, tz)}>
                 <TooltipLine color={css(DATA_COLORS[recoveryColor(a.value)].css)}>{`${formatValue("int", a.value)}%`}</TooltipLine>
               </TooltipCard>
             )}

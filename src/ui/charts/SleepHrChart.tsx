@@ -103,7 +103,7 @@ function Chart({ hr, highlight }: { hr: SleepHr; highlight?: { start: number; en
             <ScrubLayer width={width} height={height} onScrub={setX} />
             <ScrubTick index={ai} />
             {a && a.v !== null && (
-              <TooltipCard x={tx(a.t)} width={width} title={clock(a.t, tz)}>
+              <TooltipCard x={tx(a.t)} marks={[y(a.v)]} width={width} height={height} title={clock(a.t, tz)}>
                 <TooltipLine color={c.foreground}>{`${a.v} bpm`}</TooltipLine>
               </TooltipCard>
             )}

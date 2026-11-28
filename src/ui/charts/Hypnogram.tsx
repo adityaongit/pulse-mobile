@@ -91,7 +91,7 @@ export function HypnogramChart({ night }: { night: HypnogramNight }) {
             <ScrubLayer width={width} height={height} onScrub={setX} />
             <ScrubTick index={seg ? seg.start : -1} />
             {seg && x !== null && (
-              <TooltipCard x={x} width={width} title={`${clock(seg.start, tz)} to ${clock(seg.end, tz)}`}>
+              <TooltipCard x={x} marks={[y(LANE[seg.stage])]} width={width} height={height} title={`${clock(seg.start, tz)} to ${clock(seg.end, tz)}`}>
                 <TooltipLine color={css(DATA_COLORS[`stage-${seg.stage}`].css)}>{i18n.t("ui:hypnogram.tooltip", { stage: stageName(seg.stage), minutes: Math.round((seg.end - seg.start) / 60000) })}</TooltipLine>
               </TooltipCard>
             )}

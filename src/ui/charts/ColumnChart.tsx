@@ -86,7 +86,7 @@ export function ColumnChart({ summary, data, format, unit, tickEvery = 1, refere
             <ScrubLayer width={width} height={height} onScrub={setX} />
             <ScrubTick index={active} />
             {a && (
-              <TooltipCard x={centers[active]} width={width} title={a.title ?? a.label}>
+              <TooltipCard x={centers[active]} marks={a.value !== null && a.value > 0 ? [y(a.value), y1] : []} gap={Math.max(12, bw / 2 + 4)} width={width} height={height} title={a.title ?? a.label}>
                 <TooltipLine color={!any || a.highlight ? ON : c["dial-track"]}>{a.value === null ? i18n.t("reasons:noData.long") : `${formatValue(format, a.value)}${unitText}`}</TooltipLine>
               </TooltipCard>
             )}

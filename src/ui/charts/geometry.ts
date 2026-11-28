@@ -134,6 +134,21 @@ export function nearestIndex(xs: readonly number[], x: number): number {
 }
 
 /**
+ * Where the scrub tooltip (`w` × `h`) goes in a `width` × `height` chart so it never covers the marks it describes: the
+ * scrubbed x and the ys of its marks (a dot, or a bar's top and base). Centred over x at the top of the chart, its usual
+ * spot, when that clears the highest mark by `gap` (past a GlowDot's 9 px halo); else below the lowest mark when that fits; else beside the marks at
+ * the top, right of x when that fits, else left. Horizontally it always stays inside the chart.
+ */
+export function tooltipPlace(x: number, marks: readonly number[], w: number, h: number, width: number, height: number, gap = 12): { left: number; top: number } {
+  const inside = (left: number) => Math.min(Math.max(left, 0), Math.max(0, width - w));
+  const centred = inside(x - w / 2);
+  if (!marks.length || h + gap <= Math.min(...marks)) return { left: centred, top: 0 };
+  const below = Math.max(...marks) + gap;
+  if (below + h <= height) return { left: centred, top: below };
+  return { left: inside(x + gap + w <= width ? x + gap : x - gap - w), top: 0 };
+}
+
+/**
  * "Nice" ticks covering [lo, hi]: Recharts' getNiceTickValues (its default "auto" step, decimals allowed), which the
  * web's axes run with `tickCount`. The step is the rough step rounded up to 0.05 of its power of ten (0.1 for steps
  * from 1 to 10), the ticks pass through 0 when the range spans it, else through a multiple of the step near the middle,
