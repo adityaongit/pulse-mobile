@@ -183,6 +183,8 @@ Android resizes the window for the keyboard itself, so a `KeyboardAvoidingView` 
 
 `android.predictiveBackGestureEnabled` in `app.json` lets Android 13+ show the system's back preview (the app peeking out, or returning to the launcher) while the gesture is held. It is a native manifest flag, so Expo Go ignores it: it only shows in a development build.
 
+It is off. With it on, the app opts into Android's newer back callbacks (`enableOnBackInvokedCallback`). On some Android 13 to 15 phones (a Nothing Phone 1 on Android 15, a OnePlus Nord CE on OxygenOS 13, with the gesture and with buttons) Back then never reached the native stack, so Android ran its default and closed the app from any depth (#57). Pixel, Samsung and Xiaomi phones were fine. Turn it back on only after checking Back on a pushed screen on one of those phones.
+
 ## Headers stay custom, on the native stack
 
 The headers are the shells' own views (centred title, date switcher, collapsing hero) laid over a `Stack` whose native header is off. The native stack still gives the iOS edge swipe-back and the Android back gesture on every pushed route, because those belong to the screen, not the header.
