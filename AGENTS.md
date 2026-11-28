@@ -78,9 +78,13 @@ docs/         rewrite-plan.md, plan.md, design/spec.md, learning.md, onboarding.
 ## Git
 
 - Use the `git` CLI only, never `gh`.
-- Commit as `adityaongit`, email `74150665+adityaongit@users.noreply.github.com`. Check `git config user.email` before committing.
+- The maintainer commits as `adityaongit`, email `74150665+adityaongit@users.noreply.github.com`. Contributors commit under their own name and email, never the maintainer's.
 - Conventional commit messages, signed off (`git commit -s`).
 - Once typecheck, lint, test and the bundle check pass and the change has been tried on the phone, fast-forward `origin/main`. Never force-push.
+
+## Pull requests
+
+- Fill in `.github/PULL_REQUEST_TEMPLATE.md`. Under **AI assistance**, a coding agent lists itself: the tool and the exact model id it runs on (for example `Claude Code with claude-opus-5-5`), and what it wrote. Do not leave it for the person to fill in.
 
 ## Testing
 
