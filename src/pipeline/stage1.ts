@@ -93,6 +93,9 @@ function stage1Key(data: Data, day: string, opts: PipelineOptions, carried: numb
       vo2maxFor(data, day), // Training Effect's intensity scale (version 19)
       rhrBase, // the engine's TRIMP and EPOC rest on the 60-day resting-HR baseline (version 21)
       opts.profile.engineMaxHr, // the engine's zones (version 25)
+      // The person's own zones: setting, changing or clearing them redoes every day, as a new max HR does. Left out
+      // without them, so the keys of a profile that never set any stay as they were.
+      ...(opts.profile.hrZones ? [opts.profile.hrZones] : []),
     ]),
   );
 }
@@ -267,7 +270,8 @@ function engineDay(
 
   const { sex } = opts.profile;
   const maxHr = opts.profile.engineMaxHr ?? opts.profile.maxHr;
-  const zones = zonesOf(maxHr);
+  const own = opts.profile.hrZones ?? null;
+  const zones = zonesOf(maxHr, own);
   const workouts = new Map<string, EngineWorkout>();
   let workoutUnits = 0;
   const zoneS = [0, 0, 0, 0, 0, 0];
@@ -312,6 +316,7 @@ function engineDay(
           workoutUnits: round(workoutUnits, 1),
           zoneS: zoneS.map((v) => Math.round(v)),
           maxHr,
+          ...(own ? { zones: [...zones.lowest] } : {}),
         }
       : null,
   };

@@ -44,13 +44,14 @@ export type MetricsRow = Metrics;
 
 /**
  * The screens' zones are the Pulse engine's (% of max HR, max HR the profile's or 220 − age): a stored day or workout
- * with engine zone seconds shows those, zone 0 as the time below zone 1, with the engine's lower bounds. Halo's zones on
- * heart-rate reserve stay in the stored row for halo's extras.
+ * with engine zone seconds shows those, zone 0 as the time below zone 1, with the engine's lower bounds (the person's
+ * own when the day was scored on them, Profile.hrZones). Halo's zones on heart-rate reserve stay in the stored row for
+ * halo's extras.
  */
 function engineZoned(s1: Stage1Day): Stage1Day {
   const st = s1.engine?.strain;
   if (!st?.zoneS || st.maxHr == null) return s1;
-  return { ...s1, zoneSeconds: st.zoneS.slice(1), zoneBelowSeconds: st.zoneS[0], zoneLower: [...engineZones(st.maxHr).lowest], maxHr: st.maxHr };
+  return { ...s1, zoneSeconds: st.zoneS.slice(1), zoneBelowSeconds: st.zoneS[0], zoneLower: [...engineZones(st.maxHr, st.zones).lowest], maxHr: st.maxHr };
 }
 function engineZonedActivity(a: Stage1Activity, s1: Stage1Day | null): Stage1Activity {
   const z = a.engine?.zoneS;

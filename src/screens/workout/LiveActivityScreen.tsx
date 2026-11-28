@@ -45,8 +45,8 @@ export function strainSetupOf(s: RecordedWorkout): ActivityStrainSetup {
 }
 
 /** Zone rows 5 down to 0 with their bpm ranges on `maxHr`, as the activity detail lists them. */
-export function zoneRows(maxHr: number, seconds: number[]): ZoneRow[] {
-  const z = zonesOf(maxHr).lowest;
+export function zoneRows(maxHr: number, seconds: number[], own?: readonly number[] | null): ZoneRow[] {
+  const z = zonesOf(maxHr, own).lowest;
   return [0, 1, 2, 3, 4, 5].map((k) => ({
     zone: k,
     label: i18n.t("workouts:live.zone", { zone: k }),
@@ -88,7 +88,7 @@ export function LiveActivityScreen() {
   const paused = session.status !== "recording";
   const fresh = !paused && session.link === "live" && session.lastSampleAt !== null && now - session.lastSampleAt < FRESH_MS;
   const bpm = fresh ? session.lastBpm : null;
-  const maxHr = strainSetupOf(session).maxHr;
+  const { maxHr, zones } = strainSetupOf(session);
   const toggle = () => { haptic.toggle(paused); void workoutRecorder.command(paused ? "resume" : "pause"); };
 
   return (
@@ -124,7 +124,7 @@ export function LiveActivityScreen() {
             <View className="items-center pb-2">
               <StrainDial view={view} target={session.target ?? null} paused={paused} />
             </View>
-            <HeartRateCard bpm={bpm} maxHr={maxHr} />
+            <HeartRateCard bpm={bpm} maxHr={maxHr} zones={zones} />
             <StatsCard items={[
               { icon: "heart", label: t("live.avgHr"), value: view.avgHr },
               { icon: "maxHeart", label: t("live.maxHr"), value: view.maxHr },
@@ -134,7 +134,7 @@ export function LiveActivityScreen() {
         ) : (
           <>
             <View className={cn(CARD_CLASS, "items-center pt-5")}>
-              <HrDisc bpm={bpm} maxHr={maxHr} />
+              <HrDisc bpm={bpm} maxHr={maxHr} zones={zones} />
               <HrLine samples={state.samples} />
             </View>
             <StatsCard items={[
@@ -144,7 +144,7 @@ export function LiveActivityScreen() {
             ]} />
             <View className={cn(CARD_CLASS, "px-4 pb-2 pt-4")}>
               <Text className={cn("mb-3 text-[13px] text-foreground", CAPS)}>{t("live.timeInZones")}</Text>
-              <ZoneBars variant="rows" data={{ value: zoneRows(maxHr, view.zoneSeconds), reason: null, provisional: true }} />
+              <ZoneBars variant="rows" data={{ value: zoneRows(maxHr, view.zoneSeconds, zones), reason: null, provisional: true }} />
             </View>
           </>
         )}
@@ -259,7 +259,7 @@ function Marker({ size }: { size: number }) {
 }
 
 /** The heart rate in a card: the label, the bpm and the zone bar. */
-function HeartRateCard({ bpm, maxHr }: { bpm: number | null; maxHr: number }) {
+function HeartRateCard({ bpm, maxHr, zones }: { bpm: number | null; maxHr: number; zones?: readonly number[] | null }) {
   const { t } = useTranslation("workouts");
   const { c } = useTheme();
   return (
@@ -271,13 +271,13 @@ function HeartRateCard({ bpm, maxHr }: { bpm: number | null; maxHr: number }) {
       <Text className="font-numeric text-[40px] font-bold leading-[44px] tabular-nums text-foreground">
         {bpm ?? "--"}<Text className="text-[15px] font-semibold text-muted-foreground"> {t("live.bpm")}</Text>
       </Text>
-      <ZoneBar bpm={bpm} maxHr={maxHr} />
+      <ZoneBar bpm={bpm} maxHr={maxHr} zones={zones} />
     </View>
   );
 }
 
 /** The HEART RATE tab's disc: the bpm and its zone in a dark circle inside a faint halo. */
-function HrDisc({ bpm, maxHr }: { bpm: number | null; maxHr: number }) {
+function HrDisc({ bpm, maxHr, zones }: { bpm: number | null; maxHr: number; zones?: readonly number[] | null }) {
   const { t } = useTranslation("workouts");
   const { c } = useTheme();
   const { width } = useWindowDimensions();
@@ -288,7 +288,7 @@ function HrDisc({ bpm, maxHr }: { bpm: number | null; maxHr: number }) {
       <View className="items-center justify-center rounded-full bg-background" style={{ width: disc, height: disc }}>
         <Heart size={20} color={c["recovery-red"]} fill={c["recovery-red"]} />
         <Text className="font-numeric font-bold tabular-nums text-foreground" style={{ fontSize: disc * 0.32, lineHeight: disc * 0.38 }}>{bpm ?? "--"}</Text>
-        {bpm !== null && <Text className="text-[13px] font-semibold text-muted-foreground">{t("live.zone", { zone: zonePosition(bpm, maxHr).zone })}</Text>}
+        {bpm !== null && <Text className="text-[13px] font-semibold text-muted-foreground">{t("live.zone", { zone: zonePosition(bpm, maxHr, zones).zone })}</Text>}
       </View>
     </View>
   );

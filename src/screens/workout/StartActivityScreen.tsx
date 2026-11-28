@@ -105,7 +105,7 @@ export function StartActivityScreen() {
                 <Heart size={22} color={c["on-strain"]} fill={c["on-strain"]} />
                 <Text className="font-numeric font-bold text-on-strain" style={{ fontSize: disc * 0.36, lineHeight: disc * 0.42 }}>{live ? band.bpm : "--"}</Text>
                 {/* The zone, as the live Heart Rate tab's disc shows it. */}
-                {live && start && <Text className="text-[13px] font-semibold text-on-strain/80">{t("live.zone", { zone: zonePosition(band.bpm!, start.strainSetup.maxHr).zone })}</Text>}
+                {live && start && <Text className="text-[13px] font-semibold text-on-strain/80">{t("live.zone", { zone: zonePosition(band.bpm!, start.strainSetup.maxHr, start.strainSetup.zones).zone })}</Text>}
               </View>
             </Animated.View>
             {!live && <Connect band={band} />}

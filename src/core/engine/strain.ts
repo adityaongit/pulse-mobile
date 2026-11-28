@@ -5,8 +5,27 @@ import { roundHalfAway } from "./math";
 /** Lower bounds of zones 1–5 (bpm) and the max HR that tops zone 5. */
 export type Zones = { lowest: [number, number, number, number, number]; maxHr: number };
 
-/** Zones on % of max HR: each lower bound ceil(round1(maxHr · p)) for p = 50, 60, 70, 80, 90 % (§ Zone settings). */
-export function zonesOf(maxHr: number): Zones {
+/** The bpm a zone's own lower bound may take (Settings › Profile › Heart-rate zones). */
+export const ZONE_BPM = { min: 40, max: 239 } as const;
+
+/**
+ * Why five lower bounds (bpm, zones 1 to 5) can't be the person's own zones, or null when they can: five whole numbers
+ * in ZONE_BPM, each above the one before, and with `maxHr`, zone 5 starting below it.
+ */
+export function zoneBoundsError(own: readonly number[], maxHr?: number): "count" | "range" | "order" | "max" | null {
+  if (own.length !== 5) return "count";
+  if (!own.every((b) => Number.isInteger(b) && b >= ZONE_BPM.min && b <= ZONE_BPM.max)) return "range";
+  if (!own.every((b, i) => i === 0 || b > own[i - 1]!)) return "order";
+  return maxHr !== undefined && own[4]! >= maxHr ? "max" : null;
+}
+
+/**
+ * Zones on % of max HR: each lower bound ceil(round1(maxHr · p)) for p = 50, 60, 70, 80, 90 % (§ Zone settings, method
+ * maxHR). `own`: the person's own lower bounds in bpm (§ Zone settings, method manual), used when well formed
+ * (zoneBoundsError without max HR); zone 5 then runs to max HR, or one bpm past its own start when that is higher.
+ */
+export function zonesOf(maxHr: number, own?: readonly number[] | null): Zones {
+  if (own && zoneBoundsError(own) === null) return { lowest: [own[0]!, own[1]!, own[2]!, own[3]!, own[4]!], maxHr: Math.max(maxHr, own[4]! + 1) };
   const b = (p: number) => Math.ceil(roundHalfAway(maxHr * p, 1));
   return { lowest: [b(0.5), b(0.6), b(0.7), b(0.8), b(0.9)], maxHr };
 }

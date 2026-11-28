@@ -78,7 +78,7 @@ export function RecordedActivityScreen() {
 
   const view = activityView(samples, strainSetupOf(session), session.body ?? null);
   const summary = summarizeWorkout(session, samples);
-  const maxHr = strainSetupOf(session).maxHr;
+  const { maxHr, zones } = strainSetupOf(session);
   // Home once it is gone; when the delete fails the dialog stays open with the reason.
   const remove = () => void workoutRecorder.discard(session.id).then((ok) => {
     if (ok) { setAsking(false); router.replace("/(tabs)" as Href); }
@@ -117,7 +117,7 @@ export function RecordedActivityScreen() {
         <View className="gap-6">
           <Text className="text-[13px] leading-5 text-muted-foreground">{t(session.hcId ? "detail.importing" : "detail.phoneOnly")}</Text>
           <IntradayHrChart variant="activity" data={{ value: hasHr ? { points: summary.trace } : null, reason: hasHr ? null : "no_data", provisional: false }} />
-          <ZoneBars variant="rows" data={{ value: zoneRows(maxHr, view.zoneSeconds), reason: null, provisional: false }} note={t("detail.zoneNote", { maxHr })} />
+          <ZoneBars variant="rows" data={{ value: zoneRows(maxHr, view.zoneSeconds, zones), reason: null, provisional: false }} note={zones ? t("detail.zoneNoteOwn") : t("detail.zoneNote", { maxHr })} />
         </View>
       }
       secondary={[

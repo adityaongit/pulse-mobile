@@ -32,8 +32,8 @@ const zoneText = (zone: number) => (zone === 0 ? "text-muted-foreground" : DATA_
  * WHOOP's zone bar: six equal segments, dimmed except the current one, a dot at the bpm's place within its zone, and
  * "Zone 0" … "Zone 5" under them, the current one in the foreground colour and bold.
  */
-export function ZoneBar({ bpm, maxHr, compact = false }: { bpm: number | null; maxHr: number; compact?: boolean }) {
-  const at = bpm !== null ? zonePosition(bpm, maxHr) : null;
+export function ZoneBar({ bpm, maxHr, zones, compact = false }: { bpm: number | null; maxHr: number; zones?: readonly number[] | null; compact?: boolean }) {
+  const at = bpm !== null ? zonePosition(bpm, maxHr, zones) : null;
   return (
     <View accessibilityLabel={at ? i18n.t("workouts:live.zoneA11y", { zone: at.zone }) : undefined}>
       <View className="flex-row gap-[3px]">

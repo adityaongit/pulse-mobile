@@ -391,5 +391,6 @@
     "recentSpoken": "{{when}} : {{duration}}, Strain de la séance {{value}} pour cent",
     "recentLine": "{{duration}} · {{bpm}} bpm moy.",
     "strain": "Strain"
-  }
+  },
+  "zoneNoteOwn": "Tes propres zones, définies dans Réglages › Profil."
 }

@@ -74,7 +74,7 @@ export function summarizeWorkout(session: RecordedWorkout, samples: readonly Wor
   const validMax = finite(session.maxHr) && session.maxHr > 30 && session.maxHr <= 240;
   const calibrated = validMax && finite(session.restingHr) && session.restingHr >= 30 && session.restingHr < session.maxHr! &&
     (session.sex === "male" || session.sex === "female");
-  const zones = validMax ? zonesOf(session.maxHr!) : null;
+  const zones = validMax ? zonesOf(session.maxHr!, session.strainSetup?.zones) : null;
   let observedMs = 0;
   let sum = 0;
   let maxHr: number | null = null;

@@ -7,7 +7,8 @@ import { LiveStrain, MAX_JUMP_BPM, type StrainBase } from "./liveStrain";
 import { MAX_WORKOUT_GAP_MS, type WorkoutSample } from "./workout";
 
 export type ActivityBody = { age: number; weightKg: number; sex: Sex };
-export type ActivityStrainSetup = { restingHr: number; maxHr: number; base: StrainBase | null; sex: string };
+/** `zones`: the person's own zone lower bounds (Profile.hrZones) at Start; absent: 50–90 % of max HR. */
+export type ActivityStrainSetup = { restingHr: number; maxHr: number; base: StrainBase | null; sex: string; zones?: number[] | null };
 
 export type ActivityView = {
   /** The activity's own Strain, a percent. */
@@ -39,7 +40,7 @@ export function kcalPerMin(bpm: number, b: ActivityBody): number {
  * MAX_WORKOUT_GAP_MS breaks a run: nothing is credited across either, as summarizeWorkout does.
  */
 export function activityView(samples: readonly WorkoutSample[], setup: ActivityStrainSetup, body: ActivityBody | null): ActivityView {
-  const strain = new LiveStrain({ restingHr: setup.restingHr, maxHr: setup.maxHr, base: setup.base, sex: setup.sex });
+  const strain = new LiveStrain({ restingHr: setup.restingHr, maxHr: setup.maxHr, base: setup.base, sex: setup.sex, zones: setup.zones });
   let kcal = 0;
   let previous: WorkoutSample | null = null;
   for (const s of withoutSpikes(samples)) {
@@ -79,12 +80,12 @@ export function withoutSpikes(samples: readonly WorkoutSample[]): WorkoutSample[
 }
 
 /** The bpm's zone 0–5 and how far through that zone it is (0–1), for the dot on the zone bar. */
-export function zonePosition(bpm: number, maxHr: number): { zone: number; at: number } {
-  const z = zonesOf(maxHr);
+export function zonePosition(bpm: number, maxHr: number, own?: readonly number[] | null): { zone: number; at: number } {
+  const z = zonesOf(maxHr, own);
   const zone = zoneOf(bpm, z);
-  // Zone 0 runs from 40 % of max HR up to Zone 1; Zone 5 up to max HR.
-  const lo = zone === 0 ? Math.round(maxHr * 0.4) : z.lowest[zone - 1];
-  const hi = zone === 5 ? maxHr : z.lowest[zone];
+  // Zone 0 runs from 40 % of max HR (or below the person's own Zone 1) up to Zone 1; Zone 5 up to max HR.
+  const lo = zone === 0 ? Math.min(Math.round(maxHr * 0.4), z.lowest[0] - 1) : z.lowest[zone - 1];
+  const hi = zone === 5 ? z.maxHr : z.lowest[zone];
   return { zone, at: Math.min(1, Math.max(0, (bpm - lo) / Math.max(1, hi - lo))) };
 }
 

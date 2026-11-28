@@ -112,6 +112,7 @@
     "delete": "Delete",
     "deleting": "Deleting…",
     "importing": "Saved to Health Connect and Google Health. The full activity opens here once Pulse imports it on the next sync.",
-    "phoneOnly": "Kept on this phone only: Pulse needs permission to write workouts to Health Connect to save it to Google Health."
+    "phoneOnly": "Kept on this phone only: Pulse needs permission to write workouts to Health Connect to save it to Google Health.",
+    "zoneNoteOwn": "Your own zones, set in Settings › Profile."
   }
 }

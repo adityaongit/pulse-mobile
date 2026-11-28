@@ -338,5 +338,22 @@
     "off": "Aktiviere „Fehlerberichte senden“ unter Einstellungen › App › Datenschutz, um dies zu senden.",
     "sentTitle": "Gesendet",
     "sentBody": "Danke. Deine Meldung hilft, es zu beheben."
+  },
+  "zones": {
+    "title": "Herzfrequenzzonen",
+    "body": "Strain zählt die Zeit in jeder Zone. Pulse legt sie anhand deiner maximalen Herzfrequenz fest, oder du bestimmst selbst, wo jede Zone beginnt. Eine Änderung berechnet deinen ganzen Verlauf neu, wie eine neue maximale Herzfrequenz.",
+    "method": "Wie die Zonen festgelegt werden",
+    "automatic": "Automatisch",
+    "own": "Eigene",
+    "automaticHint": "Aus deiner maximalen Herzfrequenz ({{maxHr}} bpm): Zone 1 ab {{z1}}, Zone 2 ab {{z2}}, Zone 3 ab {{z3}}, Zone 4 ab {{z4}}, Zone 5 ab {{z5}} bpm (50 bis 90%).",
+    "zone": "Zone {{n}}",
+    "zoneAria": "Zone {{n}} beginnt bei, bpm",
+    "ownHint": "Wo jede Zone beginnt, in bpm. Zone 5 reicht bis zu deiner maximalen Herzfrequenz ({{maxHr}} bpm).",
+    "saveAria": "Herzfrequenzzonen speichern",
+    "saved": "Zonen gespeichert. Pulse berechnet deinen Verlauf neu.",
+    "errorWhole": "Gib für jede Zone eine ganze Zahl in bpm ein.",
+    "errorRange": "Jede Zone beginnt zwischen {{min}} und {{max}} bpm.",
+    "errorOrder": "Jede Zone muss über der vorherigen beginnen.",
+    "errorMax": "Zone 5 muss unter deiner maximalen Herzfrequenz ({{maxHr}} bpm) beginnen."
   }
 }

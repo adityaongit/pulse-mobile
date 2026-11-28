@@ -377,5 +377,6 @@
     "recentSpoken": "{{when}}: {{duration}}, workout strain {{value}} percent",
     "recentLine": "{{duration}} · {{bpm}} bpm avg",
     "strain": "Strain"
-  }
+  },
+  "zoneNoteOwn": "Your own zones, set in Settings › Profile."
 }

@@ -28,7 +28,7 @@ export async function loadWorkoutStart(ctx: QueryCtx): Promise<WorkoutStart> {
     sex: ctx.profile.sex,
     estimatedMaxHr: ctx.profile.maxHr == null,
     timeZone: ctx.timeZone,
-    strainSetup: { restingHr: setup.restingHr, maxHr: setup.maxHr, base: setup.base, sex: setup.sex },
+    strainSetup: { restingHr: setup.restingHr, maxHr: setup.maxHr, base: setup.base, sex: setup.sex, zones: ctx.profile.hrZones ?? null },
     target: setup.target,
     body: weightKg !== null && age > 0 ? { age, weightKg, sex: ctx.profile.sex } : null,
   };

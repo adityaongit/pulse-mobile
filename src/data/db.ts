@@ -100,6 +100,8 @@ const MIGRATIONS = [
   "create index if not exists blood_pressure_ts on blood_pressure_readings (ts)",
   // An unused view an earlier build created.
   "drop view if exists blood_pressure",
+  // The person's own heart-rate zones, JSON [z1..z5] lower bounds in bpm (Settings › Profile).
+  "alter table profile add column hr_zones text",
 ];
 
 const DAY = 86_400;
@@ -319,17 +321,18 @@ class SqliteStore implements Store {
   async getProfile() {
     const r = await this.db.getFirstAsync<{
       birth_date: string; sex: Profile["sex"]; max_hr: number | null; height_cm: number | null; waist_cm: number | null; time_zone: string;
-      name: string | null; photo: string | null; sleep_goal: string | null; display: string | null;
-    }>("select birth_date, sex, max_hr, height_cm, waist_cm, time_zone, name, photo, sleep_goal, display from profile where id = 1");
+      name: string | null; photo: string | null; sleep_goal: string | null; display: string | null; hr_zones: string | null;
+    }>("select birth_date, sex, max_hr, height_cm, waist_cm, time_zone, name, photo, sleep_goal, display, hr_zones from profile where id = 1");
     return r && {
       birthDate: r.birth_date, sex: r.sex, maxHr: r.max_hr, heightCm: r.height_cm, waistCm: r.waist_cm, timeZone: r.time_zone, name: r.name, photo: r.photo,
       sleepGoal: parse<NonNullable<Profile["sleepGoal"]>>(r.sleep_goal),
       display: parse<NonNullable<Profile["display"]>>(r.display),
+      hrZones: parse<number[]>(r.hr_zones),
     };
   }
   async setProfile(p: Profile) {
-    await this.tx((db) => db.runAsync("insert or replace into profile (id, birth_date, sex, max_hr, height_cm, waist_cm, time_zone, name, photo, sleep_goal, display) values (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [
-      p.birthDate, p.sex, p.maxHr, p.heightCm, p.waistCm ?? null, p.timeZone, p.name ?? null, p.photo ?? null, json(p.sleepGoal), json(p.display),
+    await this.tx((db) => db.runAsync("insert or replace into profile (id, birth_date, sex, max_hr, height_cm, waist_cm, time_zone, name, photo, sleep_goal, display, hr_zones) values (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [
+      p.birthDate, p.sex, p.maxHr, p.heightCm, p.waistCm ?? null, p.timeZone, p.name ?? null, p.photo ?? null, json(p.sleepGoal), json(p.display), json(p.hrZones),
     ]));
   }
   async getSyncState(): Promise<SyncState> {

@@ -7,8 +7,11 @@ import { contextAt, minuteHr, type Span, type Timeline, within } from "@/core/en
 import { dayStrain, PASSIVE_GAP_S, segmentsOf, units, zonesOf } from "@/core/engine/strain";
 import type { HrSample } from "@/core/scoring/types";
 
-/** What the day's stored Strain was scored with: its value (null: no Strain), the max HR and the last reading scored. */
-export type StrainInputs = { value: number | null; maxHr: number; lastHrTs: number | null };
+/**
+ * What the day's stored Strain was scored with: its value (null: no Strain), the max HR, the last reading scored and the
+ * person's own zone lower bounds when the day was scored on them (EngineDayAggs.strain.zones).
+ */
+export type StrainInputs = { value: number | null; maxHr: number; lastHrTs: number | null; zones?: number[] };
 
 /** A running Day Strain: x minutes from the day's start, y the Strain (a percent) of everything before that minute. */
 export type StrainCurve = { xs: number[]; ys: number[] };
@@ -35,7 +38,7 @@ export function strainCurve(
 ): StrainCurve {
   if (!s1 || s1.value == null) return EMPTY;
   const scored = s1.lastHrTs == null ? hr : hr.filter((s) => s.ts <= s1.lastHrTs!);
-  const zones = zonesOf(s1.maxHr);
+  const zones = zonesOf(s1.maxHr, s1.zones);
   // Unit credits at their segment's start, and awake step minutes, both summed in stage 1's order for the last point.
   const credits: { ts: number; u: number }[] = [];
   const awake = within(minuteHr(scored), start, end).filter((m) => contextAt(tl, m.ts) === "awake");
