@@ -349,3 +349,21 @@
   --orb-blend: lighter;
   --disabled-opacity: 0.5;
 }
+
+/*
+ * Pure black (Settings › Appearance): the dark theme with the page ground at #000, for OLED screens. The app's root view
+ * takes this class (src/ui/providers.tsx) only while the dark theme is on, and every view under it reads these values in
+ * place of .dark:root's. Only the ground tokens change; cards, sheets and text keep the dark palette. src/ui/palette.ts
+ * holds the same values as BLACK.
+ */
+/* The app's root view always has this class, so it holds a variable from its first render (src/ui/providers.tsx). */
+.ground-root {
+  --ground-root: 1;
+}
+
+.pure-black {
+  --background-top: 0 0 0;
+  --background-mid: 0 0 0;
+  --background: 0 0 0;
+  --ground-healthspan: 0 0 0;
+}

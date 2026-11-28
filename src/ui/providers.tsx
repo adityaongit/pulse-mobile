@@ -1,12 +1,13 @@
 import { workoutRecorder } from "@/live/workoutRecorder";
 import { useEffect, useState, type ReactNode } from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { todayIn } from "@/lib/url";
 import { LiveBleProvider } from "@/state/liveBle";
 import { LiveHrTicker } from "@/state/liveHr";
 import { ShellCalendarProvider } from "./shells/ShellStatus";
+import { usePureBlack } from "./theme";
 import { ToastHost } from "./Toast";
 
 /**
@@ -21,15 +22,21 @@ import { ToastHost } from "./Toast";
 export function AppProviders({ children }: { children: ReactNode }) {
   useEffect(() => workoutRecorder.mount(), []);
   const [calendar] = useState(() => ({ today: todayIn() }));
+  // Pure black: global.css's `.pure-black` turns the ground tokens to #000 for every view below. `.ground-root` sets a
+  // variable from the first render, so NativeWind wraps this view in its variable provider once; adding a variable class
+  // later would swap the root view's type and remount the app, losing the navigation context.
+  const black = usePureBlack();
   return (
     <GestureHandlerRootView style={styles.root}>
-      <SafeAreaProvider>
-        <ShellCalendarProvider value={calendar}>
-          <LiveBleProvider>{children}</LiveBleProvider>
-          <ToastHost />
-          <LiveHrTicker />
-        </ShellCalendarProvider>
-      </SafeAreaProvider>
+      <View className={black ? "ground-root pure-black flex-1" : "ground-root flex-1"}>
+        <SafeAreaProvider>
+          <ShellCalendarProvider value={calendar}>
+            <LiveBleProvider>{children}</LiveBleProvider>
+            <ToastHost />
+            <LiveHrTicker />
+          </ShellCalendarProvider>
+        </SafeAreaProvider>
+      </View>
     </GestureHandlerRootView>
   );
 }

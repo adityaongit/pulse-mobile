@@ -407,6 +407,10 @@ Rem values assume 16 px root. "Caps" means the source string is sentence case an
 - Settings › App › Display holds Theme, Units and Clock as rows (`SelectRow`): the label, the choice and a chevron; a
   tap opens the choices in the kit's dropdown (`MenuPanel`), the current one ticked. The dropdown shows and goes at
   once, with no fade.
+- Theme is System, Light, Dark or Pure black. Pure black is the dark theme with the page ground at `#000` for OLED
+  screens: the root view takes `global.css`'s `.pure-black` class, which sets only `--background`, `--background-top`,
+  `--background-mid` and `--ground-healthspan` to black (`BLACK` in `src/ui/palette.ts` for Skia and native chrome).
+  Cards, sheets, popovers and text keep the dark palette, so they stand off the black ground.
 - No data: `--` in the same role as the value would have been, `text-muted-foreground`.
 - Large text: never below `tracking-[-0.04em]`; `text-balance` on titles; `text-pretty` on body; `truncate` with `min-w-0` on every flex child holding a name.
 
