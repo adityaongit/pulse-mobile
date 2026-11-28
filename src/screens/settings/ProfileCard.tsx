@@ -16,7 +16,6 @@ import { toast } from "@/ui/Toast";
 import { UserAvatar } from "@/ui/shells/UserAvatar";
 import { DAY, formatDay, heightText } from "@/lib/format";
 import type { SettingsVM } from "@/queries/types";
-import { CAPTION } from "@/ui/metrics/primitives";
 import { SectionShell } from "@/ui/shells/SectionShell";
 import { Text } from "@/ui/Text";
 import { cn } from "@/ui/cn";
@@ -42,9 +41,6 @@ export function ProfileCard({ profile }: { profile: SettingsVM["profile"] }) {
           <Text numberOfLines={1} className="text-[15px] font-semibold leading-[22px]">
             {name || t("profile.noName")}
           </Text>
-          <Text numberOfLines={1} className="text-[13px] leading-[18px] text-muted-foreground">
-            {t("profile.photoStays")}
-          </Text>
         </View>
       </View>
       <PhotoButtons />
@@ -56,7 +52,6 @@ export function ProfileCard({ profile }: { profile: SettingsVM["profile"] }) {
           </View>
         ))}
       </View>
-      <Text className={`${CAPTION} mt-2`}>{t("profile.daysStart")}</Text>
     </SectionShell>
   );
 }

@@ -34,12 +34,12 @@
     "hours12Detail": "10:05 PM",
     "updates": "Updates",
     "checkForUpdates": "Check for updates",
-    "checkForUpdatesHint": "Once a day Pulse asks GitHub whether a newer version is out. Nothing about you is sent.",
+    "checkForUpdatesHint": "Asks GitHub once a day. Sends nothing about you.",
     "privacy": "Privacy",
     "errorReports": "Send error reports",
-    "errorReportsHint": "When Pulse crashes or a sync fails, it sends a short report: the error, the phone model and Pulse’s version. Some sessions also send how long syncs and screens take. Never your health data. Turning this off stops them at once.",
+    "errorReportsHint": "Crashes and failed syncs, with the phone model and Pulse’s version. Never your health data.",
     "shakeToReport": "Shake to report a problem",
-    "shakeToReportHint": "Shake the phone to tell us what went wrong. Pulse sends only what you write, the screen you were on, the phone model and Pulse’s version.",
+    "shakeToReportHint": "Sends only what you write, the screen, the phone model and Pulse’s version.",
     "version": "Pulse {{version}}",
     "isOut": "{{version}} is out",
     "checking": "Checking…",
@@ -65,8 +65,6 @@
       "learned": "learned",
       "estimated": "estimated"
     },
-    "photoStays": "Your photo stays on this phone",
-    "daysStart": "Your days start at midnight in your time zone. Edit changes it and recomputes your scores.",
     "photoUpdated": "Photo updated",
     "photoRemoved": "Photo removed",
     "cameraDenied": "Allow the camera in Android settings to take a photo.",
@@ -160,12 +158,12 @@
     "dataCheck": "Data check",
     "dataCheckHint": "Compares the last 10 days in Health Connect, app by app, with what Pulse stored. Shares the report.",
     "checking": "Checking…",
-    "runDataCheck": "Run data check",
     "reimportTitle": "Re-import your history?",
     "reimportBody": "Pulse reads the last 180 days from Health Connect again and rescores them, for data an app shared late. Your journal and profile stay.",
     "sampleTitle": "Use sample data?",
     "sampleConfirmBody": "Pulse removes what it imported from Health Connect and fills every screen with 180 days of generated data. Your profile is kept for when you switch back.",
-    "sampleFailed": "Couldn’t build the sample data. Try again."
+    "sampleFailed": "Couldn’t build the sample data. Try again.",
+    "run": "Run"
   },
   "bg": {
     "result": {
@@ -184,7 +182,7 @@
     "title": "Background sync",
     "syncHint": "Imports Health Connect and rescores while Pulse is closed.",
     "needsHc": "Needs Health Connect as the data source.",
-    "androidDecides": "Android decides when it runs: every 15 minutes at best, often hours apart when you rarely open Pulse or Battery Saver is on. Pulse always syncs when you open it.",
+    "androidDecides": "Android picks the time: every 15 minutes at best, often hours apart. Pulse always syncs when you open it.",
     "restricted": "Background tasks are restricted for Pulse on this phone.",
     "access": "Background access",
     "accessHint": "Health Connect only answers a closed app with this permission.",
@@ -193,8 +191,7 @@
     "allowed": "Allowed",
     "notAllowed": "Not allowed",
     "battery": "Battery",
-    "batteryOk": "Pulse may run in the background, so a sync finishes.",
-    "batteryHint": "Many phones pause Pulse a few seconds into a background sync, which then stalls. Under Battery, choose Allow background activity or Unrestricted.",
+    "batteryHint": "Some phones pause Pulse mid-sync. Under Battery, choose Unrestricted.",
     "open": "Open",
     "openLabel": "Open Pulse's battery settings",
     "unrestricted": "Unrestricted",
@@ -230,8 +227,7 @@
     "testTitle": "Recovery ready",
     "testBody": "{{body}} · a test from Pulse",
     "testSent": "Test notification sent",
-    "testFailed": "Couldn’t show a notification",
-    "footer": "Alerts are checked after every sync, in the background or when Pulse opens. Nothing leaves the phone."
+    "testFailed": "Couldn’t show a notification"
   },
   "live": {
     "status": {
@@ -270,7 +266,6 @@
     "radioTurning": "Turning on or off",
     "radioNotAvailable": "Not available",
     "radioUnknown": "Unknown",
-    "nearbyNote": "Android asks for Nearby devices (scan and connect) only. Pulse never uses your location for this.",
     "openAndroidSettings": "Open Android settings",
     "allowNearby": "Allow Nearby devices",
     "turnOnBluetooth": "Turn on Bluetooth",
@@ -319,7 +314,7 @@
     "goLive": "Go live",
     "goLiveIntro": "Beat by beat from your band, over Bluetooth.",
     "yourBand": "Your band",
-    "batteryNote": "Sharing uses the band’s battery, and the band takes one connection at a time: while Pulse holds it, gym equipment or another app can’t connect. Pulse lets go {{seconds}} seconds after you leave it and reconnects when you come back.",
+    "batteryNote": "Sharing uses the band’s battery, and the band takes one connection at a time. Pulse lets go {{seconds}} seconds after you leave.",
     "viewingNote": "Live readings are for viewing; scores use what Pulse reads from Health Connect."
   },
   "report": {

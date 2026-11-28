@@ -169,9 +169,7 @@ function BackgroundCard({ s, timeZone }: { s: Prefs; timeZone: string }) {
           <View className={cn(ROW, ROW_RULE)}>
             <View className="min-w-0 flex-1">
               <Text className={ROW_LABEL}>{t("bg.battery")}</Text>
-              <Text className={HINT}>
-                {unrestricted ? t("bg.batteryOk") : t("bg.batteryHint")}
-              </Text>
+              {unrestricted === false && <Text className={HINT}>{t("bg.batteryHint")}</Text>}
             </View>
             {unrestricted === false ? (
               <SmallButton solid label={t("bg.open")} accessibilityLabel={t("bg.openLabel")} onPress={() => void Linking.openSettings()} />
@@ -304,7 +302,6 @@ function NotificationsCard({ s, timeZone }: { s: Prefs; timeZone: string }) {
       <Button variant="outline" className="mt-2" onPress={() => void test()} disabled={denied}>
         {t("notif.sendTest")}
       </Button>
-      <Text className={cn(HINT, "mt-3")}>{t("notif.footer")}</Text>
     </SectionShell>
   );
 }

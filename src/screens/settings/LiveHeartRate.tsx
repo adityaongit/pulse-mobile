@@ -161,7 +161,6 @@ function PermissionsCard({ live }: { live: LiveControl }) {
         <Row label={t("live.nearby")} value={permission} tone={live.permission === "granted" ? undefined : "text-warning-text"} />
         <Row rule label={t("live.bluetooth")} value={radio} tone={live.radio === "on" ? undefined : "text-warning-text"} />
       </View>
-      <Text className={cn(HINT, "mt-2")}>{t("live.nearbyNote")}</Text>
       {live.permission !== "granted" && (
         <Button className="mt-4" onPress={() => void live.requestPermission()}>
           {live.permission === "blocked" ? t("live.openAndroidSettings") : t("live.allowNearby")}

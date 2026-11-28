@@ -34,12 +34,12 @@
     "hours12Detail": "10:05 PM",
     "updates": "Atualizações",
     "checkForUpdates": "Buscar atualizações",
-    "checkForUpdatesHint": "Uma vez por dia o Pulse pergunta ao GitHub se há uma versão nova. Nada sobre você é enviado.",
+    "checkForUpdatesHint": "Consulta o GitHub uma vez por dia. Não envia nada sobre você.",
     "privacy": "Privacidade",
     "errorReports": "Enviar relatórios de erro",
-    "errorReportsHint": "Quando o Pulse trava ou uma sincronização falha, ele envia um relatório curto: o erro, o modelo do celular e a versão do Pulse. Algumas sessões também enviam quanto tempo levam as sincronizações e as telas. Nunca seus dados de saúde. Desativar interrompe os relatórios na hora.",
+    "errorReportsHint": "Travamentos e sincronizações com falha, com o modelo do celular e a versão do Pulse. Nunca seus dados de saúde.",
     "shakeToReport": "Agitar para relatar um problema",
-    "shakeToReportHint": "Agite o celular para nos contar o que deu errado. O Pulse envia só o que você escreve, a tela em que você estava, o modelo do celular e a versão do Pulse.",
+    "shakeToReportHint": "Envia só o que você escreve, a tela, o modelo do celular e a versão do Pulse.",
     "version": "Pulse {{version}}",
     "isOut": "{{version}} já está disponível",
     "checking": "Verificando…",
@@ -65,8 +65,6 @@
       "learned": "aprendida",
       "estimated": "estimada"
     },
-    "photoStays": "Sua foto fica neste celular",
-    "daysStart": "Seus dias começam à meia-noite no seu fuso horário. Editar muda isso e recalcula seus scores.",
     "photoUpdated": "Foto atualizada",
     "photoRemoved": "Foto removida",
     "cameraDenied": "Permita a câmera nas configurações do Android para tirar uma foto.",
@@ -161,12 +159,12 @@
     "dataCheck": "Verificação de dados",
     "dataCheckHint": "Compara os últimos 10 dias no Health Connect, app por app, com o que o Pulse guardou. Compartilha o relatório.",
     "checking": "Verificando…",
-    "runDataCheck": "Verificar dados",
     "reimportTitle": "Reimportar seu histórico?",
     "reimportBody": "O Pulse lê de novo os últimos 180 dias do Health Connect e recalcula os scores, para dados que um app compartilhou tarde. Seu diário e seu perfil ficam.",
     "sampleTitle": "Usar dados de exemplo?",
     "sampleConfirmBody": "O Pulse remove o que importou do Health Connect e preenche cada tela com 180 dias de dados gerados. Seu perfil é mantido para quando você voltar.",
-    "sampleFailed": "Não foi possível montar os dados de exemplo. Tente de novo."
+    "sampleFailed": "Não foi possível montar os dados de exemplo. Tente de novo.",
+    "run": "Executar"
   },
   "bg": {
     "result": {
@@ -185,7 +183,7 @@
     "title": "Sincronização em segundo plano",
     "syncHint": "Importa o Health Connect e recalcula os scores com o Pulse fechado.",
     "needsHc": "Precisa do Health Connect como fonte de dados.",
-    "androidDecides": "O Android decide quando roda: a cada 15 minutos no melhor caso, muitas vezes com horas de intervalo quando você raramente abre o Pulse ou a Economia de bateria está ativa. O Pulse sempre sincroniza quando você o abre.",
+    "androidDecides": "O Android escolhe a hora: a cada 15 minutos no melhor caso, muitas vezes com horas de intervalo. O Pulse sempre sincroniza quando você o abre.",
     "restricted": "As tarefas em segundo plano estão restritas para o Pulse neste celular.",
     "access": "Acesso em segundo plano",
     "accessHint": "O Health Connect só responde a um app fechado com esta permissão.",
@@ -194,8 +192,7 @@
     "allowed": "Permitido",
     "notAllowed": "Não permitido",
     "battery": "Bateria",
-    "batteryOk": "O Pulse pode rodar em segundo plano, então a sincronização termina.",
-    "batteryHint": "Muitos celulares pausam o Pulse poucos segundos depois do início de uma sincronização em segundo plano, que então trava. Em Bateria, escolha Permitir atividade em segundo plano ou Sem restrições.",
+    "batteryHint": "Alguns celulares pausam o Pulse no meio da sincronização. Em Bateria, escolha Sem restrições.",
     "open": "Abrir",
     "openLabel": "Abrir as configurações de bateria do Pulse",
     "unrestricted": "Sem restrições",
@@ -231,8 +228,7 @@
     "testTitle": "Recovery pronta",
     "testBody": "{{body}} · um teste do Pulse",
     "testSent": "Notificação de teste enviada",
-    "testFailed": "Não foi possível mostrar uma notificação",
-    "footer": "Os alertas são verificados após cada sincronização, em segundo plano ou ao abrir o Pulse. Nada sai do celular."
+    "testFailed": "Não foi possível mostrar uma notificação"
   },
   "live": {
     "status": {
@@ -271,7 +267,6 @@
     "radioTurning": "Ligando ou desligando",
     "radioNotAvailable": "Indisponível",
     "radioUnknown": "Desconhecido",
-    "nearbyNote": "O Android pede apenas Dispositivos próximos (buscar e conectar). O Pulse nunca usa sua localização para isso.",
     "openAndroidSettings": "Abrir configurações do Android",
     "allowNearby": "Permitir Dispositivos próximos",
     "turnOnBluetooth": "Ligar o Bluetooth",
@@ -320,7 +315,7 @@
     "goLive": "Ficar ao vivo",
     "goLiveIntro": "Batimento a batimento da sua pulseira, por Bluetooth.",
     "yourBand": "Sua pulseira",
-    "batteryNote": "Compartilhar gasta a bateria da pulseira, e ela aceita uma conexão por vez: enquanto o Pulse a mantém, aparelhos de academia ou outro app não conseguem conectar. O Pulse solta {{seconds}} segundos depois que você sai e reconecta quando você volta.",
+    "batteryNote": "Compartilhar gasta a bateria da pulseira, e ela aceita uma conexão por vez. O Pulse solta {{seconds}} segundos depois que você sai.",
     "viewingNote": "As leituras ao vivo são só para visualização; os scores usam o que o Pulse lê do Health Connect."
   },
   "report": {
