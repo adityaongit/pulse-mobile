@@ -448,7 +448,8 @@ function stage1Day(
       maxHrSeconds: cardio == null ? null : maxHrSplit(xs, maxHr),
       hrCount: xs.length,
       avgHr: xs.length ? round(xs.reduce((a, s) => a + s.bpm, 0) / xs.length, 1) : null,
-      maxHr: xs.length ? Math.max(...xs.map((s) => s.bpm)) : null,
+      // reduce, not Math.max(...): a long workout's readings overflow the stack as call arguments (#70).
+      maxHr: xs.length ? xs.reduce((m, s) => Math.max(m, s.bpm), -Infinity) : null,
       zoneSeconds: actTiz.seconds,
       zoneBelowSeconds: actTiz.belowZone1,
       hrr: hrRecovery(hr, e.startTs, e.endTs, maxHr),

@@ -133,7 +133,8 @@ export type HrRecovery = { drop: number; startHr: number; endHr: number; startTs
  */
 export function hrRecovery(xs: readonly { ts: number; bpm: number }[], activeEnd: number, z: Zones): HrRecovery | null {
   if (xs.length < 2) return null;
-  if (zoneOf(Math.max(...xs.map((x) => x.bpm)), z) < 4) return null;
+  // reduce, not Math.max(...): a long workout's readings overflow the stack as call arguments (#70).
+  if (zoneOf(xs.reduce((m, x) => Math.max(m, x.bpm), -Infinity), z) < 4) return null;
   let best = Infinity;
   let bj = -1;
   let bk = -1;
