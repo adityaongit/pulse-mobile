@@ -42,12 +42,13 @@ flowchart LR
 
 1. Branch off `main`: `feat/short-name`, `fix/short-name`, `docs/short-name`.
 2. Commit in small steps with [Conventional Commits](https://www.conventionalcommits.org/)
-   (`feat(sleep): ...`, `fix(sync): ...`, `docs: ...`) and sign off each commit with `git commit -s`
+   (`feat(sleep): ...`, `fix(sync): ...`, `docs: ...`) under your own name and email, and sign off each commit with `git commit -s`
    ([Developer Certificate of Origin](https://developercertificate.org/)).
 3. Before you push, run `pnpm typecheck && pnpm lint && pnpm test`, and the bundle check from AGENTS.md when you
    change `babel.config.js`, `metro.config.js`, `app.json` or a dependency.
 4. Try UI changes on an Android phone or emulator.
-5. Open a pull request and fill in the template. CI must be green.
+5. Open a pull request and fill in the template, including **AI assistance**: the tool and exact model that helped,
+   or "None". AI help is welcome; we just want to know. CI must be green.
 
 ## The rules of the codebase
 
