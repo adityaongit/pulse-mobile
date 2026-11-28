@@ -1,0 +1,96 @@
+{
+  "welcome": {
+    "title": "Fitbit verilerin, her sabah puanlanıyor",
+    "subtitle": "Health Connect verilerinden uyku, Toparlanma ve Günlük Yük hesaplanır; tüm işlemler bu telefonda yapılır.",
+    "exploreSample": "Örnek verilerle keşfet",
+    "private": "Sağlık verilerin hesabın olmadan bu telefonda kalır. Hata raporları bu verileri içermez; Ayarlar'dan hata raporlarını kapatabilirsin.",
+    "sampleFailed": "Örnek veriler oluşturulamadı. Tekrar dene."
+  },
+  "progress": {
+    "buildingSample": "Örnek veriler oluşturuluyor",
+    "importing": "Health Connect'ten aktarılıyor"
+  },
+  "profile": {
+    "title": "Health Connect'in paylaşmadığı iki bilgi",
+    "intro": "Pulse, seçtiğin referans aralıklarını kullanarak kalp atış hızını yaşındaki kişilerle karşılaştırır. Bunları daha sonra Ayarlar'dan değiştirebilirsin.",
+    "saveContinue": "Kaydet ve devam et",
+    "saving": "Kaydediliyor…"
+  },
+  "form": {
+    "name": "Ad",
+    "nameHint": "Ana ekranda ve Ayarlar'da görünür. Bu telefonda kalır.",
+    "namePlaceholder": "Adın",
+    "birthDate": "Doğum tarihi",
+    "birthDateHint": "Kalp atış hızı bölgeleri, uyku ihtiyacı ve Pulse Yaşı için.",
+    "rangesLabel": "Referans aralıkları",
+    "male": "Erkek",
+    "female": "Kadın",
+    "chooseOne": "Birini seç",
+    "rangesHint": "Günlük Yük, uyku hedefleri, VO2 maks. ve Pulse Yaşı erkek ve kadın referans tablolarını kullanır. Bugün vücuduna daha uygun olanı seç. Uzun süreli hormon tedavisinde genellikle hormonlarınla uyumlu olan seçenek tercih edilir.",
+    "timeZone": "Saat dilimi",
+    "timeZoneHint": "Yaşadığın yer. Günlerin burada gece yarısında başlar.",
+    "change": "Değiştir",
+    "changeTimeZone": "Saat dilimini değiştir",
+    "height": "Boy",
+    "heightHint": "Pulse Yaşı hesaplamasına yağsız vücut kütlesini ekler.",
+    "heightFeet": "Boy, feet",
+    "heightInches": "Boy, inç",
+    "heightCm": "Boy, cm",
+    "maxHr": "Maksimum kalp atış hızı",
+    "maxHrHint": "Yaşına göre tahmin edilmesini istiyorsan boş bırak.",
+    "maxHrBpm": "Maksimum kalp atış hızı (bpm)"
+  },
+  "birth": {
+    "notChosen": "Seçilmedi",
+    "choose": "Doğum tarihini seç",
+    "month": "Ay",
+    "day": "Gün",
+    "year": "Yıl",
+    "scrollHint": "Seçmek için kaydır veya dokun",
+    "done": "Tamam"
+  },
+  "zone": {
+    "search": "Şehir veya GMT farkı ara",
+    "close": "Saat dilimlerini kapat",
+    "show": "Saat dilimlerini göster",
+    "list": "Saat dilimleri",
+    "noMatch": "“{{query}}” ile eşleşen saat dilimi yok."
+  },
+  "connect": {
+    "button": "Health Connect'i bağla",
+    "open": "Health Connect'i aç",
+    "notNow": "Şimdi değil",
+    "unavailable": "Health Connect bu telefonda kullanılamıyor.",
+    "updateRequired": "Health Connect güncellenmeli. Aç, güncelle ve ardından geri dön.",
+    "openFailed": "Health Connect açılamadı. Tekrar dene.",
+    "waitingTitle": "Health Connect bekleniyor",
+    "waitingBody": "Health Connect penceresinde Pulse'un okuyabileceği verileri seç. İşlemin bitince buraya geri dönersin.",
+    "refusedTitle": "Health Connect erişimine izin ver",
+    "refusedBody": "Pulse en azından kalp atış hızı ve uyku verilerine ihtiyaç duyar. Eski verilere erişim dahil tüm izinleri ver.",
+    "title": "Pulse hangi verileri okur?",
+    "intro": "Health Connect'ten alınır ve bu telefonda tutulur. İlk aktarım son 180 günü okur.",
+    "introSample": "Health Connect'ten alınır ve bu telefonda tutulur. İlk aktarım son 180 günü okur. Bağlantı kurduğunda örnek verilerin silinir.",
+    "readSteps": "Adımlar, mesafe ve antrenmanlar",
+    "readHeart": "Kalp atış hızı ve HRV",
+    "readSleep": "Uyku ve uyku evreleri",
+    "readBreathing": "Solunum, oksijen ve sıcaklık",
+    "readFood": "Fitbit'e kaydettiğin yiyecekler ve su",
+    "readBody": "Kilo, vücut yağı ve VO2 maks."
+  },
+  "importing": {
+    "stopped": "Veri aktarımı durdu",
+    "titleSample": "Örnek verilerin oluşturuluyor",
+    "title": "Verilerin aktarılıyor",
+    "bodySample": "Bir demo kullanıcısının yarım yıllık verileri, bu telefonda puanlanıyor.",
+    "body": "Health Connect'ten en fazla 180 günlük veri bu telefonda puanlanır. İlk aktarım birkaç dakika sürer."
+  },
+  "background": {
+    "titleOn": "Arka plan senkronizasyonu açık",
+    "title": "Pulse güncel kalsın",
+    "bodyOn": "Pulse kapalıyken de senkronize olur. Ayarlar › Bildirimler ve arka plan bölümünden değiştirebilirsin.",
+    "bodyBattery": "Bir adım daha: Pil bölümünden arka plan etkinliğine izin ver veya Sınırsız seçeneğini belirle. Aksi hâlde birçok telefon Pulse'un arka planda çalışmasını durdurur.",
+    "body": "Pulse kapalıyken de senkronize olsun. Birçok telefonda Pulse'un arka planda çalışmasına da izin vermek gerekir; düğme ilgili ayarı açar.",
+    "openBattery": "Pil ayarlarını aç",
+    "turnOn": "Arka plan senkronizasyonunu aç"
+  }
+}

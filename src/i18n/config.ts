@@ -12,6 +12,7 @@ export const NAMESPACES = ["common", "reasons", "metrics", "home", "sleep", "rec
 /** Each language by its own name. Add a code here with its folder under locales/. */
 export const LANGUAGES = [
   { code: "en", name: "English" },
+  { code: "tr", name: "Türkçe" },
   { code: "de", name: "Deutsch" },
   { code: "fr", name: "Français" },
   { code: "es", name: "Español" },

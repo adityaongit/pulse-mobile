@@ -1,0 +1,216 @@
+{
+  "goalLabel": {
+    "steps": "Adım",
+    "distance": "Mesafe",
+    "floors": "Kat",
+    "azm": "Aktif Bölge Dakikaları",
+    "active_minutes": "Aktif dakika",
+    "active_calories": "Aktif kalori",
+    "water": "Su",
+    "sleep": "Uyku"
+  },
+  "goalShort": {
+    "steps": "Adım",
+    "distance": "Mesafe",
+    "floors": "Kat",
+    "azm": "Bölge dk.",
+    "active_minutes": "Aktif",
+    "active_calories": "Kalori",
+    "water": "Su",
+    "sleep": "Uyku"
+  },
+  "goalName": {
+    "steps": "Adım hedefi",
+    "distance": "Mesafe hedefi",
+    "floors": "Kat hedefi",
+    "azm": "Aktif Bölge Dakikaları hedefi",
+    "active_minutes": "Aktif dakika hedefi",
+    "active_calories": "Aktif kalori hedefi",
+    "water": "Su hedefi",
+    "sleep": "Uyku hedefi"
+  },
+  "planLabel": {
+    "zone13": "Orta yoğunluklu aktivite",
+    "zone45": "Yüksek yoğunluklu aktivite",
+    "strength": "Kuvvet antrenmanları",
+    "steps": "Günlük adım",
+    "consistency": "Uyku düzenliliği",
+    "sleepNeed": "Uyku ihtiyacını karşılama"
+  },
+  "planShort": {
+    "zone13": "Orta yoğunluk",
+    "zone45": "Yüksek yoğunluk",
+    "strength": "Kuvvet",
+    "steps": "Adım",
+    "consistency": "Düzenlilik",
+    "sleepNeed": "Uyku ihtiyacı"
+  },
+  "planDetail": {
+    "zone13": "1–3. bölgeler; tempolu yürüyüşten itibaren",
+    "zone45": "4–5. bölgeler",
+    "strength": "Kuvvet, ağırlık, HIIT veya vücut ağırlığı egzersizleri",
+    "steps": "Günlük ortalama",
+    "consistency": "Son 7 gecen",
+    "sleepNeed": "Uyku ihtiyacını karşıladığın geceler"
+  },
+  "planUnit": {
+    "zone13": "dk.",
+    "zone45": "dk.",
+    "strength": "seans",
+    "steps": "adım",
+    "consistency": "%",
+    "sleepNeed": "gece"
+  },
+  "planHint": {
+    "zone13": "WHO: Haftada 150–300 dakika. 1–3. bölgeler; maksimum kalp atış hızının %50'sinden itibaren, tempolu yürüyüş gibi aktiviteler.",
+    "zone45": "WHO: Haftada 75–150 dakika veya orta yoğunluklu dakikalarla birleştirilebilir.",
+    "strength": "Kuvvet, ağırlık, HIIT veya vücut ağırlığı egzersizleri. WHO: Haftada en az 2 gün.",
+    "steps": "Haftalık günlük adım ortalaman. Fayda, günde yaklaşık 8.000–10.000 adım civarında dengelenir (Paluch 2022).",
+    "consistency": "Son 7 gecedeki uyku düzenliliğin. %80 ve üzeri ideal.",
+    "sleepNeed": "Pulse'ın o gece için belirlediği uyku ihtiyacını karşıladığın geceler."
+  },
+  "planStatus": {
+    "done": "Tamamlandı",
+    "onPace": "Plan dahilinde",
+    "behind": "Geride",
+    "missed": "Kaçırıldı",
+    "noData": "Veri yok"
+  },
+  "planTarget": {
+    "minutes": "{{value}} dk. hedefinin",
+    "sessions_one": "{{value}} seans hedefinin",
+    "sessions_other": "{{value}} seans hedefinin",
+    "percent": "%{{value}} hedefinin",
+    "nights_one": "{{value}} gece hedefinin",
+    "nights_other": "{{value}} gece hedefinin",
+    "plain": "{{value}} hedefinin"
+  },
+  "planLeft": {
+    "minutes": "{{value}} dk.",
+    "sessions_one": "{{value}} seans",
+    "sessions_other": "{{value}} seans",
+    "steps_one": "günde {{value}} adım",
+    "steps_other": "günde {{value}} adım",
+    "points_one": "{{value}} puan",
+    "points_other": "{{value}} puan",
+    "nights_one": "{{value}} gece",
+    "nights_other": "{{value}} gece"
+  },
+  "planCaption": {
+    "doneStreak_one": "Tamamlandı · {{count}} haftalık seri",
+    "doneStreak_other": "Tamamlandı · {{count}} haftalık seri",
+    "done": "Bu hafta tamamlandı",
+    "onPaceStreak_one": "{{left}} kaldı · {{count}} haftalık seri tehlikede",
+    "onPaceStreak_other": "{{left}} kaldı · {{count}} haftalık seri tehlikede",
+    "onPace": "Plan dahilinde · {{left}} kaldı",
+    "behindPace": "Hedefin {{left}} gerisinde",
+    "short": "{{left}} eksik",
+    "toGo": "{{left}} kaldı",
+    "missedBest_one": "Kaçırıldı · en iyi seri {{count}} hafta",
+    "missedBest_other": "Kaçırıldı · en iyi seri {{count}} hafta",
+    "missed": "Bu hafta kaçırıldı",
+    "noData": "Henüz veri yok"
+  },
+  "plan": {
+    "title": "Haftalık plan",
+    "thisWeek": "Bu hafta",
+    "weekOf": "{{date}} haftası",
+    "cardThisWeek": "Haftalık plan · bu hafta",
+    "cardWeekOf": "Haftalık plan · {{date}} haftası",
+    "onTrack": "{{total}} hedeften {{on}} tanesi plan dahilinde",
+    "pageDescription": "{{range}} · {{total}} hedeften {{on}} tanesi plan dahilinde",
+    "streak_one": "Geçen hafta tüm hedefler tamamlandı",
+    "streak_other": "{{count}} haftadır tüm hedefler tamamlanıyor",
+    "emptyBody": "Etkinleştirilmiş haftalık hedef yok.",
+    "emptyAction": "Haftalık hedefleri belirle",
+    "spoken": "{{label}}: {{value}} {{target}}, {{status}}",
+    "spokenLine": "{{label}}: {{value}} {{target}}. {{caption}}",
+    "whyTitle": "Bu hedefler neden seçildi?",
+    "whyBody": "Bunlar Pulse Age'in puanladığı alışkanlıklardır. Varsayılan hedefler WHO'nun haftada 150 dakika orta yoğunluklu veya 75 dakika yüksek yoğunluklu aktivite ve 2 gün kuvvet antrenmanı önerilerini, günde yaklaşık 8.000 adımı ve düzenli bir uyku programını temel alır. Çubuktaki işaret, şu ana kadar eşit bir tempoda ilerleseydin ulaşman gereken noktayı gösterir.",
+    "editTargets": "Hedefleri düzenle",
+    "pulseAge": "Pulse Age"
+  },
+  "card": {
+    "titleToday": "Bugünün hedefleri",
+    "title": "Hedefler",
+    "done": "{{total}} hedeften {{done}} tanesi tamamlandı",
+    "emptyBody": "Etkinleştirilmiş hedef yok.",
+    "emptyAction": "Hedef belirle",
+    "of": "{{target}} hedefinin",
+    "spoken": "{{label}}: {{value}} / {{target}}",
+    "spokenReached": "{{label}}: {{value}} / {{target}}, hedefe ulaşıldı",
+    "spokenSoFar": "{{label}}: {{value}} / {{target}}, bugün şu ana kadar"
+  },
+  "week": {
+    "caption": "Bu hafta, pazartesiden pazara",
+    "of": "{{target}} dk. hedefinin",
+    "spoken": "Bu haftaki Aktif Bölge Dakikaları: {{total}} / {{target}} dakika",
+    "spokenReached": "Bu haftaki Aktif Bölge Dakikaları: {{total}} / {{target}} dakika, hedefe ulaşıldı",
+    "daysLabel": "Aktif Bölge Dakikaları, günlük hedefe ulaşılan günler: {{met}} / {{total}}"
+  },
+  "line": {
+    "reachedStreak_one": "Ulaşıldı · {{count}} günlük seri",
+    "reachedStreak_other": "Ulaşıldı · {{count}} günlük seri",
+    "reached": "Ulaşıldı",
+    "onTheLine_one": "{{count}} günlük seri tehlikede",
+    "onTheLine_other": "{{count}} günlük seri tehlikede",
+    "met": "Son 7 günün {{met}} gününde karşılandı",
+    "spoken": "{{label}}: {{value}} / {{target}}. {{caption}}",
+    "spokenPct": "{{label}}: {{value}} / {{target}}, yüzde {{pct}}. {{caption}}",
+    "daysLabel": "{{label}}, son 7 gün: 7 günün {{met}} gününde karşılandı"
+  },
+  "page": {
+    "title": "Hedefler",
+    "edit": "Hedefleri düzenle",
+    "off": "Kapalı",
+    "offBody": "{{labels}}. Ayarlar › Hedefler bölümünden etkinleştir."
+  },
+  "weekdayLetter": {
+    "mon": "P",
+    "tue": "S",
+    "wed": "Ç",
+    "thu": "P",
+    "fri": "C",
+    "sat": "C",
+    "sun": "P"
+  },
+  "settings": {
+    "off": "Kapalı",
+    "need": "İhtiyaç",
+    "sleepNeed": "Uyku ihtiyacı",
+    "fixed": "gece başına {{duration}}",
+    "sleepChoiceAria": "Uyku hedefi, {{choice}}",
+    "azmWeek": "Haftalık Aktif Bölge Dakikaları",
+    "targetAria": "{{label}} hedefi",
+    "azmWeekHint": "Fitbit, orta yoğunluklu dakikaları bir kez; yüksek yoğunluklu veya zirve dakikalarını iki kez sayar.",
+    "dailyTitle": "Günlük hedefler",
+    "dailyBody": "Her hedef, Günlük Yük ekranında gün boyunca dolan bir satır olarak gösterilir. Bir hedefi kapatmak için değerini sil.",
+    "weeklyTitle": "Haftalık hedef",
+    "weeklyBody": "Aktif Bölge Dakikaları pazartesiden pazara birikir. Günlük Aktif Bölge Dakikaları hedefi de etkin olur.",
+    "resetGoals": "Fitbit varsayılanlarına sıfırla",
+    "goalsReset": "Hedefler Fitbit varsayılanlarına sıfırlandı",
+    "planTitle": "Haftalık plan",
+    "planBody": "Pulse Age'in puanladığı alışkanlıklar için pazartesiden pazara haftalık hedefler. Her tamamlanan hafta için seri tutulur. Bir hedefi kapatmak için değerini sil.",
+    "resetPlan": "Haftalık planı sıfırla",
+    "planReset": "Haftalık plan varsayılanlarına sıfırlandı"
+  },
+  "sleepGoal": {
+    "title": "Uyku hedefi",
+    "automatic": "Otomatik",
+    "manual": "Manuel",
+    "toast": "Uyku hedefi: {{duration}}",
+    "errorFormat": "Tam saat ve 0 ile 59 arasında dakika gir",
+    "errorRange": "4 ile 12 saat arasında",
+    "hoursAria": "Uyku hedefi saat",
+    "minutesAria": "Uyku hedefi dakika",
+    "saveAria": "Uyku hedefini kaydet",
+    "body": "Uyku Performansı, Uyku İhtiyacı, Uyku Borcu ve Enerji Deposu'nun hedeflediği süre. Değiştirmek geçmiş verilerini yeniden puanlar.",
+    "goal": "Hedef",
+    "method": "Hedef nasıl belirleniyor?",
+    "estimate": "Son {{nights}} gecedeki en iyi {{best}} Toparlanma sabahından önceki ortalama uyku süren: {{duration}}.",
+    "estimateEarly": "Son {{nights}} gecedeki en iyi {{best}} Toparlanma sabahından önceki ortalama uyku süren: {{duration}}. Bu erken bir tahmin; 90 gece, bunların 15'inde Toparlanma puanının 67 veya üzerinde olmasıyla (şu ana kadar {{high}}) daha kesin hale gelir.",
+    "use": "{{duration}} değerini kullan",
+    "useAria": "{{duration}} değerini uyku hedefi olarak kullan",
+    "notEnough": "Henüz yeterli gece yok: tahmin için Toparlanma puanı olan geceler ve bunlardan en az birinin 67 veya üzeri olması gerekiyor. O zamana kadar mevcut hedef değişmez."
+  }
+}

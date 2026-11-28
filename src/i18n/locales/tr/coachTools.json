@@ -1,0 +1,14 @@
+{
+  "costUnit": "Toparlanma yüzde puanı",
+  "costBaselineRest": "o gün veya önceki 7 gün içinde antrenman yapılmayan günlerdeki ortalama Toparlanma",
+  "costBaselineAll": "tüm günlerdeki ortalama Toparlanma (dinlenme günü sayısı yetersiz)",
+  "strainScale": "yüzde, 0-100 (çok yoğun bir günde 100'ün üzerine çıkabilir)",
+  "facts": {
+    "unknown": "bilinmiyor",
+    "activity": "Aktivite: {{name}}, {{minutes}} dakika.",
+    "strain": "Günlük Yük: {{value}} ({{name}} için normal: {{usual}}).",
+    "stat": "{{label}}: {{value}} (normal: {{usual}}).",
+    "steps": "Adım: {{value}} (normal: {{usual}}).",
+    "zone": "{{label}}: {{minutes}} dakika."
+  }
+}
