@@ -56,9 +56,11 @@ export { forgetChanges };
  * app's records are kept, the largest source per day for measured totals. 8: near-identical workouts from different
  * apps are imported once, retaining distinct sports, partial overlaps and records with no source. 9: a night's readings
  * (HRV, respiratory rate, oxygen saturation) count from the sleep's start through two minutes after its end, where
- * Fitbit stamps its one HRV value for the night. 10: blood pressure readings are imported.
+ * Fitbit stamps its one HRV value for the night. 10: blood pressure readings are imported. 11: copies of one workout
+ * from different apps or devices merge when they overlap at least 70% of the shorter session (lengths within 4x), across
+ * equivalent sport codes and every strength code; a workout recorded in Pulse, then the longest copy, is the one kept.
  */
-export const IMPORT_VERSION = 10;
+export const IMPORT_VERSION = 11;
 
 /**
  * How far before the window's first local midnight the reads start. Health Connect returns a record only to a read whose
