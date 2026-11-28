@@ -1,0 +1,1289 @@
+Configuration on demand is an incubating feature.
+> Task :expo-gradle-plugin:expo-autolinking-plugin-shared:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :expo-gradle-plugin:expo-autolinking-settings-plugin:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gradle-plugin:shared:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gradle-plugin:settings-plugin:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gradle-plugin:settings-plugin:pluginDescriptors UP-TO-DATE
+> Task :expo-gradle-plugin:expo-autolinking-settings-plugin:pluginDescriptors UP-TO-DATE
+> Task :gradle-plugin:settings-plugin:processResources UP-TO-DATE
+> Task :expo-gradle-plugin:expo-autolinking-settings-plugin:processResources UP-TO-DATE
+> Task :gradle-plugin:shared:compileKotlin UP-TO-DATE
+> Task :gradle-plugin:shared:compileJava NO-SOURCE
+> Task :gradle-plugin:shared:processResources NO-SOURCE
+> Task :gradle-plugin:shared:classes UP-TO-DATE
+> Task :expo-gradle-plugin:expo-autolinking-plugin-shared:compileKotlin UP-TO-DATE
+> Task :expo-gradle-plugin:expo-autolinking-plugin-shared:compileJava NO-SOURCE
+> Task :expo-gradle-plugin:expo-autolinking-plugin-shared:processResources NO-SOURCE
+> Task :expo-gradle-plugin:expo-autolinking-plugin-shared:classes UP-TO-DATE
+> Task :gradle-plugin:shared:jar UP-TO-DATE
+> Task :expo-gradle-plugin:expo-autolinking-plugin-shared:jar UP-TO-DATE
+> Task :gradle-plugin:settings-plugin:compileKotlin UP-TO-DATE
+> Task :expo-gradle-plugin:expo-autolinking-settings-plugin:compileKotlin UP-TO-DATE
+> Task :gradle-plugin:settings-plugin:compileJava NO-SOURCE
+> Task :gradle-plugin:settings-plugin:classes UP-TO-DATE
+> Task :expo-gradle-plugin:expo-autolinking-settings-plugin:compileJava NO-SOURCE
+> Task :expo-gradle-plugin:expo-autolinking-settings-plugin:classes UP-TO-DATE
+> Task :gradle-plugin:settings-plugin:jar UP-TO-DATE
+> Task :expo-gradle-plugin:expo-autolinking-settings-plugin:jar UP-TO-DATE
+> Task :expo-gradle-plugin:expo-autolinking-plugin:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :expo-gradle-plugin:expo-max-sdk-override-plugin:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gradle-plugin:react-native-gradle-plugin:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :expo-module-gradle-plugin:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :expo-module-gradle-plugin:pluginDescriptors UP-TO-DATE
+> Task :expo-dev-launcher-gradle-plugin:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :expo-dev-launcher-gradle-plugin:pluginDescriptors UP-TO-DATE
+> Task :expo-module-gradle-plugin:processResources UP-TO-DATE
+> Task :expo-dev-launcher-gradle-plugin:processResources UP-TO-DATE
+> Task :expo-gradle-plugin:expo-autolinking-plugin:compileKotlin UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:compileKotlin UP-TO-DATE
+> Task :expo-gradle-plugin:expo-max-sdk-override-plugin:compileKotlin UP-TO-DATE
+> Task :expo-gradle-plugin:expo-autolinking-plugin:compileJava NO-SOURCE
+> Task :gradle-plugin:react-native-gradle-plugin:compileJava NO-SOURCE
+> Task :expo-gradle-plugin:expo-max-sdk-override-plugin:compileJava NO-SOURCE
+> Task :expo-gradle-plugin:expo-autolinking-plugin:pluginDescriptors UP-TO-DATE
+> Task :expo-gradle-plugin:expo-max-sdk-override-plugin:pluginDescriptors UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:pluginDescriptors UP-TO-DATE
+> Task :expo-gradle-plugin:expo-autolinking-plugin:processResources UP-TO-DATE
+> Task :expo-gradle-plugin:expo-autolinking-plugin:classes UP-TO-DATE
+> Task :expo-gradle-plugin:expo-max-sdk-override-plugin:processResources UP-TO-DATE
+> Task :expo-gradle-plugin:expo-max-sdk-override-plugin:classes UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:processResources UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:classes UP-TO-DATE
+> Task :expo-gradle-plugin:expo-max-sdk-override-plugin:jar UP-TO-DATE
+> Task :expo-gradle-plugin:expo-autolinking-plugin:jar UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:jar UP-TO-DATE
+> Task :expo-module-gradle-plugin:compileKotlin UP-TO-DATE
+> Task :expo-module-gradle-plugin:compileJava NO-SOURCE
+> Task :expo-module-gradle-plugin:classes UP-TO-DATE
+> Task :expo-dev-launcher-gradle-plugin:compileKotlin UP-TO-DATE
+> Task :expo-module-gradle-plugin:jar UP-TO-DATE
+> Task :expo-dev-launcher-gradle-plugin:compileJava NO-SOURCE
+> Task :expo-dev-launcher-gradle-plugin:classes UP-TO-DATE
+> Task :expo-dev-launcher-gradle-plugin:jar UP-TO-DATE
+
+> Configure project :app
+ ℹ️  [33mApplying gradle plugin[0m '[32mexpo-max-sdk-override-plugin[0m'
+  [expo-max-sdk-override-plugin] This plugin will find all permissions declared with `android:maxSdkVersion`. If there exists a declaration with the `android:maxSdkVersion` annotation and another one without, the plugin will remove the annotation from the final merged manifest. In order to see a log with the changes run a clean build of the app.
+ ℹ️  [33mApplying gradle plugin[0m '[32mexpo-dev-launcher-gradle-plugin[0m'
+
+> Configure project :
+[32m[ExpoRootProject][0m Using the following versions:
+  - buildTools:  [32m36.0.0[0m
+  - minSdk:      [32m26[0m
+  - compileSdk:  [32m36[0m
+  - targetSdk:   [32m36[0m
+  - ndk:         [32m27.1.12297006[0m
+  - kotlin:      [32m2.1.20[0m
+  - ksp:         [32m2.1.20-2.0.1[0m
+
+> Configure project :shopify_react-native-skia
+react-native-skia: SK_GRAPHITE: false
+react-native-skia: Skia libs: /private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/@shopify+react-native-skia@2.6.2_dbae72ccf31b4ea9e05bb62b47391d88/node_modules/@shopify/react-native-skia/android/../libs/android
+react-native-skia: node_modules/ found at: /private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/@shopify+react-native-skia@2.6.2_dbae72ccf31b4ea9e05bb62b47391d88/node_modules
+react-native-skia: RN Version: 86 / 0.86.3
+react-native-skia: isSourceBuild: false
+react-native-skia: PrebuiltDir: /private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/@shopify+react-native-skia@2.6.2_dbae72ccf31b4ea9e05bb62b47391d88/node_modules/@shopify/react-native-skia/android/build/react-native-0*/jni
+react-native-skia: buildType: debug
+react-native-skia: buildDir: /private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/@shopify+react-native-skia@2.6.2_dbae72ccf31b4ea9e05bb62b47391d88/node_modules/@shopify/react-native-skia/android/build
+react-native-skia: node_modules: /private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/@shopify+react-native-skia@2.6.2_dbae72ccf31b4ea9e05bb62b47391d88/node_modules
+react-native-skia: Enable Prefab: true
+react-native-skia: aar state post 70, do nothing
+
+> Configure project :expo
+
+Using expo modules
+  - [32mexpo-log-box[0m (57.0.4)
+  - [32mexpo-background-task[0m (57.0.21)
+  - [32mexpo-constants[0m (57.0.21)
+  - [32mexpo-dev-client[0m (57.0.19)
+  - [32mexpo-dev-launcher[0m (57.0.20)
+  - [32mexpo-dev-menu[0m (57.0.19)
+  - [32mexpo-dev-menu-interface[0m (57.0.0)
+  - [32mexpo-json-utils[0m (57.0.2)
+  - [32mexpo-manifests[0m (57.0.2)
+
+> Configure project :expo-modules-core
+Linking react-native-worklets native libs into expo-modules-core build tasks
+task ':react-native-worklets:mergeDebugNativeLibs'
+task ':react-native-worklets:mergeReleaseNativeLibs'
+
+> Configure project :expo
+  - [32mexpo-modules-core[0m (57.0.26)
+  - [32mexpo-updates-interface[0m (57.0.2)
+  - [32mpulse-bt[0m (1.0.0)
+  - [32mpulse-widgets[0m (1.0.0)
+  - [32mpulse-workouts[0m (1.0.0)
+  - [32mreact-native-health-connect-expo[0m (4.1.3)
+  - [33m[📦][0m [32mexpo-dom-webview[0m (57.0.1)
+  - [33m[📦][0m [32mexpo-ui[0m (57.0.22)
+  - [33m[📦][0m [32mexpo-application[0m (57.0.3)
+  - [33m[📦][0m [32mexpo-asset[0m (57.0.19)
+  - [33m[📦][0m [32mexpo-battery[0m (57.0.3)
+  - [33m[📦][0m [32mexpo-blur[0m (57.0.3)
+  - [33m[📦][0m [32mexpo-device[0m (57.0.2)
+  - [33m[📦][0m [32mexpo-file-system[0m (57.0.7)
+  - [33m[📦][0m [32mexpo-font[0m (57.0.4)
+  - [33m[📦][0m [32mexpo-haptics[0m (57.0.3)
+  - [33m[📦][0m [32mexpo-image-loader[0m (57.0.1)
+  - [33m[📦][0m [32mexpo-image-manipulator[0m (57.0.21)
+  - [33m[📦][0m [32mexpo-image-picker[0m (57.0.20)
+  - [33m[📦][0m [32mexpo-intent-launcher[0m (57.0.1)
+  - [33m[📦][0m [32mexpo-keep-awake[0m (57.0.2)
+  - [33m[📦][0m [32mexpo-linear-gradient[0m (57.0.2)
+  - [33m[📦][0m [32mexpo-linking[0m (57.0.12)
+  - [33m[📦][0m [32mexpo-localization[0m (57.0.2)
+  - [33m[📦][0m [32mexpo-notifications[0m (57.0.22)
+  - [33m[📦][0m [32mexpo-router[0m (57.0.25)
+  - [33m[📦][0m [32mexpo-secure-store[0m (57.0.4)
+  - [33m[📦][0m [32mexpo-sensors[0m (57.0.3)
+  - [33m[📦][0m [32mexpo-sharing[0m (57.0.22)
+  - [33m[📦][0m [32mexpo-splash-screen[0m (57.0.9)
+  - [33m[📦][0m [32mexpo-sqlite[0m (57.0.4)
+  - [33m[📦][0m [32mexpo-status-bar[0m (57.0.1)
+  - [33m[📦][0m [32mexpo-system-ui[0m (57.0.4)
+  - [33m[📦][0m [32mexpo-task-manager[0m (57.0.21)
+  - [33m[📦][0m [32munimodules-app-loader[0m (57.0.2)
+
+
+> Task :expo-dev-menu-interface:preBuild UP-TO-DATE
+> Task :expo-dev-launcher:preBuild UP-TO-DATE
+> Task :expo-dev-client:preBuild UP-TO-DATE
+> Task :expo-background-task:preBuild UP-TO-DATE
+> Task :expo-log-box:preBuild UP-TO-DATE
+> Task :expo-dev-menu:preBuild UP-TO-DATE
+> Task :expo-dev-launcher:preDebugBuild UP-TO-DATE
+> Task :expo-json-utils:preBuild UP-TO-DATE
+> Task :expo-background-task:preDebugBuild UP-TO-DATE
+> Task :expo-dev-client:preDebugBuild UP-TO-DATE
+> Task :expo-json-utils:preDebugBuild UP-TO-DATE
+> Task :expo-dev-menu:preDebugBuild UP-TO-DATE
+> Task :expo-log-box:preDebugBuild UP-TO-DATE
+> Task :expo-dev-menu-interface:preDebugBuild UP-TO-DATE
+> Task :expo-json-utils:writeDebugAarMetadata
+> Task :expo-dev-menu:writeDebugAarMetadata
+> Task :expo-manifests:preBuild UP-TO-DATE
+> Task :expo-manifests:preDebugBuild UP-TO-DATE
+> Task :expo-modules-core:preBuild UP-TO-DATE
+> Task :expo-modules-core:preDebugBuild UP-TO-DATE
+> Task :expo-background-task:writeDebugAarMetadata
+> Task :expo-updates-interface:preBuild UP-TO-DATE
+> Task :expo-updates-interface:preDebugBuild UP-TO-DATE
+> Task :expo-log-box:writeDebugAarMetadata
+> Task :pulse-bt:preBuild UP-TO-DATE
+> Task :pulse-bt:preDebugBuild UP-TO-DATE
+> Task :expo-dev-client:writeDebugAarMetadata
+> Task :pulse-widgets:preBuild UP-TO-DATE
+> Task :pulse-widgets:preDebugBuild UP-TO-DATE
+> Task :expo-dev-launcher:writeDebugAarMetadata
+> Task :pulse-workouts:preBuild UP-TO-DATE
+> Task :pulse-workouts:preDebugBuild UP-TO-DATE
+> Task :expo-modules-core:writeDebugAarMetadata
+> Task :expo-manifests:writeDebugAarMetadata
+> Task :pulse-workouts:writeDebugAarMetadata
+> Task :pulse-widgets:writeDebugAarMetadata
+> Task :expo-updates-interface:writeDebugAarMetadata
+> Task :react-native-health-connect-expo:preBuild UP-TO-DATE
+> Task :react-native-health-connect-expo:preDebugBuild UP-TO-DATE
+> Task :expo-dev-menu-interface:writeDebugAarMetadata
+> Task :react-native-masked-view_masked-view:preBuild UP-TO-DATE
+> Task :react-native-masked-view_masked-view:preDebugBuild UP-TO-DATE
+> Task :react-native-health-connect-expo:writeDebugAarMetadata
+> Task :expo:generatePackagesList
+> Task :expo:preBuild
+> Task :expo:preDebugBuild
+> Task :pulse-bt:writeDebugAarMetadata
+> Task :react-native-masked-view_masked-view:writeDebugAarMetadata
+> Task :expo:writeDebugAarMetadata
+
+> Task :expo-constants:createExpoConfig
+The NODE_ENV environment variable is required but was not specified. Ensure the project is bundled with Expo CLI or NODE_ENV is set. Using only .env.local and .env
+
+> Task :react-native-reanimated:assertMinimalReactNativeVersionTask
+> Task :react-native-reanimated:assertWorkletsVersionTask
+> Task :react-native-async-storage_async-storage:generateCodegenSchemaFromJavaScript
+
+> Task :react-native-ble-plx:generateCodegenSchemaFromJavaScript
+No modules to process in combine-js-to-schema-cli. If this is unexpected, please check if you set up your NativeComponent correctly. See combine-js-to-schema.js for how codegen finds modules.
+
+> Task :react-native-health-connect:generateCodegenSchemaFromJavaScript
+> Task :react-native-gesture-handler:generateCodegenSchemaFromJavaScript
+> Task :react-native-reanimated:generateCodegenSchemaFromJavaScript
+> Task :react-native-safe-area-context:generateCodegenSchemaFromJavaScript
+> Task :react-native-screens:generateCodegenSchemaFromJavaScript
+> Task :react-native-svg:generateCodegenSchemaFromJavaScript
+> Task :expo-constants:preBuild
+> Task :expo-constants:preDebugBuild
+> Task :expo-constants:writeDebugAarMetadata
+> Task :react-native-async-storage_async-storage:generateCodegenArtifactsFromSchema
+> Task :react-native-async-storage_async-storage:preBuild
+> Task :react-native-async-storage_async-storage:preDebugBuild
+> Task :react-native-health-connect:generateCodegenArtifactsFromSchema
+> Task :react-native-health-connect:preBuild
+> Task :react-native-ble-plx:generateCodegenArtifactsFromSchema
+> Task :react-native-health-connect:preDebugBuild
+> Task :react-native-ble-plx:preBuild
+> Task :react-native-ble-plx:preDebugBuild
+> Task :react-native-health-connect:writeDebugAarMetadata
+> Task :react-native-reanimated:generateCodegenArtifactsFromSchema
+> Task :react-native-gesture-handler:generateCodegenArtifactsFromSchema
+> Task :react-native-gesture-handler:preBuild
+> Task :react-native-gesture-handler:preDebugBuild
+> Task :react-native-safe-area-context:generateCodegenArtifactsFromSchema
+> Task :react-native-safe-area-context:preBuild
+> Task :react-native-safe-area-context:preDebugBuild
+> Task :react-native-gesture-handler:writeDebugAarMetadata
+> Task :react-native-async-storage_async-storage:writeDebugAarMetadata
+> Task :react-native-ble-plx:writeDebugAarMetadata
+> Task :react-native-safe-area-context:writeDebugAarMetadata
+> Task :react-native-worklets:assertMinimalReactNativeVersionTask
+> Task :shopify_react-native-skia:generateCodegenSchemaFromJavaScript
+> Task :react-native-screens:generateCodegenArtifactsFromSchema
+> Task :react-native-screens:preBuild
+> Task :react-native-screens:preDebugBuild
+> Task :sentry_react-native:generateCodegenSchemaFromJavaScript
+> Task :react-native-screens:writeDebugAarMetadata
+> Task :react-native-worklets:generateCodegenSchemaFromJavaScript
+> Task :expo:generateDebugResValues
+> Task :expo:generateDebugResources
+> Task :react-native-svg:generateCodegenArtifactsFromSchema
+> Task :react-native-svg:preBuild
+> Task :react-native-svg:preDebugBuild
+> Task :react-native-svg:writeDebugAarMetadata
+> Task :expo-background-task:generateDebugResValues FROM-CACHE
+> Task :expo:packageDebugResources
+> Task :expo-constants:generateDebugResValues FROM-CACHE
+> Task :expo-background-task:generateDebugResources FROM-CACHE
+> Task :expo-constants:generateDebugResources FROM-CACHE
+> Task :expo-background-task:packageDebugResources
+> Task :expo-constants:packageDebugResources
+> Task :expo-dev-client:generateDebugResValues FROM-CACHE
+> Task :expo-dev-launcher:generateDebugResValues FROM-CACHE
+> Task :expo-dev-client:generateDebugResources FROM-CACHE
+> Task :expo-dev-menu:generateDebugResValues FROM-CACHE
+> Task :expo-dev-client:packageDebugResources
+> Task :shopify_react-native-skia:generateCodegenArtifactsFromSchema
+> Task :react-native-worklets:generateCodegenArtifactsFromSchema
+> Task :expo-dev-menu-interface:generateDebugResValues FROM-CACHE
+> Task :expo-dev-launcher:generateDebugResources
+> Task :expo-dev-menu-interface:generateDebugResources FROM-CACHE
+> Task :expo-dev-menu:generateDebugResources
+> Task :expo-dev-menu-interface:packageDebugResources
+> Task :expo-json-utils:generateDebugResValues FROM-CACHE
+> Task :expo-json-utils:generateDebugResources FROM-CACHE
+> Task :expo-json-utils:packageDebugResources
+> Task :expo-log-box:generateDebugResValues FROM-CACHE
+> Task :sentry_react-native:generateCodegenArtifactsFromSchema
+> Task :sentry_react-native:preBuild
+> Task :sentry_react-native:preDebugBuild
+> Task :expo-log-box:generateDebugResources FROM-CACHE
+> Task :sentry_react-native:writeDebugAarMetadata
+> Task :expo-log-box:packageDebugResources
+> Task :expo-dev-launcher:packageDebugResources
+> Task :expo-manifests:generateDebugResValues FROM-CACHE
+> Task :expo-dev-menu:packageDebugResources
+> Task :expo-modules-core:generateDebugResValues FROM-CACHE
+> Task :pulse-bt:generateDebugResValues FROM-CACHE
+> Task :expo-updates-interface:generateDebugResValues FROM-CACHE
+> Task :pulse-bt:generateDebugResources FROM-CACHE
+> Task :expo-updates-interface:generateDebugResources FROM-CACHE
+> Task :react-native-worklets:prepareWorkletsHeadersForPrefabs
+> Task :react-native-worklets:preBuild
+> Task :react-native-worklets:preDebugBuild
+> Task :expo-manifests:generateDebugResources FROM-CACHE
+> Task :react-native-worklets:writeDebugAarMetadata
+> Task :pulse-widgets:generateDebugResValues FROM-CACHE
+> Task :pulse-bt:packageDebugResources
+> Task :expo-updates-interface:packageDebugResources
+> Task :react-native-async-storage_async-storage:generateDebugResValues FROM-CACHE
+> Task :react-native-async-storage_async-storage:generateDebugResources FROM-CACHE
+> Task :pulse-workouts:generateDebugResValues FROM-CACHE
+> Task :expo-modules-core:generateDebugResources FROM-CACHE
+> Task :react-native-async-storage_async-storage:packageDebugResources
+> Task :react-native-ble-plx:generateDebugResValues FROM-CACHE
+> Task :expo-modules-core:packageDebugResources
+> Task :react-native-ble-plx:generateDebugResources FROM-CACHE
+> Task :react-native-gesture-handler:generateDebugResValues FROM-CACHE
+> Task :react-native-gesture-handler:generateDebugResources FROM-CACHE
+> Task :react-native-reanimated:prepareReanimatedHeadersForPrefabs
+> Task :react-native-reanimated:preBuild
+> Task :react-native-reanimated:preDebugBuild
+> Task :react-native-reanimated:writeDebugAarMetadata
+> Task :react-native-ble-plx:packageDebugResources
+> Task :expo-manifests:packageDebugResources
+> Task :react-native-health-connect:generateDebugResValues FROM-CACHE
+> Task :pulse-widgets:generateDebugResources
+> Task :react-native-masked-view_masked-view:generateDebugResValues FROM-CACHE
+> Task :react-native-health-connect:generateDebugResources FROM-CACHE
+> Task :react-native-health-connect-expo:generateDebugResValues FROM-CACHE
+> Task :react-native-health-connect-expo:generateDebugResources FROM-CACHE
+> Task :react-native-masked-view_masked-view:generateDebugResources FROM-CACHE
+> Task :react-native-health-connect-expo:packageDebugResources
+> Task :react-native-health-connect:packageDebugResources
+> Task :react-native-safe-area-context:generateDebugResValues FROM-CACHE
+> Task :react-native-reanimated:generateDebugResValues FROM-CACHE
+> Task :react-native-reanimated:generateDebugResources FROM-CACHE
+> Task :react-native-masked-view_masked-view:packageDebugResources
+> Task :react-native-safe-area-context:generateDebugResources FROM-CACHE
+> Task :react-native-screens:generateDebugResValues FROM-CACHE
+> Task :pulse-workouts:generateDebugResources
+> Task :react-native-safe-area-context:packageDebugResources
+> Task :react-native-svg:generateDebugResValues FROM-CACHE
+> Task :react-native-gesture-handler:packageDebugResources
+> Task :react-native-svg:generateDebugResources FROM-CACHE
+> Task :react-native-worklets:generateDebugResValues FROM-CACHE
+> Task :react-native-worklets:generateDebugResources FROM-CACHE
+> Task :react-native-svg:packageDebugResources
+> Task :react-native-worklets:packageDebugResources
+> Task :sentry_react-native:generateDebugResValues FROM-CACHE
+> Task :pulse-workouts:packageDebugResources
+> Task :sentry_react-native:generateDebugResources FROM-CACHE
+> Task :expo:extractDeepLinksDebug
+> Task :expo-background-task:extractDeepLinksDebug
+> Task :sentry_react-native:packageDebugResources
+> Task :pulse-widgets:packageDebugResources
+> Task :expo-constants:extractDeepLinksDebug FROM-CACHE
+> Task :expo-dev-client:extractDeepLinksDebug FROM-CACHE
+> Task :expo:processDebugManifest
+> Task :expo-dev-launcher:extractDeepLinksDebug FROM-CACHE
+> Task :expo-background-task:processDebugManifest
+> Task :react-native-screens:generateDebugResources
+> Task :expo-dev-menu:extractDeepLinksDebug FROM-CACHE
+> Task :expo-dev-launcher:processDebugManifest
+> Task :expo-dev-menu-interface:extractDeepLinksDebug FROM-CACHE
+> Task :expo-dev-menu-interface:processDebugManifest
+> Task :expo-json-utils:extractDeepLinksDebug FROM-CACHE
+> Task :expo-json-utils:processDebugManifest
+> Task :expo-dev-client:processDebugManifest
+> Task :expo-constants:processDebugManifest
+> Task :expo-dev-menu:processDebugManifest
+> Task :react-native-screens:packageDebugResources
+> Task :expo-updates-interface:extractDeepLinksDebug FROM-CACHE
+> Task :expo-manifests:extractDeepLinksDebug FROM-CACHE
+> Task :pulse-bt:extractDeepLinksDebug FROM-CACHE
+> Task :expo-modules-core:extractDeepLinksDebug FROM-CACHE
+> Task :expo-log-box:extractDeepLinksDebug FROM-CACHE
+> Task :expo-log-box:processDebugManifest
+
+> Task :expo-modules-core:processDebugManifest
+/private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-modules-core@57.0.26_react-native-worklets@0.10.1_@babel+core@7.29.7_supports-colo_1616673b4e8b68b652d88b20b6cb1468/node_modules/expo-modules-core/android/src/main/AndroidManifest.xml:8:9-11:45 Warning:
+	meta-data#com.facebook.soloader.enabled@android:value was tagged at AndroidManifest.xml:8 to replace other declarations but no other declaration present
+
+> Task :expo-manifests:processDebugManifest
+> Task :pulse-bt:processDebugManifest
+> Task :expo-updates-interface:processDebugManifest
+> Task :pulse-workouts:extractDeepLinksDebug FROM-CACHE
+> Task :pulse-widgets:extractDeepLinksDebug FROM-CACHE
+> Task :react-native-async-storage_async-storage:extractDeepLinksDebug FROM-CACHE
+> Task :react-native-ble-plx:extractDeepLinksDebug FROM-CACHE
+> Task :react-native-gesture-handler:extractDeepLinksDebug FROM-CACHE
+> Task :pulse-workouts:processDebugManifest
+> Task :react-native-gesture-handler:processDebugManifest
+> Task :pulse-widgets:processDebugManifest
+> Task :react-native-ble-plx:processDebugManifest
+> Task :react-native-masked-view_masked-view:extractDeepLinksDebug FROM-CACHE
+> Task :react-native-safe-area-context:extractDeepLinksDebug FROM-CACHE
+> Task :react-native-health-connect:extractDeepLinksDebug FROM-CACHE
+> Task :react-native-health-connect-expo:extractDeepLinksDebug FROM-CACHE
+> Task :react-native-health-connect-expo:processDebugManifest
+
+> Task :react-native-health-connect:processDebugManifest
+package="dev.matinzd.healthconnect" found in source AndroidManifest.xml: /private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-health-connect@4.1.3_@expo+config-plugins@57.0.10_supports-color@8.1.1_typ_bb22bbadda4be4bd26a34aa0d248b833/node_modules/react-native-health-connect/android/src/main/AndroidManifest.xml.
+Setting the namespace via the package attribute in the source AndroidManifest.xml is no longer supported, and the value is ignored.
+Recommendation: remove package="dev.matinzd.healthconnect" from the source AndroidManifest.xml: /private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-health-connect@4.1.3_@expo+config-plugins@57.0.10_supports-color@8.1.1_typ_bb22bbadda4be4bd26a34aa0d248b833/node_modules/react-native-health-connect/android/src/main/AndroidManifest.xml.
+
+> Task :react-native-safe-area-context:processDebugManifest
+package="com.th3rdwave.safeareacontext" found in source AndroidManifest.xml: /private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-safe-area-context@5.7.0_react-native@0.86.3_@babel+core@7.29.7_supports-co_615750e58128cab27be7af0ebe0e3ceb/node_modules/react-native-safe-area-context/android/src/main/AndroidManifest.xml.
+Setting the namespace via the package attribute in the source AndroidManifest.xml is no longer supported, and the value is ignored.
+Recommendation: remove package="com.th3rdwave.safeareacontext" from the source AndroidManifest.xml: /private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-safe-area-context@5.7.0_react-native@0.86.3_@babel+core@7.29.7_supports-co_615750e58128cab27be7af0ebe0e3ceb/node_modules/react-native-safe-area-context/android/src/main/AndroidManifest.xml.
+
+> Task :react-native-masked-view_masked-view:processDebugManifest
+> Task :react-native-svg:extractDeepLinksDebug FROM-CACHE
+> Task :react-native-screens:extractDeepLinksDebug FROM-CACHE
+> Task :react-native-worklets:extractDeepLinksDebug FROM-CACHE
+> Task :sentry_react-native:extractDeepLinksDebug FROM-CACHE
+> Task :react-native-svg:processDebugManifest
+
+> Task :sentry_react-native:processDebugManifest
+package="io.sentry.react" found in source AndroidManifest.xml: /private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/@sentry+react-native@7.11.0_expo@57.0.27_react-native@0.86.3_@babel+core@7.29.7_support_85a6ca99ee07f3c5e0c87ce422327fbb/node_modules/@sentry/react-native/android/src/main/AndroidManifest.xml.
+Setting the namespace via the package attribute in the source AndroidManifest.xml is no longer supported, and the value is ignored.
+Recommendation: remove package="io.sentry.react" from the source AndroidManifest.xml: /private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/@sentry+react-native@7.11.0_expo@57.0.27_react-native@0.86.3_@babel+core@7.29.7_support_85a6ca99ee07f3c5e0c87ce422327fbb/node_modules/@sentry/react-native/android/src/main/AndroidManifest.xml.
+
+> Task :react-native-worklets:processDebugManifest
+> Task :expo-background-task:compileDebugLibraryResources
+> Task :expo:compileDebugLibraryResources
+> Task :expo-constants:compileDebugLibraryResources
+> Task :expo:parseDebugLocalResources
+> Task :expo-background-task:parseDebugLocalResources
+> Task :expo-constants:parseDebugLocalResources
+> Task :expo:generateDebugRFile
+> Task :expo-background-task:generateDebugRFile
+> Task :expo-constants:generateDebugRFile
+> Task :expo-dev-client:compileDebugLibraryResources FROM-CACHE
+> Task :expo-dev-client:parseDebugLocalResources FROM-CACHE
+> Task :expo-dev-client:generateDebugRFile
+> Task :expo-dev-launcher:compileDebugLibraryResources
+> Task :expo-dev-menu:compileDebugLibraryResources
+> Task :expo-dev-menu:parseDebugLocalResources
+> Task :expo-dev-launcher:parseDebugLocalResources
+> Task :expo-dev-launcher:generateDebugRFile
+> Task :expo-dev-menu:generateDebugRFile
+> Task :expo-log-box:compileDebugLibraryResources FROM-CACHE
+> Task :expo-json-utils:compileDebugLibraryResources FROM-CACHE
+> Task :expo-log-box:parseDebugLocalResources FROM-CACHE
+> Task :expo-json-utils:parseDebugLocalResources FROM-CACHE
+> Task :expo-dev-menu-interface:compileDebugLibraryResources FROM-CACHE
+> Task :expo-dev-menu-interface:parseDebugLocalResources FROM-CACHE
+> Task :react-native-reanimated:packageDebugResources
+> Task :react-native-reanimated:extractDeepLinksDebug FROM-CACHE
+
+> Task :react-native-async-storage_async-storage:processDebugManifest
+package="com.reactnativecommunity.asyncstorage" found in source AndroidManifest.xml: /private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/@react-native-async-storage+async-storage@2.2.0_react-native@0.86.3_@babel+core@7.29.7__f60667c45fff89cd7a9a00642eedee31/node_modules/@react-native-async-storage/async-storage/android/src/main/AndroidManifest.xml.
+Setting the namespace via the package attribute in the source AndroidManifest.xml is no longer supported, and the value is ignored.
+Recommendation: remove package="com.reactnativecommunity.asyncstorage" from the source AndroidManifest.xml: /private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/@react-native-async-storage+async-storage@2.2.0_react-native@0.86.3_@babel+core@7.29.7__f60667c45fff89cd7a9a00642eedee31/node_modules/@react-native-async-storage/async-storage/android/src/main/AndroidManifest.xml.
+
+> Task :expo-log-box:generateDebugRFile
+> Task :expo-manifests:compileDebugLibraryResources FROM-CACHE
+> Task :expo-manifests:parseDebugLocalResources FROM-CACHE
+> Task :expo-json-utils:generateDebugRFile
+> Task :expo-modules-core:compileDebugLibraryResources FROM-CACHE
+> Task :react-native-screens:processDebugManifest
+> Task :expo-modules-core:parseDebugLocalResources FROM-CACHE
+> Task :expo-updates-interface:compileDebugLibraryResources FROM-CACHE
+> Task :pulse-bt:compileDebugLibraryResources FROM-CACHE
+> Task :expo-dev-menu-interface:generateDebugRFile
+> Task :expo-updates-interface:parseDebugLocalResources FROM-CACHE
+> Task :pulse-bt:parseDebugLocalResources FROM-CACHE
+> Task :react-native-reanimated:processDebugManifest
+> Task :pulse-widgets:parseDebugLocalResources
+> Task :expo-modules-core:generateDebugRFile
+> Task :expo-updates-interface:generateDebugRFile
+> Task :pulse-workouts:compileDebugLibraryResources
+> Task :react-native-async-storage_async-storage:compileDebugLibraryResources FROM-CACHE
+> Task :react-native-async-storage_async-storage:parseDebugLocalResources FROM-CACHE
+> Task :pulse-workouts:parseDebugLocalResources
+> Task :pulse-widgets:generateDebugRFile
+> Task :pulse-bt:generateDebugRFile
+> Task :react-native-health-connect:compileDebugLibraryResources FROM-CACHE
+> Task :react-native-ble-plx:compileDebugLibraryResources FROM-CACHE
+> Task :react-native-health-connect-expo:compileDebugLibraryResources FROM-CACHE
+> Task :react-native-gesture-handler:compileDebugLibraryResources FROM-CACHE
+> Task :expo-manifests:generateDebugRFile
+> Task :react-native-health-connect:parseDebugLocalResources FROM-CACHE
+> Task :react-native-masked-view_masked-view:compileDebugLibraryResources FROM-CACHE
+> Task :react-native-gesture-handler:parseDebugLocalResources FROM-CACHE
+> Task :react-native-health-connect-expo:parseDebugLocalResources FROM-CACHE
+> Task :react-native-ble-plx:parseDebugLocalResources FROM-CACHE
+> Task :react-native-masked-view_masked-view:parseDebugLocalResources FROM-CACHE
+> Task :pulse-workouts:generateDebugRFile
+> Task :react-native-reanimated:compileDebugLibraryResources FROM-CACHE
+> Task :react-native-reanimated:parseDebugLocalResources FROM-CACHE
+> Task :react-native-gesture-handler:generateDebugRFile
+> Task :pulse-widgets:compileDebugLibraryResources
+> Task :react-native-safe-area-context:compileDebugLibraryResources FROM-CACHE
+> Task :react-native-health-connect-expo:generateDebugRFile
+> Task :react-native-masked-view_masked-view:generateDebugRFile
+> Task :react-native-ble-plx:generateDebugRFile
+> Task :react-native-safe-area-context:parseDebugLocalResources FROM-CACHE
+> Task :react-native-svg:compileDebugLibraryResources FROM-CACHE
+> Task :react-native-reanimated:generateDebugRFile
+> Task :react-native-svg:parseDebugLocalResources FROM-CACHE
+> Task :react-native-worklets:compileDebugLibraryResources FROM-CACHE
+> Task :react-native-async-storage_async-storage:generateDebugRFile
+> Task :expo:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :react-native-screens:parseDebugLocalResources
+> Task :react-native-worklets:parseDebugLocalResources FROM-CACHE
+> Task :sentry_react-native:compileDebugLibraryResources FROM-CACHE
+> Task :react-native-health-connect:generateDebugRFile
+> Task :expo-background-task:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :sentry_react-native:parseDebugLocalResources FROM-CACHE
+> Task :react-native-safe-area-context:generateDebugRFile
+> Task :expo-modules-core:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:generateAutolinkingNewArchitectureFiles
+> Task :react-native-svg:generateDebugRFile
+> Task :react-native-worklets:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :expo:generateDebugBuildConfig
+> Task :expo-constants:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :expo-modules-core:generateDebugBuildConfig
+> Task :expo-background-task:generateDebugBuildConfig
+> Task :react-native-worklets:generateDebugRFile
+> Task :expo-dev-client:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :expo-background-task:javaPreCompileDebug
+> Task :expo-dev-launcher:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :expo-constants:generateDebugBuildConfig
+> Task :expo-modules-core:javaPreCompileDebug
+> Task :expo-dev-menu:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:generateAutolinkingPackageList
+> Task :app:generateCodegenSchemaFromJavaScript SKIPPED
+> Task :app:generateCodegenArtifactsFromSchema SKIPPED
+> Task :expo-constants:javaPreCompileDebug FROM-CACHE
+> Task :expo-dev-menu-interface:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :react-native-worklets:generateDebugBuildConfig
+> Task :app:generateReactNativeEntryPoint
+> Task :app:preBuild
+> Task :app:preDebugBuild
+> Task :sentry_react-native:generateDebugRFile
+> Task :expo-json-utils:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :expo-dev-menu:generateDebugBuildConfig
+> Task :expo-manifests:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:generateDebugBuildConfig
+> Task :expo-dev-menu-interface:generateDebugBuildConfig
+> Task :expo-dev-menu-interface:javaPreCompileDebug FROM-CACHE
+> Task :expo-manifests:generateDebugBuildConfig
+> Task :app:generateDebugResValues
+> Task :expo-manifests:javaPreCompileDebug FROM-CACHE
+> Task :expo-updates-interface:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :expo-dev-menu:javaPreCompileDebug FROM-CACHE
+> Task :expo-log-box:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :expo-updates-interface:generateDebugBuildConfig
+> Task :expo-updates-interface:javaPreCompileDebug FROM-CACHE
+> Task :pulse-bt:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :expo-log-box:generateDebugBuildConfig
+> Task :expo-log-box:javaPreCompileDebug FROM-CACHE
+> Task :pulse-widgets:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :pulse-bt:generateDebugBuildConfig
+> Task :pulse-bt:javaPreCompileDebug FROM-CACHE
+> Task :pulse-workouts:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :pulse-widgets:generateDebugBuildConfig
+> Task :pulse-workouts:generateDebugBuildConfig
+> Task :pulse-workouts:javaPreCompileDebug FROM-CACHE
+> Task :react-native-health-connect:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :react-native-health-connect:generateDebugBuildConfig
+> Task :react-native-screens:compileDebugLibraryResources
+> Task :react-native-health-connect-expo:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :react-native-health-connect-expo:generateDebugBuildConfig
+> Task :react-native-health-connect-expo:javaPreCompileDebug FROM-CACHE
+> Task :expo:javaPreCompileDebug FROM-CACHE
+> Task :react-native-async-storage_async-storage:generateDebugBuildConfig
+> Task :react-native-async-storage_async-storage:javaPreCompileDebug FROM-CACHE
+> Task :pulse-widgets:javaPreCompileDebug FROM-CACHE
+> Task :expo-json-utils:generateDebugBuildConfig
+> Task :expo-json-utils:javaPreCompileDebug FROM-CACHE
+> Task :react-native-gesture-handler:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:generateDebugResources
+> Task :react-native-ble-plx:generateDebugBuildConfig
+> Task :react-native-ble-plx:javaPreCompileDebug FROM-CACHE
+> Task :react-native-gesture-handler:generateDebugBuildConfig
+> Task :react-native-reanimated:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :react-native-reanimated:generateDebugBuildConfig
+> Task :react-native-reanimated:javaPreCompileDebug FROM-CACHE
+> Task :react-native-svg:generateDebugBuildConfig
+> Task :react-native-svg:javaPreCompileDebug FROM-CACHE
+> Task :react-native-screens:generateDebugRFile
+> Task :react-native-gesture-handler:javaPreCompileDebug FROM-CACHE
+> Task :react-native-masked-view_masked-view:generateDebugBuildConfig
+> Task :react-native-masked-view_masked-view:javaPreCompileDebug FROM-CACHE
+
+> Task :react-native-masked-view_masked-view:compileDebugJavaWithJavac
+Note: /private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/@react-native-masked-view+masked-view@0.3.2_react-native@0.86.3_@babel+core@7.29.7_supp_d232b9d64a032e88004c7003ff7f7d13/node_modules/@react-native-masked-view/masked-view/android/src/main/java/org/reactnative/maskedview/RNCMaskedViewPackage.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :shopify_react-native-skia:prepareHeaders
+> Task :shopify_react-native-skia:preBuild
+> Task :shopify_react-native-skia:preDebugBuild
+
+> Task :react-native-svg:compileDebugJavaWithJavac
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Note: Some input files use unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+
+> Task :app:packageDebugResources
+> Task :shopify_react-native-skia:generateDebugResValues FROM-CACHE
+> Task :shopify_react-native-skia:generateDebugResources FROM-CACHE
+> Task :shopify_react-native-skia:packageDebugResources
+> Task :expo-dev-client:dataBindingMergeDependencyArtifactsDebug
+> Task :expo-dev-launcher:dataBindingMergeDependencyArtifactsDebug
+> Task :react-native-worklets:compileDebugKotlin
+> Task :react-native-health-connect:compileDebugKotlin
+> Task :react-native-async-storage_async-storage:compileDebugJavaWithJavac
+> Task :react-native-ble-plx:compileDebugJavaWithJavac
+> Task :shopify_react-native-skia:writeDebugAarMetadata
+> Task :app:mapDebugSourceSetPaths
+> Task :shopify_react-native-skia:extractDeepLinksDebug FROM-CACHE
+> Task :shopify_react-native-skia:compileDebugLibraryResources FROM-CACHE
+
+> Task :shopify_react-native-skia:processDebugManifest
+package="com.shopify.reactnative.skia" found in source AndroidManifest.xml: /private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/@shopify+react-native-skia@2.6.2_dbae72ccf31b4ea9e05bb62b47391d88/node_modules/@shopify/react-native-skia/android/src/main/AndroidManifest.xml.
+Setting the namespace via the package attribute in the source AndroidManifest.xml is no longer supported, and the value is ignored.
+Recommendation: remove package="com.shopify.reactnative.skia" from the source AndroidManifest.xml: /private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/@shopify+react-native-skia@2.6.2_dbae72ccf31b4ea9e05bb62b47391d88/node_modules/@shopify/react-native-skia/android/src/main/AndroidManifest.xml.
+
+> Task :shopify_react-native-skia:parseDebugLocalResources FROM-CACHE
+> Task :shopify_react-native-skia:generateDebugRFile
+> Task :react-native-safe-area-context:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :react-native-safe-area-context:generateDebugBuildConfig
+> Task :react-native-masked-view_masked-view:bundleLibCompileToJarDebug
+> Task :react-native-screens:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :react-native-screens:generateDebugBuildConfig
+> Task :react-native-svg:bundleLibCompileToJarDebug
+> Task :sentry_react-native:generateDebugBuildConfig
+> Task :sentry_react-native:javaPreCompileDebug FROM-CACHE
+
+> Task :react-native-async-storage_async-storage:compileDebugJavaWithJavac
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Note: /private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/@react-native-async-storage+async-storage@2.2.0_react-native@0.86.3_@babel+core@7.29.7__f60667c45fff89cd7a9a00642eedee31/node_modules/@react-native-async-storage/async-storage/android/src/javaPackage/java/com/reactnativecommunity/asyncstorage/AsyncStoragePackage.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+
+> Task :expo-dev-client:dataBindingGenBaseClassesDebug
+> Task :react-native-worklets:javaPreCompileDebug FROM-CACHE
+> Task :expo-dev-client:generateDebugBuildConfig
+> Task :expo-dev-client:javaPreCompileDebug FROM-CACHE
+> Task :react-native-health-connect:javaPreCompileDebug FROM-CACHE
+
+> Task :react-native-ble-plx:compileDebugJavaWithJavac
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Note: /private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-ble-plx@3.5.1_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1__24f72d3a701dc321819d24b107676f65/node_modules/react-native-ble-plx/android/src/main/java/com/bleplx/adapter/utils/RefreshGattCustomOperation.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+
+> Task :react-native-safe-area-context:javaPreCompileDebug FROM-CACHE
+> Task :shopify_react-native-skia:generateDebugBuildConfig
+> Task :shopify_react-native-skia:javaPreCompileDebug FROM-CACHE
+
+> Task :shopify_react-native-skia:compileDebugJavaWithJavac
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Note: Some input files use unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+
+> Task :sentry_react-native:compileDebugJavaWithJavac
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :app:checkDebugAarMetadata
+
+> Task :react-native-safe-area-context:compileDebugKotlin
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-safe-area-context@5.7.0_react-native@0.86.3_@babel+core@7.29.7_supports-co_615750e58128cab27be7af0ebe0e3ceb/node_modules/react-native-safe-area-context/android/src/main/java/com/th3rdwave/safeareacontext/SafeAreaProviderManager.kt:39:19 'fun getEventDispatcherForReactTag(context: ReactContext, reactTag: Int): EventDispatcher?' is deprecated. reactTag is no longer needed.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-safe-area-context@5.7.0_react-native@0.86.3_@babel+core@7.29.7_supports-co_615750e58128cab27be7af0ebe0e3ceb/node_modules/react-native-safe-area-context/android/src/main/java/com/th3rdwave/safeareacontext/SafeAreaView.kt:9:8 'class UIManagerModule : ReactContextBaseJavaModule, LifecycleEventListener, UIManager' is deprecated. Deprecated in Java.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-safe-area-context@5.7.0_react-native@0.86.3_@babel+core@7.29.7_supports-co_615750e58128cab27be7af0ebe0e3ceb/node_modules/react-native-safe-area-context/android/src/main/java/com/th3rdwave/safeareacontext/SafeAreaView.kt:50:54 'class UIManagerModule : ReactContextBaseJavaModule, LifecycleEventListener, UIManager' is deprecated. Deprecated in Java.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-safe-area-context@5.7.0_react-native@0.86.3_@babel+core@7.29.7_supports-co_615750e58128cab27be7af0ebe0e3ceb/node_modules/react-native-safe-area-context/android/src/main/java/com/th3rdwave/safeareacontext/SafeAreaView.kt:59:23 'val uiImplementation: UIImplementation!' is deprecated. Deprecated in Java.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-safe-area-context@5.7.0_react-native@0.86.3_@babel+core@7.29.7_supports-co_615750e58128cab27be7af0ebe0e3ceb/node_modules/react-native-safe-area-context/android/src/main/java/com/th3rdwave/safeareacontext/SafeAreaViewShadowNode.kt:9:32 'class LayoutShadowNode : ReactShadowNodeImpl' is deprecated. This class is part of Legacy Architecture and will be removed in a future release.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-safe-area-context@5.7.0_react-native@0.86.3_@babel+core@7.29.7_supports-co_615750e58128cab27be7af0ebe0e3ceb/node_modules/react-native-safe-area-context/android/src/main/java/com/th3rdwave/safeareacontext/SafeAreaViewShadowNode.kt:110:61 'class NativeViewHierarchyOptimizer : Any' is deprecated. This class is part of Legacy Architecture and will be removed in a future release.
+
+> Task :react-native-async-storage_async-storage:bundleLibCompileToJarDebug
+> Task :expo:mergeDebugShaders
+> Task :expo:compileDebugShaders NO-SOURCE
+> Task :expo:generateDebugAssets UP-TO-DATE
+> Task :expo:mergeDebugAssets
+> Task :expo-background-task:mergeDebugShaders
+> Task :expo-background-task:compileDebugShaders NO-SOURCE
+> Task :expo-background-task:generateDebugAssets UP-TO-DATE
+> Task :expo-background-task:mergeDebugAssets
+> Task :expo-constants:mergeDebugShaders
+> Task :expo-constants:compileDebugShaders NO-SOURCE
+> Task :expo-constants:generateDebugAssets UP-TO-DATE
+> Task :shopify_react-native-skia:bundleLibCompileToJarDebug
+> Task :expo-constants:mergeDebugAssets
+> Task :expo-dev-client:mergeDebugShaders
+> Task :expo-dev-menu:mergeDebugShaders
+> Task :expo-dev-client:compileDebugShaders NO-SOURCE
+> Task :expo-dev-menu:compileDebugShaders NO-SOURCE
+> Task :expo-dev-client:generateDebugAssets UP-TO-DATE
+> Task :expo-dev-menu:generateDebugAssets UP-TO-DATE
+> Task :react-native-ble-plx:bundleLibCompileToJarDebug
+> Task :expo-dev-menu:mergeDebugAssets
+> Task :expo-json-utils:mergeDebugShaders
+> Task :expo-json-utils:compileDebugShaders NO-SOURCE
+> Task :expo-json-utils:generateDebugAssets UP-TO-DATE
+> Task :expo-dev-launcher:dataBindingGenBaseClassesDebug
+> Task :sentry_react-native:bundleLibCompileToJarDebug
+> Task :expo-dev-launcher:generateDebugBuildConfig
+> Task :expo-log-box:mergeDebugShaders
+> Task :expo-log-box:compileDebugShaders NO-SOURCE
+> Task :expo-log-box:generateDebugAssets UP-TO-DATE
+> Task :expo-dev-menu-interface:mergeDebugShaders
+> Task :expo-dev-menu-interface:compileDebugShaders NO-SOURCE
+> Task :expo-dev-menu-interface:generateDebugAssets UP-TO-DATE
+> Task :expo-log-box:mergeDebugAssets
+> Task :expo-manifests:mergeDebugShaders
+> Task :expo-manifests:compileDebugShaders NO-SOURCE
+> Task :expo-manifests:generateDebugAssets UP-TO-DATE
+> Task :expo-dev-client:mergeDebugAssets
+> Task :expo-modules-core:mergeDebugShaders
+> Task :expo-dev-launcher:checkApolloVersions
+> Task :expo-manifests:mergeDebugAssets
+> Task :expo-modules-core:compileDebugShaders NO-SOURCE
+> Task :expo-modules-core:generateDebugAssets UP-TO-DATE
+> Task :expo-json-utils:mergeDebugAssets
+> Task :expo-updates-interface:mergeDebugShaders
+> Task :expo-updates-interface:compileDebugShaders NO-SOURCE
+> Task :expo-updates-interface:generateDebugAssets UP-TO-DATE
+> Task :pulse-bt:mergeDebugShaders
+> Task :expo-modules-core:mergeDebugAssets
+> Task :pulse-bt:compileDebugShaders NO-SOURCE
+> Task :pulse-bt:generateDebugAssets UP-TO-DATE
+> Task :expo-updates-interface:mergeDebugAssets
+> Task :pulse-bt:mergeDebugAssets
+> Task :pulse-workouts:mergeDebugShaders
+> Task :react-native-async-storage_async-storage:mergeDebugShaders
+> Task :react-native-async-storage_async-storage:compileDebugShaders NO-SOURCE
+> Task :pulse-workouts:compileDebugShaders NO-SOURCE
+> Task :react-native-async-storage_async-storage:generateDebugAssets UP-TO-DATE
+> Task :pulse-workouts:generateDebugAssets UP-TO-DATE
+> Task :pulse-workouts:mergeDebugAssets
+> Task :react-native-async-storage_async-storage:mergeDebugAssets
+> Task :react-native-ble-plx:mergeDebugShaders
+> Task :react-native-gesture-handler:mergeDebugShaders
+> Task :pulse-widgets:mergeDebugShaders
+> Task :react-native-ble-plx:compileDebugShaders NO-SOURCE
+> Task :react-native-gesture-handler:compileDebugShaders NO-SOURCE
+> Task :pulse-widgets:compileDebugShaders NO-SOURCE
+> Task :react-native-gesture-handler:generateDebugAssets UP-TO-DATE
+> Task :pulse-widgets:generateDebugAssets UP-TO-DATE
+> Task :react-native-ble-plx:generateDebugAssets UP-TO-DATE
+> Task :react-native-ble-plx:mergeDebugAssets
+> Task :react-native-gesture-handler:mergeDebugAssets
+> Task :pulse-widgets:mergeDebugAssets
+> Task :react-native-masked-view_masked-view:mergeDebugShaders
+> Task :react-native-health-connect-expo:mergeDebugShaders
+> Task :react-native-health-connect:mergeDebugShaders
+> Task :react-native-health-connect:compileDebugShaders NO-SOURCE
+> Task :react-native-health-connect-expo:compileDebugShaders NO-SOURCE
+> Task :react-native-masked-view_masked-view:compileDebugShaders NO-SOURCE
+> Task :react-native-health-connect:generateDebugAssets UP-TO-DATE
+> Task :react-native-masked-view_masked-view:generateDebugAssets UP-TO-DATE
+> Task :react-native-health-connect-expo:generateDebugAssets UP-TO-DATE
+> Task :react-native-masked-view_masked-view:mergeDebugAssets
+> Task :react-native-health-connect:mergeDebugAssets
+> Task :react-native-health-connect-expo:mergeDebugAssets
+> Task :react-native-safe-area-context:mergeDebugShaders
+> Task :react-native-svg:mergeDebugShaders
+> Task :react-native-reanimated:mergeDebugShaders
+> Task :expo-dev-launcher:generateServiceApolloOptions
+> Task :react-native-safe-area-context:compileDebugShaders NO-SOURCE
+> Task :react-native-svg:compileDebugShaders NO-SOURCE
+> Task :react-native-reanimated:compileDebugShaders NO-SOURCE
+> Task :react-native-safe-area-context:generateDebugAssets UP-TO-DATE
+> Task :react-native-reanimated:generateDebugAssets UP-TO-DATE
+> Task :react-native-svg:generateDebugAssets UP-TO-DATE
+> Task :react-native-svg:mergeDebugAssets
+> Task :react-native-safe-area-context:mergeDebugAssets
+> Task :shopify_react-native-skia:mergeDebugShaders
+> Task :sentry_react-native:mergeDebugShaders
+> Task :sentry_react-native:compileDebugShaders NO-SOURCE
+> Task :shopify_react-native-skia:compileDebugShaders NO-SOURCE
+> Task :sentry_react-native:generateDebugAssets UP-TO-DATE
+> Task :shopify_react-native-skia:generateDebugAssets UP-TO-DATE
+> Task :sentry_react-native:mergeDebugAssets
+> Task :shopify_react-native-skia:mergeDebugAssets
+> Task :expo-dev-menu-interface:mergeDebugAssets
+> Task :react-native-reanimated:mergeDebugAssets
+> Task :expo-dev-launcher:javaPreCompileDebug FROM-CACHE
+> Task :react-native-masked-view_masked-view:bundleLibRuntimeToJarDebug
+> Task :expo-dev-launcher:mergeDebugShaders
+> Task :expo-dev-launcher:compileDebugShaders NO-SOURCE
+> Task :expo-dev-launcher:generateDebugAssets UP-TO-DATE
+> Task :expo-dev-launcher:mergeDebugAssets
+> Task :react-native-async-storage_async-storage:bundleLibRuntimeToJarDebug
+> Task :react-native-screens:javaPreCompileDebug FROM-CACHE
+> Task :react-native-screens:mergeDebugShaders
+> Task :react-native-screens:compileDebugShaders NO-SOURCE
+> Task :react-native-screens:generateDebugAssets UP-TO-DATE
+> Task :react-native-screens:mergeDebugAssets
+> Task :sentry_react-native:bundleLibRuntimeToJarDebug
+> Task :react-native-svg:bundleLibRuntimeToJarDebug
+> Task :shopify_react-native-skia:bundleLibRuntimeToJarDebug
+
+> Task :expo-dev-launcher:generateServiceApolloSources
+w: /private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-dev-launcher@57.0.20_expo@57.0.27_react-native@0.86.3_@babel+core@7.29.7_supports-_527cd3a697660f9965fa3a590bf08d8e/node_modules/expo-dev-launcher/android/src/debug/graphql/GetBranches.graphql: (21, 11): Apollo: Use of deprecated field `runtimeVersion`
+w: /private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-dev-launcher@57.0.20_expo@57.0.27_react-native@0.86.3_@babel+core@7.29.7_supports-_527cd3a697660f9965fa3a590bf08d8e/node_modules/expo-dev-launcher/android/src/debug/graphql/GetBranches.graphql: (34, 3): Apollo: Variable `platform` is unused
+w: /private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-dev-launcher@57.0.20_expo@57.0.27_react-native@0.86.3_@babel+core@7.29.7_supports-_527cd3a697660f9965fa3a590bf08d8e/node_modules/expo-dev-launcher/android/src/debug/graphql/GetUpdates.graphql: (14, 11): Apollo: Use of deprecated field `runtimeVersion`
+
+> Task :react-native-health-connect:compileDebugKotlin
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-health-connect@4.1.3_@expo+config-plugins@57.0.10_supports-color@8.1.1_typ_bb22bbadda4be4bd26a34aa0d248b833/node_modules/react-native-health-connect/android/src/main/java/dev/matinzd/healthconnect/HealthConnectPackage.kt:3:8 'class TurboReactPackage : BaseReactPackage' is deprecated. Use BaseReactPackage instead.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-health-connect@4.1.3_@expo+config-plugins@57.0.10_supports-color@8.1.1_typ_bb22bbadda4be4bd26a34aa0d248b833/node_modules/react-native-health-connect/android/src/main/java/dev/matinzd/healthconnect/HealthConnectPackage.kt:10:30 'class TurboReactPackage : BaseReactPackage' is deprecated. Use BaseReactPackage instead.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-health-connect@4.1.3_@expo+config-plugins@57.0.10_supports-color@8.1.1_typ_bb22bbadda4be4bd26a34aa0d248b833/node_modules/react-native-health-connect/android/src/main/java/dev/matinzd/healthconnect/HealthConnectPackage.kt:23:47 'constructor(name: String, className: String, canOverrideExistingModule: Boolean, needsEagerInit: Boolean, hasConstants: Boolean, isCxxModule: Boolean, isTurboModule: Boolean): ReactModuleInfo' is deprecated. This constructor is deprecated and will be removed in the future. Use ReactModuleInfo(String, String, boolean, boolean, boolean, boolean)].
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-health-connect@4.1.3_@expo+config-plugins@57.0.10_supports-color@8.1.1_typ_bb22bbadda4be4bd26a34aa0d248b833/node_modules/react-native-health-connect/android/src/main/java/dev/matinzd/healthconnect/records/ReactHealthRecord.kt:34:26 'fun newInstance(): CapturedType(out ReactHealthRecordImpl<*>)!' is deprecated. Deprecated in Java.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-health-connect@4.1.3_@expo+config-plugins@57.0.10_supports-color@8.1.1_typ_bb22bbadda4be4bd26a34aa0d248b833/node_modules/react-native-health-connect/android/src/main/java/dev/matinzd/healthconnect/records/ReactHealthRecord.kt:34:40 Unchecked cast of 'ReactHealthRecordImpl<*>?' to 'ReactHealthRecordImpl<T (of fun <T : Record> createReactHealthRecordInstance)>'.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-health-connect@4.1.3_@expo+config-plugins@57.0.10_supports-color@8.1.1_typ_bb22bbadda4be4bd26a34aa0d248b833/node_modules/react-native-health-connect/android/src/main/java/dev/matinzd/healthconnect/records/ReactHealthRecord.kt:43:26 'fun newInstance(): CapturedType(out ReactHealthRecordImpl<out Record>)!' is deprecated. Deprecated in Java.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-health-connect@4.1.3_@expo+config-plugins@57.0.10_supports-color@8.1.1_typ_bb22bbadda4be4bd26a34aa0d248b833/node_modules/react-native-health-connect/android/src/main/java/dev/matinzd/healthconnect/records/ReactHealthRecord.kt:43:40 Unchecked cast of 'ReactHealthRecordImpl<out Record>?' to 'ReactHealthRecordImpl<T (of fun <T : Record> createReactHealthRecordInstance)>'.
+
+> Task :app:parseDebugLocalResources
+> Task :app:createDebugCompatibleScreenManifests
+> Task :app:extractDeepLinksDebug
+> Task :react-native-async-storage_async-storage:processDebugJavaRes NO-SOURCE
+> Task :react-native-ble-plx:processDebugJavaRes NO-SOURCE
+> Task :react-native-masked-view_masked-view:processDebugJavaRes NO-SOURCE
+> Task :react-native-svg:processDebugJavaRes NO-SOURCE
+> Task :sentry_react-native:processDebugJavaRes NO-SOURCE
+> Task :shopify_react-native-skia:processDebugJavaRes NO-SOURCE
+> Task :shopify_react-native-skia:extractAARHeaders
+> Task :shopify_react-native-skia:extractJNIFiles
+
+> Task :shopify_react-native-skia:configureCMakeDebug[arm64-v8a]
+[CXX5304] This version only understands SDK XML versions up to 3 but an SDK XML file of version 4 was encountered. This can happen if you use versions of Android Studio and the command-line tools that were released at different times.
+[CXX5304] This version only understands SDK XML versions up to 3 but an SDK XML file of version 4 was encountered. This can happen if you use versions of Android Studio and the command-line tools that were released at different times.
+
+> Task :expo-background-task:mergeDebugJniLibFolders
+> Task :expo-background-task:mergeDebugNativeLibs NO-SOURCE
+> Task :expo-background-task:copyDebugJniLibsProjectOnly
+> Task :expo:mergeDebugJniLibFolders
+> Task :expo:mergeDebugNativeLibs NO-SOURCE
+> Task :react-native-ble-plx:bundleLibRuntimeToJarDebug
+> Task :expo:copyDebugJniLibsProjectOnly
+> Task :expo-dev-client:mergeDebugJniLibFolders
+> Task :expo-dev-client:mergeDebugNativeLibs NO-SOURCE
+> Task :expo-dev-client:copyDebugJniLibsProjectOnly
+> Task :expo-constants:mergeDebugJniLibFolders
+> Task :expo-constants:mergeDebugNativeLibs NO-SOURCE
+> Task :expo-constants:copyDebugJniLibsProjectOnly
+> Task :expo-dev-launcher:mergeDebugJniLibFolders
+> Task :expo-dev-launcher:mergeDebugNativeLibs NO-SOURCE
+> Task :expo-dev-launcher:copyDebugJniLibsProjectOnly
+> Task :expo-dev-menu:mergeDebugJniLibFolders
+> Task :expo-dev-menu:mergeDebugNativeLibs NO-SOURCE
+> Task :expo-dev-menu:copyDebugJniLibsProjectOnly
+> Task :expo-json-utils:mergeDebugJniLibFolders
+> Task :expo-json-utils:mergeDebugNativeLibs NO-SOURCE
+> Task :expo-dev-menu-interface:mergeDebugJniLibFolders
+> Task :expo-dev-menu-interface:mergeDebugNativeLibs NO-SOURCE
+> Task :expo-json-utils:copyDebugJniLibsProjectOnly
+> Task :expo-log-box:mergeDebugJniLibFolders
+> Task :expo-log-box:mergeDebugNativeLibs NO-SOURCE
+> Task :expo-manifests:mergeDebugJniLibFolders
+> Task :expo-dev-menu-interface:copyDebugJniLibsProjectOnly
+> Task :expo-manifests:mergeDebugNativeLibs NO-SOURCE
+> Task :expo-manifests:copyDebugJniLibsProjectOnly
+> Task :expo-modules-core:mergeDebugJniLibFolders
+> Task :expo-updates-interface:mergeDebugJniLibFolders
+> Task :expo-updates-interface:mergeDebugNativeLibs NO-SOURCE
+> Task :pulse-bt:mergeDebugJniLibFolders
+> Task :expo-updates-interface:copyDebugJniLibsProjectOnly
+> Task :pulse-bt:mergeDebugNativeLibs NO-SOURCE
+> Task :pulse-bt:copyDebugJniLibsProjectOnly
+> Task :pulse-widgets:mergeDebugJniLibFolders
+> Task :pulse-widgets:mergeDebugNativeLibs NO-SOURCE
+> Task :pulse-widgets:copyDebugJniLibsProjectOnly
+> Task :pulse-workouts:mergeDebugJniLibFolders
+> Task :pulse-workouts:mergeDebugNativeLibs NO-SOURCE
+> Task :pulse-workouts:copyDebugJniLibsProjectOnly
+> Task :react-native-async-storage_async-storage:mergeDebugJniLibFolders
+> Task :react-native-async-storage_async-storage:mergeDebugNativeLibs NO-SOURCE
+> Task :react-native-ble-plx:mergeDebugJniLibFolders
+> Task :react-native-async-storage_async-storage:copyDebugJniLibsProjectOnly
+> Task :react-native-ble-plx:mergeDebugNativeLibs NO-SOURCE
+> Task :react-native-ble-plx:copyDebugJniLibsProjectOnly
+> Task :react-native-gesture-handler:mergeDebugJniLibFolders
+> Task :react-native-health-connect-expo:mergeDebugJniLibFolders
+> Task :react-native-health-connect-expo:mergeDebugNativeLibs NO-SOURCE
+> Task :react-native-masked-view_masked-view:mergeDebugJniLibFolders
+> Task :react-native-masked-view_masked-view:mergeDebugNativeLibs NO-SOURCE
+> Task :react-native-health-connect-expo:copyDebugJniLibsProjectOnly
+> Task :react-native-masked-view_masked-view:copyDebugJniLibsProjectOnly
+> Task :react-native-reanimated:mergeDebugJniLibFolders
+> Task :react-native-svg:mergeDebugJniLibFolders
+> Task :react-native-svg:mergeDebugNativeLibs NO-SOURCE
+> Task :react-native-svg:copyDebugJniLibsProjectOnly
+> Task :sentry_react-native:mergeDebugJniLibFolders
+> Task :expo-log-box:copyDebugJniLibsProjectOnly
+> Task :sentry_react-native:mergeDebugNativeLibs NO-SOURCE
+> Task :sentry_react-native:copyDebugJniLibsProjectOnly
+
+> Task :app:processDebugMainManifest
+/private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/android/app/src/debug/AndroidManifest.xml Warning:
+	uses-permission#android.permission.RECORD_AUDIO was tagged at AndroidManifest.xml:0 to remove other declarations but no other declaration present
+/private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/android/app/src/debug/AndroidManifest.xml Warning:
+	provider#expo.modules.filesystem.FileSystemFileProvider@android:authorities was tagged at AndroidManifest.xml:0 to replace other declarations but no other declaration present
+/private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/android/app/src/debug/AndroidManifest.xml Warning:
+	activity#expo.modules.imagepicker.ExpoCropImageActivity@android:exported was tagged at AndroidManifest.xml:0 to replace other declarations but no other declaration present
+
+> Task :react-native-worklets:compileDebugJavaWithJavac
+> Task :react-native-health-connect:compileDebugJavaWithJavac
+> Task :react-native-worklets:mergeDebugShaders
+> Task :react-native-worklets:compileDebugShaders NO-SOURCE
+> Task :react-native-worklets:generateDebugAssets UP-TO-DATE
+> Task :react-native-worklets:mergeDebugAssets
+> Task :react-native-safe-area-context:compileDebugJavaWithJavac
+
+> Task :app:expoDebugOverrideMaxSdkConflicts
+[33m---------- Expo Max Sdk Override Plugin ----------[0m
+[33m>>> WARNING: Found 2 permission(s) with conflicting 'android:maxSdkVersion' declarations.[0m
+[33m    - android.permission.BLUETOOTH[0m
+[33m      > Defined WITH `android:maxSdkVersion` in: /Users/adityajindal/.gradle/caches/9.3.1/transforms/f00911f054c1aa4b19af2f809b0706a2/transformed/rxandroidble-1.17.2/AndroidManifest.xml[0m
+[33m      > Defined WITHOUT `android:maxSdkVersion` in: /private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/android/app/src/main/AndroidManifest.xml[0m
+[33m    - android.permission.BLUETOOTH_ADMIN[0m
+[33m      > Defined WITH `android:maxSdkVersion` in: /Users/adityajindal/.gradle/caches/9.3.1/transforms/f00911f054c1aa4b19af2f809b0706a2/transformed/rxandroidble-1.17.2/AndroidManifest.xml[0m
+[33m      > Defined WITHOUT `android:maxSdkVersion` in: /private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/android/app/src/main/AndroidManifest.xml[0m
+[33m>>> Removing 'android:maxSdkVersion' from these permissions in the final manifest to prevent runtime issues.[0m
+[33m>>> Removed 'android:maxSdkVersion' from 2 instance(s) in the final manifest.[0m
+[33m--------------------------------------------------[0m
+
+> Task :react-native-safe-area-context:bundleLibCompileToJarDebug
+> Task :react-native-worklets:bundleLibCompileToJarDebug
+> Task :react-native-health-connect:bundleLibCompileToJarDebug
+> Task :react-native-health-connect:bundleLibRuntimeToJarDebug
+> Task :react-native-worklets:bundleLibRuntimeToJarDebug
+> Task :app:processDebugManifest
+> Task :react-native-safe-area-context:bundleLibRuntimeToJarDebug
+> Task :app:javaPreCompileDebug FROM-CACHE
+> Task :app:mergeDebugShaders
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :react-native-health-connect:processDebugJavaRes
+> Task :react-native-safe-area-context:processDebugJavaRes
+> Task :react-native-worklets:processDebugJavaRes
+
+> Task :shopify_react-native-skia:configureCMakeDebug[arm64-v8a]
+C/C++: -- SKIA_LIBS_PATH: /private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/@shopify+react-native-skia@2.6.2_dbae72ccf31b4ea9e05bb62b47391d88/node_modules/@shopify/react-native-skia/android/../libs/android/arm64-v8a
+C/C++: -- SK_GRAPHITE: OFF
+C/C++: -- ABI     : arm64-v8a
+C/C++: -- PREBUILT: /private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/@shopify+react-native-skia@2.6.2_dbae72ccf31b4ea9e05bb62b47391d88/node_modules/@shopify/react-native-skia/android/build/react-native-0*/jni
+C/C++: -- BUILD   : /tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/@shopify+react-native-skia@2.6.2_dbae72ccf31b4ea9e05bb62b47391d88/node_modules/@shopify/react-native-skia/android/build
+C/C++: -- LIBRN   : 
+C/C++: -- LOG     : /Users/adityajindal/Library/Android/sdk/ndk/27.1.12297006/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib/aarch64-linux-android/26/liblog.so
+C/C++: -- JSI     : ReactAndroid::jsi
+C/C++: -- REACT   : ReactAndroid::reactnative
+C/C++: -- FBJNI   : fbjni::fbjni
+C/C++: -- REACTNATIVEJNI   : 
+C/C++: -- RUNTIMEEXECUTOR   : 
+C/C++: -- TURBO   : 
+
+> Task :app:mergeDebugResources
+> Task :shopify_react-native-skia:generateJsonModelDebug
+> Task :shopify_react-native-skia:prefabDebugConfigurePackage
+
+> Task :react-native-screens:compileDebugKotlin
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/RNScreensPackage.kt:70:9 The corresponding parameter in the supertype 'BaseReactPackage' is named 'name'. This may cause problems when calling this function with named arguments.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/RNScreensPackage.kt:71:9 The corresponding parameter in the supertype 'BaseReactPackage' is named 'reactContext'. This may cause problems when calling this function with named arguments.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/RNScreensPackage.kt:83:17 'constructor(name: String, className: String, canOverrideExistingModule: Boolean, needsEagerInit: Boolean, hasConstants: Boolean, isCxxModule: Boolean, isTurboModule: Boolean): ReactModuleInfo' is deprecated. This constructor is deprecated and will be removed in the future. Use ReactModuleInfo(String, String, boolean, boolean, boolean, boolean)].
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/Screen.kt:54:77 Unchecked cast of '(CoordinatorLayout.Behavior<View!>?..CoordinatorLayout.Behavior<*>?)' to 'BottomSheetBehavior<Screen>'.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/Screen.kt:59:33 'fun getEventDispatcherForReactTag(context: ReactContext, reactTag: Int): EventDispatcher?' is deprecated. reactTag is no longer needed.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/Screen.kt:516:14 'fun getEventDispatcherForReactTag(context: ReactContext, reactTag: Int): EventDispatcher?' is deprecated. reactTag is no longer needed.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenContainer.kt:250:18 'fun getEventDispatcherForReactTag(context: ReactContext, reactTag: Int): EventDispatcher?' is deprecated. reactTag is no longer needed.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenContainer.kt:260:18 'fun getEventDispatcherForReactTag(context: ReactContext, reactTag: Int): EventDispatcher?' is deprecated. reactTag is no longer needed.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenFragment.kt:225:37 'fun getEventDispatcherForReactTag(context: ReactContext, reactTag: Int): EventDispatcher?' is deprecated. reactTag is no longer needed.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenFragment.kt:242:14 'fun getEventDispatcherForReactTag(context: ReactContext, reactTag: Int): EventDispatcher?' is deprecated. reactTag is no longer needed.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenFragment.kt:258:22 'fun getEventDispatcherForReactTag(context: ReactContext, reactTag: Int): EventDispatcher?' is deprecated. reactTag is no longer needed.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenFragment.kt:327:22 'fun getEventDispatcherForReactTag(context: ReactContext, reactTag: Int): EventDispatcher?' is deprecated. reactTag is no longer needed.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenModalFragment.kt:180:22 'fun getEventDispatcherForReactTag(context: ReactContext, reactTag: Int): EventDispatcher?' is deprecated. reactTag is no longer needed.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStack.kt:120:14 'fun getEventDispatcherForReactTag(context: ReactContext, reactTag: Int): EventDispatcher?' is deprecated. reactTag is no longer needed.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackFragment.kt:173:18 'fun getEventDispatcherForReactTag(context: ReactContext, reactTag: Int): EventDispatcher?' is deprecated. reactTag is no longer needed.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackFragment.kt:230:31 'var targetElevation: Float' is deprecated. Deprecated in Java.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackFragment.kt:233:13 'fun setHasOptionsMenu(p0: Boolean): Unit' is deprecated. Deprecated in Java.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackFragment.kt:443:18 This declaration overrides a deprecated member but is not marked as deprecated itself. Add the '@Deprecated' annotation or suppress the diagnostic.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackFragment.kt:450:22 'fun onPrepareOptionsMenu(p0: Menu): Unit' is deprecated. Deprecated in Java.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackFragment.kt:453:18 This declaration overrides a deprecated member but is not marked as deprecated itself. Add the '@Deprecated' annotation or suppress the diagnostic.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackFragment.kt:458:22 'fun onCreateOptionsMenu(p0: Menu, p1: MenuInflater): Unit' is deprecated. Deprecated in Java.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackHeaderConfig.kt:199:14 'fun getEventDispatcherForReactTag(context: ReactContext, reactTag: Int): EventDispatcher?' is deprecated. reactTag is no longer needed.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackHeaderConfig.kt:209:14 'fun getEventDispatcherForReactTag(context: ReactContext, reactTag: Int): EventDispatcher?' is deprecated. reactTag is no longer needed.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenWindowTraits.kt:48:42 'fun replaceSystemWindowInsets(p0: Int, p1: Int, p2: Int, p3: Int): @NonNull() WindowInsetsCompat' is deprecated. Deprecated in Java.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenWindowTraits.kt:49:39 'val systemWindowInsetLeft: Int' is deprecated. Deprecated in Java.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenWindowTraits.kt:51:39 'val systemWindowInsetRight: Int' is deprecated. Deprecated in Java.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenWindowTraits.kt:52:39 'val systemWindowInsetBottom: Int' is deprecated. Deprecated in Java.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreensModule.kt:100:14 'fun getEventDispatcherForReactTag(context: ReactContext, reactTag: Int): EventDispatcher?' is deprecated. reactTag is no longer needed.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/SearchBarView.kt:137:29 'fun getEventDispatcherForReactTag(context: ReactContext, reactTag: Int): EventDispatcher?' is deprecated. reactTag is no longer needed.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/BottomSheetDialogRootView.kt:7:8 'object ReactFeatureFlags : Any' is deprecated. Use com.facebook.react.internal.featureflags.ReactNativeFeatureFlags instead.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/BottomSheetDialogRootView.kt:25:13 'object ReactFeatureFlags : Any' is deprecated. Use com.facebook.react.internal.featureflags.ReactNativeFeatureFlags instead.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/BottomSheetDialogRootView.kt:32:9 The corresponding parameter in the supertype 'ReactViewGroup' is named 'left'. This may cause problems when calling this function with named arguments.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/BottomSheetDialogRootView.kt:33:9 The corresponding parameter in the supertype 'ReactViewGroup' is named 'top'. This may cause problems when calling this function with named arguments.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/BottomSheetDialogRootView.kt:34:9 The corresponding parameter in the supertype 'ReactViewGroup' is named 'right'. This may cause problems when calling this function with named arguments.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/BottomSheetDialogRootView.kt:35:9 The corresponding parameter in the supertype 'ReactViewGroup' is named 'bottom'. This may cause problems when calling this function with named arguments.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/BottomSheetDialogRootView.kt:71:9 The corresponding parameter in the supertype 'RootView' is named 'childView'. This may cause problems when calling this function with named arguments.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/BottomSheetDialogRootView.kt:72:9 The corresponding parameter in the supertype 'RootView' is named 'ev'. This may cause problems when calling this function with named arguments.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/BottomSheetDialogRootView.kt:79:46 The corresponding parameter in the supertype 'RootView' is named 'ev'. This may cause problems when calling this function with named arguments.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/BottomSheetDialogRootView.kt:83:9 The corresponding parameter in the supertype 'RootView' is named 'childView'. This may cause problems when calling this function with named arguments.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/BottomSheetDialogRootView.kt:84:9 The corresponding parameter in the supertype 'RootView' is named 'ev'. This may cause problems when calling this function with named arguments.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/BottomSheetDialogRootView.kt:95:34 The corresponding parameter in the supertype 'RootView' is named 't'. This may cause problems when calling this function with named arguments.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/DimmingView.kt:64:9 The corresponding parameter in the supertype 'ReactCompoundView' is named 'touchX'. This may cause problems when calling this function with named arguments.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/DimmingView.kt:65:9 The corresponding parameter in the supertype 'ReactCompoundView' is named 'touchY'. This may cause problems when calling this function with named arguments.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/DimmingView.kt:69:9 The corresponding parameter in the supertype 'ReactCompoundViewGroup' is named 'touchX'. This may cause problems when calling this function with named arguments.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/DimmingView.kt:70:9 The corresponding parameter in the supertype 'ReactCompoundViewGroup' is named 'touchY'. This may cause problems when calling this function with named arguments.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/gamma/common/event/BaseEventEmitter.kt:12:38 'fun getEventDispatcherForReactTag(context: ReactContext, reactTag: Int): EventDispatcher?' is deprecated. reactTag is no longer needed.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/gamma/modals/dimmingview/DimmingView.kt:64:9 The corresponding parameter in the supertype 'ReactCompoundView' is named 'touchX'. This may cause problems when calling this function with named arguments.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/gamma/modals/dimmingview/DimmingView.kt:65:9 The corresponding parameter in the supertype 'ReactCompoundView' is named 'touchY'. This may cause problems when calling this function with named arguments.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/gamma/modals/dimmingview/DimmingView.kt:69:9 The corresponding parameter in the supertype 'ReactCompoundViewGroup' is named 'touchX'. This may cause problems when calling this function with named arguments.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/gamma/modals/dimmingview/DimmingView.kt:70:9 The corresponding parameter in the supertype 'ReactCompoundViewGroup' is named 'touchY'. This may cause problems when calling this function with named arguments.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/gamma/modals/formsheet/FormSheetContentView.kt:11:8 'object ReactFeatureFlags : Any' is deprecated. Use com.facebook.react.internal.featureflags.ReactNativeFeatureFlags instead.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/gamma/modals/formsheet/FormSheetContentView.kt:39:33 'fun getEventDispatcher(context: ReactContext, uiManagerType: Int): EventDispatcher?' is deprecated. UIManagerType is no longer needed.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/gamma/modals/formsheet/FormSheetContentView.kt:44:13 'object ReactFeatureFlags : Any' is deprecated. Use com.facebook.react.internal.featureflags.ReactNativeFeatureFlags instead.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/gamma/modals/formsheet/FormSheetHostViewManager.kt:38:9 The corresponding parameter in the supertype 'FormSheetHostViewManager' is named 'view'. This may cause problems when calling this function with named arguments.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/gamma/tabs/host/TabsHostViewManager.kt:44:9 The corresponding parameter in the supertype 'TabsHostViewManager' is named 'view'. This may cause problems when calling this function with named arguments.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-screens@4.26.2_react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1_305740909f0d806a9f76258476655720/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/safearea/SafeAreaView.kt:143:45 'fun consumeDisplayCutout(): @NonNull() WindowInsetsCompat' is deprecated. Deprecated in Java.
+
+> Task :react-native-screens:configureCMakeDebug[arm64-v8a]
+> Task :react-native-safe-area-context:mergeDebugJniLibFolders
+> Task :react-native-health-connect:mergeDebugJniLibFolders
+> Task :react-native-safe-area-context:mergeDebugNativeLibs NO-SOURCE
+> Task :react-native-health-connect:mergeDebugNativeLibs NO-SOURCE
+> Task :react-native-health-connect:copyDebugJniLibsProjectOnly
+> Task :react-native-safe-area-context:copyDebugJniLibsProjectOnly
+> Task :app:mergeDebugAssets
+> Task :app:processDebugManifestForPackage
+> Task :app:compressDebugAssets
+
+> Task :react-native-reanimated:compileDebugKotlin
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NodesManager.kt:13:8 'class UIManagerModule : ReactContextBaseJavaModule, LifecycleEventListener, UIManager' is deprecated. Deprecated in Java.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NodesManager.kt:58:95 'fun resolveCustomDirectEventName(eventName: String): String?' is deprecated.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NodesManager.kt:234:29 'fun receiveEvent(surfaceId: Int, targetTag: Int, eventName: String, canCoalesceEvent: Boolean, customCoalesceKey: Int, params: WritableMap?, category: Int): Unit' is deprecated. Use the overload with eventTimestamp parameter instead.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/ReanimatedPackage.kt:5:8 'class ReactInstanceManager : Any' is deprecated. Deprecated in Java.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/ReanimatedPackage.kt:60:73 'class ReactInstanceManager : Any' is deprecated. Deprecated in Java.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/ReanimatedPackage.kt:61:63 'val reactNativeHost: ReactNativeHost' is deprecated. You should not use ReactNativeHost directly in the New Architecture. Use ReactHost instead.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/nativeProxy/EventHandler.kt:7:8 'class UIManagerModule : ReactContextBaseJavaModule, LifecycleEventListener, UIManager' is deprecated. Deprecated in Java.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/nativeProxy/EventHandler.kt:25:18 This declaration overrides a deprecated member but is not marked as deprecated itself. Add the '@Deprecated' annotation or suppress the diagnostic.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/nativeProxy/EventHandler.kt:38:18 This declaration overrides a deprecated member but is not marked as deprecated itself. Add the '@Deprecated' annotation or suppress the diagnostic.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/nativeProxy/EventHandler.kt:48:18 This declaration overrides a deprecated member but is not marked as deprecated itself. Add the '@Deprecated' annotation or suppress the diagnostic.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/nativeProxy/EventHandler.kt:57:18 This declaration overrides a deprecated member but is not marked as deprecated itself. Add the '@Deprecated' annotation or suppress the diagnostic.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/nativeProxy/NoopEventHandler.kt:8:18 This declaration overrides a deprecated member but is not marked as deprecated itself. Add the '@Deprecated' annotation or suppress the diagnostic.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/nativeProxy/NoopEventHandler.kt:20:18 This declaration overrides a deprecated member but is not marked as deprecated itself. Add the '@Deprecated' annotation or suppress the diagnostic.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/nativeProxy/NoopEventHandler.kt:29:18 This declaration overrides a deprecated member but is not marked as deprecated itself. Add the '@Deprecated' annotation or suppress the diagnostic.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/nativeProxy/NoopEventHandler.kt:37:18 This declaration overrides a deprecated member but is not marked as deprecated itself. Add the '@Deprecated' annotation or suppress the diagnostic.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/sensor/ReanimatedSensor.kt:28:26 'val defaultDisplay: Display!' is deprecated. Deprecated in Java.
+
+> Task :react-native-worklets:configureCMakeDebug[arm64-v8a]
+> Task :app:desugarDebugFileDependencies
+> Task :react-native-reanimated:compileDebugJavaWithJavac
+> Task :react-native-reanimated:processDebugJavaRes
+> Task :react-native-screens:buildCMakeDebug[arm64-v8a]
+> Task :app:mergeDebugJniLibFolders
+> Task :app:validateSigningDebug
+> Task :app:writeDebugAppMetadata
+> Task :app:writeDebugSigningConfigVersions
+> Task :react-native-reanimated:bundleLibCompileToJarDebug
+> Task :react-native-reanimated:bundleLibRuntimeToJarDebug
+> Task :app:checkDebugDuplicateClasses
+> Task :app:processDebugResources
+> Task :expo-modules-core:compileDebugKotlin
+> Task :shopify_react-native-skia:buildCMakeDebug[arm64-v8a]
+> Task :react-native-worklets:buildCMakeDebug[arm64-v8a][worklets]
+> Task :react-native-screens:compileDebugJavaWithJavac
+> Task :react-native-gesture-handler:compileDebugKotlin
+> Task :app:mergeExtDexDebug
+> Task :shopify_react-native-skia:externalNativeBuildDebug
+> Task :react-native-worklets:externalNativeBuildDebug
+> Task :react-native-worklets:generateJsonModelDebug
+> Task :react-native-worklets:prefabDebugConfigurePackage
+> Task :react-native-worklets:prefabDebugPackage
+> Task :react-native-worklets:mergeDebugJniLibFolders
+> Task :shopify_react-native-skia:prefabDebugPackage
+> Task :react-native-screens:processDebugJavaRes
+> Task :react-native-screens:mergeDebugJniLibFolders
+> Task :react-native-screens:mergeDebugNativeLibs
+> Task :react-native-screens:bundleLibCompileToJarDebug
+> Task :react-native-screens:bundleLibRuntimeToJarDebug
+> Task :react-native-screens:copyDebugJniLibsProjectOnly
+> Task :react-native-worklets:mergeDebugNativeLibs
+> Task :shopify_react-native-skia:mergeDebugJniLibFolders
+> Task :react-native-worklets:copyDebugJniLibsProjectOnly
+> Task :shopify_react-native-skia:mergeDebugNativeLibs
+> Task :react-native-reanimated:configureCMakeDebug[arm64-v8a]
+> Task :shopify_react-native-skia:copyDebugJniLibsProjectOnly
+> Task :react-native-reanimated:generateJsonModelDebug
+> Task :react-native-reanimated:prefabDebugConfigurePackage
+
+> Task :react-native-gesture-handler:compileDebugKotlin
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-gesture-handler@2.32.0_react-native@0.86.3_@babel+core@7.29.7_supports-col_6b87920552acf4ff4c48d9e0c799d364/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/Extensions.kt:8:8 'class UIManagerModule : ReactContextBaseJavaModule, LifecycleEventListener, UIManager' is deprecated. Deprecated in Java.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-gesture-handler@2.32.0_react-native@0.86.3_@babel+core@7.29.7_supports-col_6b87920552acf4ff4c48d9e0c799d364/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/Extensions.kt:13:29 'class UIManagerModule : ReactContextBaseJavaModule, LifecycleEventListener, UIManager' is deprecated. Deprecated in Java.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native-gesture-handler@2.32.0_react-native@0.86.3_@babel+core@7.29.7_supports-col_6b87920552acf4ff4c48d9e0c799d364/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/Extensions.kt:14:32 'class UIManagerModule : ReactContextBaseJavaModule, LifecycleEventListener, UIManager' is deprecated. Deprecated in Java.
+
+> Task :expo-modules-core:configureCMakeDebug[arm64-v8a]
+
+> Task :expo-modules-core:compileDebugKotlin
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-modules-core@57.0.26_react-native-worklets@0.10.1_@babel+core@7.29.7_supports-colo_1616673b4e8b68b652d88b20b6cb1468/node_modules/expo-modules-core/android/src/main/java/expo/modules/apploader/AppLoaderProvider.kt:34:52 Unchecked cast of 'Class<*>!' to 'Class<out HeadlessAppLoader>'.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-modules-core@57.0.26_react-native-worklets@0.10.1_@babel+core@7.29.7_supports-colo_1616673b4e8b68b652d88b20b6cb1468/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/AppContext.kt:14:8 'class UIManagerModule : ReactContextBaseJavaModule, LifecycleEventListener, UIManager' is deprecated. Deprecated in Java.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-modules-core@57.0.26_react-native-worklets@0.10.1_@babel+core@7.29.7_supports-colo_1616673b4e8b68b652d88b20b6cb1468/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/AppContext.kt:22:8 'typealias ErrorManagerModule = JSLoggerModule' is deprecated. Use JSLoggerModule instead.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-modules-core@57.0.26_react-native-worklets@0.10.1_@babel+core@7.29.7_supports-colo_1616673b4e8b68b652d88b20b6cb1468/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/AppContext.kt:61:13 'val hostingRuntimeContext: MainRuntime' is deprecated. Use AppContext.runtimeContext instead.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-modules-core@57.0.26_react-native-worklets@0.10.1_@babel+core@7.29.7_supports-colo_1616673b4e8b68b652d88b20b6cb1468/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/AppContext.kt:271:21 'typealias ErrorManagerModule = JSLoggerModule' is deprecated. Use JSLoggerModule instead.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-modules-core@57.0.26_react-native-worklets@0.10.1_@babel+core@7.29.7_supports-colo_1616673b4e8b68b652d88b20b6cb1468/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/AppContext.kt:380:21 'val DEFAULT: Int' is deprecated. UIManagerType.DEFAULT will be deleted in the next release of React Native. Use [LEGACY] instead.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-modules-core@57.0.26_react-native-worklets@0.10.1_@babel+core@7.29.7_supports-colo_1616673b4e8b68b652d88b20b6cb1468/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/AppContext.kt:381:10 'class UIManagerModule : ReactContextBaseJavaModule, LifecycleEventListener, UIManager' is deprecated. Deprecated in Java.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-modules-core@57.0.26_react-native-worklets@0.10.1_@babel+core@7.29.7_supports-colo_1616673b4e8b68b652d88b20b6cb1468/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/defaultmodules/NativeModulesProxyModule.kt:16:5 'fun Constants(legacyConstantsProvider: () -> Map<String, Any?>): Unit' is deprecated. Use `Constant` or `Property` instead.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-modules-core@57.0.26_react-native-worklets@0.10.1_@babel+core@7.29.7_supports-colo_1616673b4e8b68b652d88b20b6cb1468/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/events/KModuleEventEmitterWrapper.kt:99:21 'fun getEventDispatcherForReactTag(context: ReactContext, reactTag: Int): EventDispatcher?' is deprecated. reactTag is no longer needed.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-modules-core@57.0.26_react-native-worklets@0.10.1_@babel+core@7.29.7_supports-colo_1616673b4e8b68b652d88b20b6cb1468/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/events/KModuleEventEmitterWrapper.kt:108:21 'fun getEventDispatcherForReactTag(context: ReactContext, reactTag: Int): EventDispatcher?' is deprecated. reactTag is no longer needed.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-modules-core@57.0.26_react-native-worklets@0.10.1_@babel+core@7.29.7_supports-colo_1616673b4e8b68b652d88b20b6cb1468/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/views/ViewDefinitionBuilder.kt:470:16 'val errorManager: JSLoggerModule?' is deprecated. Use AppContext.jsLogger instead.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-modules-core@57.0.26_react-native-worklets@0.10.1_@babel+core@7.29.7_supports-colo_1616673b4e8b68b652d88b20b6cb1468/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/views/ViewDefinitionBuilder.kt:470:30 'fun reportExceptionToLogBox(codedException: CodedException): Unit' is deprecated. Use appContext.jsLogger.error(...) instead.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-modules-core@57.0.26_react-native-worklets@0.10.1_@babel+core@7.29.7_supports-colo_1616673b4e8b68b652d88b20b6cb1468/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/views/ViewManagerDefinition.kt:41:16 'val errorManager: JSLoggerModule?' is deprecated. Use AppContext.jsLogger instead.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-modules-core@57.0.26_react-native-worklets@0.10.1_@babel+core@7.29.7_supports-colo_1616673b4e8b68b652d88b20b6cb1468/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/views/ViewManagerDefinition.kt:41:30 'fun reportExceptionToLogBox(codedException: CodedException): Unit' is deprecated. Use appContext.jsLogger.error(...) instead.
+
+> Task :expo-modules-core:buildCMakeDebug[arm64-v8a]
+C/C++: ninja: Entering directory `/private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-modules-core@57.0.26_react-native-worklets@0.10.1_@babel+core@7.29.7_supports-colo_1616673b4e8b68b652d88b20b6cb1468/node_modules/expo-modules-core/android/.cxx/Debug/2067151a/arm64-v8a'
+C/C++: /tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-modules-core@57.0.26_react-native-worklets@0.10.1_@babel+core@7.29.7_supports-colo_1616673b4e8b68b652d88b20b6cb1468/node_modules/expo-modules-core/android/src/main/cpp/fabric/ExpoComponentDescriptorFactory.cpp:17:5: warning: 'RawPropsParser' is deprecated [-Wdeprecated-declarations]
+C/C++:    17 |     react::RawPropsParser(/*useRawPropsJsiValue=*/true)
+C/C++:       |     ^
+C/C++: /private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/react-native@0.86.3_@babel+core@7.29.7_supports-color@8.1.1__@react-native+metro-config_1d6dcd1f85e0febfee7048ed36b91734/node_modules/react-native/ReactCommon/react/renderer/core/RawPropsParser.h:31:5: note: 'RawPropsParser' has been explicitly marked deprecated here
+C/C++:    31 |   [[deprecated]] explicit RawPropsParser(bool /* ignored */) : RawPropsParser() {}
+C/C++:       |     ^
+C/C++: 1 warning generated.
+
+> Task :expo-modules-core:mergeDebugNativeLibs
+> Task :app:configureCMakeDebug[arm64-v8a]
+> Task :react-native-reanimated:buildCMakeDebug[arm64-v8a][reanimated]
+> Task :react-native-gesture-handler:configureCMakeDebug[arm64-v8a]
+> Task :expo-modules-core:copyDebugJniLibsProjectOnly
+> Task :react-native-reanimated:externalNativeBuildDebug
+
+> Task :expo-modules-core:compileDebugJavaWithJavac
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :react-native-reanimated:prefabDebugPackage
+> Task :react-native-reanimated:mergeDebugNativeLibs
+> Task :expo-modules-core:processDebugJavaRes
+> Task :react-native-reanimated:copyDebugJniLibsProjectOnly
+> Task :expo-modules-core:bundleLibRuntimeToJarDebug
+> Task :expo-modules-core:bundleLibCompileToJarDebug
+> Task :expo-dev-client:compileDebugKotlin NO-SOURCE
+> Task :expo-dev-menu-interface:compileDebugKotlin NO-SOURCE
+> Task :expo-dev-client:compileDebugJavaWithJavac
+> Task :expo-dev-menu-interface:compileDebugJavaWithJavac
+> Task :expo-dev-client:bundleLibCompileToJarDebug
+> Task :expo-dev-menu-interface:bundleLibCompileToJarDebug
+> Task :react-native-gesture-handler:compileDebugJavaWithJavac
+> Task :react-native-gesture-handler:bundleLibCompileToJarDebug
+> Task :react-native-gesture-handler:bundleLibRuntimeToJarDebug
+> Task :expo-json-utils:compileDebugKotlin
+> Task :expo-json-utils:compileDebugJavaWithJavac
+> Task :expo-json-utils:bundleLibCompileToJarDebug
+> Task :expo-dev-client:bundleLibRuntimeToJarDebug
+> Task :expo-dev-menu-interface:bundleLibRuntimeToJarDebug
+> Task :expo-json-utils:bundleLibRuntimeToJarDebug
+
+> Task :expo-constants:compileDebugKotlin
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-constants@57.0.21_expo@57.0.27_react-native@0.86.3_@babel+core@7.29.7_supports-col_7f5aa4a6b091cfcaa1f554e26b12149e/node_modules/expo-constants/android/src/main/java/expo/modules/constants/ConstantsModule.kt:13:5 'fun Constants(legacyConstantsProvider: () -> Map<String, Any?>): Unit' is deprecated. Use `Constant` or `Property` instead.
+
+> Task :pulse-bt:compileDebugKotlin
+> Task :pulse-bt:compileDebugJavaWithJavac
+> Task :pulse-bt:bundleLibCompileToJarDebug
+> Task :pulse-bt:bundleLibRuntimeToJarDebug
+> Task :expo-updates-interface:compileDebugKotlin
+> Task :react-native-health-connect-expo:compileDebugKotlin
+> Task :expo-dev-client:processDebugJavaRes NO-SOURCE
+> Task :expo-dev-menu-interface:processDebugJavaRes NO-SOURCE
+> Task :expo-json-utils:processDebugJavaRes
+> Task :pulse-bt:processDebugJavaRes
+> Task :expo-updates-interface:compileDebugJavaWithJavac
+> Task :react-native-gesture-handler:processDebugJavaRes
+> Task :expo-updates-interface:bundleLibCompileToJarDebug
+> Task :expo-updates-interface:bundleLibRuntimeToJarDebug
+> Task :expo-updates-interface:processDebugJavaRes
+> Task :expo-constants:compileDebugJavaWithJavac
+> Task :react-native-health-connect-expo:compileDebugJavaWithJavac
+> Task :expo-constants:bundleLibCompileToJarDebug
+> Task :expo-constants:bundleLibRuntimeToJarDebug
+> Task :expo-constants:processDebugJavaRes
+> Task :react-native-health-connect-expo:bundleLibCompileToJarDebug
+> Task :react-native-health-connect-expo:bundleLibRuntimeToJarDebug
+> Task :react-native-health-connect-expo:processDebugJavaRes
+
+> Task :expo-manifests:compileDebugKotlin
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-manifests@57.0.2_expo@57.0.27/node_modules/expo-manifests/android/src/main/java/expo/modules/manifests/core/EmbeddedManifest.kt:19:16 This declaration overrides a deprecated member but is not marked as deprecated itself. Add the '@Deprecated' annotation or suppress the diagnostic.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-manifests@57.0.2_expo@57.0.27/node_modules/expo-manifests/android/src/main/java/expo/modules/manifests/core/EmbeddedManifest.kt:19:86 'fun getLegacyID(): String' is deprecated. Prefer scopeKey or projectId depending on use case.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-manifests@57.0.2_expo@57.0.27/node_modules/expo-manifests/android/src/main/java/expo/modules/manifests/core/ExpoUpdatesManifest.kt:16:16 This declaration overrides a deprecated member but is not marked as deprecated itself. Add the '@Deprecated' annotation or suppress the diagnostic.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-manifests@57.0.2_expo@57.0.27/node_modules/expo-manifests/android/src/main/java/expo/modules/manifests/core/Manifest.kt:13:3 Deprecations and opt-ins on a method overridden from 'Any' may not be reported.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-manifests@57.0.2_expo@57.0.27/node_modules/expo-manifests/android/src/main/java/expo/modules/manifests/core/Manifest.kt:15:12 'fun getRawJson(): JSONObject' is deprecated. Prefer to use specific field getters.
+
+> Task :expo-log-box:compileDebugKotlin
+> Task :expo-background-task:compileDebugKotlin
+> Task :pulse-widgets:compileDebugKotlin
+> Task :expo-log-box:compileDebugJavaWithJavac
+> Task :pulse-workouts:compileDebugKotlin
+> Task :expo-log-box:processDebugJavaRes
+> Task :expo-log-box:bundleLibCompileToJarDebug
+> Task :expo-log-box:bundleLibRuntimeToJarDebug
+> Task :pulse-widgets:compileDebugJavaWithJavac
+> Task :expo-manifests:compileDebugJavaWithJavac
+> Task :pulse-widgets:processDebugJavaRes
+> Task :expo-manifests:processDebugJavaRes
+> Task :expo-manifests:bundleLibRuntimeToJarDebug
+> Task :expo-manifests:bundleLibCompileToJarDebug
+> Task :pulse-widgets:bundleLibCompileToJarDebug
+> Task :pulse-widgets:bundleLibRuntimeToJarDebug
+> Task :expo-background-task:compileDebugJavaWithJavac
+> Task :expo-background-task:processDebugJavaRes
+> Task :expo-background-task:bundleLibCompileToJarDebug
+> Task :expo-background-task:bundleLibRuntimeToJarDebug
+> Task :pulse-workouts:compileDebugJavaWithJavac
+> Task :pulse-workouts:processDebugJavaRes
+> Task :pulse-workouts:bundleLibRuntimeToJarDebug
+> Task :pulse-workouts:bundleLibCompileToJarDebug
+> Task :react-native-gesture-handler:buildCMakeDebug[arm64-v8a]
+> Task :react-native-gesture-handler:mergeDebugNativeLibs
+> Task :react-native-gesture-handler:copyDebugJniLibsProjectOnly
+> Task :app:buildCMakeDebug[arm64-v8a]
+> Task :expo-dev-menu:compileDebugKotlin
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-dev-menu@57.0.19_expo@57.0.27_react-native@0.86.3_@babel+core@7.29.7_supports-colo_6a5139d4414517778da78781616db3ba/node_modules/expo-dev-menu/android/src/debug/java/com/facebook/react/devsupport/DevMenuSettingsBase.kt:6:8 'class PreferenceManager : Any' is deprecated. Deprecated in Java.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-dev-menu@57.0.19_expo@57.0.27_react-native@0.86.3_@babel+core@7.29.7_supports-colo_6a5139d4414517778da78781616db3ba/node_modules/expo-dev-menu/android/src/debug/java/com/facebook/react/devsupport/DevMenuSettingsBase.kt:18:51 'class PreferenceManager : Any' is deprecated. Deprecated in Java.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-dev-menu@57.0.19_expo@57.0.27_react-native@0.86.3_@babel+core@7.29.7_supports-colo_6a5139d4414517778da78781616db3ba/node_modules/expo-dev-menu/android/src/debug/java/com/facebook/react/devsupport/DevMenuSettingsBase.kt:18:69 'static fun getDefaultSharedPreferences(p0: Context!): SharedPreferences!' is deprecated. Deprecated in Java.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-dev-menu@57.0.19_expo@57.0.27_react-native@0.86.3_@babel+core@7.29.7_supports-colo_6a5139d4414517778da78781616db3ba/node_modules/expo-dev-menu/android/src/debug/java/com/facebook/react/devsupport/DevMenuSettingsBase.kt:51:13 This code uses error suppression for 'NOTHING_TO_OVERRIDE'. While it might compile and work, the compiler behavior is UNSPECIFIED and WILL NOT BE PRESERVED. Please report your use case to the Kotlin issue tracker instead: https://kotl.in/issue
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-dev-menu@57.0.19_expo@57.0.27_react-native@0.86.3_@babel+core@7.29.7_supports-colo_6a5139d4414517778da78781616db3ba/node_modules/expo-dev-menu/android/src/debug/java/com/facebook/react/devsupport/DevMenuSettingsBase.kt:58:13 This code uses error suppression for 'NOTHING_TO_OVERRIDE'. While it might compile and work, the compiler behavior is UNSPECIFIED and WILL NOT BE PRESERVED. Please report your use case to the Kotlin issue tracker instead: https://kotl.in/issue
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-dev-menu@57.0.19_expo@57.0.27_react-native@0.86.3_@babel+core@7.29.7_supports-colo_6a5139d4414517778da78781616db3ba/node_modules/expo-dev-menu/android/src/debug/java/expo/modules/devmenu/compose/ui/AppInfo.kt:64:5 'fun Button(onClick: () -> Unit, enabled: Boolean = ..., shape: Shape = ..., backgroundColor: Color = ..., contentColor: Color = ..., contentPadding: PaddingValues = ..., borderColor: Color = ..., borderWidth: Dp = ..., modifier: Modifier = ..., role: Role = ..., indication: Indication? = ..., interactionSource: MutableInteractionSource? = ..., horizontalArrangement: Arrangement.Horizontal = ..., verticalAlignment: Alignment.Vertical = ..., content: @Composable() ComposableFunction1<RowScope, Unit>): Unit' is deprecated. Use UnstyledButton instead.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-dev-menu@57.0.19_expo@57.0.27_react-native@0.86.3_@babel+core@7.29.7_supports-colo_6a5139d4414517778da78781616db3ba/node_modules/expo-dev-menu/android/src/debug/java/expo/modules/devmenu/compose/ui/MenuButton.kt:33:5 'fun Button(onClick: () -> Unit, enabled: Boolean = ..., shape: Shape = ..., backgroundColor: Color = ..., contentColor: Color = ..., contentPadding: PaddingValues = ..., borderColor: Color = ..., borderWidth: Dp = ..., modifier: Modifier = ..., role: Role = ..., indication: Indication? = ..., interactionSource: MutableInteractionSource? = ..., horizontalArrangement: Arrangement.Horizontal = ..., verticalAlignment: Alignment.Vertical = ..., content: @Composable() ComposableFunction1<RowScope, Unit>): Unit' is deprecated. Use UnstyledButton instead.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-dev-menu@57.0.19_expo@57.0.27_react-native@0.86.3_@babel+core@7.29.7_supports-colo_6a5139d4414517778da78781616db3ba/node_modules/expo-dev-menu/android/src/debug/java/expo/modules/devmenu/compose/ui/Onboarding.kt:70:5 'fun Button(onClick: () -> Unit, enabled: Boolean = ..., shape: Shape = ..., backgroundColor: Color = ..., contentColor: Color = ..., contentPadding: PaddingValues = ..., borderColor: Color = ..., borderWidth: Dp = ..., modifier: Modifier = ..., role: Role = ..., indication: Indication? = ..., interactionSource: MutableInteractionSource? = ..., horizontalArrangement: Arrangement.Horizontal = ..., verticalAlignment: Alignment.Vertical = ..., content: @Composable() ComposableFunction1<RowScope, Unit>): Unit' is deprecated. Use UnstyledButton instead.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-dev-menu@57.0.19_expo@57.0.27_react-native@0.86.3_@babel+core@7.29.7_supports-colo_6a5139d4414517778da78781616db3ba/node_modules/expo-dev-menu/android/src/debug/java/expo/modules/devmenu/compose/ui/SystemSection.kt:52:3 'fun Button(onClick: () -> Unit, enabled: Boolean = ..., shape: Shape = ..., backgroundColor: Color = ..., contentColor: Color = ..., contentPadding: PaddingValues = ..., borderColor: Color = ..., borderWidth: Dp = ..., modifier: Modifier = ..., role: Role = ..., indication: Indication? = ..., interactionSource: MutableInteractionSource? = ..., horizontalArrangement: Arrangement.Horizontal = ..., verticalAlignment: Alignment.Vertical = ..., content: @Composable() ComposableFunction1<RowScope, Unit>): Unit' is deprecated. Use UnstyledButton instead.
+
+> Task :expo-dev-menu:compileDebugJavaWithJavac
+> Task :expo-dev-menu:processDebugJavaRes
+> Task :expo-dev-menu:bundleLibCompileToJarDebug
+> Task :expo-dev-menu:bundleLibRuntimeToJarDebug
+> Task :expo-dev-launcher:compileDebugKotlin
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-dev-launcher@57.0.20_expo@57.0.27_react-native@0.86.3_@babel+core@7.29.7_supports-_527cd3a697660f9965fa3a590bf08d8e/node_modules/expo-dev-launcher/android/src/debug/java/expo/modules/devlauncher/compose/models/BranchViewModel.kt:80:31 'val runtimeVersion: String' is deprecated. Use 'runtime' field .
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-dev-launcher@57.0.20_expo@57.0.27_react-native@0.86.3_@babel+core@7.29.7_supports-_527cd3a697660f9965fa3a590bf08d8e/node_modules/expo-dev-launcher/android/src/debug/java/expo/modules/devlauncher/compose/screens/BranchScreen.kt:59:9 'fun Button(onClick: () -> Unit, enabled: Boolean = ..., shape: Shape = ..., backgroundColor: Color = ..., contentColor: Color = ..., contentPadding: PaddingValues = ..., borderColor: Color = ..., borderWidth: Dp = ..., modifier: Modifier = ..., role: Role = ..., indication: Indication? = ..., interactionSource: MutableInteractionSource? = ..., horizontalArrangement: Arrangement.Horizontal = ..., verticalAlignment: Alignment.Vertical = ..., content: @Composable() ComposableFunction1<RowScope, Unit>): Unit' is deprecated. Use UnstyledButton instead.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-dev-launcher@57.0.20_expo@57.0.27_react-native@0.86.3_@babel+core@7.29.7_supports-_527cd3a697660f9965fa3a590bf08d8e/node_modules/expo-dev-launcher/android/src/debug/java/expo/modules/devlauncher/compose/screens/BranchScreen.kt:113:13 'fun Button(onClick: () -> Unit, enabled: Boolean = ..., shape: Shape = ..., backgroundColor: Color = ..., contentColor: Color = ..., contentPadding: PaddingValues = ..., borderColor: Color = ..., borderWidth: Dp = ..., modifier: Modifier = ..., role: Role = ..., indication: Indication? = ..., interactionSource: MutableInteractionSource? = ..., horizontalArrangement: Arrangement.Horizontal = ..., verticalAlignment: Alignment.Vertical = ..., content: @Composable() ComposableFunction1<RowScope, Unit>): Unit' is deprecated. Use UnstyledButton instead.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-dev-launcher@57.0.20_expo@57.0.27_react-native@0.86.3_@babel+core@7.29.7_supports-_527cd3a697660f9965fa3a590bf08d8e/node_modules/expo-dev-launcher/android/src/debug/java/expo/modules/devlauncher/compose/screens/HomeScreen.kt:53:5 'fun Button(onClick: () -> Unit, enabled: Boolean = ..., shape: Shape = ..., backgroundColor: Color = ..., contentColor: Color = ..., contentPadding: PaddingValues = ..., borderColor: Color = ..., borderWidth: Dp = ..., modifier: Modifier = ..., role: Role = ..., indication: Indication? = ..., interactionSource: MutableInteractionSource? = ..., horizontalArrangement: Arrangement.Horizontal = ..., verticalAlignment: Alignment.Vertical = ..., content: @Composable() ComposableFunction1<RowScope, Unit>): Unit' is deprecated. Use UnstyledButton instead.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-dev-launcher@57.0.20_expo@57.0.27_react-native@0.86.3_@babel+core@7.29.7_supports-_527cd3a697660f9965fa3a590bf08d8e/node_modules/expo-dev-launcher/android/src/debug/java/expo/modules/devlauncher/compose/screens/SettingsScreen.kt:345:11 'fun TextField(value: String, onValueChange: (String) -> Unit, modifier: Modifier = ..., editable: Boolean = ..., cursorBrush: Brush = ..., textStyle: TextStyle = ..., textAlign: TextAlign = ..., lineHeight: TextUnit = ..., fontSize: TextUnit = ..., letterSpacing: TextUnit = ..., fontWeight: FontWeight? = ..., fontFamily: FontFamily? = ..., singleLine: Boolean = ..., minLines: Int = ..., maxLines: Int = ..., keyboardActions: KeyboardActions = ..., keyboardOptions: KeyboardOptions = ..., visualTransformation: VisualTransformation = ..., interactionSource: MutableInteractionSource? = ..., textColor: Color = ..., content: @Composable() ComposableFunction1<TextFieldScope, Unit>): Unit' is deprecated. This will go to 2.0. Stateless TextFields in Compose do not work correctly in all languages and cause duplication characters and unexpected behaviors.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-dev-launcher@57.0.20_expo@57.0.27_react-native@0.86.3_@babel+core@7.29.7_supports-_527cd3a697660f9965fa3a590bf08d8e/node_modules/expo-dev-launcher/android/src/debug/java/expo/modules/devlauncher/compose/ui/ActionButton.kt:32:3 'fun Button(onClick: () -> Unit, enabled: Boolean = ..., shape: Shape = ..., backgroundColor: Color = ..., contentColor: Color = ..., contentPadding: PaddingValues = ..., borderColor: Color = ..., borderWidth: Dp = ..., modifier: Modifier = ..., role: Role = ..., indication: Indication? = ..., interactionSource: MutableInteractionSource? = ..., horizontalArrangement: Arrangement.Horizontal = ..., verticalAlignment: Alignment.Vertical = ..., content: @Composable() ComposableFunction1<RowScope, Unit>): Unit' is deprecated. Use UnstyledButton instead.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-dev-launcher@57.0.20_expo@57.0.27_react-native@0.86.3_@babel+core@7.29.7_supports-_527cd3a697660f9965fa3a590bf08d8e/node_modules/expo-dev-launcher/android/src/debug/java/expo/modules/devlauncher/compose/ui/AppHeader.kt:98:7 'fun Button(onClick: () -> Unit, enabled: Boolean = ..., shape: Shape = ..., backgroundColor: Color = ..., contentColor: Color = ..., contentPadding: PaddingValues = ..., borderColor: Color = ..., borderWidth: Dp = ..., modifier: Modifier = ..., role: Role = ..., indication: Indication? = ..., interactionSource: MutableInteractionSource? = ..., horizontalArrangement: Arrangement.Horizontal = ..., verticalAlignment: Alignment.Vertical = ..., content: @Composable() ComposableFunction1<RowScope, Unit>): Unit' is deprecated. Use UnstyledButton instead.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-dev-launcher@57.0.20_expo@57.0.27_react-native@0.86.3_@babel+core@7.29.7_supports-_527cd3a697660f9965fa3a590bf08d8e/node_modules/expo-dev-launcher/android/src/debug/java/expo/modules/devlauncher/compose/ui/AppLoadingErrorDialog.kt:35:26 'fun rememberDialogState(initiallyVisible: Boolean = ...): DialogState' is deprecated. This will go away in 2.0. Use Dialog from the com.composeunstyled package.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-dev-launcher@57.0.20_expo@57.0.27_react-native@0.86.3_@babel+core@7.29.7_supports-_527cd3a697660f9965fa3a590bf08d8e/node_modules/expo-dev-launcher/android/src/debug/java/expo/modules/devlauncher/compose/ui/AppLoadingErrorDialog.kt:55:3 'fun Dialog(state: DialogState, properties: DialogProperties = ..., onDismiss: () -> Unit = ..., content: @Composable() ComposableFunction1<DialogScope, Unit>): Unit' is deprecated. This will go away in 2.0. Use Dialog from the com.composeunstyled package.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-dev-launcher@57.0.20_expo@57.0.27_react-native@0.86.3_@babel+core@7.29.7_supports-_527cd3a697660f9965fa3a590bf08d8e/node_modules/expo-dev-launcher/android/src/debug/java/expo/modules/devlauncher/compose/ui/AppLoadingErrorDialog.kt:56:5 'fun DialogScope.Scrim(modifier: Modifier = ..., scrimColor: Color = ..., enter: EnterTransition = ..., exit: ExitTransition = ...): Unit' is deprecated. This will go away in 2.0. Use Dialog from the com.composeunstyled package.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-dev-launcher@57.0.20_expo@57.0.27_react-native@0.86.3_@babel+core@7.29.7_supports-_527cd3a697660f9965fa3a590bf08d8e/node_modules/expo-dev-launcher/android/src/debug/java/expo/modules/devlauncher/compose/ui/AppLoadingErrorDialog.kt:58:5 'fun DialogScope.DialogPanel(modifier: Modifier = ..., enter: EnterTransition = ..., exit: ExitTransition = ..., shape: Shape = ..., backgroundColor: Color = ..., contentColor: Color = ..., contentPadding: PaddingValues = ..., content: @Composable() ComposableFunction0<Unit>): Unit' is deprecated. This will go away in 2.0. Use Dialog from the com.composeunstyled package.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-dev-launcher@57.0.20_expo@57.0.27_react-native@0.86.3_@babel+core@7.29.7_supports-_527cd3a697660f9965fa3a590bf08d8e/node_modules/expo-dev-launcher/android/src/debug/java/expo/modules/devlauncher/compose/ui/AppLoadingErrorDialog.kt:81:11 'fun Button(onClick: () -> Unit, enabled: Boolean = ..., shape: Shape = ..., backgroundColor: Color = ..., contentColor: Color = ..., contentPadding: PaddingValues = ..., borderColor: Color = ..., borderWidth: Dp = ..., modifier: Modifier = ..., role: Role = ..., indication: Indication? = ..., interactionSource: MutableInteractionSource? = ..., horizontalArrangement: Arrangement.Horizontal = ..., verticalAlignment: Alignment.Vertical = ..., content: @Composable() ComposableFunction1<RowScope, Unit>): Unit' is deprecated. Use UnstyledButton instead.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-dev-launcher@57.0.20_expo@57.0.27_react-native@0.86.3_@babel+core@7.29.7_supports-_527cd3a697660f9965fa3a590bf08d8e/node_modules/expo-dev-launcher/android/src/debug/java/expo/modules/devlauncher/compose/ui/AppLoadingErrorDialog.kt:104:21 'fun rememberDialogState(initiallyVisible: Boolean = ...): DialogState' is deprecated. This will go away in 2.0. Use Dialog from the com.composeunstyled package.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-dev-launcher@57.0.20_expo@57.0.27_react-native@0.86.3_@babel+core@7.29.7_supports-_527cd3a697660f9965fa3a590bf08d8e/node_modules/expo-dev-launcher/android/src/debug/java/expo/modules/devlauncher/compose/ui/DevelopmentSession.kt:131:5 'fun Button(onClick: () -> Unit, enabled: Boolean = ..., shape: Shape = ..., backgroundColor: Color = ..., contentColor: Color = ..., contentPadding: PaddingValues = ..., borderColor: Color = ..., borderWidth: Dp = ..., modifier: Modifier = ..., role: Role = ..., indication: Indication? = ..., interactionSource: MutableInteractionSource? = ..., horizontalArrangement: Arrangement.Horizontal = ..., verticalAlignment: Alignment.Vertical = ..., content: @Composable() ComposableFunction1<RowScope, Unit>): Unit' is deprecated. Use UnstyledButton instead.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-dev-launcher@57.0.20_expo@57.0.27_react-native@0.86.3_@babel+core@7.29.7_supports-_527cd3a697660f9965fa3a590bf08d8e/node_modules/expo-dev-launcher/android/src/debug/java/expo/modules/devlauncher/compose/ui/FetchDevelopmentServersButton.kt:27:5 'fun Button(onClick: () -> Unit, enabled: Boolean = ..., shape: Shape = ..., backgroundColor: Color = ..., contentColor: Color = ..., contentPadding: PaddingValues = ..., borderColor: Color = ..., borderWidth: Dp = ..., modifier: Modifier = ..., role: Role = ..., indication: Indication? = ..., interactionSource: MutableInteractionSource? = ..., horizontalArrangement: Arrangement.Horizontal = ..., verticalAlignment: Alignment.Vertical = ..., content: @Composable() ComposableFunction1<RowScope, Unit>): Unit' is deprecated. Use UnstyledButton instead.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-dev-launcher@57.0.20_expo@57.0.27_react-native@0.86.3_@babel+core@7.29.7_supports-_527cd3a697660f9965fa3a590bf08d8e/node_modules/expo-dev-launcher/android/src/debug/java/expo/modules/devlauncher/compose/ui/RunningAppCard.kt:43:5 'fun Button(onClick: () -> Unit, enabled: Boolean = ..., shape: Shape = ..., backgroundColor: Color = ..., contentColor: Color = ..., contentPadding: PaddingValues = ..., borderColor: Color = ..., borderWidth: Dp = ..., modifier: Modifier = ..., role: Role = ..., indication: Indication? = ..., interactionSource: MutableInteractionSource? = ..., horizontalArrangement: Arrangement.Horizontal = ..., verticalAlignment: Alignment.Vertical = ..., content: @Composable() ComposableFunction1<RowScope, Unit>): Unit' is deprecated. Use UnstyledButton instead.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-dev-launcher@57.0.20_expo@57.0.27_react-native@0.86.3_@babel+core@7.29.7_supports-_527cd3a697660f9965fa3a590bf08d8e/node_modules/expo-dev-launcher/android/src/debug/java/expo/modules/devlauncher/compose/ui/ScanQRCodeButton.kt:26:5 'fun Button(onClick: () -> Unit, enabled: Boolean = ..., shape: Shape = ..., backgroundColor: Color = ..., contentColor: Color = ..., contentPadding: PaddingValues = ..., borderColor: Color = ..., borderWidth: Dp = ..., modifier: Modifier = ..., role: Role = ..., indication: Indication? = ..., interactionSource: MutableInteractionSource? = ..., horizontalArrangement: Arrangement.Horizontal = ..., verticalAlignment: Alignment.Vertical = ..., content: @Composable() ComposableFunction1<RowScope, Unit>): Unit' is deprecated. Use UnstyledButton instead.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-dev-launcher@57.0.20_expo@57.0.27_react-native@0.86.3_@babel+core@7.29.7_supports-_527cd3a697660f9965fa3a590bf08d8e/node_modules/expo-dev-launcher/android/src/debug/java/expo/modules/devlauncher/compose/ui/ServerUrlInput.kt:62:5 'fun TextField(value: String, onValueChange: (String) -> Unit, modifier: Modifier = ..., editable: Boolean = ..., cursorBrush: Brush = ..., textStyle: TextStyle = ..., textAlign: TextAlign = ..., lineHeight: TextUnit = ..., fontSize: TextUnit = ..., letterSpacing: TextUnit = ..., fontWeight: FontWeight? = ..., fontFamily: FontFamily? = ..., singleLine: Boolean = ..., minLines: Int = ..., maxLines: Int = ..., keyboardActions: KeyboardActions = ..., keyboardOptions: KeyboardOptions = ..., visualTransformation: VisualTransformation = ..., interactionSource: MutableInteractionSource? = ..., textColor: Color = ..., content: @Composable() ComposableFunction1<TextFieldScope, Unit>): Unit' is deprecated. This will go to 2.0. Stateless TextFields in Compose do not work correctly in all languages and cause duplication characters and unexpected behaviors.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-dev-launcher@57.0.20_expo@57.0.27_react-native@0.86.3_@babel+core@7.29.7_supports-_527cd3a697660f9965fa3a590bf08d8e/node_modules/expo-dev-launcher/android/src/debug/java/expo/modules/devlauncher/launcher/DevLauncherActivity.kt:10:5 'fun overridePendingTransition(p0: Int, p1: Int): Unit' is deprecated. Deprecated in Java.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-dev-launcher@57.0.20_expo@57.0.27_react-native@0.86.3_@babel+core@7.29.7_supports-_527cd3a697660f9965fa3a590bf08d8e/node_modules/expo-dev-launcher/android/src/debug/java/expo/modules/devlauncher/launcher/DevLauncherActivity.kt:24:5 'fun overridePendingTransition(p0: Int, p1: Int): Unit' is deprecated. Deprecated in Java.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-dev-launcher@57.0.20_expo@57.0.27_react-native@0.86.3_@babel+core@7.29.7_supports-_527cd3a697660f9965fa3a590bf08d8e/node_modules/expo-dev-launcher/android/src/debug/java/expo/modules/devlauncher/launcher/DevLauncherRecentlyOpenedAppsRegistry.kt:33:47 Unchecked cast of 'MutableMap<Any?, Any?>' to 'MutableMap<String, Any>'.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-dev-launcher@57.0.20_expo@57.0.27_react-native@0.86.3_@babel+core@7.29.7_supports-_527cd3a697660f9965fa3a590bf08d8e/node_modules/expo-dev-launcher/android/src/debug/java/expo/modules/devlauncher/launcher/DevLauncherRecentlyOpenedAppsRegistry.kt:51:27 'fun getRawJson(): JSONObject' is deprecated. Prefer to use specific field getters.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-dev-launcher@57.0.20_expo@57.0.27_react-native@0.86.3_@babel+core@7.29.7_supports-_527cd3a697660f9965fa3a590bf08d8e/node_modules/expo-dev-launcher/android/src/debug/java/expo/modules/devlauncher/modules/DevLauncherModule.kt:14:29 'fun getRawJson(): JSONObject' is deprecated. Prefer to use specific field getters.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-dev-launcher@57.0.20_expo@57.0.27_react-native@0.86.3_@babel+core@7.29.7_supports-_527cd3a697660f9965fa3a590bf08d8e/node_modules/expo-dev-launcher/android/src/debug/java/expo/modules/devlauncher/react/DevLauncherBridgelessDevSupportManager.kt:44:38 This code uses error suppression for 'NOTHING_TO_OVERRIDE'. While it might compile and work, the compiler behavior is UNSPECIFIED and WILL NOT BE PRESERVED. Please report your use case to the Kotlin issue tracker instead: https://kotl.in/issue
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-dev-launcher@57.0.20_expo@57.0.27_react-native@0.86.3_@babel+core@7.29.7_supports-_527cd3a697660f9965fa3a590bf08d8e/node_modules/expo-dev-launcher/android/src/debug/java/expo/modules/devlauncher/react/DevLauncherDevSupportManagerFactory.kt:16:16 This declaration overrides a deprecated member but is not marked as deprecated itself. Add the '@Deprecated' annotation or suppress the diagnostic.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo-dev-launcher@57.0.20_expo@57.0.27_react-native@0.86.3_@babel+core@7.29.7_supports-_527cd3a697660f9965fa3a590bf08d8e/node_modules/expo-dev-launcher/android/src/main/java/expo/modules/devlauncher/DevLauncherPackage.kt:15:16 This declaration overrides a deprecated member but is not marked as deprecated itself. Add the '@Deprecated' annotation or suppress the diagnostic.
+
+> Task :expo-dev-launcher:compileDebugJavaWithJavac
+> Task :expo-dev-launcher:processDebugJavaRes
+> Task :expo-dev-launcher:bundleLibCompileToJarDebug
+> Task :expo-dev-launcher:bundleLibRuntimeToJarDebug
+
+> Task :expo:compileDebugKotlin
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo@57.0.27_@babel+core@7.29.7_supports-color@8.1.1__@expo+dom-webview@57.0.1_@expo+me_0685ff5cf512e1ee59090cc5fd988fa8/node_modules/expo/android/src/main/java/expo/modules/ExpoModulesPackage.kt:34:16 This declaration overrides a deprecated member but is not marked as deprecated itself. Add the '@Deprecated' annotation or suppress the diagnostic.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo@57.0.27_@babel+core@7.29.7_supports-color@8.1.1__@expo+dom-webview@57.0.1_@expo+me_0685ff5cf512e1ee59090cc5fd988fa8/node_modules/expo/android/src/main/java/expo/modules/ReactActivityDelegateWrapper.kt:22:8 'class ReactInstanceManager : Any' is deprecated. Deprecated in Java.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo@57.0.27_@babel+core@7.29.7_supports-color@8.1.1__@expo+dom-webview@57.0.1_@expo+me_0685ff5cf512e1ee59090cc5fd988fa8/node_modules/expo/android/src/main/java/expo/modules/ReactActivityDelegateWrapper.kt:102:16 This declaration overrides a deprecated member but is not marked as deprecated itself. Add the '@Deprecated' annotation or suppress the diagnostic.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo@57.0.27_@babel+core@7.29.7_supports-color@8.1.1__@expo+dom-webview@57.0.1_@expo+me_0685ff5cf512e1ee59090cc5fd988fa8/node_modules/expo/android/src/main/java/expo/modules/ReactActivityDelegateWrapper.kt:102:43 'class ReactInstanceManager : Any' is deprecated. Deprecated in Java.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo@57.0.27_@babel+core@7.29.7_supports-color@8.1.1__@expo+dom-webview@57.0.1_@expo+me_0685ff5cf512e1ee59090cc5fd988fa8/node_modules/expo/android/src/main/java/expo/modules/ReactActivityDelegateWrapper.kt:103:21 'val reactInstanceManager: ReactInstanceManager' is deprecated. Deprecated in Java.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo@57.0.27_@babel+core@7.29.7_supports-color@8.1.1__@expo+dom-webview@57.0.1_@expo+me_0685ff5cf512e1ee59090cc5fd988fa8/node_modules/expo/android/src/main/java/expo/modules/fetch/ExpoFetchModule.kt:33:39 'constructor(reactContext: ReactContext): ForwardingCookieHandler' is deprecated. Use the default constructor.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo@57.0.27_@babel+core@7.29.7_supports-color@8.1.1__@expo+dom-webview@57.0.1_@expo+me_0685ff5cf512e1ee59090cc5fd988fa8/node_modules/expo/android/src/main/java/expo/modules/fetch/NativeResponse.kt:44:16 This declaration overrides a deprecated member but is not marked as deprecated itself. Add the '@Deprecated' annotation or suppress the diagnostic.
+w: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/node_modules/.pnpm/expo@57.0.27_@babel+core@7.29.7_supports-color@8.1.1__@expo+dom-webview@57.0.1_@expo+me_0685ff5cf512e1ee59090cc5fd988fa8/node_modules/expo/android/src/main/java/expo/modules/fetch/NativeResponse.kt:46:11 'fun deallocate(): Unit' is deprecated. Use sharedObjectDidRelease() instead.
+
+> Task :expo:compileDebugJavaWithJavac
+> Task :expo:processDebugJavaRes
+> Task :expo:bundleLibCompileToJarDebug
+> Task :expo:bundleLibRuntimeToJarDebug
+> Task :app:compileDebugKotlin
+> Task :app:compileDebugJavaWithJavac
+> Task :app:processDebugJavaRes
+> Task :app:transformDebugClassesWithAsm
+> Task :app:mergeDebugNativeLibs
+> Task :app:dexBuilderDebug
+> Task :app:mergeDebugGlobalSynthetics
+> Task :app:mergeProjectDexDebug
+> Task :app:stripDebugDebugSymbols
+> Task :app:mergeLibDexDebug
+> Task :app:mergeDebugJavaResource
+> Task :app:packageDebug
+> Task :app:createDebugApkListingFileRedirect
+> Task :app:assembleDebug
+
+[Incubating] Problems report is available at: file:///private/tmp/claude-501/-Users-adityajindal-personal-pulse-all-pulse-mobile/78254945-9b41-4fc8-b7ae-263b94f2eb6a/scratchpad/shots/android/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.3.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 8m 59s
+686 actionable tasks: 512 executed, 142 from cache, 32 up-to-date

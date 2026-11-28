@@ -22,11 +22,13 @@ import { ToastHost } from "./Toast";
 export function AppProviders({ children }: { children: ReactNode }) {
   useEffect(() => workoutRecorder.mount(), []);
   const [calendar] = useState(() => ({ today: todayIn() }));
-  // Pure black: global.css's `.pure-black` turns the ground tokens to #000 for every view below.
+  // Pure black: global.css's `.pure-black` turns the ground tokens to #000 for every view below. `.ground-root` sets a
+  // variable from the first render, so NativeWind wraps this view in its variable provider once; adding a variable class
+  // later would swap the root view's type and remount the app, losing the navigation context.
   const black = usePureBlack();
   return (
     <GestureHandlerRootView style={styles.root}>
-      <View className={black ? "pure-black flex-1" : "flex-1"}>
+      <View className={black ? "ground-root pure-black flex-1" : "ground-root flex-1"}>
         <SafeAreaProvider>
           <ShellCalendarProvider value={calendar}>
             <LiveBleProvider>{children}</LiveBleProvider>

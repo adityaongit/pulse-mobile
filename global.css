@@ -356,6 +356,11 @@
  * place of .dark:root's. Only the ground tokens change; cards, sheets and text keep the dark palette. src/ui/palette.ts
  * holds the same values as BLACK.
  */
+/* The app's root view always has this class, so it holds a variable from its first render (src/ui/providers.tsx). */
+.ground-root {
+  --ground-root: 1;
+}
+
 .pure-black {
   --background-top: 0 0 0;
   --background-mid: 0 0 0;
