@@ -100,7 +100,7 @@ function Chart({ s, variant }: { s: StressSeries; variant: "full" | "spark" }) {
             {full && <ScrubLayer width={width} height={height} onScrub={setX} />}
             <ScrubTick index={ai} />
             {a && a.value !== null && (
-              <TooltipCard x={tx(a.t)} width={width} title={clock(a.t, tz)}>
+              <TooltipCard x={tx(a.t)} marks={[y(a.value)]} width={width} height={height} title={clock(a.t, tz)}>
                 <TooltipLine color={css(DATA_COLORS[STRESS_COLOR[stressLevel(a.value)]].css)}>{`${formatValue("int", a.value)} ${STRESS_WORD[stressLevel(a.value)]}`}</TooltipLine>
               </TooltipCard>
             )}

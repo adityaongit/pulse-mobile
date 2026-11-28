@@ -84,7 +84,7 @@ export function LoadChart({ load }: { load: FitnessVM["load"] }) {
               ))}
               <ScrubLayer width={width} height={height} onScrub={setX} />
               {a && (
-                <TooltipCard x={xs[ai]} width={width} title={formatDay(a.day, DAY.short)}>
+                <TooltipCard x={xs[ai]} marks={[a.ctl, a.atl, a.tsb, a.tsb === null ? null : 0].flatMap((v) => (v === null ? [] : [y(v)]))} width={width} height={height} title={formatDay(a.day, DAY.short)}>
                   {/* In the plot's order: the bars, then the two lines. */}
                   {a.tsb !== null && (
                     <TooltipLine color={a.tsb < 0 ? c.warning : c["chart-2"]}>

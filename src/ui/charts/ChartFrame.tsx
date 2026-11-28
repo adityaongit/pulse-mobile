@@ -7,6 +7,7 @@ import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { runOnJS } from "react-native-reanimated";
 import { cn } from "../cn";
 import { alpha } from "../color";
+import { tooltipPlace } from "./geometry";
 import { Panel } from "../Panel";
 import { Text } from "../Text";
 import { useTheme } from "../theme";
@@ -176,6 +177,9 @@ export const wholeTick = (fmt: (v: number) => string) => (v: number) => (Number.
 export function ScrubLayer({ width, height, onScrub, children }: Size & { onScrub: (x: number | null) => void; children?: ReactNode }) {
   const [pinned, setPinned] = useState<number | null>(null);
   useEffect(() => onScrub(pinned), [pinned, onScrub]);
+  // Tapping the pinned point again clears it. Runs on the JS thread: an updater function made in a gesture worklet
+  // does not survive runOnJS, so passing one to setPinned pinned every tap to the first point.
+  const tap = useCallback((x: number) => setPinned((prev) => (prev !== null && Math.abs(prev - x) < 14 ? null : x)), []);
   const gesture = useMemo(
     () =>
       Gesture.Race(
@@ -192,11 +196,10 @@ export function ScrubLayer({ width, height, onScrub, children }: Size & { onScru
         Gesture.Tap()
           .maxDuration(300)
           .onEnd((e, ok) => {
-            // Tapping the pinned point again clears it.
-            if (ok) runOnJS(setPinned)((prev: number | null) => (prev !== null && Math.abs(prev - e.x) < 14 ? null : e.x));
+            if (ok) runOnJS(tap)(e.x);
           }),
       ),
-    [],
+    [tap],
   );
   return (
     <GestureDetector gesture={gesture}>
@@ -223,12 +226,16 @@ export function ScrubTick({ index }: { index: number }) {
   return null;
 }
 
-/** The scrubbed point's readout: a popover card (rounded-xl, ring) near the cursor, kept inside the chart. */
-export function TooltipCard({ x, width, title, children }: { x: number; width: number; title?: string; children: ReactNode }) {
-  const [w, setW] = useState(0);
-  const left = Math.min(Math.max(x - w / 2, 0), Math.max(0, width - w));
+/**
+ * The scrubbed point's readout: a popover card (rounded-xl, ring) near the cursor, kept inside the chart and off the
+ * marks it describes (`marks`: their ys, a dot or a bar's top and base; `gap`: the clearance, wider for a wide bar; see
+ * tooltipPlace).
+ */
+export function TooltipCard({ x, marks, gap, width, height, title, children }: { x: number; marks: number[]; gap?: number; width: number; height: number; title?: string; children: ReactNode }) {
+  const [box, setBox] = useState({ w: 0, h: 0 });
+  const { left, top } = tooltipPlace(x, marks, box.w, box.h, width, height, gap);
   return (
-    <Panel pointerEvents="none" onLayout={(e) => setW(e.nativeEvent.layout.width)} className="absolute top-0 gap-1 rounded-xl px-2.5 py-2" style={{ left, opacity: w ? 1 : 0 }}>
+    <Panel pointerEvents="none" onLayout={(e) => setBox({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })} className="absolute gap-1 rounded-xl px-2.5 py-2" style={{ left, top, opacity: box.w ? 1 : 0 }}>
       {!!title && <Text className="text-xs font-medium leading-4 text-muted-foreground">{title}</Text>}
       {children}
     </Panel>

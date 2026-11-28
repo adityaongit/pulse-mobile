@@ -123,7 +123,7 @@ function Chart({ hr, variant, zoned }: { hr: HrSeries; variant: "day" | "activit
             <ScrubLayer width={width} height={h} onScrub={setX} />
             <ScrubTick index={ai} />
             {a && a.bpm !== null && (
-              <TooltipCard x={tx(a.t)} width={width} title={clock(a.t, tz)}>
+              <TooltipCard x={tx(a.t)} marks={[y(a.bpm)]} width={width} height={h} title={clock(a.t, tz)}>
                 <TooltipLine color={css(bandColor(a.bpm, bands))}>{`${a.bpm} bpm`}</TooltipLine>
                 {!!zoneOf(a.bpm) && <ZoneName name={zoneOf(a.bpm)!} />}
               </TooltipCard>

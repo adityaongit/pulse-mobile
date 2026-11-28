@@ -1331,6 +1331,7 @@ Plan U16 asks that nothing moves when data arrives. Every kit component's `.Skel
 - Position follows the pointer (`position` unset); bars snap to the hovered category, lines and areas snap to the nearest point (`ComposedChart` default with `accessibilityLayer`).
 - Touch: `onTouchMove` scrubs (Recharts default); the header readout switches to the scrubbed point, as v1 TrendChart.
 - Look: tooltip material (§2.6), label in caption role, values in the chart text role.
+- Mobile: the card never covers the marks it describes (`tooltipPlace` in `src/ui/charts/geometry.ts`). It sits at the top of the chart, centred on the cursor, when that clears the scrubbed dot or bar; else just below the lowest mark; else beside the marks at the top, right of the cursor, or left near the right edge.
 
 ---
 
