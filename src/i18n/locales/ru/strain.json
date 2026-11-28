@@ -405,5 +405,6 @@
     "recentSpoken": "{{when}}: {{duration}}, Strain тренировки {{value}} процентов",
     "recentLine": "{{duration}} · средн. {{bpm}} bpm",
     "strain": "Strain"
-  }
+  },
+  "zoneNoteOwn": "Твои собственные зоны из Настройки › Профиль."
 }

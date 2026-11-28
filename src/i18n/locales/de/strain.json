@@ -377,5 +377,6 @@
     "recentSpoken": "{{when}}: {{duration}}, Workout-Strain {{value}} Prozent",
     "recentLine": "{{duration}} · {{bpm}} bpm Ø",
     "strain": "Strain"
-  }
+  },
+  "zoneNoteOwn": "Deine eigenen Zonen, festgelegt unter Einstellungen › Profil."
 }

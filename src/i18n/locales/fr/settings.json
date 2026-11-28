@@ -333,5 +333,22 @@
     "off": "Activez « Envoyer les rapports d’erreur » dans Réglages › App › Confidentialité pour l’envoyer.",
     "sentTitle": "Envoyé",
     "sentBody": "Merci. Votre signalement aide à corriger le problème."
+  },
+  "zones": {
+    "title": "Zones de fréquence cardiaque",
+    "body": "Strain compte le temps passé dans chaque zone. Pulse les fixe à partir de ta fréquence cardiaque max, ou tu peux choisir où commence chaque zone. Les changer recalcule tout ton historique, comme une nouvelle fréquence cardiaque max.",
+    "method": "Comment les zones sont fixées",
+    "automatic": "Automatique",
+    "own": "Les miennes",
+    "automaticHint": "D’après ta fréquence cardiaque max ({{maxHr}} bpm) : zone 1 à partir de {{z1}}, zone 2 de {{z2}}, zone 3 de {{z3}}, zone 4 de {{z4}}, zone 5 de {{z5}} bpm (50 à 90 %).",
+    "zone": "Zone {{n}}",
+    "zoneAria": "Début de la zone {{n}}, bpm",
+    "ownHint": "Où commence chaque zone, en bpm. La zone 5 va jusqu’à ta fréquence cardiaque max ({{maxHr}} bpm).",
+    "saveAria": "Enregistrer les zones de fréquence cardiaque",
+    "saved": "Zones enregistrées. Pulse recalcule ton historique.",
+    "errorWhole": "Saisis un nombre entier de bpm pour chaque zone.",
+    "errorRange": "Chaque zone commence entre {{min}} et {{max}} bpm.",
+    "errorOrder": "Chaque zone doit commencer au-dessus de la précédente.",
+    "errorMax": "La zone 5 doit commencer sous ta fréquence cardiaque max ({{maxHr}} bpm)."
   }
 }

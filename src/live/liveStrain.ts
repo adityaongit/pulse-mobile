@@ -40,6 +40,8 @@ export type LiveStrainConfig = {
   sex?: string;
   /** Today's stored Daily Strain inputs before the workout; null when there are none yet. */
   base: StrainBase | null;
+  /** The person's own zone lower bounds, bpm (Profile.hrZones); absent: 50–90 % of max HR. */
+  zones?: readonly number[] | null;
 };
 
 export class LiveStrain {
@@ -64,8 +66,8 @@ export class LiveStrain {
     this.restingHr = c.restingHr > 0 ? c.restingHr : defaultRestingHR;
     this.maxHr = c.maxHr;
     this.sex = c.sex ?? "male";
-    // The engine's zones use its own max HR (220 − age without the profile's), as stage 1 stored it.
-    this.engineZones = zonesOf(c.base?.maxHr ?? c.maxHr);
+    // The engine's zones use its own max HR (220 − age without the profile's), as stage 1 stored it, or the person's own.
+    this.engineZones = zonesOf(c.base?.maxHr ?? c.maxHr, c.zones);
     this.base = c.base ?? { units: 0, steps: 0 };
   }
 

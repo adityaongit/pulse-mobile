@@ -15,6 +15,7 @@ import { DeleteEverything } from "./DeleteEverything";
 import { LiveHeartRate } from "./LiveHeartRate";
 import { NotificationsSection } from "./NotificationsSection";
 import { GoalsSettings } from "@/screens/goals/GoalsSettings";
+import { HeartRateZones } from "./HeartRateZones";
 import { ProfileCard } from "./ProfileCard";
 
 type SectionId = "profile" | "source" | "app" | "live" | "notifications" | "goals";
@@ -90,6 +91,7 @@ function ProfileSection() {
   ) : (
     <>
       <ProfileCard profile={data.profile} />
+      <HeartRateZones />
       <DeleteEverything />
     </>
   );

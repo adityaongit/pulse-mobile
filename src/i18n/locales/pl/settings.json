@@ -334,5 +334,22 @@
     "off": "Włącz „Wysyłaj raporty o błędach” w Ustawienia › Aplikacja › Prywatność, aby to wysłać.",
     "sentTitle": "Wysłano",
     "sentBody": "Dziękujemy. Twoje zgłoszenie pomoże to naprawić."
+  },
+  "zones": {
+    "title": "Strefy tętna",
+    "body": "Strain liczy czas spędzony w każdej strefie. Pulse ustala je na podstawie Twojego maksymalnego tętna albo możesz sam ustawić, gdzie zaczyna się każda strefa. Zmiana przelicza całą historię, tak jak nowe maksymalne tętno.",
+    "method": "Jak ustawiane są strefy",
+    "automatic": "Automatyczne",
+    "own": "Własne",
+    "automaticHint": "Z Twojego maksymalnego tętna ({{maxHr}} bpm): strefa 1 od {{z1}}, strefa 2 od {{z2}}, strefa 3 od {{z3}}, strefa 4 od {{z4}}, strefa 5 od {{z5}} bpm (od 50 do 90%).",
+    "zone": "Strefa {{n}}",
+    "zoneAria": "Początek strefy {{n}}, bpm",
+    "ownHint": "Gdzie zaczyna się każda strefa, w bpm. Strefa 5 sięga do Twojego maksymalnego tętna ({{maxHr}} bpm).",
+    "saveAria": "Zapisz strefy tętna",
+    "saved": "Strefy zapisane. Pulse przelicza Twoją historię.",
+    "errorWhole": "Wpisz całkowitą liczbę bpm dla każdej strefy.",
+    "errorRange": "Każda strefa zaczyna się między {{min}} a {{max}} bpm.",
+    "errorOrder": "Każda strefa musi zaczynać się powyżej poprzedniej.",
+    "errorMax": "Strefa 5 musi zaczynać się poniżej Twojego maksymalnego tętna ({{maxHr}} bpm)."
   }
 }

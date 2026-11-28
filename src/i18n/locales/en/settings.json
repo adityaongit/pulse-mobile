@@ -332,5 +332,22 @@
     "off": "Turn on Send error reports in Settings › App › Privacy to send this.",
     "sentTitle": "Sent",
     "sentBody": "Thanks. Your report helps fix it."
+  },
+  "zones": {
+    "title": "Heart-rate zones",
+    "body": "Strain counts the time you spend in each zone. Pulse sets them from your max heart rate, or you can set where each zone starts. Changing them rescores your whole history, as a new max heart rate does.",
+    "method": "How zones are set",
+    "automatic": "Automatic",
+    "own": "My own",
+    "automaticHint": "From your max heart rate ({{maxHr}} bpm): zone 1 from {{z1}}, zone 2 from {{z2}}, zone 3 from {{z3}}, zone 4 from {{z4}}, zone 5 from {{z5}} bpm (50 to 90%).",
+    "zone": "Zone {{n}}",
+    "zoneAria": "Zone {{n}} starts at, bpm",
+    "ownHint": "Where each zone starts, in bpm. Zone 5 runs to your max heart rate ({{maxHr}} bpm).",
+    "saveAria": "Save heart-rate zones",
+    "saved": "Zones saved. Pulse is rescoring your history.",
+    "errorWhole": "Enter a whole number of bpm for each zone.",
+    "errorRange": "Each zone starts between {{min}} and {{max}} bpm.",
+    "errorOrder": "Each zone has to start above the one before it.",
+    "errorMax": "Zone 5 has to start below your max heart rate ({{maxHr}} bpm)."
   }
 }

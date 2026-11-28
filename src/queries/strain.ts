@@ -155,7 +155,7 @@ export const zoneBounds = (lower: number[]): ZoneRow[] =>
 
 /** How the day's zones are set, under the zone rows. */
 export const zoneNote = (row: DayRow | undefined, ctx: QueryCtx) =>
-  i18n.t("strain:zoneNote", { maxHr: row?.s1?.maxHr ?? maxHrOf(ctx) });
+  row?.s1?.engine?.strain?.zones ? i18n.t("strain:zoneNoteOwn") : i18n.t("strain:zoneNote", { maxHr: row?.s1?.maxHr ?? maxHrOf(ctx) });
 
 export function zoneRows(row: DayRow | undefined, seconds = row?.s1?.zoneSeconds, below = row?.s1?.zoneBelowSeconds): Metric<ZoneRow[]> {
   const s1 = row?.s1;

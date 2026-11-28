@@ -285,7 +285,7 @@ export async function getChartDay(view: DayView, day: string, ctx: QueryCtx): Pr
       ctx.store.segmentsFor(near.map((s) => s.id)),
     ]);
     const tl = timeline({ sessions: near, segments, workouts: touching(exercises) });
-    const inputs = s1 && { value: s1.engine?.strain?.value ?? null, maxHr: s1.engine?.strain?.maxHr ?? s1.maxHr, lastHrTs: s1.lastHrTs };
+    const inputs = s1 && { value: s1.engine?.strain?.value ?? null, maxHr: s1.engine?.strain?.maxHr ?? s1.maxHr, lastHrTs: s1.lastHrTs, zones: s1.engine?.strain?.zones };
     const curve = strainCurve(hr, steps, tl, inputs, start, end, day === today, own);
     const spans = await daySpans(ctx, row, day, start);
     const target = row?.strainTarget;

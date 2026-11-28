@@ -333,5 +333,22 @@
     "off": "Ative “Enviar relatórios de erro” em Configurações › Aplicativo › Privacidade para enviar.",
     "sentTitle": "Enviado",
     "sentBody": "Obrigado. Seu relato ajuda a corrigir isso."
+  },
+  "zones": {
+    "title": "Zonas de frequência cardíaca",
+    "body": "Strain conta o tempo que você passa em cada zona. Pulse as define a partir da sua frequência cardíaca máxima, ou você escolhe onde cada zona começa. Mudá-las recalcula todo o seu histórico, como uma nova frequência cardíaca máxima.",
+    "method": "Como as zonas são definidas",
+    "automatic": "Automáticas",
+    "own": "As minhas",
+    "automaticHint": "Pela sua frequência cardíaca máxima ({{maxHr}} bpm): zona 1 a partir de {{z1}}, zona 2 de {{z2}}, zona 3 de {{z3}}, zona 4 de {{z4}}, zona 5 de {{z5}} bpm (50 a 90%).",
+    "zone": "Zona {{n}}",
+    "zoneAria": "Início da zona {{n}}, bpm",
+    "ownHint": "Onde cada zona começa, em bpm. A zona 5 vai até a sua frequência cardíaca máxima ({{maxHr}} bpm).",
+    "saveAria": "Salvar zonas de frequência cardíaca",
+    "saved": "Zonas salvas. Pulse está recalculando seu histórico.",
+    "errorWhole": "Digite um número inteiro de bpm para cada zona.",
+    "errorRange": "Cada zona começa entre {{min}} e {{max}} bpm.",
+    "errorOrder": "Cada zona precisa começar acima da anterior.",
+    "errorMax": "A zona 5 precisa começar abaixo da sua frequência cardíaca máxima ({{maxHr}} bpm)."
   }
 }

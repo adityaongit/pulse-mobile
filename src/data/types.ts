@@ -28,6 +28,11 @@ export type Profile = {
   sleepGoal?: { hours: number; method: "manual" | "automatic" } | null;
   /** Units and the clock (Settings › App). Absent: the phone's own (src/lib/units.ts deviceDisplayPrefs). */
   display?: DisplayPrefs | null;
+  /**
+   * The person's own heart-rate zones (Settings › Profile): the lower bounds of zones 1 to 5, bpm. Absent: 50, 60, 70, 80
+   * and 90 % of max HR (src/core/engine/strain.ts zonesOf). Strain is scored on them, so a change rescores the history.
+   */
+  hrZones?: number[] | null;
 };
 
 /** One sleep session; `day` is the local wake day. */

@@ -101,6 +101,8 @@ export type PipelineOptions = {
     waistCm?: number | null;
     /** The profile's sleep goal, hours; null for the engine's 7.5 h. */
     sleepGoalHours?: number | null;
+    /** The person's own zone lower bounds, bpm (Profile.hrZones); null for 50–90 % of the engine's max HR. */
+    hrZones?: number[] | null;
   };
 };
 
@@ -169,8 +171,12 @@ export type Stage1Day = {
  * and the workouts' units; null on a day with no heart rate or steps.
  */
 export type EngineDayAggs = Pick<DayAggs, "restingHRV" | "averageHRV" | "restingHR" | "inactiveHR"> & {
-  /** `zoneS` (version 23): seconds in zones 0–5 on % of max HR, waking heart rate and workouts. */
-  strain?: { value: number; steps: number; passiveUnits: number; workoutUnits: number; zoneS?: number[]; maxHr?: number } | null;
+  /**
+   * `zoneS` (version 23): seconds in zones 0–5 on % of max HR, waking heart rate and workouts. `zones`: the lower bounds
+   * of zones 1–5 (bpm) the day was scored on, kept only when the person has their own (Profile.hrZones); without it
+   * they are zonesOf(maxHr).
+   */
+  strain?: { value: number; steps: number; passiveUnits: number; workoutUnits: number; zoneS?: number[]; maxHr?: number; zones?: number[] } | null;
   /** Version 22: the day's HRV samples as [seconds after local midnight, ms], for Stress and Energy Bank in stage 2. */
   hrv?: [number, number][];
 };

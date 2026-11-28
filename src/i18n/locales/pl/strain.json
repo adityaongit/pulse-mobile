@@ -405,5 +405,6 @@
     "recentSpoken": "{{when}}: {{duration}}, Strain treningu {{value}} procent",
     "recentLine": "{{duration}} · śr. {{bpm}} bpm",
     "strain": "Strain"
-  }
+  },
+  "zoneNoteOwn": "Twoje własne strefy, ustawione w Ustawienia › Profil."
 }
