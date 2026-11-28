@@ -380,7 +380,7 @@ flowchart LR
 
 ## Sync while the app is open
 
-halo's rule (`src/state/app.ts`): boot shows the last scores at once and starts a run in the background, and coming back to the foreground after 10 minutes away runs again, because Health Connect gets new nights while the app sleeps. A run is serialised: a second call joins the one in flight. Pulling any tab root or detail page down runs Sync now through `ShellSync.syncNow`. The background task (WorkManager) shares the run body, `src/background/runSync.ts`, guarded by its lock.
+halo's rule (`src/state/app.ts`): boot shows the last scores at once and starts a run in the background, and coming back to the foreground after a minute away runs again, because Health Connect gets new data while the app sleeps (it was 10 minutes, which left Pulse and its widget a sync behind until a pull, #74). A run is serialised: a second call joins the one in flight. Pulling any tab root or detail page down runs Sync now through `ShellSync.syncNow`. The background task (WorkManager) shares the run body, `src/background/runSync.ts`, guarded by its lock. When the task runs in the app's runtime, `onTaskRun` lets the app read the new sync time and bump the data version, so the screens' memoised reads (`src/data/memo.ts`) do not outlive it.
 
 ```mermaid
 flowchart LR

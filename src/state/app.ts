@@ -10,7 +10,7 @@ import { i18n } from "@/i18n/config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useSyncExternalStore } from "react";
 import { AppState } from "react-native";
-import { markUiRuntime, registerAppStore, runSync, type Source } from "@/background/runSync";
+import { markUiRuntime, onTaskRun, registerAppStore, runSync, type Source } from "@/background/runSync";
 import { startBackground } from "@/background/startup";
 import { deleteAllPhotos, deletePhoto } from "@/actions/photo";
 import { openStore } from "@/data/db";
@@ -60,8 +60,11 @@ const OWN_PROFILE_KEY = "pulse.ownProfile";
 
 export const THEME_KEY = "pulse.theme";
 const EMPTY_SYNC: SyncState = { lastSyncTs: null, firstDay: null, lastError: null };
-/** Coming back to the foreground after this long away re-imports (Health Connect gets new nights while the app sleeps). */
-const RESYNC_AWAY_MS = 10 * 60_000;
+/**
+ * Coming back to the foreground after this long away re-imports (Health Connect gets new data while the app sleeps). Short,
+ * so opening Pulse shows what a pull would; long enough that a trip to a picker or a share sheet does not resync.
+ */
+export const RESYNC_AWAY_MS = 60_000;
 
 let state: AppInfo = {
   status: "booting",
@@ -206,6 +209,8 @@ export async function boot(applyTheme: (theme: string) => void): Promise<void> {
     // The background task reuses this connection when it fires while the app is up; the task registration and the
     // check-in reminder are made to match the saved settings.
     registerAppStore(st);
+    // A background run in this runtime stored new scores: the screens' memoised reads and the sync time move on with it.
+    onTaskRun(() => void st.getSyncState().then((sync) => { patch({ sync }); dataChanged(); }, () => {}));
     void startBackground();
     // This runtime has a screen: its syncs slice their work so taps and frames get through (src/lib/yield.ts).
     markUiRuntime();

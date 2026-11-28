@@ -74,12 +74,19 @@ function watchForeground() {
   AppState.addEventListener("change", (next) => setForeground(onScreen(next)));
 }
 
+let afterTaskRun: (() => void) | null = null;
+/** The app hears when a background task's run ends in its runtime: the task stored scores the screens have not read. */
+export function onTaskRun(fn: (() => void) | null): void {
+  afterTaskRun = fn;
+}
+
 /** Serialised: a second call while one runs returns the same promise. Throws what the sync or pipeline threw. */
 export function runSync(store: Store, profile: Profile, source: Source, opts: RunSyncOptions): Promise<RunSyncResult> {
   watchForeground();
   if (inflight) return inflight;
   const job = run(store, profile, source, opts).finally(() => {
     inflight = null;
+    if (opts.owner !== "app") afterTaskRun?.();
   });
   inflight = job;
   return job;
