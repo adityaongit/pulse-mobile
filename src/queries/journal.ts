@@ -46,6 +46,12 @@ export const tagKey = (label: string) =>
 export const MAX_TAGS = 60;
 
 /**
+ * Most tag rows, removed ones included. Removing frees a MAX_TAGS place but keeps the row for past answers, and
+ * insights bootstrap every tag answered in the window on every recompute, so this bounds that work.
+ */
+export const MAX_TAG_ROWS = 2 * MAX_TAGS;
+
+/**
  * The tag rows, the defaults first ensured. The web inserts them at sign-up and on the worker's first run; on the
  * phone they are inserted the first time anything reads the tags (and again after `clearAll`), a no-op afterwards.
  */
@@ -74,6 +80,7 @@ export async function addTag(store: Store, tag: string, label: string): Promise<
     const previous = rows.find((r) => r.tag === tag);
     if (previous && !previous.removed) return { result: "exists" };
     if (rows.filter((r) => !r.removed).length >= MAX_TAGS) return { result: "full" };
+    if (!previous && rows.length >= MAX_TAG_ROWS) return { result: "full" };
     if (previous) return { result: "added", update: [{ tag, hidden: false, removed: false }] };
     const position = rows.reduce((m, r) => Math.max(m, r.position), 0) + 1;
     return { result: "added", insert: [{ tag, label, isDefault: false, hidden: false, position }] };

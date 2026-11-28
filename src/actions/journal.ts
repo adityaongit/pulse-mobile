@@ -6,7 +6,7 @@ import { behavior, englishBehaviorLabel } from "@/lib/behaviors";
 import type { JournalTagChange, JournalTagRow } from "@/data/store";
 import { addDays, localDay } from "@/lib/time";
 import type { QueryCtx } from "@/queries/ctx";
-import { addTag, editTags, getJournal, MAX_TAGS, tagKey, tagRows } from "@/queries/journal";
+import { addTag, editTags, getJournal, MAX_TAG_ROWS, MAX_TAGS, tagKey, tagRows } from "@/queries/journal";
 import type { JournalVM } from "@/queries/types";
 import type { ActionCtx } from "@/state/app";
 
@@ -110,7 +110,7 @@ export async function saveBehaviors(c: ActionCtx, { tags, remove = [], restore =
         changes.push({ tag, hidden });
       }
     }
-    if (available > MAX_TAGS) return { result: fail(i18n.t("errors:journal.tooManyBehaviours", { count: MAX_TAGS })) };
+    if (available > MAX_TAGS || rows.length + newTags.length > MAX_TAG_ROWS) return { result: fail(i18n.t("errors:journal.tooManyBehaviours", { count: MAX_TAGS })) };
     return { result: { ok: true, data: undefined }, update: changes, insert: newTags };
   });
 }

@@ -34,10 +34,6 @@ Want it on a server instead, for the browser and several people? See [Pulse](htt
 - **Pulse Age**, **Stress** and **Energy Bank** through the day
 - **Health Monitor**, **Journal**, **Trends**, **Reports** and **My Dashboard**
 
-In **More → Behaviours** (also available from the pencil in a journal check-in), tap the bin beside a built-in or custom
-behaviour, then **Save behaviours**. Past answers stay in History and Insights. To bring a behaviour back, tap it under
-**Removed** and save.
-
 Every score is explained on the [metrics pages](https://pulse.portlabs.in/metrics/).
 
 ## How it works

@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { openMemoryStore } from "@/data/memory";
 import type { Store } from "@/data/store";
 import type { Profile } from "@/data/types";
-import { DEFAULT_JOURNAL_TAGS, ensureDefaultTags, getBehaviours, getJournal, MAX_TAGS } from "@/queries/journal";
+import { DEFAULT_JOURNAL_TAGS, ensureDefaultTags, getBehaviours, getJournal, MAX_TAG_ROWS, MAX_TAGS } from "@/queries/journal";
 import { getMore, journalTable } from "@/queries/settings";
 import type { QueryCtx } from "@/queries/ctx";
 import { addCustomTag, loadCheckIn, saveBehaviors, saveCheckIn, saveJournalEntry, type ActionCtx } from "./journal";
@@ -188,6 +188,18 @@ describe("saveBehaviors", () => {
     ]);
     expect(competing.filter((r) => r.ok)).toHaveLength(1);
     expect((await store.journalTags()).filter((t) => !t.removed)).toHaveLength(MAX_TAGS);
+  });
+
+  it("caps tag rows, removed ones included, so insights work stays bounded", async () => {
+    let n = 0;
+    while ((await store.journalTags()).length < MAX_TAG_ROWS) {
+      const { ok, data } = (await addCustomTag(c(), { label: `Row ${n++}` })) as { ok: boolean; data: { tag: string } };
+      expect(ok).toBe(true);
+      expect((await saveBehaviors(c(), { tags: [], remove: [data.tag] })).ok).toBe(true);
+    }
+    expect((await addCustomTag(c(), { label: "One more" })).ok).toBe(false);
+    expect((await saveBehaviors(c(), { tags: ["acupuncture"] })).ok).toBe(false);
+    expect((await addCustomTag(c(), { label: "Row 0" })).ok).toBe(true);
   });
 
   it("adds catalogue behaviours, hides the rest and keeps their answers", async () => {

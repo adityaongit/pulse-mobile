@@ -45,6 +45,7 @@ export function BehaviorPicker({ tags, initial, selected, removed, disabled, onC
   const [query, setQuery] = useState("");
   const [tab, setTab] = useState<Tab>("all");
   const items = itemsOf(tags);
+  const savedRemoved = new Set(tags.filter((t) => t.removed).map((t) => t.tag));
   const tabs: { key: Tab; label: string }[] = [{ key: "all", label: t("behaviours.tabAll") }];
   if (removed.size) tabs.push({ key: "removed", label: t("behaviours.tabRemoved") });
   tabs.push(...BEHAVIOR_CATEGORIES);
@@ -124,7 +125,8 @@ export function BehaviorPicker({ tags, initial, selected, removed, disabled, onC
                         accessibilityLabel={inRemoved ? t("behaviours.restoreLabel", { name: i.label }) : `${i.label}. ${i.question}`}
                         onPress={() => {
                           haptic.select();
-                          const checked = inRemoved ? initial.has(i.key) : !on;
+                          // A saved removal comes back ticked, so the journal asks it again; an unsaved one returns to how it was.
+                          const checked = inRemoved ? savedRemoved.has(i.key) || initial.has(i.key) : !on;
                           onChange(i.key, checked ? "selected" : "unselected");
                         }}
                         className="min-h-16 flex-1 flex-row items-center gap-4 py-2"
