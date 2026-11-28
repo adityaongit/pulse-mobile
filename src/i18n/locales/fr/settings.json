@@ -46,7 +46,10 @@
     "checkNow": "Rechercher",
     "latest": "Pulse {{version}} est la dernière version.",
     "group": "App",
-    "notificationsLink": "Notifications et arrière-plan"
+    "notificationsLink": "Notifications et arrière-plan",
+    "journal": "Journal",
+    "showJournal": "Afficher le Journal",
+    "showJournalHint": "Désactivé, l’onglet Journal, ses cartes et comportements, le check-in et son rappel sont masqués. Rien n’est supprimé : réactivez-le et tout revient."
   },
   "form": {
     "optional": "Facultatif"

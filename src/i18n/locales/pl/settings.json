@@ -46,7 +46,10 @@
     "checkNow": "Sprawdź teraz",
     "latest": "Pulse {{version}} to najnowsza wersja.",
     "group": "Aplikacja",
-    "notificationsLink": "Powiadomienia i tło"
+    "notificationsLink": "Powiadomienia i tło",
+    "journal": "Dziennik",
+    "showJournal": "Pokazuj Dziennik",
+    "showJournalHint": "Wyłączone ukrywa kartę Dziennik, jej karty i zachowania, check-in i przypomnienie o nim. Nic nie jest usuwane: włącz ponownie, a wszystko wróci."
   },
   "form": {
     "optional": "Opcjonalnie"

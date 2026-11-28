@@ -46,7 +46,10 @@
     "checkNow": "Verificar agora",
     "latest": "O Pulse {{version}} é a versão mais recente.",
     "group": "Aplicativo",
-    "notificationsLink": "Notificações e segundo plano"
+    "notificationsLink": "Notificações e segundo plano",
+    "journal": "Journal",
+    "showJournal": "Mostrar o Journal",
+    "showJournalHint": "Desativado, esconde a aba Journal, seus cartões e hábitos, o check-in e o lembrete dele. Nada é apagado: ative de novo e tudo volta."
   },
   "form": {
     "optional": "Opcional"

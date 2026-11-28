@@ -14,6 +14,7 @@ import { dayHref } from "@/lib/url";
 import { todayOf } from "@/queries/common";
 import { latestReport } from "@/queries/home";
 import { getReport, type ReportPageVM } from "@/queries/reports";
+import { useJournalShown } from "@/state/app";
 import { useWeeklyPlan } from "@/state/weeklyPlan";
 import { Button } from "@/ui/Button";
 import type { KeyStat, ReportVM } from "@/queries/types";
@@ -178,6 +179,8 @@ export default function ReportScreen() {
   const valid = isWeek || MONTH.test(period);
   // The assessment scores the period against the Weekly plan's targets (src/state/weeklyPlan.ts), as halo's report does.
   const { plan } = useWeeklyPlan();
+  // Top journal effects goes while Settings › App hides the Journal.
+  const journal = useJournalShown();
   const { data, error, reload } = useScreen((ctx) => load(period, ctx, plan.targets), ["report", period, plan.targets]);
   const title = isWeek ? t("weeklyReport") : t("monthlyReport");
 
@@ -236,9 +239,9 @@ export default function ReportScreen() {
             <EmptyState body={t("page.noBalance")} className="py-4" />
           )}
         </SectionShell>,
-        <SectionShell key="journal" variant="card" title={t("page.journalEffects")} info={cardInfo("Top journal effects")} action={{ label: t("page.viewAll"), href: "/journal/insights" }}>
+        ...(journal ? [<SectionShell key="journal" variant="card" title={t("page.journalEffects")} info={cardInfo("Top journal effects")} action={{ label: t("page.viewAll"), href: "/journal/insights" }}>
           {vm.topImpacts.length ? <DriverList variant="impact" unit="%" data={{ value: vm.topImpacts.slice(0, 3), reason: null, provisional: false }} /> : <EmptyState body={t("page.noJournalEffects")} className="py-4" />}
-        </SectionShell>,
+        </SectionShell>] : []),
         ...(vm.bestWorst
           ? [
               <SectionShell key="best" variant="card" title={t("page.bestWorst")} info={cardInfo("Best and worst day")}>
@@ -287,7 +290,7 @@ function LoadingPrimary() {
 }
 
 /** The loading state's sections; read at render, so the titles follow the language. */
-function loadingSecondary(t: TFunction<"reports">) {
+function loadingSecondary(t: TFunction<"reports">, journal: boolean) {
   const averages = [metricLabel("recovery"), metricLabel("strain"), metricLabel("sleep"), metricLabel("hours"), metricLabel("consistency"), metricLabel("hrv"), metricLabel("rhr")];
   return [
   <SectionShell key="avg" variant="card" title={t("page.averages")} info={cardInfo("Averages")} aside={<SkeletonText className="w-20" />}>
@@ -309,9 +312,9 @@ function loadingSecondary(t: TFunction<"reports">) {
       </View>
     </View>
   </SectionShell>,
-  <SectionShell key="journal" variant="card" title={t("page.journalEffects")} info={cardInfo("Top journal effects")} action={{ label: t("page.viewAll"), href: "/journal/insights" }}>
+  ...(journal ? [<SectionShell key="journal" variant="card" title={t("page.journalEffects")} info={cardInfo("Top journal effects")} action={{ label: t("page.viewAll"), href: "/journal/insights" }}>
     <DriverListSkeleton />
-  </SectionShell>,
+  </SectionShell>] : []),
   <SectionShell key="best" variant="card" title={t("page.bestWorst")} info={cardInfo("Best and worst day")}>
     <View accessibilityElementsHidden>
       <Divided>
@@ -341,7 +344,7 @@ function BodySkeleton() {
   return (
     <>
       <LoadingPrimary />
-      <View className="gap-3">{loadingSecondary(t).slice(0, 2)}</View>
+      <View className="gap-3">{loadingSecondary(t, true).slice(0, 2)}</View>
     </>
   );
 }
@@ -353,6 +356,7 @@ function BodySkeleton() {
  */
 function Loading() {
   const { t } = useTranslation("reports");
+  const journal = useJournalShown();
   return (
     <DetailShell
       loading
@@ -382,7 +386,7 @@ function Loading() {
       insight={<InsightCardSkeleton />}
       primary={<LoadingPrimary />}
       bodySkeleton={<BodySkeleton />}
-      secondary={loadingSecondary(t)}
+      secondary={loadingSecondary(t, journal)}
     />
   );
 }
