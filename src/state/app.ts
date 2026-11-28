@@ -53,7 +53,7 @@ export type AppInfo = {
   /** A profile, a source and a first completed run: the tabs open. Until then onboarding shows. */
   onboarded: boolean;
   /** The saved theme choice, read at boot so Settings › App opens without waiting on storage. */
-  theme: "system" | "light" | "dark";
+  theme: "system" | "light" | "dark" | "black";
 };
 
 const OWN_PROFILE_KEY = "pulse.ownProfile";
@@ -217,7 +217,7 @@ export async function boot(applyTheme: (theme: string) => void): Promise<void> {
       AsyncStorage.getItem(THEME_KEY).catch(() => null),
     ]);
     if (theme) applyTheme(theme);
-    patch({ theme: theme === "light" || theme === "dark" ? theme : "system" });
+    patch({ theme: theme === "light" || theme === "dark" || theme === "black" ? theme : "system" });
     patch({ store: st, profile, source, sync, availability: avail });
     watchForeground();
     void checkForUpdate();

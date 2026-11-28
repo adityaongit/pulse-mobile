@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { alpha, mix, parseColor, resolveCss } from "./color";
-import { DARK, LIGHT, VALUES } from "./palette";
+import { BLACK, DARK, LIGHT, VALUES } from "./palette";
 
 const css = readFileSync(new URL("../../global.css", import.meta.url), "utf8");
 const block = (selector: string) => {
@@ -30,6 +30,11 @@ describe("global.css and palette.ts hold the same tokens", () => {
       expect(Object.fromEntries(entries.filter(([k]) => k in values).map(([k, v]) => [k, asValue(v)]))).toEqual(values);
     });
   }
+  it("pure black: the dark palette with .pure-black's ground tokens", () => {
+    const ground = Object.fromEntries(Object.entries(vars(block(".pure-black"))).map(([k, v]) => [k, asPalette(v)]));
+    expect(Object.keys(ground)).toEqual(["background-top", "background-mid", "background", "ground-healthspan"]);
+    expect(BLACK).toEqual({ ...DARK, ...ground });
+  });
   it("both themes define the same names", () => {
     expect(Object.keys(LIGHT)).toEqual(Object.keys(DARK));
     expect(Object.keys(VALUES.light)).toEqual(Object.keys(VALUES.dark));

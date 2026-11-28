@@ -24,6 +24,7 @@
     "themeSystem": "System",
     "themeLight": "Light",
     "themeDark": "Dark",
+    "themeBlack": "Pure black",
     "unitsMetric": "Metric",
     "unitsMetricDetail": "kg, km, cm, °C, ml",
     "unitsImperial": "Imperial",

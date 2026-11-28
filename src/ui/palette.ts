@@ -329,7 +329,13 @@ export const VALUES = {
   },
 } as const;
 
-export type Palette = typeof LIGHT | typeof DARK;
+/**
+ * Pure black (Settings › Appearance): the dark theme with the page ground at #000, for OLED screens. Only the ground
+ * tokens change, as global.css's `.pure-black` block sets them for the views under the app's root.
+ */
+export const BLACK = { ...DARK, "background-top": "#000000", "background-mid": "#000000", background: "#000000", "ground-healthspan": "#000000" } as const;
+
+export type Palette = typeof LIGHT | typeof DARK | typeof BLACK;
 export type Scheme = "light" | "dark";
 export type TokenName = keyof typeof LIGHT;
 

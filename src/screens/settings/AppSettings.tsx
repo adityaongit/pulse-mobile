@@ -1,12 +1,12 @@
 // Settings › App (display: theme, units and clock; notifications). Ported from pulse (app)/settings/SettingsView.tsx (Appearance), SettingsClient
-// `ThemePicker` and AppSettings.tsx. The theme is system, light or dark, kept on the device (AsyncStorage `pulse.theme`, applied
+// `ThemePicker` and AppSettings.tsx. The theme is system, light, dark or pure black, kept on the device (AsyncStorage `pulse.theme`, applied
 // at launch by src/state/app.ts boot). The notification toggles live in Settings › Notifications & background
 // (NotificationsSection.tsx); this section links there.
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
-import { colorScheme } from "nativewind";
-import { Bell, Monitor, Moon, Sun } from "lucide-react-native";
+import { applyTheme } from "@/ui/theme";
+import { Bell, Monitor, Moon, MoonStar, Sun } from "lucide-react-native";
 import { saveTheme, type Theme } from "@/actions/preferences";
 import { displayPrefs, type UnitSystem } from "@/lib/units";
 import { i18n, LANGUAGES, PSEUDO, REVIEWED, showPseudo, type LanguageChoice } from "@/i18n/config";
@@ -28,6 +28,7 @@ const themes = (): SelectOption<Theme>[] => [
   { value: "system", label: i18n.t("settings:app.themeSystem"), icon: Monitor },
   { value: "light", label: i18n.t("settings:app.themeLight"), icon: Sun },
   { value: "dark", label: i18n.t("settings:app.themeDark"), icon: Moon },
+  { value: "black", label: i18n.t("settings:app.themeBlack"), icon: MoonStar },
 ];
 
 const units = (): SelectOption<UnitSystem>[] => [
@@ -82,7 +83,7 @@ function DisplayRows({ initialTheme }: { initialTheme: Theme }) {
         options={themes()}
         onChange={(v) => {
           setTheme(v);
-          colorScheme.set(v);
+          applyTheme(v);
           rememberTheme(v);
           void saveTheme(v);
         }}

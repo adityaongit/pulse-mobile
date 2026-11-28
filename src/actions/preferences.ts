@@ -3,12 +3,12 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { THEME_KEY } from "@/state/app";
 
-export type Theme = "system" | "light" | "dark";
+export type Theme = "system" | "light" | "dark" | "black";
 export type AppPrefs = { theme: Theme };
 
 export async function loadPrefs(): Promise<AppPrefs> {
   const theme = await AsyncStorage.getItem(THEME_KEY).catch(() => null);
-  return { theme: theme === "light" || theme === "dark" ? theme : "system" };
+  return { theme: theme === "light" || theme === "dark" || theme === "black" ? theme : "system" };
 }
 
 export async function saveTheme(theme: Theme): Promise<void> {
