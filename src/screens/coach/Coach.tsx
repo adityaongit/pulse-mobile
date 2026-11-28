@@ -22,7 +22,6 @@ import { useTheme } from "@/ui/theme";
 import { Evidence } from "./Evidence";
 import { Prose } from "./Prose";
 import { push } from "@/ui/navigate";
-import { useJournalShown } from "@/state/app";
 
 type Part = UIMessage["parts"][number];
 
@@ -153,7 +152,6 @@ function AssistantMessage({ m, done, onRegenerate }: { m: UIMessage; done: boole
 
 function Empty({ providerLabel, suggestions, today, onAsk }: { providerLabel: string; suggestions: CoachSuggestion[]; today: string; onAsk: (text: string) => void }) {
   const { t } = useTranslation("coach");
-  const journal = useJournalShown();
   return (
     <View className="flex-1 items-center justify-center py-8">
       <CoachMark size={48} />
@@ -172,13 +170,10 @@ function Empty({ providerLabel, suggestions, today, onAsk }: { providerLabel: st
           </Press>
         ))}
       </View>
-      {/* No check-in while Settings › App hides the Journal. */}
-      {journal && (
-        <Press accessibilityRole="button" onPress={() => push(`/checkin?d=${today}`)} className="mt-3 h-10 flex-row items-center gap-2 rounded-full px-4">
-          <Icon icon={NotebookPen} size={16} tone="foreground-secondary" />
-          <Text className="text-[14px] font-medium text-foreground-secondary">{t("chat.checkIn")}</Text>
-        </Press>
-      )}
+      <Press accessibilityRole="button" onPress={() => push(`/checkin?d=${today}`)} className="mt-3 h-10 flex-row items-center gap-2 rounded-full px-4">
+        <Icon icon={NotebookPen} size={16} tone="foreground-secondary" />
+        <Text className="text-[14px] font-medium text-foreground-secondary">{t("chat.checkIn")}</Text>
+      </Press>
     </View>
   );
 }

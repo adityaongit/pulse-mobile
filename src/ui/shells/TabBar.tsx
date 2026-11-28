@@ -52,7 +52,7 @@ function Lens({ index, itemWidth }: { index: number; itemWidth: number }) {
 }
 
 /** Phone tab bar: a 62 px glass squircle with five destinations, for expo-router's <Tabs tabBar>. */
-function Bar({ state, navigation, tabs, current: shown }: TabBarProps & { tabs: typeof TABS; current: number }) {
+function Bar({ state, navigation, current: shown }: TabBarProps & { current: number }) {
   const { t } = useTranslation(["ui", "workouts"]);
   const [width, setWidth] = useState(0);
   // The tapped tab lights up (lens, icon, label) in its own small render; the tab's screen renders a frame later. One
@@ -60,12 +60,12 @@ function Bar({ state, navigation, tabs, current: shown }: TabBarProps & { tabs: 
   const [tapped, setTapped] = useState<number | null>(null);
   if (tapped !== null && tapped === shown) setTapped(null);
   const current = tapped ?? shown;
-  const itemWidth = Math.max(0, (width - 8) / tabs.length);
+  const itemWidth = Math.max(0, (width - 8) / TABS.length);
   return (
     <Glass radius={GLASS_RADIUS} accessibilityRole="tablist" accessibilityLabel={t("tabs.primary")} onLayout={(e) => setWidth(e.nativeEvent.layout.width)} style={{ height: TAB_BAR_HEIGHT, flex: 1, minWidth: 0, padding: 4 }}>
       {width > 0 && <Lens index={current} itemWidth={itemWidth} />}
       <View className="h-full flex-row">
-        {tabs.map(({ route, labelKey, icon }, i) => {
+        {TABS.map(({ route, labelKey, icon }, i) => {
           const label = t(labelKey);
           const route_ = state.routes.find((r) => r.name === route);
           const on = i === current;
@@ -104,14 +104,12 @@ function Bar({ state, navigation, tabs, current: shown }: TabBarProps & { tabs: 
 export function TabBar(props: TabBarProps) {
   const bottom = useTabBarBottom();
   const route = props.state.routes[props.state.index];
-  // A tab the navigator guards (the Journal, while Settings › App hides it) has no route, so no item.
-  const tabs = TABS.filter((tab) => props.state.routes.some((r) => r.name === tab.route));
-  const current = tabs.findIndex((t) => t.route === route?.name);
+  const current = TABS.findIndex((t) => t.route === route?.name);
   return (
     <View pointerEvents="box-none" className="absolute inset-x-3 gap-2" style={{ bottom }}>
       <LiveWorkoutBar />
       <View pointerEvents="box-none" className="flex-row justify-end gap-2">
-        <Bar {...props} tabs={tabs} current={current} />
+        <Bar {...props} current={current} />
         <CheckInAction />
       </View>
     </View>

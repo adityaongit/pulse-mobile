@@ -26,7 +26,7 @@ import { ScreenError } from "@/screens/ScreenError";
 import { ShellData } from "@/screens/ShellData";
 import { ShakeToReport } from "@/screens/report/ShakeToReport";
 import { initTelemetry, registerNavigation } from "@/lib/telemetry";
-import { boot, useApp, useJournalShown } from "@/state/app";
+import { boot, useApp } from "@/state/app";
 import { AppProviders } from "@/ui/providers";
 import { useTheme } from "@/ui/theme";
 
@@ -98,7 +98,6 @@ export default Sentry.wrap(RootLayout);
 function Screens({ onboarded }: { onboarded: boolean }) {
   const { c, scheme } = useTheme();
   const language = useLanguage();
-  const journalShown = useJournalShown();
   // A tapped notification opens its screen once the navigator exists, a cold start included (src/background/links.ts).
   useNotificationDeepLinks();
   useTabLinks();
@@ -137,7 +136,9 @@ function Screens({ onboarded }: { onboarded: boolean }) {
           <Stack.Screen name="health/heart-rate" />
           <Stack.Screen name="health/monitor" />
           <Stack.Screen name="health/stress" />
+          <Stack.Screen name="journal/insights" />
           <Stack.Screen name="metric/[key]" />
+          <Stack.Screen name="more/behaviours" />
           <Stack.Screen name="more/data" />
           <Stack.Screen name="more/how-it-works" />
           <Stack.Screen name="more/how-it-works/[score]" />
@@ -165,20 +166,14 @@ function Screens({ onboarded }: { onboarded: boolean }) {
           <Stack.Screen name="ecg" />
           <Stack.Screen name="profile" />
           <Stack.Screen name="report" />
+          <Stack.Screen name="checkin" />
           <Stack.Screen name="log" />
           <Stack.Screen name="food" />
           <Stack.Screen name="goals" />
           <Stack.Screen name="weekly-plan" />
           <Stack.Screen name="chart-metric" />
+          <Stack.Screen name="journal/impact" />
           <Stack.Screen name="dev/task" />
-          {/* The Journal's own pages, gone while Settings › App hides the Journal (the tab is guarded in app/(tabs)/_layout.tsx).
-              A link or a deep link to one then goes nowhere; the journal's rows stay in the Store. */}
-          <Stack.Protected guard={journalShown}>
-            <Stack.Screen name="journal/insights" />
-            <Stack.Screen name="journal/impact" />
-            <Stack.Screen name="more/behaviours" />
-            <Stack.Screen name="checkin" />
-          </Stack.Protected>
         </Stack.Protected>
         <Stack.Screen name="workout-live" />
       </Stack>

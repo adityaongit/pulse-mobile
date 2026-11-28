@@ -20,7 +20,7 @@ import { askBackgroundPermission, permissionState } from "@/health/connect";
 import { clock, DAY, formatDay, timeOfDay } from "@/lib/format";
 import { displayPrefs } from "@/lib/units";
 import { localDay } from "@/lib/time";
-import { deviceTimeZone, useApp, useJournalShown } from "@/state/app";
+import { deviceTimeZone, useApp } from "@/state/app";
 import { Button } from "@/ui/Button";
 import { cn } from "@/ui/cn";
 import { Segmented } from "@/ui/Segmented";
@@ -232,8 +232,6 @@ const LEADS = BEDTIME_LEADS.map((m) => ({ value: String(m), label: `${m} min` })
 function NotificationsCard({ s, timeZone }: { s: Prefs; timeZone: string }) {
   const { t } = useTranslation("settings");
   const store = useApp((a) => a.store);
-  // The check-in reminder opens the Journal: its rows go while Settings › App hides it (the reminder is off then too).
-  const journal = useJournalShown();
   const denied = s.permission === "denied";
   // The wind-down reminder on the schedule, for its hint; re-planned on open as after a run.
   const [next, setNext] = useState<BedtimeReminder | null>(null);
@@ -296,8 +294,8 @@ function NotificationsCard({ s, timeZone }: { s: Prefs; timeZone: string }) {
         disabled={denied}
       />
       <SwitchRow label={t("notif.weeklyReport")} hint={t("notif.weeklyReportHint")} value={s.settings.weeklyReport} onChange={(v) => void set("weeklyReport", v)} disabled={denied} />
-      {journal && <SwitchRow label={t("notif.checkIn")} hint={t("notif.checkInHint")} value={s.settings.checkIn} onChange={(v) => void setCheckIn(v)} disabled={denied} />}
-      {journal && <TimeRow value={s.settings.checkInTime} onCommit={(v) => void setTime(v)} disabled={denied || !s.settings.checkIn} />}
+      <SwitchRow label={t("notif.checkIn")} hint={t("notif.checkInHint")} value={s.settings.checkIn} onChange={(v) => void setCheckIn(v)} disabled={denied} />
+      <TimeRow value={s.settings.checkInTime} onCommit={(v) => void setTime(v)} disabled={denied || !s.settings.checkIn} />
       <SwitchRow label={t("notif.windDown")} hint={windDownHint} value={s.settings.bedtime} onChange={(v) => void setWindDown({ bedtime: v })} disabled={denied} />
       <View className={cn("gap-2 py-3", ROW_RULE, (denied || !s.settings.bedtime) && "opacity-disabled")} pointerEvents={denied || !s.settings.bedtime ? "none" : "auto"}>
         <Text className={ROW_LABEL}>{t("notif.remindBeforeBed")}</Text>

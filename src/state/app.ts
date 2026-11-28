@@ -11,9 +11,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useSyncExternalStore } from "react";
 import { AppState } from "react-native";
 import { markUiRuntime, registerAppStore, runSync, type Source } from "@/background/runSync";
-import { applyCheckIn, startBackground } from "@/background/startup";
-import { readSettings } from "@/background/settings";
-import { JOURNAL_HIDDEN_KEY, saveJournalHidden, THEME_KEY } from "@/actions/preferences";
+import { startBackground } from "@/background/startup";
 import { deleteAllPhotos, deletePhoto } from "@/actions/photo";
 import { openStore } from "@/data/db";
 import { memoStore } from "@/data/memo";
@@ -56,13 +54,11 @@ export type AppInfo = {
   onboarded: boolean;
   /** The saved theme choice, read at boot so Settings › App opens without waiting on storage. */
   theme: "system" | "light" | "dark";
-  /** Settings › App › Show the Journal, off: the Journal's tab, routes, cards and reminder are gone; its rows stay. */
-  journalHidden: boolean;
 };
 
 const OWN_PROFILE_KEY = "pulse.ownProfile";
 
-export { THEME_KEY };
+export const THEME_KEY = "pulse.theme";
 const EMPTY_SYNC: SyncState = { lastSyncTs: null, firstDay: null, lastError: null };
 /** Coming back to the foreground after this long away re-imports (Health Connect gets new nights while the app sleeps). */
 const RESYNC_AWAY_MS = 10 * 60_000;
@@ -79,7 +75,6 @@ let state: AppInfo = {
   warnings: [],
   onboarded: false,
   theme: "system",
-  journalHidden: false,
 };
 const listeners = new Set<() => void>();
 const subscribe = (l: () => void) => {
@@ -99,8 +94,6 @@ export function useApp<T>(select?: (s: AppInfo) => T) {
   return useSyncExternalStore(subscribe, () => (select ? select(state) : state));
 }
 export const appState = () => state;
-/** False while the person has hidden the Journal. Every Journal entry point reads this one flag. */
-export const useJournalShown = () => useApp((s) => !s.journalHidden);
 
 // ── The data version ────────────────────────────────────────────────────────
 // Bumped after every scoring run and every write a screen reads (a check-in, a log entry, the dashboard): every
@@ -216,16 +209,15 @@ export async function boot(applyTheme: (theme: string) => void): Promise<void> {
     void startBackground();
     // This runtime has a screen: its syncs slice their work so taps and frames get through (src/lib/yield.ts).
     markUiRuntime();
-    const [profile, source, sync, avail, theme, journal] = await Promise.all([
+    const [profile, source, sync, avail, theme] = await Promise.all([
       st.getProfile(),
       AsyncStorage.getItem(SOURCE_KEY).catch(() => null) as Promise<Source | null>,
       st.getSyncState(),
       availability().catch((): Availability => "unavailable"),
       AsyncStorage.getItem(THEME_KEY).catch(() => null),
-      AsyncStorage.getItem(JOURNAL_HIDDEN_KEY).catch(() => null),
     ]);
     if (theme) applyTheme(theme);
-    patch({ theme: theme === "light" || theme === "dark" ? theme : "system", journalHidden: journal === "1" });
+    patch({ theme: theme === "light" || theme === "dark" ? theme : "system" });
     patch({ store: st, profile, source, sync, availability: avail });
     watchForeground();
     void checkForUpdate();
@@ -291,16 +283,6 @@ export async function setPhoto(photo: string | null): Promise<void> {
 
 /** Remembers the theme the person picked, for the Settings row to open on after a remount. */
 export const rememberTheme = (theme: AppInfo["theme"]) => patch({ theme });
-
-/**
- * Shows or hides the Journal (Settings › App). Nothing is deleted: hiding drops the Journal's tab, routes, cards and the
- * check-in reminder; showing it again brings them back with every answer, and the reminder as Notifications has it.
- */
-export async function setJournalHidden(hidden: boolean): Promise<void> {
-  patch({ journalHidden: hidden });
-  await saveJournalHidden(hidden);
-  await applyCheckIn(await readSettings());
-}
 
 /** Sets the units and the clock (Settings › App). No rescore: the scores are stored in metric; every screen redraws. */
 export async function setDisplay(display: DisplayPrefs): Promise<void> {

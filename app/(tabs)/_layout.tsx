@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import { Tabs } from "expo-router";
 import { TabBar } from "@/ui/shells/TabBar";
 import { useTheme } from "@/ui/theme";
-import { useJournalShown } from "@/state/app";
 
 // The bottom tabs: Home, Health, Journal, More. The bar is Pulse's own floating glass bar with
 // the round check-in action (src/ui/shells/TabBar.tsx), the same on iOS and Android; Expo Router's <Tabs> supplies the
@@ -11,7 +10,6 @@ import { useJournalShown } from "@/state/app";
 export default function TabsLayout() {
   const { c } = useTheme();
   const { t } = useTranslation("ui");
-  const journalShown = useJournalShown();
   // `sceneStyle`: the ground behind a tab while it switches, not the navigation theme's default. `shift`: the tabs
   // cross-fade and move 50 px toward the tapped side (native driver), over the spec's base duration and standard ease.
   return (
@@ -26,10 +24,7 @@ export default function TabsLayout() {
     >
       <Tabs.Screen name="index" options={{ title: t("tabs.home") }} />
       <Tabs.Screen name="health" options={{ title: t("tabs.health") }} />
-      {/* Settings › App can hide the Journal: the tab leaves the navigator, so the bar drops it too (TabBar). */}
-      <Tabs.Protected guard={journalShown}>
-        <Tabs.Screen name="journal" options={{ title: t("tabs.journal") }} />
-      </Tabs.Protected>
+      <Tabs.Screen name="journal" options={{ title: t("tabs.journal") }} />
       <Tabs.Screen name="more" options={{ title: t("tabs.more") }} />
     </Tabs>
   );

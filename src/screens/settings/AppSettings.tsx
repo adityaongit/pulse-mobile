@@ -1,4 +1,4 @@
-// Settings › App (display: theme, units and clock; whether the Journal shows; notifications). Ported from pulse (app)/settings/SettingsView.tsx (Appearance), SettingsClient
+// Settings › App (display: theme, units and clock; notifications). Ported from pulse (app)/settings/SettingsView.tsx (Appearance), SettingsClient
 // `ThemePicker` and AppSettings.tsx. The theme is system, light or dark, kept on the device (AsyncStorage `pulse.theme`, applied
 // at launch by src/state/app.ts boot). The notification toggles live in Settings › Notifications & background
 // (NotificationsSection.tsx); this section links there.
@@ -11,7 +11,7 @@ import { saveTheme, type Theme } from "@/actions/preferences";
 import { displayPrefs, type UnitSystem } from "@/lib/units";
 import { i18n, LANGUAGES, PSEUDO, REVIEWED, showPseudo, type LanguageChoice } from "@/i18n/config";
 import { readChoice } from "@/i18n/language";
-import { rememberTheme, setDisplay, setJournalHidden, setLanguage, useApp, useJournalShown } from "@/state/app";
+import { rememberTheme, setDisplay, setLanguage, useApp } from "@/state/app";
 import { LinkList } from "@/ui/shells/LinkList";
 import { SectionShell } from "@/ui/shells/SectionShell";
 import { APP_VERSION } from "@/queries/settings";
@@ -156,17 +156,6 @@ function Privacy() {
   );
 }
 
-/** Show the Journal (src/state/app.ts setJournalHidden): off hides every entry point; nothing is deleted. */
-function JournalSetting() {
-  const { t } = useTranslation("settings");
-  const shown = useJournalShown();
-  return (
-    <SectionShell variant="card" title={t("app.journal")}>
-      <SwitchRow rule={false} label={t("app.showJournal")} hint={t("app.showJournalHint")} value={shown} onChange={(on) => void setJournalHidden(!on)} />
-    </SectionShell>
-  );
-}
-
 export function AppSettings() {
   const { t } = useTranslation("settings");
   const theme = useApp((a) => a.theme);
@@ -175,7 +164,6 @@ export function AppSettings() {
       <SectionShell variant="card" title={t("app.display")}>
         <DisplayRows initialTheme={theme} />
       </SectionShell>
-      <JournalSetting />
       <WidgetSettings />
       <Updates />
       <Privacy />
