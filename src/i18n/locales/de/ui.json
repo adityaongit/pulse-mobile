@@ -137,7 +137,9 @@
     "lastSync": "Zuletzt synchronisiert {{ago}}",
     "behind": "Synchronisierung hinkt hinterher",
     "syncedAgo": "Synchronisiert {{ago}}",
-    "synced": "Synchronisiert"
+    "synced": "Synchronisiert",
+    "battery": "Fitbit Air-Akku {{percent}} %",
+    "batteryCharging": "Fitbit Air-Akku {{percent}} %, wird geladen"
   },
   "calendar": {
     "close": "Kalender schließen",

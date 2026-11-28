@@ -137,7 +137,9 @@
     "lastSync": "Last sync {{ago}}",
     "behind": "Sync is behind",
     "syncedAgo": "Synced {{ago}}",
-    "synced": "Synced"
+    "synced": "Synced",
+    "battery": "Fitbit Air battery {{percent}}%",
+    "batteryCharging": "Fitbit Air battery {{percent}}%, charging"
   },
   "calendar": {
     "close": "Close calendar",

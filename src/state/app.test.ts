@@ -33,6 +33,7 @@ vi.mock("@/background/runSync", () => ({
 vi.mock("@/background/startup", () => ({ startBackground: async () => {} }));
 vi.mock("@/widgets/publish", () => ({ refreshWidgets: async () => {}, clearWidgets: async () => {} }));
 vi.mock("../../modules/pulse-workouts", () => ({ workoutNative: {}, workoutNativeAvailable: false }));
+vi.mock("@/health/airBattery", () => ({ refreshAirBattery: async () => {} }));
 vi.mock("@/data/db", () => ({ openStore: async () => fake.store }));
 vi.mock("@/health/connect", () => ({ availability: async () => "available", permissionState: async () => ({ granted: ["Steps"], background: true }), askPermissions: async () => ({ granted: [] }) }));
 vi.mock("@/health/sync", () => ({ forgetChanges: async () => {} }));

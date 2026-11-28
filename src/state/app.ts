@@ -27,6 +27,7 @@ import { forgetChanges } from "@/health/sync";
 import { localDay } from "@/lib/time";
 import { report, resetTelemetryId } from "@/lib/telemetry";
 import type { DisplayPrefs } from "@/lib/units";
+import { refreshAirBattery } from "@/health/airBattery";
 import type { QueryCtx } from "@/queries/ctx";
 import { ensureDefaultTags } from "@/queries/journal";
 import { applyDisplay } from "./display";
@@ -174,6 +175,8 @@ function run(scoreOnly = false): Promise<void> {
       if (!r.ran) console.log("[run] skipped:", r.skipped);
       const sync = await store.getSyncState();
       patch({ status: "ready", progress: null, sync, warnings: r.ran && !r.unchanged ? r.warnings : state.warnings, onboarded: true });
+      // Not awaited: the band's battery takes seconds and the sync's spinner shouldn't wait for it.
+      if (!scoreOnly) void refreshAirBattery();
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e);
       console.warn("[run]", message);

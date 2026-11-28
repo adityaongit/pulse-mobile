@@ -141,7 +141,9 @@
     "lastSync": "Последняя синхронизация {{ago}}",
     "behind": "Синхронизация отстаёт",
     "syncedAgo": "Синхронизировано {{ago}}",
-    "synced": "Синхронизировано"
+    "synced": "Синхронизировано",
+    "battery": "Заряд Fitbit Air {{percent}} %",
+    "batteryCharging": "Заряд Fitbit Air {{percent}} %, заряжается"
   },
   "calendar": {
     "close": "Закрыть календарь",
