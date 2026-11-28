@@ -1,6 +1,6 @@
 {
   "title": "Home screen widgets",
-  "about": "Anyone who sees your home screen sees what a widget shows. They update when Pulse syncs.",
+  "about": "Visible to anyone who sees your home screen.",
   "sizes": {
     "small": "Small · one metric",
     "medium": "Medium · three metrics",
