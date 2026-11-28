@@ -10,7 +10,6 @@ import { SCORING_VERSION } from "@/pipeline";
 import { APP_VERSION, getMore } from "@/queries/settings";
 import { LinkList, LinkListSkeleton, MORE_COLUMN, type LinkListRow } from "@/ui/shells/LinkList";
 import { PageShell } from "@/ui/shells/PageShell";
-import { useJournalShown } from "@/state/app";
 import { useScreen } from "../useScreen";
 import { About } from "./About";
 import { SCORE_DOCS } from "./howItWorksContent";
@@ -38,8 +37,6 @@ export function MoreScreen() {
   const { t } = useTranslation("more");
   const settings = settingsRows();
   const live = liveLinks();
-  // The Journal group (its behaviours) goes while Settings › App hides the Journal.
-  const journal = useJournalShown();
   const { data: vm } = useScreen(getMore, MORE_KEY);
   if (!vm)
     return (
@@ -56,7 +53,7 @@ export function MoreScreen() {
           />
           <LinkListSkeleton title={t("group.trends")} rows={[{ icon: ChartLine, label: t("row.trends") }]} />
           <LinkListSkeleton title={t("group.live")} rows={live} />
-          {journal && <LinkListSkeleton title={t("group.journal")} rows={[{ icon: ListChecks, label: t("row.behaviours") }]} />}
+          <LinkListSkeleton title={t("group.journal")} rows={[{ icon: ListChecks, label: t("row.behaviours") }]} />
           <LinkListSkeleton title={t("group.help")} rows={[{ icon: BookOpen, label: t("row.howPulseWorks") }]} />
           <LinkListSkeleton title={t("group.yourData")} rows={[{ icon: Database, label: t("row.export") }]} />
           <About version={APP_VERSION} scoringVersion={SCORING_VERSION} />
@@ -77,7 +74,7 @@ export function MoreScreen() {
         <LinkList title={t("group.reports")} rows={reports} />
         <LinkList title={t("group.trends")} rows={[{ icon: ChartLine, label: t("row.trends"), aside: t("row.trendsAside"), href: "/trends" }]} />
         <LinkList title={t("group.live")} rows={live} />
-        {journal && <LinkList title={t("group.journal")} rows={[{ icon: ListChecks, label: t("row.behaviours"), aside: t("row.behavioursAside", { shown: vm.behaviours.shown, total: vm.behaviours.total }), href: "/more/behaviours" }]} />}
+        <LinkList title={t("group.journal")} rows={[{ icon: ListChecks, label: t("row.behaviours"), aside: t("row.behavioursAside", { shown: vm.behaviours.shown, total: vm.behaviours.total }), href: "/more/behaviours" }]} />
         <LinkList title={t("group.help")} rows={[{ icon: BookOpen, label: t("row.howPulseWorks"), aside: t("row.scoresAside", { count: SCORE_DOCS.length }), href: "/more/how-it-works" }]} />
         <LinkList title={t("group.yourData")} rows={[{ icon: Database, label: t("row.export"), aside: t("row.exportAside"), href: "/more/data" }]} />
         <About version={vm.version} scoringVersion={vm.scoringVersion} />

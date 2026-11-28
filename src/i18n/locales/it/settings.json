@@ -46,10 +46,7 @@
     "checkNow": "Controlla ora",
     "latest": "Pulse {{version}} è l’ultima versione.",
     "group": "App",
-    "notificationsLink": "Notifiche e background",
-    "journal": "Diario",
-    "showJournal": "Mostra il Diario",
-    "showJournalHint": "Se disattivato, nasconde la scheda Diario, le sue card e abitudini, il check-in e il suo promemoria. Non si cancella nulla: riattivalo e torna tutto."
+    "notificationsLink": "Notifiche e background"
   },
   "form": {
     "optional": "Facoltativo"

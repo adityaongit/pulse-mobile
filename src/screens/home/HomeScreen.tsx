@@ -14,7 +14,6 @@ import { clock, DAY, formatDay, formatValue, MISSING, rangeLabel } from "@/lib/f
 import { reasonCopy } from "@/lib/reasons";
 import { activityHref, dayHref, napHref } from "@/lib/url";
 import { getHome } from "@/queries/home";
-import { useJournalShown } from "@/state/app";
 import { dashboardKeys, getHomeDashboard, type HomeDashboard } from "@/queries/homeExtras";
 import type { HomeVM, KeyStat, StressLevel } from "@/queries/types";
 import { Wordmark } from "@/ui/brand";
@@ -305,11 +304,8 @@ function DayBanner({ outlook }: { outlook: NonNullable<HomeVM["outlook"]> }) {
   );
 }
 
-/** My Journal: the week's check-ins. Gone while Settings › App hides the Journal. */
 function JournalWeek({ vm, at }: { vm: HomePageVM; at: (href: string) => string }) {
   const { t } = useTranslation("home");
-  const shown = useJournalShown();
-  if (!shown) return null;
   return (
     <SectionShell variant="card" title={t("section.myJournal")} action={<IconLink href={at("/journal")} label={t("journal.open")} icon={ChevronRight} />}>
       <View accessibilityRole="list" className="flex-row pt-1">

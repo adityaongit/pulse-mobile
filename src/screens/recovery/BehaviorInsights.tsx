@@ -10,7 +10,6 @@ import { Icon } from "@/ui/Icon"
 import { StatusChip } from "@/ui/metrics/primitives"
 import { SectionShell } from "@/ui/shells/SectionShell"
 import { Text } from "@/ui/Text"
-import { useJournalShown } from "@/state/app"
 
 const TONE = { up: "optimal", down: "warning", neutral: "neutral" } as const
 const DIR = { up: "up", down: "down", neutral: "flat" } as const
@@ -18,9 +17,7 @@ const SPOKEN = { up: "behaviors.spokenUp", down: "behaviors.spokenDown", neutral
 
 export function BehaviorInsights({ chips, href }: { chips: BehaviorChip[]; href: string }) {
   const { t } = useTranslation("recovery")
-  // Behaviours are the Journal's: gone while Settings › App hides it.
-  const journal = useJournalShown()
-  if (!chips.length || !journal) return null
+  if (!chips.length) return null
   return (
     <SectionShell variant="card" title={t("behaviors.title")} info={false} href={href} icon={<Icon icon={Lightbulb} size={20} tone="foreground" />}>
       <Text className="text-[15px] leading-[22px] text-foreground-secondary">{t("behaviors.body")}</Text>

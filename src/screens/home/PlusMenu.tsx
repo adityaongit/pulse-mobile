@@ -17,7 +17,6 @@ import { useState } from "react";
 import { ADD_ACTIVITY_INFO } from "../_lib/info";
 import { Press } from "@/ui/Press";
 import { push } from "@/ui/navigate";
-import { useJournalShown } from "@/state/app";
 
 /** The ~34 pt white key with a soft top light; the hit area grows to 44 px without moving it. */
 export function PlusKey({ label }: { label: string }) {
@@ -44,7 +43,6 @@ export function PlusKey({ label }: { label: string }) {
 export function PlusPage({ label }: { label: string }) {
   const { t } = useTranslation(["home", "workouts"]);
   const [info, setInfo] = useState(false);
-  const journal = useJournalShown();
   const item = "h-12 flex-row items-center gap-3 rounded-xl px-3";
   return (
     <TaskPage title={label}>
@@ -58,13 +56,11 @@ export function PlusPage({ label }: { label: string }) {
           <Icon icon={Plus} size={20} tone="foreground-secondary" strokeWidth={1.75} />
           <Text className="text-[13px] font-bold uppercase leading-4 tracking-[0.1em]">{t("activities.add")}</Text>
         </Press>
-        {/* Replaces the menu with the check-in rather than stacking a second sheet on it. Not while the Journal is hidden. */}
-        {journal && (
-          <Press activeBg="bg-fill-pressed" accessibilityRole="menuitem" onPress={() => router.replace("/checkin" as Href)} className={item}>
-            <Icon icon={NotebookPen} size={20} tone="foreground-secondary" strokeWidth={1.75} />
-            <Text className="text-[13px] font-bold uppercase leading-4 tracking-[0.1em]">{t("add.completeJournal")}</Text>
-          </Press>
-        )}
+        {/* Replaces the menu with the check-in rather than stacking a second sheet on it. */}
+        <Press activeBg="bg-fill-pressed" accessibilityRole="menuitem" onPress={() => router.replace("/checkin" as Href)} className={item}>
+          <Icon icon={NotebookPen} size={20} tone="foreground-secondary" strokeWidth={1.75} />
+          <Text className="text-[13px] font-bold uppercase leading-4 tracking-[0.1em]">{t("add.completeJournal")}</Text>
+        </Press>
       </View>
       <InfoDialog open={info} onClose={() => setInfo(false)} {...ADD_ACTIVITY_INFO} />
     </TaskPage>

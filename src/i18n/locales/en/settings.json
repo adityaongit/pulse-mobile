@@ -46,10 +46,7 @@
     "checkNow": "Check now",
     "latest": "Pulse {{version}} is the latest version.",
     "group": "App",
-    "notificationsLink": "Notifications & background",
-    "journal": "Journal",
-    "showJournal": "Show the Journal",
-    "showJournalHint": "Off hides the Journal tab, its cards and behaviours, the check-in and its reminder. Nothing is deleted: turn it back on and everything returns."
+    "notificationsLink": "Notifications & background"
   },
   "form": {
     "optional": "Optional"
