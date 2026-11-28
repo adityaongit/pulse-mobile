@@ -47,7 +47,12 @@
     "checkNow": "Check now",
     "latest": "Pulse {{version}} is the latest version.",
     "group": "App",
-    "notificationsLink": "Notifications & background"
+    "notificationsLink": "Notifications & background",
+    "bpGuideline": "Blood pressure categories",
+    "bpAha": "AHA/ACC",
+    "bpAhaDetail": "American, 2017",
+    "bpEsh": "ESH",
+    "bpEshDetail": "European, 2023"
   },
   "form": {
     "optional": "Optional"

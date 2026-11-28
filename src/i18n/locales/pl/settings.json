@@ -47,7 +47,12 @@
     "checkNow": "Sprawdź teraz",
     "latest": "Pulse {{version}} to najnowsza wersja.",
     "group": "Aplikacja",
-    "notificationsLink": "Powiadomienia i tło"
+    "notificationsLink": "Powiadomienia i tło",
+    "bpGuideline": "Kategorie ciśnienia krwi",
+    "bpAha": "AHA/ACC",
+    "bpAhaDetail": "Amerykańska, 2017",
+    "bpEsh": "ESH",
+    "bpEshDetail": "Europejska, 2023"
   },
   "form": {
     "optional": "Opcjonalnie"

@@ -47,7 +47,12 @@
     "checkNow": "Jetzt prüfen",
     "latest": "Pulse {{version}} ist die neueste Version.",
     "group": "App",
-    "notificationsLink": "Benachrichtigungen & Hintergrund"
+    "notificationsLink": "Benachrichtigungen & Hintergrund",
+    "bpGuideline": "Blutdruck-Kategorien",
+    "bpAha": "AHA/ACC",
+    "bpAhaDetail": "Amerikanisch, 2017",
+    "bpEsh": "ESH",
+    "bpEshDetail": "Europäisch, 2023"
   },
   "form": {
     "optional": "Optional"

@@ -1,5 +1,5 @@
 import type { BloodPressureReading } from "@/data/types";
-import { classifyBloodPressure, type BloodPressureCategory } from "@/core/scoring/bloodPressure";
+import { BP_CATEGORIES, classifyBloodPressure, type BloodPressureCategory, type BpGuideline } from "@/core/scoring/bloodPressure";
 import { addDays, wall } from "@/lib/time";
 import { none, ok, type QueryCtx, todayOf } from "@/queries/common";
 import type { Metric } from "@/queries/types";
@@ -26,6 +26,8 @@ export type BloodPressurePoint = {
 
 export type BloodPressureSummary = {
   day: string;
+  /** The categories every `category` here is in (Settings › App; AHA/ACC unless the person picked ESH). */
+  guideline: BpGuideline;
   isToday: boolean;
   /** Latest reading for the day, or none("no_data") */
   latest: Metric<BloodPressureItem>;
@@ -51,18 +53,33 @@ export type BloodPressureSummary = {
   } | null;
   /** 30 days of representative readings ending on `day` */
   history: BloodPressurePoint[];
-  /** Category distribution over the 30-day history window */
-  distribution: Record<BloodPressureCategory, number>;
+  /** Category distribution over the 30-day history window, the guideline's categories only. */
+  distribution: Partial<Record<BloodPressureCategory, number>>;
 };
 
-const toItem = (r: BloodPressureReading, tz: string): BloodPressureItem => ({
+/** Each category's chip tone: green in range, amber raised, red for the top stages and grades. */
+export const BP_TONE: Record<BloodPressureCategory, "optimal" | "warning" | "alert"> = {
+  optimal: "optimal",
+  normal: "optimal",
+  elevated: "warning",
+  highNormal: "warning",
+  stage1: "warning",
+  grade1: "warning",
+  isolatedSystolic: "warning",
+  stage2: "alert",
+  grade2: "alert",
+  crisis: "alert",
+  grade3: "alert",
+};
+
+const toItem = (r: BloodPressureReading, tz: string, guideline: BpGuideline): BloodPressureItem => ({
   id: r.id,
   ts: r.ts,
   day: r.day,
   time: wall(r.ts, tz).time.slice(0, 5),
   systolic: r.systolicMmhg,
   diastolic: r.diastolicMmhg,
-  category: classifyBloodPressure(r.systolicMmhg, r.diastolicMmhg),
+  category: classifyBloodPressure(r.systolicMmhg, r.diastolicMmhg, guideline),
   bodyPosition: r.bodyPosition ?? null,
   measurementLocation: r.measurementLocation ?? null,
 });
@@ -77,6 +94,8 @@ export async function getBloodPressureSummary(
   ctx: QueryCtx,
 ): Promise<BloodPressureSummary> {
   const isToday = day === todayOf(ctx);
+  // A display choice: the stored rows keep AHA/ACC, every category shown is worked out here.
+  const guideline = ctx.profile.display?.bp ?? "aha";
   const windowStart = addDays(day, -29);
   const baselineStart = addDays(day, -30);
 
@@ -86,9 +105,9 @@ export async function getBloodPressureSummary(
     .filter((r) => r.day <= day)
     .sort((a, b) => b.ts - a.ts || (a.id < b.id ? 1 : -1));
 
-  const dayReadings = all.flatMap((r) => (r.day === day ? [toItem(r, ctx.timeZone)] : []));
+  const dayReadings = all.flatMap((r) => (r.day === day ? [toItem(r, ctx.timeZone, guideline)] : []));
   const latestPriorRaw = all.find((r) => r.day < day);
-  const latestPrior = latestPriorRaw ? toItem(latestPriorRaw, ctx.timeZone) : null;
+  const latestPrior = latestPriorRaw ? toItem(latestPriorRaw, ctx.timeZone, guideline) : null;
 
   const latest: Metric<BloodPressureItem> = dayReadings.length > 0
     ? ok(dayReadings[0])
@@ -136,7 +155,7 @@ export async function getBloodPressureSummary(
         day: d,
         systolic: top.systolicMmhg,
         diastolic: top.diastolicMmhg,
-        category: classifyBloodPressure(top.systolicMmhg, top.diastolicMmhg),
+        category: classifyBloodPressure(top.systolicMmhg, top.diastolicMmhg, guideline),
       });
     } else {
       history.push({
@@ -148,20 +167,15 @@ export async function getBloodPressureSummary(
     }
   }
 
-  const distribution = {
-    normal: 0,
-    elevated: 0,
-    stage1: 0,
-    stage2: 0,
-    crisis: 0,
-  } satisfies Record<BloodPressureCategory, number>;
+  const distribution: Partial<Record<BloodPressureCategory, number>> = Object.fromEntries(BP_CATEGORIES[guideline].map((c) => [c, 0]));
   for (const r of windowReadings) {
-    const cat = classifyBloodPressure(r.systolicMmhg, r.diastolicMmhg);
-    distribution[cat]++;
+    const cat = classifyBloodPressure(r.systolicMmhg, r.diastolicMmhg, guideline);
+    distribution[cat] = (distribution[cat] ?? 0) + 1;
   }
 
   return {
     day,
+    guideline,
     isToday,
     latest,
     readings: dayReadings,

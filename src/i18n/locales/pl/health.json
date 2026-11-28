@@ -389,7 +389,13 @@
       "stage1": "Stopień 1",
       "stage2": "Stopień 2",
       "crisis": "Ciężkie nadciśnienie",
-      "hypertensiveCrisis": "Ciężkie nadciśnienie"
+      "hypertensiveCrisis": "Ciężkie nadciśnienie",
+      "optimal": "Optymalne",
+      "highNormal": "Wysokie prawidłowe",
+      "grade1": "Stopień 1",
+      "grade2": "Stopień 2",
+      "grade3": "Stopień 3",
+      "isolatedSystolic": "Izolowane skurczowe"
     },
     "stageRange": {
       "normal": "< 120 i < 80 mmHg",
@@ -397,6 +403,16 @@
       "stage1": "130–139 lub 80–89 mmHg",
       "stage2": "140+ lub 90+ mmHg",
       "crisis": "> 180 i/lub > 120 mmHg"
+    },
+    "guidelinesEsh": "Klasyfikacja ESH",
+    "stageRangeEsh": {
+      "optimal": "< 120 i < 80 mmHg",
+      "normal": "120–129 i/lub 80–84 mmHg",
+      "highNormal": "130–139 i/lub 85–89 mmHg",
+      "grade1": "140–159 i/lub 90–99 mmHg",
+      "isolatedSystolic": "140+ i < 90 mmHg",
+      "grade2": "160–179 i/lub 100–109 mmHg",
+      "grade3": "180+ i/lub 110+ mmHg"
     }
   }
 }

@@ -47,7 +47,12 @@
     "checkNow": "Controlla ora",
     "latest": "Pulse {{version}} è l’ultima versione.",
     "group": "App",
-    "notificationsLink": "Notifiche e background"
+    "notificationsLink": "Notifiche e background",
+    "bpGuideline": "Categorie di pressione arteriosa",
+    "bpAha": "AHA/ACC",
+    "bpAhaDetail": "Americana, 2017",
+    "bpEsh": "ESH",
+    "bpEshDetail": "Europea, 2023"
   },
   "form": {
     "optional": "Facoltativo"

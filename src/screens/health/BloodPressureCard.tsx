@@ -3,9 +3,9 @@ import { View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { ChevronRight, Info, Stethoscope } from "lucide-react-native";
 import { Circle, Group, Path } from "@shopify/react-native-skia";
-import type { BloodPressureCategory } from "@/core/scoring/bloodPressure";
+import { BP_CATEGORIES, type AhaCategory, type BloodPressureCategory, type EshCategory } from "@/core/scoring/bloodPressure";
 import { formatDay, DAY } from "@/lib/format";
-import type { BloodPressurePoint, BloodPressureSummary } from "@/queries/bloodPressure";
+import { BP_TONE, type BloodPressurePoint, type BloodPressureSummary } from "@/queries/bloodPressure";
 import { Card } from "@/ui/Card";
 import { ChartFigure, DashedLine, PlotCanvas } from "@/ui/charts/ChartFrame";
 import { linearScale, linePath, type Point } from "@/ui/charts/geometry";
@@ -18,23 +18,22 @@ import type { TokenName } from "@/ui/palette";
 import { useTheme } from "@/ui/theme";
 import { vitalHref } from "./vitals";
 
-const CATEGORY_TONE: Record<BloodPressureCategory, "optimal" | "warning" | "alert"> = {
-  normal: "optimal",
-  elevated: "warning",
-  stage1: "warning",
-  stage2: "alert",
-  crisis: "alert",
-};
-
 const CATEGORY_DOT: Record<BloodPressureCategory, TokenName> = {
+  optimal: "bp-normal",
   normal: "bp-normal",
   elevated: "bp-elevated",
+  highNormal: "bp-elevated",
   stage1: "bp-stage-1",
+  grade1: "bp-stage-1",
+  isolatedSystolic: "bp-stage-1",
   stage2: "bp-stage-2",
+  grade2: "bp-stage-2",
   crisis: "bp-crisis",
+  grade3: "bp-crisis",
 };
 
-const STAGE_KEYS: BloodPressureCategory[] = ["normal", "elevated", "stage1", "stage2", "crisis"];
+/** The 30-day breakdown's text colour by tone. */
+const TONE_TEXT = { optimal: "text-optimal-text", warning: "text-warning-text", alert: "text-recovery-red-text" } as const;
 const UNIT_MMHG = "mmHg";
 
 const CHART_H = 140;
@@ -162,10 +161,11 @@ export function BloodPressureCard({
   const [showGuidelines, setShowGuidelines] = useState(false);
   const latest = summary.latest.value;
   const categoryLabel = (cat: BloodPressureCategory) => t(`bloodPressure.category.${cat}`);
-  const chip = latest ? { tone: CATEGORY_TONE[latest.category], text: categoryLabel(latest.category) } : null;
+  const chip = latest ? { tone: BP_TONE[latest.category], text: categoryLabel(latest.category) } : null;
+  const esh = summary.guideline === "esh";
   const detailUrl = vitalHref("bp", day, today);
 
-  const totalInWindow = Object.values(summary.distribution).reduce((a, b) => a + b, 0);
+  const totalInWindow = Object.values(summary.distribution).reduce((a, b) => a + (b ?? 0), 0);
 
   return (
     <Card className="gap-5 p-4">
@@ -284,31 +284,14 @@ export function BloodPressureCard({
             {t("bloodPressure.breakdown", { count: totalInWindow })}
           </Text>
           <View className="flex-row flex-wrap gap-2 pt-1">
-            {summary.distribution.normal > 0 && (
-              <Text className="text-xs font-medium text-optimal-text">
-                {`${summary.distribution.normal} ${categoryLabel("normal")}`}
-              </Text>
-            )}
-            {summary.distribution.elevated > 0 && (
-              <Text className="text-xs font-medium text-warning-text">
-                {`${summary.distribution.elevated} ${categoryLabel("elevated")}`}
-              </Text>
-            )}
-            {summary.distribution.stage1 > 0 && (
-              <Text className="text-xs font-medium text-warning-text">
-                {`${summary.distribution.stage1} ${categoryLabel("stage1")}`}
-              </Text>
-            )}
-            {summary.distribution.stage2 > 0 && (
-              <Text className="text-xs font-medium text-recovery-red-text">
-                {`${summary.distribution.stage2} ${categoryLabel("stage2")}`}
-              </Text>
-            )}
-            {summary.distribution.crisis > 0 && (
-              <Text className="text-xs font-medium text-recovery-red-text">
-                {`${summary.distribution.crisis} ${categoryLabel("crisis")}`}
-              </Text>
-            )}
+            {BP_CATEGORIES[summary.guideline].map((cat) => {
+              const n = summary.distribution[cat] ?? 0;
+              return n > 0 ? (
+                <Text key={cat} className={`text-xs font-medium ${TONE_TEXT[BP_TONE[cat]]}`}>
+                  {`${n} ${categoryLabel(cat)}`}
+                </Text>
+              ) : null;
+            })}
           </View>
         </View>
       )}
@@ -321,7 +304,7 @@ export function BloodPressureCard({
           </Text>
           <View className="gap-1.5">
             {summary.readings.map((r) => {
-              const rTone = CATEGORY_TONE[r.category];
+              const rTone = BP_TONE[r.category];
               const rLabel = categoryLabel(r.category);
               return (
                 <View key={r.id} className="flex-row items-center justify-between py-1">
@@ -342,7 +325,7 @@ export function BloodPressureCard({
         </View>
       )}
 
-      {/* Educational & Clinical Guideline Section (AHA/ACC) */}
+      {/* Educational & Clinical Guideline Section (AHA/ACC or ESH, Settings › App) */}
       <View className="gap-2 border-t border-border pt-3">
         <Press
           activeScale={0.98}
@@ -351,7 +334,7 @@ export function BloodPressureCard({
           className="flex-row items-center justify-between py-1"
         >
           <Text className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-            {t("bloodPressure.guidelines")}
+            {esh ? t("bloodPressure.guidelinesEsh") : t("bloodPressure.guidelines")}
           </Text>
           <Text className="text-xs font-medium text-foreground-secondary">
             {showGuidelines ? t("bloodPressure.hide") : t("bloodPressure.show")}
@@ -360,7 +343,7 @@ export function BloodPressureCard({
 
         {showGuidelines && (
           <View className="gap-2 rounded-lg bg-secondary/30 p-3">
-            {STAGE_KEYS.map((cat) => (
+            {BP_CATEGORIES[summary.guideline].map((cat) => (
               <View key={cat} className="flex-row items-center justify-between py-1 border-b border-border/50">
                 <View className="flex-row items-center gap-2">
                   <View className="size-2 rounded-full" style={{ backgroundColor: c[CATEGORY_DOT[cat]] }} />
@@ -369,7 +352,7 @@ export function BloodPressureCard({
                   </Text>
                 </View>
                 <Text className="font-numeric text-xs text-muted-foreground">
-                  {t(`bloodPressure.stageRange.${cat}`)}
+                  {esh ? t(`bloodPressure.stageRangeEsh.${cat as EshCategory}`) : t(`bloodPressure.stageRange.${cat as AhaCategory}`)}
                 </Text>
               </View>
             ))}

@@ -9,6 +9,7 @@ import { applyTheme } from "@/ui/theme";
 import { Bell, Monitor, Moon, MoonStar, Sun } from "lucide-react-native";
 import { saveTheme, type Theme } from "@/actions/preferences";
 import { displayPrefs, type UnitSystem } from "@/lib/units";
+import type { BpGuideline } from "@/core/scoring/bloodPressure";
 import { i18n, LANGUAGES, PSEUDO, REVIEWED, showPseudo, type LanguageChoice } from "@/i18n/config";
 import { readChoice } from "@/i18n/language";
 import { rememberTheme, setDisplay, setLanguage, useApp } from "@/state/app";
@@ -41,7 +42,12 @@ const hours = (): SelectOption<"24" | "12">[] => [
   { value: "12", label: i18n.t("settings:app.hours12"), detail: i18n.t("settings:app.hours12Detail") },
 ];
 
-const languageOptions = (): SelectOption<LanguageChoice>[] => [
+const bpGuidelines = (): SelectOption<BpGuideline>[] => [
+  { value: "aha", label: i18n.t("settings:app.bpAha"), detail: i18n.t("settings:app.bpAhaDetail") },
+  { value: "esh", label: i18n.t("settings:app.bpEsh"), detail: i18n.t("settings:app.bpEshDetail") },
+];
+
+const languageOptions =(): SelectOption<LanguageChoice>[] => [
   { value: "auto", label: i18n.t("settings:app.languagePhone") },
   ...LANGUAGES.map((l) => ({ value: l.code, label: REVIEWED.has(l.code) ? l.name : i18n.t("settings:app.languageBeta", { name: l.name }) })),
   // Development builds only: English wrapped and padded, to find copy that is not in keys and layouts that overflow.
@@ -90,6 +96,7 @@ function DisplayRows({ initialTheme }: { initialTheme: Theme }) {
       />
       <SelectRow rule label={t("app.units")} value={display.units} options={units()} onChange={(u) => void setDisplay({ ...display, units: u })} />
       <SelectRow rule label={t("app.clock")} value={String(display.hours) as "24" | "12"} options={hours()} onChange={(h) => void setDisplay({ ...display, hours: h === "12" ? 12 : 24 })} />
+      <SelectRow rule label={t("app.bpGuideline")} value={display.bp ?? "aha"} options={bpGuidelines()} onChange={(bp) => void setDisplay({ ...display, bp })} />
       <LanguageRow />
     </View>
   );

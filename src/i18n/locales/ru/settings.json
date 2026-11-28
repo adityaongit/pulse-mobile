@@ -47,7 +47,12 @@
     "checkNow": "Проверить сейчас",
     "latest": "Pulse {{version}} это последняя версия.",
     "group": "Приложение",
-    "notificationsLink": "Уведомления и фон"
+    "notificationsLink": "Уведомления и фон",
+    "bpGuideline": "Категории давления",
+    "bpAha": "AHA/ACC",
+    "bpAhaDetail": "Американская, 2017",
+    "bpEsh": "ESH",
+    "bpEshDetail": "Европейская, 2023"
   },
   "form": {
     "optional": "Необязательно"
