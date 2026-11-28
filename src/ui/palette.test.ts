@@ -30,9 +30,9 @@ describe("global.css and palette.ts hold the same tokens", () => {
       expect(Object.fromEntries(entries.filter(([k]) => k in values).map(([k, v]) => [k, asValue(v)]))).toEqual(values);
     });
   }
-  it("pure black: the dark palette with .pure-black's ground tokens", () => {
+  it("pure black: the dark palette with .pure-black's tokens", () => {
     const ground = Object.fromEntries(Object.entries(vars(block(".pure-black"))).map(([k, v]) => [k, asPalette(v)]));
-    expect(Object.keys(ground)).toEqual(["background-top", "background-mid", "background", "ground-healthspan"]);
+    expect(Object.keys(ground).every((k) => k in DARK)).toBe(true);
     expect(BLACK).toEqual({ ...DARK, ...ground });
   });
   it("both themes define the same names", () => {

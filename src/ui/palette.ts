@@ -330,10 +330,38 @@ export const VALUES = {
 } as const;
 
 /**
- * Pure black (Settings › Appearance): the dark theme with the page ground at #000, for OLED screens. Only the ground
- * tokens change, as global.css's `.pure-black` block sets them for the views under the app's root.
+ * Pure black (Settings › App › Theme): the dark theme redrawn for OLED screens: a #000 ground and neutral near-black
+ * surfaces, as global.css's `.pure-black` block sets them for the views under the app's root.
  */
-export const BLACK = { ...DARK, "background-top": "#000000", "background-mid": "#000000", background: "#000000", "ground-healthspan": "#000000" } as const;
+export const BLACK = {
+  ...DARK,
+  "background-top": "#000000",
+  "background-mid": "#000000",
+  "background": "#000000",
+  "ground-healthspan": "#000000",
+  "card": "#0d0d0e",
+  "card-top": "#141416",
+  "card-hover": "#1a1a1c",
+  "card-peek": "rgba(13, 13, 14, 0.6)",
+  "card-edge": "rgba(255, 255, 255, 0.08)",
+  "popover": "#1a1a1c",
+  "popover-top": "#202023",
+  "primary-foreground": "#000000",
+  "secondary": "#242426",
+  "muted": "#141416",
+  "accent": "#2c2c2f",
+  "inset": "#161618",
+  "field": "#1e1e21",
+  "on-color": "#000000",
+  "key-foreground": "#000000",
+  "dial-track": "#222225",
+  "dial-target": "#48484c",
+  "glass-top": "rgba(24, 24, 27, 0.8)",
+  "glass-bottom": "rgba(10, 10, 11, 0.9)",
+  "glass-action-top": "rgba(26, 26, 34, 0.84)",
+  "glass-action-bottom": "rgba(18, 18, 26, 0.92)",
+  "action-face": "#14141c",
+} as const;
 
 export type Palette = typeof LIGHT | typeof DARK | typeof BLACK;
 export type Scheme = "light" | "dark";
