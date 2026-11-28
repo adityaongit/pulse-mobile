@@ -387,7 +387,13 @@
       "stage1": "Stade 1",
       "stage2": "Stade 2",
       "crisis": "Hypertension sévère",
-      "hypertensiveCrisis": "Hypertension sévère"
+      "hypertensiveCrisis": "Hypertension sévère",
+      "optimal": "Optimale",
+      "highNormal": "Normale haute",
+      "grade1": "Grade 1",
+      "grade2": "Grade 2",
+      "grade3": "Grade 3",
+      "isolatedSystolic": "Systolique isolée"
     },
     "stageRange": {
       "normal": "< 120 et < 80 mmHg",
@@ -395,6 +401,16 @@
       "stage1": "130–139 ou 80–89 mmHg",
       "stage2": "140+ ou 90+ mmHg",
       "crisis": "> 180 et/ou > 120 mmHg"
+    },
+    "guidelinesEsh": "Classification ESH",
+    "stageRangeEsh": {
+      "optimal": "< 120 et < 80 mmHg",
+      "normal": "120–129 et/ou 80–84 mmHg",
+      "highNormal": "130–139 et/ou 85–89 mmHg",
+      "grade1": "140–159 et/ou 90–99 mmHg",
+      "isolatedSystolic": "140+ et < 90 mmHg",
+      "grade2": "160–179 et/ou 100–109 mmHg",
+      "grade3": "180+ et/ou 110+ mmHg"
     }
   }
 }

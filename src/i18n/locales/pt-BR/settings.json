@@ -46,7 +46,12 @@
     "checkNow": "Verificar agora",
     "latest": "O Pulse {{version}} é a versão mais recente.",
     "group": "Aplicativo",
-    "notificationsLink": "Notificações e segundo plano"
+    "notificationsLink": "Notificações e segundo plano",
+    "bpGuideline": "Categorias de pressão arterial",
+    "bpAha": "AHA/ACC",
+    "bpAhaDetail": "Americana, 2017",
+    "bpEsh": "ESH",
+    "bpEshDetail": "Europeia, 2023"
   },
   "form": {
     "optional": "Opcional"

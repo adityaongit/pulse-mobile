@@ -33,7 +33,7 @@ import {
 } from "./common";
 import { illnessRaised, VITAL_LABEL } from "./home";
 import { zoneBounds, zoneNote, zoneRows } from "./strain";
-import { getBloodPressureSummary } from "./bloodPressure";
+import { BP_TONE, getBloodPressureSummary } from "./bloodPressure";
 import type {
   ChipTone,
   EcgReading,
@@ -434,36 +434,9 @@ export async function getMonitor(day: string, ctx: QueryCtx, preloaded?: Map<str
   const bpVal = bpSummary.latest.value;
   let bpVital: Vital;
   if (bpVal) {
-    let chipTone: ChipTone = "optimal";
-    let chipText = "Normal";
-    let status: Vital["status"] = "in_range";
-    switch (bpVal.category) {
-      case "normal":
-        chipTone = "optimal";
-        chipText = i18n.t("health:bloodPressure.category.normal");
-        status = "in_range";
-        break;
-      case "elevated":
-        chipTone = "warning";
-        chipText = i18n.t("health:bloodPressure.category.elevated");
-        status = "high";
-        break;
-      case "stage1":
-        chipTone = "warning";
-        chipText = i18n.t("health:bloodPressure.category.stage1");
-        status = "high";
-        break;
-      case "stage2":
-        chipTone = "alert";
-        chipText = i18n.t("health:bloodPressure.category.stage2");
-        status = "high";
-        break;
-      case "crisis":
-        chipTone = "alert";
-        chipText = i18n.t("health:bloodPressure.category.crisis");
-        status = "high";
-        break;
-    }
+    const chipTone: ChipTone = BP_TONE[bpVal.category];
+    const chipText = i18n.t(`health:bloodPressure.category.${bpVal.category}`);
+    const status: Vital["status"] = chipTone === "optimal" ? "in_range" : "high";
     bpVital = {
       key: "bp",
       label: i18n.t("health:title.bloodPressure"),

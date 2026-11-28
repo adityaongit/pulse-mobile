@@ -151,3 +151,25 @@ describe("getBloodPressureSummary", () => {
     });
   });
 });
+
+describe("getBloodPressureSummary with the ESH guideline", () => {
+  it("classifies every reading, the history and the breakdown in ESH categories when the person picks them", async () => {
+    const store = new MemoryStore();
+    await store.upsertBloodPressure([
+      makeReading("r-1", "2026-05-13", "09:00:00", 118, 76),
+      makeReading("r-2", "2026-05-14", "09:00:00", 125, 82),
+      makeReading("r-3", "2026-05-15", "08:00:00", 135, 86),
+      makeReading("r-4", "2026-05-15", "20:00:00", 150, 80),
+    ]);
+    const base = await makeCtx(store);
+    const aha = await getBloodPressureSummary("2026-05-15", base);
+    const esh = await getBloodPressureSummary("2026-05-15", { ...base, profile: { ...base.profile, display: { units: "metric", hours: 24, bp: "esh" } } });
+
+    expect(aha.guideline).toBe("aha");
+    expect(aha.readings.map((r) => r.category)).toEqual(["stage2", "stage1"]);
+    expect(esh.guideline).toBe("esh");
+    expect(esh.readings.map((r) => r.category)).toEqual(["isolatedSystolic", "highNormal"]);
+    expect(esh.history.slice(-3).map((p) => p.category)).toEqual(["optimal", "normal", "isolatedSystolic"]);
+    expect(esh.distribution).toEqual({ optimal: 1, normal: 1, highNormal: 1, grade1: 0, isolatedSystolic: 1, grade2: 0, grade3: 0 });
+  });
+});

@@ -3,9 +3,12 @@
 // changes, chart scales and sentences are all worked out in the shown units. The choice comes from the profile at boot
 // and on every change (src/state/app.ts); a profile without one takes the phone's (deviceDisplayPrefs).
 
+import type { BpGuideline } from "@/core/scoring/bloodPressure";
+
 export type UnitSystem = "metric" | "imperial";
 export type ClockHours = 12 | 24;
-export type DisplayPrefs = { units: UnitSystem; hours: ClockHours };
+/** `bp`: the blood pressure categories (src/core/scoring/bloodPressure.ts); absent is AHA/ACC. */
+export type DisplayPrefs = { units: UnitSystem; hours: ClockHours; bp?: BpGuideline };
 
 export const DEFAULT_DISPLAY: DisplayPrefs = { units: "metric", hours: 24 };
 let prefs: DisplayPrefs = DEFAULT_DISPLAY;

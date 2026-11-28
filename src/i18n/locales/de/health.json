@@ -385,7 +385,13 @@
       "stage1": "Stadium 1",
       "stage2": "Stadium 2",
       "crisis": "Schwere Hypertonie",
-      "hypertensiveCrisis": "Schwere Hypertonie"
+      "hypertensiveCrisis": "Schwere Hypertonie",
+      "optimal": "Optimal",
+      "highNormal": "Hoch normal",
+      "grade1": "Grad 1",
+      "grade2": "Grad 2",
+      "grade3": "Grad 3",
+      "isolatedSystolic": "Isoliert systolisch"
     },
     "stageRange": {
       "normal": "< 120 und < 80 mmHg",
@@ -393,6 +399,16 @@
       "stage1": "130–139 oder 80–89 mmHg",
       "stage2": "140+ oder 90+ mmHg",
       "crisis": "> 180 und/oder > 120 mmHg"
+    },
+    "guidelinesEsh": "Einteilung nach ESH",
+    "stageRangeEsh": {
+      "optimal": "< 120 und < 80 mmHg",
+      "normal": "120–129 und/oder 80–84 mmHg",
+      "highNormal": "130–139 und/oder 85–89 mmHg",
+      "grade1": "140–159 und/oder 90–99 mmHg",
+      "isolatedSystolic": "140+ und < 90 mmHg",
+      "grade2": "160–179 und/oder 100–109 mmHg",
+      "grade3": "180+ und/oder 110+ mmHg"
     }
   }
 }
