@@ -23,6 +23,13 @@ describe("Trend View chart layout", () => {
     expect(m.rows.map((r) => r.value)).toEqual(values);
   });
 
+  it("a pair keeps both lines over 6M without month segments (blood pressure), and gives way to segments (sleep)", () => {
+    const series = [{ key: "diastolic", label: "Diastolic" }, { key: "systolic", label: "Systolic" }];
+    const bars = days("2026-04-01", 182).map((d, i) => ({ from: d, to: d, value: 120 + (i % 5), parts: { diastolic: 80 + (i % 3), systolic: 120 + (i % 5) } }));
+    expect(buildModel(props({ chart: "pair", range: "6m", series, bars }), fmt).pair).toEqual(series);
+    expect(buildModel(props({ chart: "pair", range: "6m", series, bars, segments: [] }), fmt).pair).toBeNull();
+  });
+
   it("clock labels wrap around midnight", () => {
     expect([clockOf(-90), clockOf(0), clockOf(450), clockOf(1500)]).toEqual(["22:30", "00:00", "07:30", "01:00"]);
   });

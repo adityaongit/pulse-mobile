@@ -63,3 +63,27 @@ describe("Calories history", () => {
     }
   });
 });
+
+describe("Blood pressure detail", () => {
+  it("carries diastolic beside systolic: the hero, its average, each history point and the range stats", async () => {
+    const store = new MemoryStore();
+    await seedDemo(store, { today: TODAY, timeZone: TZ, now: NOW });
+    const reading = (day: string, systolic: number, diastolic: number) => ({ id: `bp-${day}`, day, ts: Date.parse(`${day}T08:00:00+05:30`) / 1000, systolicMmhg: systolic, diastolicMmhg: diastolic, quality: "manual" as const, importedAt: 1 });
+    await store.upsertBloodPressure([reading("2026-09-29", 120, 78), reading("2026-09-30", 124, 82), reading("2026-10-01", 130, 86)]);
+    await runPipeline(store, PROFILE, { today: TODAY });
+    const vm = await getMetricDetail("bp", TODAY, { store, profile: PROFILE, timeZone: TZ, today: TODAY, now: NOW, sync: await store.getSyncState() });
+
+    expect(vm.label).toBe("Blood pressure");
+    expect(vm.chart).toMatchObject({ pair: true, baseline: null });
+    expect(vm.valueDay).toBe("2026-10-01");
+    expect(vm.value.value).toBe(130);
+    expect(vm.pair).toMatchObject({ value: 86, average: 80 });
+    expect(vm.average).toBe(122);
+    expect(vm.history.value!.filter((p) => p.parts)).toEqual([
+      { day: "2026-09-29", value: 120, parts: { diastolic: 78, systolic: 120 } },
+      { day: "2026-09-30", value: 124, parts: { diastolic: 82, systolic: 124 } },
+      { day: "2026-10-01", value: 130, parts: { diastolic: 86, systolic: 130 } },
+    ]);
+    expect(vm.pair!.ranges.w).toMatchObject({ average: 82, high: { day: "2026-10-01", value: 86 }, low: { day: "2026-09-29", value: 78 }, withData: 3 });
+  });
+});

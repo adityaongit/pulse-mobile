@@ -119,8 +119,8 @@ function Plot({ p, m, width, height }: { p: TrendViewChartProps; m: Model; width
             const color = css(partColor(s.key));
             return (
               <Group key={s.key}>
-                <Path path={draws.pair![k]} style="stroke" strokeWidth={2} strokeCap="round" strokeJoin="round" color={color} />
-                {rows.map((r, i) => (r.parts?.[s.key] == null || (p.range === "m" && i !== m.last) ? null : <HollowDot key={r.key} x={xs[i]} y={y(r.parts[s.key])} r={4.5} stroke={color} strokeWidth={2} />))}
+                <Path path={draws.pair![k]} style="stroke" strokeWidth={m.faint ? 1.5 : 2} strokeCap="round" strokeJoin="round" color={color} />
+                {rows.map((r, i) => (r.parts?.[s.key] == null || m.faint || (p.range === "m" && i !== m.last) ? null : <HollowDot key={r.key} x={xs[i]} y={y(r.parts[s.key])} r={4.5} stroke={color} strokeWidth={2} />))}
               </Group>
             );
           })

@@ -151,7 +151,8 @@ export function MetricSection({ s, ...c }: Ctx & { s: Section }) {
     case "outliers": {
       const range = `${formatValue(c.vm.format, s.mean - s.sd)} - ${formatValue(c.vm.format, s.mean + s.sd)}${c.vm.unit ? ` ${unitLabel(c.vm.unit)}` : ""}`;
       return (
-        <SectionShell variant="card" {...cardOf("Unusual days", t("section.unusualDays"))}>
+        // Blood pressure's unusual days are systolic's.
+        <SectionShell variant="card" {...cardOf("Unusual days", c.vm.pair ? `${t("section.unusualDays")} · ${t("bloodPressure.systolic", { ns: "health" })}` : t("section.unusualDays"))}>
           <Text className={cn(CAPTION, "mb-2")}>{t("section.usualRange", { range })}</Text>
           {s.items.length ? (
             <Divided>
