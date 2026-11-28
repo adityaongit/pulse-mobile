@@ -3,9 +3,10 @@
 // then the turn itself: validate the messages against the tools, summarise older turns (history.ts), stream the answer
 // with up to six steps of read-only tool calls, and save the whole chat when the stream ends.
 // Never logs message content, tool output, keys or provider bodies.
-import { APICallError, RetryError, generateId, isStepCount, streamText, toUIMessageStream, validateUIMessages, type ChatTransport, type LanguageModel, type UIMessage, type UIMessageChunk } from "ai";
+import { generateId, isStepCount, streamText, toUIMessageStream, validateUIMessages, type ChatTransport, type LanguageModel, type UIMessage, type UIMessageChunk } from "ai";
 import { report } from "@/lib/telemetry";
 import type { QueryCtx } from "@/queries/ctx";
+import { failureToken, providerFailure, type FailureCode } from "./failure";
 import { coachHistory } from "./history";
 import { coachInstructions } from "./instructions";
 import { defaultTexts, type Texts } from "./texts";
@@ -15,8 +16,8 @@ import { selectedActivity } from "./activityChat";
 
 /** What a turn can fail with before any answer streams; the screen maps each to a sentence (Coach.tsx ERRORS). */
 export type CoachProblem = "limit" | "key" | "profile" | "bad_request";
-/** What a failure while streaming becomes (the UI stream's errorText). */
-export type StreamProblem = "provider" | "network";
+/** What a failure while streaming becomes (the UI stream's error code, with the status appended by `failureToken`). */
+export type StreamProblem = FailureCode;
 
 export type CoachModel = { model: LanguageModel; provider: string; instructions: string | null; cacheKey?: string };
 
@@ -51,11 +52,9 @@ export function rateGuard(perMinute = PER_MINUTE) {
 /** The one per-minute guard the chat and the workout glance share (the web's allowRequest). */
 export const allowRequest = rateGuard();
 
-/** A stream failure as a problem code: the provider answered with an error, or it could not be reached. */
+/** A stream failure as a stable problem code, used for telemetry; the UI gets `failureToken` with the status. */
 export function streamProblem(e: unknown): StreamProblem {
-  if (APICallError.isInstance(e)) return e.statusCode === undefined ? "network" : "provider";
-  if (e instanceof TypeError) return "network";
-  return "provider";
+  return providerFailure(e).code;
 }
 
 /** The provider's kind for telemetry: never its URL, key or model id. */
@@ -63,9 +62,7 @@ const PROVIDER_KIND: Record<string, string> = { google: "gemini", openai: "opena
 
 /** Reports a coach failure as `coach.<problem>` with the provider's kind and the HTTP status (0 without one). */
 export function reportCoach(problem: string, provider: string | null | undefined, e?: unknown): void {
-  const err = RetryError.isInstance(e) ? e.lastError : e;
-  const status = APICallError.isInstance(err) ? (err.statusCode ?? 0) : 0;
-  void report(`coach.${problem}`, { provider: PROVIDER_KIND[provider ?? ""] ?? "unknown", status });
+  void report(`coach.${problem}`, { provider: PROVIDER_KIND[provider ?? ""] ?? "unknown", status: providerFailure(e).status ?? 0 });
 }
 
 /** The saved first message's metadata (the summary checkpoint) on the first of `messages`, when it is the same message. */
@@ -125,11 +122,11 @@ async function turn(deps: CoachDeps, chatId: string, messages: UIMessage[], abor
     onEnd: async ({ messages: all }) => {
       await deps.save(chatId, all).catch((e) => deps.onSaveError?.(e));
     },
-    // Name only: provider errors can echo the request.
+    // A code plus the HTTP status, never the provider's text: its body can echo the request.
     onError: (e) => {
       const problem = streamProblem(e);
       if (!abortSignal?.aborted) reportCoach(problem, m.provider, e);
-      return problem;
+      return failureToken(e);
     },
   });
 }

@@ -35,6 +35,9 @@
     "key": "Tu clave dejó de funcionar. Vuelve a añadirla en los ajustes del Coach.",
     "profile": "Configura primero tu perfil.",
     "provider": "Tu proveedor rechazó la solicitud (clave, cuota o facturación). Revisa tu cuenta con ellos.",
+    "unavailable": "Tu proveedor está ocupado o no está disponible. Inténtalo de nuevo en un momento.",
+    "refused": "Tu proveedor rechazó la solicitud. Es posible que el modelo o el servidor no admitan este formato de chat.",
+    "httpStatus": " (HTTP {{status}})",
     "network": "No se pudo contactar a tu proveedor. Revisa tu conexión e inténtalo de nuevo.",
     "default": "No se pudo obtener una respuesta. Inténtalo de nuevo."
   },

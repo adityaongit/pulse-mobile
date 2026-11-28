@@ -37,6 +37,9 @@
     "key": "Sua chave parou de funcionar. Adicione-a de novo nas configurações do Coach.",
     "profile": "Configure seu perfil primeiro.",
     "provider": "Seu provedor recusou a solicitação (chave, cota ou cobrança). Verifique sua conta com ele.",
+    "unavailable": "Seu provedor está ocupado ou indisponível. Tente novamente em instantes.",
+    "refused": "Seu provedor rejeitou a solicitação. O modelo ou o servidor talvez não aceite este formato de conversa.",
+    "httpStatus": " (HTTP {{status}})",
     "network": "Não foi possível alcançar seu provedor. Verifique sua conexão e tente de novo.",
     "default": "Não foi possível obter uma resposta. Tente de novo."
   },

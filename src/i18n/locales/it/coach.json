@@ -35,6 +35,9 @@
     "key": "La tua chiave ha smesso di funzionare. Aggiungila di nuovo nelle impostazioni del Coach.",
     "profile": "Prima imposta il tuo profilo.",
     "provider": "Il tuo provider ha rifiutato la richiesta (chiave, quota o fatturazione). Controlla il tuo account presso di loro.",
+    "unavailable": "Il tuo provider è occupato o non disponibile. Riprova tra poco.",
+    "refused": "Il tuo provider ha rifiutato la richiesta. Il modello o il server potrebbero non supportare questo formato di chat.",
+    "httpStatus": " (HTTP {{status}})",
     "network": "Impossibile raggiungere il tuo provider. Controlla la connessione e riprova.",
     "default": "Impossibile ottenere una risposta. Riprova."
   },

@@ -8,6 +8,7 @@ import type { UIMessage } from "ai";
 import { Activity, ArrowUp, ChevronRight, Dumbbell, Moon, NotebookPen, RefreshCw, RotateCcw, Share2, Square, type LucideIcon } from "lucide-react-native";
 import type { CoachSuggestion as CoreSuggestion } from "@/core/algorithms/coachSuggestions";
 import { plainText } from "@/coach/chats";
+import { failureText } from "@/coach/failure";
 import { i18n } from "@/i18n/config";
 import { deviceTransport } from "@/coach/session";
 import { Mark } from "@/ui/brand";
@@ -30,15 +31,11 @@ const SUGGESTION_ICONS: Record<CoachSuggestion["key"], LucideIcon> = { brief: Ac
 /** The tools with a progress line (`coach:running.<tool>`); any other tool reads the default. */
 const RUNNING = ["get_day", "get_sleep", "get_activity", "get_trend", "get_activities", "get_journal_impacts", "get_health", "get_report", "get_profile"];
 
-const PROBLEMS = ["limit", "key", "profile", "provider", "network"] as const;
 /** The composer's least gap to the screen's bottom edge, and its gap above the keyboard. */
 const COMPOSER_GAP = 12;
 
-/** The sentence for a CoachProblem code (see transport.ts); anything else reads the default. */
-const errorText = (e: Error) => {
-  const code = PROBLEMS.find((p) => p === e.message.trim());
-  return code ? i18n.t(`coach:errors.${code}`) : i18n.t("coach:errors.default");
-};
+/** The sentence for a stream token or a pre-stream `Error(code)` (see coach/failure.ts). */
+const errorText = (e: Error) => failureText(e.message);
 
 export function CoachMark({ size }: { size: number }) {
   const { c } = useTheme();
