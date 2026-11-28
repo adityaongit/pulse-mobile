@@ -46,7 +46,10 @@
     "checkNow": "Buscar ahora",
     "latest": "Pulse {{version}} es la última versión.",
     "group": "App",
-    "notificationsLink": "Notificaciones y segundo plano"
+    "notificationsLink": "Notificaciones y segundo plano",
+    "journal": "Diario",
+    "showJournal": "Mostrar el Diario",
+    "showJournalHint": "Desactivado, oculta la pestaña Diario, sus tarjetas y hábitos, el registro del día y su recordatorio. No se borra nada: vuelve a activarlo y todo regresa."
   },
   "form": {
     "optional": "Opcional"

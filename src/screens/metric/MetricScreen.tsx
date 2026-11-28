@@ -27,6 +27,7 @@ import { Text } from "@/ui/Text";
 import { chartDef } from "@/queries/chart";
 import { chartHref, type ChartRange } from "@/screens/chart/href";
 import { RangeStatsCard } from "./RangeStats";
+import { useJournalShown } from "@/state/app";
 import { MetricSection } from "./sections";
 
 /** History's stacks, bottom first; their colours come from `partColor`. */
@@ -54,6 +55,7 @@ function shape(vm: MetricDetailVM) {
 export default function MetricScreen() {
   const { t } = useTranslation("trends");
   const { key, r } = useLocalSearchParams<{ key: string; r?: string }>();
+  const journal = useJournalShown();
   const [d] = useSelectedDay();
   const range = parseRange(r);
   const timeZone = useOptionalShellCalendar()?.timeZone;
@@ -90,7 +92,7 @@ export default function MetricScreen() {
                   ? t("metricScreen.noneLogged", { label: vm.label.toLowerCase() })
                   : t("metricScreen.noneHealthConnect", { label: vm.label.toLowerCase() })
               }
-              action={vm.group === "nutrition" ? { label: t("metricScreen.openJournal"), href: "/journal" } : undefined}
+              action={vm.group === "nutrition" && journal ? { label: t("metricScreen.openJournal"), href: "/journal" } : undefined}
             />
           </SectionShell>
         ) : (

@@ -46,7 +46,10 @@
     "checkNow": "Jetzt prüfen",
     "latest": "Pulse {{version}} ist die neueste Version.",
     "group": "App",
-    "notificationsLink": "Benachrichtigungen & Hintergrund"
+    "notificationsLink": "Benachrichtigungen & Hintergrund",
+    "journal": "Journal",
+    "showJournal": "Journal anzeigen",
+    "showJournalHint": "Aus blendet den Journal-Tab, seine Karten und Gewohnheiten, den Check-in und seine Erinnerung aus. Nichts wird gelöscht: Schalte es wieder ein, und alles ist zurück."
   },
   "form": {
     "optional": "Optional"
