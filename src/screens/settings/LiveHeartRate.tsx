@@ -11,7 +11,6 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { BatteryMedium, Bluetooth, BluetoothOff, ChevronRight, ExternalLink, Info, Watch, type LucideIcon } from "lucide-react-native";
-import { BACKGROUND_GRACE_MS } from "@/health/ble";
 import { i18n } from "@/i18n/config";
 import { signalWord } from "@/health/bleHr";
 import { MISSING } from "@/lib/format";
@@ -31,8 +30,6 @@ import { BODY, ConfirmDialog, HINT, ROW, ROW_LABEL, ROW_RULE, ROW_VALUE, Switch 
 type Live = LiveControl & LiveData;
 
 const GOOGLE_HEALTH = "com.fitbit.FitbitMobile";
-/** How long Pulse keeps the band after leaving the foreground, in words. */
-const GRACE_SECONDS = Math.round(BACKGROUND_GRACE_MS / 1000);
 const WARN = "text-[13px] font-semibold leading-[18px] text-warning-text";
 
 /** The status in a few words. */
@@ -161,7 +158,6 @@ function PermissionsCard({ live }: { live: LiveControl }) {
         <Row label={t("live.nearby")} value={permission} tone={live.permission === "granted" ? undefined : "text-warning-text"} />
         <Row rule label={t("live.bluetooth")} value={radio} tone={live.radio === "on" ? undefined : "text-warning-text"} />
       </View>
-      <Text className={cn(HINT, "mt-2")}>{t("live.nearbyNote")}</Text>
       {live.permission !== "granted" && (
         <Button className="mt-4" onPress={() => void live.requestPermission()}>
           {live.permission === "blocked" ? t("live.openAndroidSettings") : t("live.allowNearby")}
@@ -400,7 +396,7 @@ function GoLiveCard({ live, scanOnArrival }: { live: LiveControl; scanOnArrival:
       </View>
       <View className="mt-6 gap-2.5">
         <Note icon={BatteryMedium}>
-          {t("live.batteryNote", { seconds: GRACE_SECONDS })}
+          {t("live.batteryNote")}
         </Note>
         <Note icon={Info}>{t("live.viewingNote")}</Note>
       </View>

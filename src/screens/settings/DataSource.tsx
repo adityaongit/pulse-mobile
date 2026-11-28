@@ -26,7 +26,7 @@ import { Text } from "@/ui/Text";
 import { toast } from "@/ui/Toast";
 import { useTheme } from "@/ui/theme";
 import { DURATION } from "@/ui/motion";
-import { BODY, ConfirmDialog, HINT, ProgressBar, ROW_LABEL, ROW_RULE } from "./controls";
+import { BODY, ConfirmDialog, HINT, ProgressBar, ROW, ROW_LABEL, ROW_RULE, SmallButton } from "./controls";
 
 /** Health Connect's record types as Settings lists them: the key of each label in `settings:recordType`. The words resolve at use. */
 const TYPE_KEY = {
@@ -291,12 +291,12 @@ export function DataSource({ now }: { now: number }) {
         )}
       </View>
       {hc && (
-        <View className="mt-4 gap-2 border-t border-border pt-4">
-          <Text className={ROW_LABEL}>{t("source.dataCheck")}</Text>
-          <Text className={HINT}>{t("source.dataCheckHint")}</Text>
-          <Button variant="secondary" disabled={checking} onPress={() => void dataCheck()}>
-            {checking ? t("source.checking") : t("source.runDataCheck")}
-          </Button>
+        <View className={cn(ROW, "mt-4 border-t border-border")}>
+          <View className="min-w-0 flex-1">
+            <Text className={ROW_LABEL}>{t("source.dataCheck")}</Text>
+            <Text className={HINT}>{t("source.dataCheckHint")}</Text>
+          </View>
+          <SmallButton label={checking ? t("source.checking") : t("source.run")} accessibilityLabel={t("source.dataCheck")} onPress={() => !checking && void dataCheck()} />
         </View>
       )}
       {hc && perms.state && <DataTypes key={String(perms.state.missing.length)} perms={perms.state} />}
