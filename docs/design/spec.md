@@ -408,9 +408,11 @@ Rem values assume 16 px root. "Caps" means the source string is sentence case an
   tap opens the choices in the kit's dropdown (`MenuPanel`), the current one ticked. The dropdown shows and goes at
   once, with no fade.
 - Theme is System, Light, Dark or Pure black. Pure black is the dark theme with the page ground at `#000` for OLED
-  screens: the root view takes `global.css`'s `.pure-black` class, which sets only `--background`, `--background-top`,
-  `--background-mid` and `--ground-healthspan` to black (`BLACK` in `src/ui/palette.ts` for Skia and native chrome).
-  Cards, sheets, popovers and text keep the dark palette, so they stand off the black ground.
+  screens: the root view takes `global.css`'s `.pure-black` class (`BLACK` in `src/ui/palette.ts` for Skia and native
+  chrome). The ground is `#000`, and the surfaces move to neutral near-blacks, each a step lighter than the one under
+  it: card `#0d0d0e` fading to `#141416` at the top with a brighter lit edge, inset rows `#161618`, secondary `#242426`,
+  fields `#1e1e21`, popovers `#1a1a1c`, and the glass bars near-black. The dark palette's slate-blue surfaces read as
+  grey patches on black. Colours and text keep the dark palette.
 - No data: `--` in the same role as the value would have been, `text-muted-foreground`.
 - Large text: never below `tracking-[-0.04em]`; `text-balance` on titles; `text-pretty` on body; `truncate` with `min-w-0` on every flex child holding a name.
 

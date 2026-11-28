@@ -351,10 +351,12 @@
 }
 
 /*
- * Pure black (Settings › Appearance): the dark theme with the page ground at #000, for OLED screens. The app's root view
- * takes this class (src/ui/providers.tsx) only while the dark theme is on, and every view under it reads these values in
- * place of .dark:root's. Only the ground tokens change; cards, sheets and text keep the dark palette. src/ui/palette.ts
- * holds the same values as BLACK.
+ * Pure black (Settings › App › Theme): the dark theme redrawn for OLED screens. The app's root view takes this class
+ * (src/ui/providers.tsx) only while the dark theme is on, and every view under it reads these values in place of
+ * .dark:root's. The ground is #000; cards, sheets, fields and the glass bars move to neutral near-blacks (the dark
+ * palette's are slate-blue, which reads as grey patches on black), each surface a step lighter than the one under it,
+ * and the card's lit top edge is brighter so cards hold their shape. Colours and text keep the dark palette.
+ * src/ui/palette.ts holds the same values as BLACK.
  */
 /* The app's root view always has this class, so it holds a variable from its first render (src/ui/providers.tsx). */
 .ground-root {
@@ -366,4 +368,26 @@
   --background-mid: 0 0 0;
   --background: 0 0 0;
   --ground-healthspan: 0 0 0;
+  --card: 13 13 14;
+  --card-top: 20 20 22;
+  --card-hover: 26 26 28;
+  --card-peek: rgb(13 13 14 / 0.6);
+  --card-edge: rgb(255 255 255 / 0.08);
+  --popover: 26 26 28;
+  --popover-top: 32 32 35;
+  --primary-foreground: 0 0 0;
+  --secondary: 36 36 38;
+  --muted: 20 20 22;
+  --accent: 44 44 47;
+  --inset: 22 22 24;
+  --field: 30 30 33;
+  --on-color: 0 0 0;
+  --key-foreground: 0 0 0;
+  --dial-track: 34 34 37;
+  --dial-target: 72 72 76;
+  --glass-top: rgb(24 24 27 / 0.8);
+  --glass-bottom: rgb(10 10 11 / 0.9);
+  --glass-action-top: rgb(26 26 34 / 0.84);
+  --glass-action-bottom: rgb(18 18 26 / 0.92);
+  --action-face: 20 20 28;
 }
