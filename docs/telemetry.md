@@ -78,7 +78,7 @@ well inside the free tier's 5M spans; logs are a handful per sync, well inside i
 | `import.mismatch.<metric>` | `days` | Health Connect has `<metric>` on 2 or more of the last days where Pulse stored nothing or a different value (the data check's comparison) |
 | `import.empty.<type>` | | A granted core type has no record at all in the last 30 days |
 | `state.stuck.<score>` | `reason`, `days` | Recovery, Sleep Performance or Strain has shown the same reason instead of a value for 3 or more days while the band was worn |
-| `coach.<problem>` | `provider`, `status` | The AI Coach failed: `provider` is the kind (gemini, openai, anthropic, openai-compatible, custom), `status` the HTTP status or 0 |
+| `coach.<problem>` | `provider`, `status` | The AI Coach failed: `problem` is `key_test_failed`, `key`, `unavailable`, `refused` (the provider answered 400, 404 or 422), `provider`, `network`, or a pre-stream code (`bad_request` is Pulse's own saved chat failing validation); `provider` is the kind (gemini, openai, anthropic, openai-compatible, custom), `status` the HTTP status or 0 |
 | `workout.command_failed` | `code`, `kind` | A workout start, pause, resume or finish failed |
 | `workout.storage_failed` | `kind` | The recorder could not read or write its storage |
 | `workout.ingest_failed` | `kind` | Recorded samples could not be stored |
