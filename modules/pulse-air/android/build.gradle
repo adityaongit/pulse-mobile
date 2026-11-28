@@ -1,0 +1,26 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'app.pulse'
+version = '1.0.0'
+
+android {
+  namespace "app.pulse.air"
+  defaultConfig {
+    versionCode 1
+    versionName '1.0.0'
+    // The Golden Gate native code finds its Kotlin classes and callbacks by their JNI names.
+    consumerProguardFiles 'consumer-rules.pro'
+  }
+}
+
+// What the Golden Gate bindings (com.fitbit.goldengate.bindings, copied from fitbit-air) need.
+dependencies {
+  implementation 'androidx.annotation:annotation:1.9.1'
+  implementation 'io.reactivex.rxjava2:rxjava:2.2.21'
+  implementation 'com.jakewharton.timber:timber:4.7.1'
+  // Only remote/WebSocketTransport uses it; React Native already ships OkHttp.
+  implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+}

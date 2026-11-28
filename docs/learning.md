@@ -965,3 +965,12 @@ References: [SDK 57 Accelerometer](https://docs.expo.dev/versions/v57.0.0/sdk/ac
 ## Pure black with a NativeWind class that sets variables
 
 NativeWind 4 compiles a plain CSS class that sets custom properties (`.pure-black { --background: 0 0 0; }` in `global.css`) into a rule that hands those values to every view under the one that takes the class, ahead of the `:root` and `.dark:root` values. The pure black theme uses that: the dark scheme stays NativeWind's (`colorScheme.set("dark")`), and the app's root view in `src/ui/providers.tsx` takes `pure-black` while it is on, so every `bg-background` turns black with no second palette. NativeWind keeps a variable in a class only when some class uses it (`--ground-healthspan` is read only from JS, so the class drops it, harmlessly). Skia, the ground and the native chrome read `BLACK` from `src/ui/palette.ts` instead (`useTheme`), and `src/ui/palette.test.ts` keeps the two in step.
+
+## Prebuilt native libraries in a local Expo module
+
+`modules/pulse-air` ships Golden Gate's `libgg.so` and `libxp.so` under `android/src/main/jniLibs/arm64-v8a/`. AGP
+packages a library module's `jniLibs` into the app with no CMake or NDK step, so EAS and `pnpm android` build it like
+any Kotlin module. The libraries are 16 KB page-aligned (check with the NDK's `llvm-readelf -lW`: every `LOAD` aligns
+to `0x4000`), which Android 15+ needs on 16 KB-page phones. Only arm64 is bundled; elsewhere `System.loadLibrary`
+throws, the read fails with `NATIVE_UNAVAILABLE` and the header keeps the sync age. The native code finds its Kotlin
+classes by JNI name, so the module's `consumer-rules.pro` keeps `com.fitbit.goldengate.bindings.**` from R8.

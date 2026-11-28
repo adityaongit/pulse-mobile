@@ -83,6 +83,7 @@ well inside the free tier's 5M spans; logs are a handful per sync, well inside i
 | `workout.storage_failed` | `kind` | The recorder could not read or write its storage |
 | `workout.ingest_failed` | `kind` | Recorded samples could not be stored |
 | `widgets.publish_failed` | `kind` | The widget summary could not be published |
+| `air.battery.failed` | `reason` | Reading the Fitbit Air's battery failed: `reason` is the native module's code (`TIMEOUT`, `HANDSHAKE_TIMEOUT`, `GATT_CONNECT`, `NATIVE_UNAVAILABLE`, `BATTERY_REJECTED`, ...); no Air, Bluetooth off and a busy reader are not reported |
 | `update.check_failed` | `status` | The daily update check got an error from GitHub |
 | `render.screen` | | A screen's error boundary caught a render error (sent as a crash) |
 

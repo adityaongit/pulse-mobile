@@ -10,6 +10,7 @@ import { initTelemetry } from "@/lib/telemetry";
 import { applyDisplay } from "@/state/display";
 import * as BackgroundTask from "expo-background-task";
 import * as TaskManager from "expo-task-manager";
+import { refreshAirBattery } from "@/health/airBattery";
 import { permissionState } from "@/health/connect";
 import { notifyAfterRun, readSource } from "./alerts";
 import { taskSkipReason } from "./decide";
@@ -46,6 +47,8 @@ export async function runBackgroundTask(): Promise<BackgroundTask.BackgroundTask
       return BackgroundTask.BackgroundTaskResult.Success;
     }
     const r = await runSync(store, profile, source, { timeZone: profile.timeZone, owner: "task" });
+    // Awaited: a headless run may end as soon as the task returns.
+    await refreshAirBattery();
     await appendLog({
       at: t0,
       result: r.ran ? "ok" : "skipped",

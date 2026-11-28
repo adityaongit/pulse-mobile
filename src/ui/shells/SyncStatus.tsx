@@ -1,9 +1,11 @@
 import { i18n } from "@/i18n/config";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
+import { Zap } from "lucide-react-native";
 import Animated, { cancelAnimation, Easing, useAnimatedStyle, useReducedMotion, useSharedValue, withRepeat, withTiming } from "react-native-reanimated";
 import Svg, { Circle } from "react-native-svg";
-import { agoShort, ago } from "@/lib/format";
+import { LOW_PERCENT, shownBattery, useAirBattery, type AirBattery } from "@/health/airBattery";
+import { agoShort, ago, FORMATS } from "@/lib/format";
 import { BandIcon } from "../brand";
 import { cn } from "../cn";
 import { push } from "../navigate";
@@ -33,22 +35,31 @@ function useMinute() {
   return now;
 }
 
+/** The spoken battery after the sync label: "Synced 12 minutes ago, Fitbit Air battery 37 percent, charging". */
+function batteryLabel(b: AirBattery) {
+  return i18n.t(b.charging ? "ui:sync.batteryCharging" : "ui:sync.battery", { percent: b.percent });
+}
+
 /**
- * Sync freshness in the reference app's battery slot (the web's SyncStatus): "12m", the band icon and a status dot, at
- * the right of Home's top row and of the Health, Journal and More headers. The tap goes straight to
- * Settings › Data source (with Sync now). `hideText`: Home's top row drops the "12m" on
+ * The reference app's battery slot (the web's SyncStatus): the Fitbit Air's battery ("37%", src/health/airBattery.ts)
+ * when a reading under 12 hours old exists, else the sync's age ("12m"); then the band icon and the sync's status dot,
+ * at the right of Home's top row and of the Health, Journal and More headers. The tap goes straight to
+ * Settings › Data source (with Sync now). `hideText`: Home's top row drops the text on
  * narrow phones (the band, its dot and the accessible name still carry it).
  */
 export function SyncStatus({ hideText = false }: { hideText?: boolean }) {
   const s = useShellSync();
   const now = useMinute();
   const { c } = useTheme();
+  const battery = shownBattery(useAirBattery(), now);
   if (!s) return null;
   const v = syncView(s, now);
-  const short = s.sync.lastSuccessAt ? agoShort(s.sync.lastSuccessAt, now) : "";
+  const short = battery ? FORMATS.pct(battery.percent) : s.sync.lastSuccessAt ? agoShort(s.sync.lastSuccessAt, now) : "";
+  const low = battery && !battery.charging && battery.percent <= LOW_PERCENT;
   return (
-    <Press activeScale={0.96} accessibilityRole="button" accessibilityLabel={v.label} onPress={() => push("/settings?s=source")} className="h-11 min-w-11 flex-row items-center justify-end gap-1.5 rounded-full pl-2 pr-0.5">
-      {!hideText && <Text className="min-w-[3ch] whitespace-nowrap text-right font-numeric text-[15px] font-semibold leading-5 tabular-nums text-muted-foreground">{short}</Text>}
+    <Press activeScale={0.96} accessibilityRole="button" accessibilityLabel={battery ? `${v.label}, ${batteryLabel(battery)}` : v.label} onPress={() => push("/settings?s=source")} className="h-11 min-w-11 flex-row items-center justify-end gap-1.5 rounded-full pl-2 pr-0.5">
+      {!hideText && battery?.charging && <Zap size={13} color={c.optimal} fill={c.optimal} strokeWidth={0} />}
+      {!hideText && <Text className={cn("min-w-[3ch] whitespace-nowrap text-right font-numeric text-[15px] font-semibold leading-5 tabular-nums", low ? "text-warning-text" : "text-muted-foreground")}>{short}</Text>}
       {/* The band with its dot at the top right, ringed in the header's colour (the web's Band). */}
       <View className="ml-1 size-6 items-center justify-center">
         <BandIcon size={22} color={c.foreground} />
