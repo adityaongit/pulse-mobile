@@ -40,13 +40,13 @@ describe("HRV Status (Garmin-style, on ln RMSSD)", () => {
     expect(r.lowLine).toBeCloseTo(50 * Math.exp(-1.5 * sd), 9);
   });
 
-  it("builds its baseline over 21 nights, and needs 4 of the last 7", () => {
-    const short = [...Array(20).fill(50), ...Array(7).fill(50)];
-    expect(hrvStatus(short)).toMatchObject({ status: null, reason: "building", baselineNights: 20 });
-    expect(hrvStatus([...Array(21).fill(50), ...Array(7).fill(50)]).status).toBe("balanced");
+  it("reads a status from 21 nights (14 for the baseline, the week's 7), and needs 4 of the last 7", () => {
+    const short = Array(20).fill(50);
+    expect(hrvStatus(short)).toMatchObject({ status: null, reason: "building", baselineNights: 13 });
+    expect(hrvStatus(Array(21).fill(50)).status).toBe("balanced");
     const gappy = [...Array(30).fill(50), 50, null, 50, null, 50, null, null];
     expect(hrvStatus(gappy)).toMatchObject({ status: null, reason: "no_recent" });
-    expect(hrvStatusConfig.minBaselineNights).toBe(21);
+    expect(hrvStatusConfig.minBaselineNights).toBe(14);
   });
 
   it("uses only the 60 nights before the last 7 for the baseline", () => {

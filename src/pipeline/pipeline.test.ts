@@ -179,7 +179,8 @@ describe("parity with the web app", () => {
     // Version 29: Fitbit's HRV and resting HR are every vital's source of truth. Version 28's value was "32eeb5d9e23357a3".
     // 30: Pulse Age's VO2 max falls back to the estimate (the seed has Fitbit's, so only the version moves). Version 29's value was "22839852f7ee4661".
     // 31: Blood pressure in Health Monitor (causal spot readings persisted in health_monitor). Version 30's value was "25a36d10947fc464".
-    "daily_scores.scoring_version": "9d8a77fc84882991",
+    // 32: HRV Status from 21 nights (its baseline needs 14 before the week). Version 31's value was "9d8a77fc84882991".
+    "daily_scores.scoring_version": "ae95b29d44b502c1",
     // Version 15: Activity Strain is the session's Banister TRIMP plus its muscular load through 5.05 · ln(1 + 0.09 · T)
     // (a seeded 45-minute strength session goes from 8.2 to 9.9 on 0–21), each activity stores its `cardioTrimp` and
     // `muscularTrimp`, and its zone seconds count Zone 1 from 40 % of the reserve. Version 14's value was "cb2d75373aaf4d20".
@@ -280,12 +281,15 @@ describe("parity with the web app", () => {
     // New at version 19 (hrvStatus.ts): HRV Status from the 7-night average of ln HRV against the 60 nights before; the
     // seed reads building for its first 27 days, then Balanced on 148 days and Unbalanced on 5.
     // Version 29: reads Fitbit's nightly HRV. Version 28's value was "9ac04f611f5dad6d".
-    "daily_scores.hrv_status": "027b836ad9f6714d",
+    // Version 32: the baseline needs 14 nights before the week, so a status shows from the 21st night (the seed builds for
+    // its first 20 days, not 27). Version 31's value was "027b836ad9f6714d".
+    "daily_scores.hrv_status": "b0a66e988c927c19",
     // New at version 19 (scores.ts scoreTraining): each workout's Aerobic Training Effect (walks about 1.5, strength 2.3,
     // easy runs 3.3, tempo runs 4.3, intervals 5.0 on the seed), Recovery Time, Training Readiness at wake and now, and
     // Training Status (productive 58 days, maintaining 77, recovery 26, no status 19).
     // Version 29: Training Readiness follows Recovery and HRV. Version 28's value was "bd09a22c06111df2".
-    "daily_scores.training": "b366c75557cc378a",
+    // Version 32: Training Status reads HRV Status a week sooner. Version 31's value was "b366c75557cc378a".
+    "daily_scores.training": "f07bb976141eaa91",
     // Version 16: the curve follows its start level (above). Version 15's value was "237320b091a7a358".
     // Version 17: likewise. Version 16's value was "081d84cb00f2d1a6". Version 18: the curve runs from midnight (the night's
     // recharge included) on the new rates. Version 17's value was "ea5921ebc2c6e657".
@@ -683,6 +687,21 @@ describe("incremental runs", () => {
     // Day without BP has null bloodPressure
     const prevDayScored = (await store.getScores(dayAt(149)))!.health_monitor as HealthMonitorRow;
     expect(prevDayScored.bloodPressure).toBeNull();
+  });
+
+  it("shows HRV Status once there are 21 nights of HRV, as the card's copy says (#72)", async () => {
+    const short = new MemoryStore();
+    await seedDemo(short, { today: TODAY, timeZone: TZ, now: NOW, days: 24 });
+    await runPipeline(short, PROFILE, { today: TODAY });
+    const withHrv = (await short.allMetrics())
+      .filter((m) => m.hrvMs != null)
+      .map((m) => m.day)
+      .sort();
+    const day21 = withHrv[20];
+    expect(day21).toBeDefined();
+    expect((await short.getScores(day21))!.hrv_status).toMatchObject({ status: expect.any(String) });
+    // The night before it still builds.
+    expect((await short.getScores(withHrv[19]))!.hrv_status).toMatchObject({ status: null, reason: "building" });
   });
 
   it("an empty store runs to nothing", async () => {
